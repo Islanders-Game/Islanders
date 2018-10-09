@@ -1,8 +1,8 @@
 FROM node:alpine as builder
 WORKDIR /app
-COPY ./pilgrims/package*.json ./
+COPY ./package*.json ./
 RUN npm install
-COPY ./pilgrims .
+COPY . .
 RUN npm run build
 
 FROM nginx:alpine

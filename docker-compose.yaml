@@ -1,8 +1,8 @@
 version: '3.5'
 services:
-  anderswind:
-    image: pilgrims
-    container_name: pilgrims
+  pilgrims-client:
+    image: pilgrims-client
+    container_name: pilgrims-client
     restart: unless-stopped
     labels:
       - "traefik.enable=true"

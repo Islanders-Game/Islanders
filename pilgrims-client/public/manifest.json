@@ -1,6 +1,6 @@
 {
-  "name": "pilgrims",
-  "short_name": "pilgrims",
+  "name": "pilgrims-client",
+  "short_name": "pilgrims-client",
   "icons": [
     {
       "src": "/img/icons/android-chrome-192x192.png",

@@ -1,4 +1,4 @@
-# pilgrims
+# pilgrims-client
 
 ## Project setup
 ```
