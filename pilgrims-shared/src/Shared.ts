@@ -81,17 +81,16 @@ interface Resources {
     wool?: number;
 }
 
-interface Failure { tag: "Failure"; }
-interface Success<T> { tag: "Success"; world: T; }
+interface Failure { reason: string; }
+interface Success<T> { world: T; }
 type Result<T> = Success<T> | Failure;
-type GameResult = Result<World>
 
 export type Rules = {
-    "Build House": (playerID: number, x:number, y:number) => (w:World) => GameResult
-    "Build City": (playerID: number, x:number, y:number) => (w:World) => GameResult
-    "Build Road": (playerID: number, x:number, y:number) => (w:World) => GameResult
-    "Move Thief": (playerID: number, x:number, y:number) => (w:World) => GameResult
-    "Buy Card": (playerID: number) => (w:World) => GameResult
-    "Play Card": (playerID: number, card: DevelopmentCard) => (w:World) => GameResult
-    "Trade": (playerID: number, otherPlayerID: number, resources: Resources) => (w:World) => GameResult   
+    "Build House": (playerID: number, x:number, y:number) => (w:World) => Result<World>
+    "Build City": (playerID: number, x:number, y:number) => (w:World) => Result<World>
+    "Build Road": (playerID: number, x:number, y:number) => (w:World) => Result<World>
+    "Move Thief": (playerID: number, x:number, y:number) => (w:World) => Result<World>
+    "Buy Card": (playerID: number) => (w:World) => Result<World>
+    "Play Card": (playerID: number, card: DevelopmentCard) => (w:World) => Result<World>
+    "Trade": (playerID: number, otherPlayerID: number, resources: Resources) => (w:World) => Result<World>   
 }
