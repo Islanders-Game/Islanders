@@ -1,7 +1,12 @@
 FROM node:alpine as builder
+
 WORKDIR /app
+
+# Install Dependencies
 COPY ./package*.json ./
 RUN npm install
+
+# Build app
 COPY . .
 RUN npm run build
 
