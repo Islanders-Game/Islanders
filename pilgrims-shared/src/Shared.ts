@@ -18,7 +18,7 @@ export interface Player {
 }
 
 interface Purchaseable { cost: Resources; }
-export interface House extends Purchaseable {
+export class House implements Purchaseable {
     position: MatrixCoordinate;
     cost: {
         wood: 1,
@@ -28,7 +28,7 @@ export interface House extends Purchaseable {
     };
 }
 
-export interface Road extends Purchaseable {
+export class Road implements Purchaseable {
     start: MatrixCoordinate;
     end: MatrixCoordinate;
     cost: {
@@ -36,7 +36,7 @@ export interface Road extends Purchaseable {
         clay: 1
     };
 }
-export interface Ship extends Purchaseable {
+export class Ship implements Purchaseable {
     start: MatrixCoordinate;
     end: MatrixCoordinate;
     cost: {
@@ -45,7 +45,7 @@ export interface Ship extends Purchaseable {
     };
 }
 
-export interface City extends Purchaseable {
+export class City implements Purchaseable {
     position: MatrixCoordinate;
     cost: {
         grain: 2,
@@ -53,7 +53,7 @@ export interface City extends Purchaseable {
     };
 }
 
-export interface DevelopmentCard extends Purchaseable {
+export class DevelopmentCard implements Purchaseable {
     type: "Knight" | "Victory Point" | "Road Building" | "Monopoly" | "Year of Plenty"
     cost: {
         grain: 1,
@@ -73,7 +73,7 @@ export interface HexCoordinate {
 }
 export interface MatrixCoordinate extends HexCoordinate {};
 
-interface Resources {
+export interface Resources {
     wood?: number;
     stone?: number;
     clay?: number;
@@ -81,8 +81,8 @@ interface Resources {
     wool?: number;
 }
 
-export interface Failure { reason: string; }
-export interface Success<T> { world: T; }
+export interface Failure { tag: "Failure", reason: string; }
+export interface Success<T> { tag: "Success", world: T; }
 export type Result<T> = Success<T> | Failure
 
 export type Rules = {
