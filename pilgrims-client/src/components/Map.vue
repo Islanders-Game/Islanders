@@ -19,7 +19,28 @@ export default class Map extends Vue {
     });
   }
 
-  private DrawMap() {
+  // Generally not the way to go - we want to load these.
+  private getTileImg(tileRand: number, draw: SVG.Doc): SVG.Image {
+    switch (Math.floor(tileRand)) {
+      case 0:
+        return draw.image('./img/tilesets/modern/brick.gif', 400, 346);
+      case 1:
+        return draw.image('./img/tilesets/modern/desert.gif', 400, 346);
+      case 2:
+        return draw.image('./img/tilesets/modern/grain.gif', 400, 346);
+      case 3:
+        return draw.image('./img/tilesets/modern/lumber.gif', 400, 346);
+      case 4:
+        return draw.image('./img/tilesets/modern/ore.gif', 400, 346);
+      case 5:
+        return draw.image('./img/tilesets/modern/sea.gif', 400, 346);
+      case 5:
+        return draw.image('./img/tilesets/modern/wool.gif', 400, 346);
+    }
+    return draw.image();
+  }
+
+  private DrawMap(): void {
     const draw = new SVG.Doc(this.$el).size('100%', '100%');
     draw.id('drawingMap');
 
@@ -32,16 +53,15 @@ export default class Map extends Vue {
 
     // an SVG symbol can be reused
     const points: SVG.PointArrayAlias = corners.map(({ x, y }) => [x, y]);
-    const hexSymbol = draw
-      .polygon(points)
-      .fill(draw.image('./img/tilesets/modern/brick.gif', 400, 346))
-      .stroke({ width: 1, color: '#999' });
+    const hexSymbol = draw.polygon(points).stroke({ width: 1, color: '#999' });
 
     // render 10,000 hexes
     Grid.rectangle({ width: 12, height: 10 }).forEach((hex) => {
       const { x, y } = hex.toPoint();
       // use hexSymbol and set its position for each hex
-      draw.use(hexSymbol).translate(x, y);
+      draw
+        .use(hexSymbol.clone().fill(this.getTileImg(Math.random() * 6, draw)))
+        .translate(x, y);
     });
 
     svgPanZoom.default('#drawingMap');
