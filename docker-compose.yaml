@@ -7,10 +7,23 @@ services:
     labels:
       - "traefik.enable=true"
       - "traefik.docker.network=traefik_proxy"
-      - "traefik.backend=pilgrims"
+      - "traefik.backend=pilgrims-client"
       - "traefik.frontend.rule=Host:pilgrims.localhost"
     networks:
       - traefik_proxy
+  
+  pilgrims-server:
+    image: pilgrims-server
+    container_name: pilgrims-server
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.backend=pilgrims-server"
+      - "traefik.frontend.rule=Host:pilgrims.localhost;PathPrefix:/api/"
+    networks:
+      - traefik_proxy
+
 
 networks:
   traefik_proxy:

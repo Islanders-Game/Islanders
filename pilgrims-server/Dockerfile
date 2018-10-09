@@ -1,13 +1,18 @@
-FROM risingstack/alpine:3.4-v6.9.4-4.2.0
+FROM node:alpine
 
-ENV PORT 3001
+# Global dependencies
+RUN npm install -g tsc \
+    && npm install -g typescript
 
-EXPOSE 3001
-
-COPY package.json package.json
+# App dependencies
+COPY package.json ./
 RUN npm install
 
+# Build app
 COPY . .
 RUN npm run build
 
+# Run
+ENV PORT 3001
+EXPOSE 3001
 CMD ["node", "dist/"]
