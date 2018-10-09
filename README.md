@@ -1,4 +1,4 @@
-![header](doc/pilgrims.jpg "Pilgrims")
+![header](doc/header-simple.jpg "Pilgrims")
 
 A clone of the popular "Settlers of Catan", written in Typescript.
 
