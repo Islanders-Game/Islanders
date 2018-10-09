@@ -12,34 +12,36 @@ import * as SVG from 'svg.js';
 export default class Map extends Vue {
   constructor() {
     super();
-    this.DrawMap();
+
+    window.addEventListener('load', (event) => {
+      this.DrawMap();
+    });
   }
 
   private DrawMap() {
     const width = 450;
     const height = 300;
 
-    const draw = SVG.create('Map');
-    // draw.viewbox(0, 0, width, height);
-    // draw.rect(width, height).fill('#dde3e1');
+    const elem = this.$el;
+    const draw = new SVG.Doc(elem).size('100%', '100%');
 
-    // const Hex = extendHex({ size: 5 });
-    // const Grid = defineGrid(Hex);
-    // // get the corners of a hex (they're the same for all hexes created with the same Hex factory)
-    // const corners = Hex().corners();
-    // // an SVG symbol can be reused
-    // const points: SVG.PointArrayAlias = corners.map(({ x, y }) => [x, y]);
-    // const hexSymbol = draw.data
-    //   .polygon(points)
-    //   .fill('none')
-    //   .stroke({ width: 1, color: '#999' });
+    const Hex = extendHex({ size: 5 });
+    const Grid = defineGrid(Hex);
+    // get the corners of a hex (they're the same for all hexes created with the same Hex factory)
+    const corners = Hex().corners();
+    // an SVG symbol can be reused
+    const points: SVG.PointArrayAlias = corners.map(({ x, y }) => [x, y]);
+    const hexSymbol = draw
+      .polygon(points)
+      .fill('none')
+      .stroke({ width: 1, color: '#999' });
 
-    // // render 10,000 hexes
-    // Grid.rectangle({ width: 100, height: 100 }).forEach((hex) => {
-    //   const { x, y } = hex.toPoint();
-    //   // use hexSymbol and set its position for each hex
-    //   draw.use(hexSymbol).translate(x, y);
-    // });
+    // render 10,000 hexes
+    Grid.rectangle({ width: 100, height: 100 }).forEach((hex) => {
+      const { x, y } = hex.toPoint();
+      // use hexSymbol and set its position for each hex
+      draw.use(hexSymbol).translate(x, y);
+    });
   }
 }
 </script>
