@@ -15,8 +15,11 @@ function getOrElse<T>(w: Result<World>, orElse: World): World {
     return orElse;
 }
 
-// Test of above: 
-const world: World = {
+
+//
+// Example usage of above:
+//
+const initialWorld: World = {
     players: [{
         id: 0, 
         resources: {},
@@ -36,3 +39,5 @@ const toApply = [tryBuildHouse, tryBuildCity];
 //TODO: Feed initial World through mutator functions,
 //      passing each new generated World to the next function to be applied, 
 //      resulting in a final Result<World> that's either valid or invalid. 
+
+//const newWorld = ???
