@@ -3,9 +3,15 @@
     "target": "es6",
     "module": "commonjs",
     "outDir": "dist",
-    "sourceMap": true
+    "sourceMap": true,
+    "baseUrl": ".",
+    "paths": {
+      "*": [
+          "node_modules/*",
+          "src/types/*"
+      ]
+    },
   },
-  "files": [],
   "include": [
     "src/**/*.ts"
   ],
