@@ -7,6 +7,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { defineGrid, extendHex } from 'honeycomb-grid';
 import * as SVG from 'svg.js';
+import * as svgPanZoom from 'svg-pan-zoom';
 
 @Component
 export default class Map extends Vue {
@@ -39,6 +40,8 @@ export default class Map extends Vue {
       // use hexSymbol and set its position for each hex
       draw.use(hexSymbol).translate(x, y);
     });
+
+    svgPanZoom.default('#drawingMap');
   }
 }
 </script>
