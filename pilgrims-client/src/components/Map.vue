@@ -23,7 +23,10 @@ export default class Map extends Vue {
     const draw = new SVG.Doc(this.$el).size('100%', '100%');
     draw.id('drawingMap');
 
-    const Hex = extendHex({ size: 50 });
+    const Hex = extendHex({
+      size: 200,
+      orientation: 'flat',
+    });
     const Grid = defineGrid(Hex);
     const corners = Hex().corners();
 
@@ -31,7 +34,7 @@ export default class Map extends Vue {
     const points: SVG.PointArrayAlias = corners.map(({ x, y }) => [x, y]);
     const hexSymbol = draw
       .polygon(points)
-      .fill('#ffffff')
+      .fill(draw.image('./img/tilesets/modern/brick.gif', 400, 346))
       .stroke({ width: 1, color: '#999' });
 
     // render 10,000 hexes
