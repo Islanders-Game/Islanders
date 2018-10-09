@@ -1,0 +1,17 @@
+version: '3.5'
+services:
+  anderswind:
+    image: pilgrims
+    container_name: pilgrims
+    restart: unless-stopped
+    labels:
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.backend=pilgrims"
+      - "traefik.frontend.rule=Host:pilgrims.localhost"
+    networks:
+      - traefik_proxy
+
+networks:
+  traefik_proxy:
+    external: true
