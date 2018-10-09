@@ -25,4 +25,4 @@ const rules: Rules = {
 }
 
 const partiallyAppliedBuild = rules["Build City"](2, 2, 2);
-// Call tryBuild() with a World, resulting in maybe a new World. 
+// Call tryBuild() with a World, resulting in hopefully a Result<World>, otherwise a Failure. 
