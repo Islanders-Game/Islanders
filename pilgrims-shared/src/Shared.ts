@@ -1,14 +1,14 @@
-interface World {
+export interface World {
     players: Player[];
     thief?: Thief;
     map: Tile[];
 }
 
-interface Thief {
+export interface Thief {
     hexCoordinate: HexCoordinate
 }
 
-interface Player {
+export interface Player {
     id: number;
     resources: Resources;
     houses: House[];
@@ -18,7 +18,7 @@ interface Player {
 }
 
 interface Purchaseable { cost: Resources; }
-interface House extends Purchaseable {
+export interface House extends Purchaseable {
     position: MatrixCoordinate;
     cost: {
         wood: 1,
@@ -28,7 +28,7 @@ interface House extends Purchaseable {
     };
 }
 
-interface Road extends Purchaseable {
+export interface Road extends Purchaseable {
     start: MatrixCoordinate;
     end: MatrixCoordinate;
     cost: {
@@ -36,7 +36,7 @@ interface Road extends Purchaseable {
         clay: 1
     };
 }
-interface Ship extends Purchaseable {
+export interface Ship extends Purchaseable {
     start: MatrixCoordinate;
     end: MatrixCoordinate;
     cost: {
@@ -45,7 +45,7 @@ interface Ship extends Purchaseable {
     };
 }
 
-interface City extends Purchaseable {
+export interface City extends Purchaseable {
     position: MatrixCoordinate;
     cost: {
         grain: 2,
@@ -53,7 +53,7 @@ interface City extends Purchaseable {
     };
 }
 
-interface DevelopmentCard extends Purchaseable {
+export interface DevelopmentCard extends Purchaseable {
     type: "Knight" | "Victory Point" | "Road Building" | "Monopoly" | "Year of Plenty"
     cost: {
         grain: 1,
@@ -62,16 +62,16 @@ interface DevelopmentCard extends Purchaseable {
     };
 }
 
-interface Tile {
+export interface Tile {
     type: "Wood" | "Stone" | "Clay" | "Grain" | "Wool";
     diceRoll: 1 | 2 | 3 | 4 | 5 | 6 | 7 | 8 | 9 | 10 | 11 | 12;
 }
 
-interface HexCoordinate {
+export interface HexCoordinate {
     x: number;
     y: number;
 }
-interface MatrixCoordinate extends HexCoordinate {};
+export interface MatrixCoordinate extends HexCoordinate {};
 
 interface Resources {
     wood?: number;
