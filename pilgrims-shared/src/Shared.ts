@@ -9,6 +9,7 @@ interface Thief {
 }
 
 interface Player {
+    id: number;
     resources: Resources;
     houses: House[];
     cities: City[];
@@ -80,32 +81,17 @@ interface Resources {
     wool?: number;
 }
 
-type Rule = "Build House" | "Build City" | "Build Road" | "Move Thief" | "Buy Card" | "Play Card" | "Trade"
-
-interface Failure<E> { tag: "Failure"; error: E; }
+interface Failure { tag: "Failure"; }
 interface Success<T> { tag: "Success"; world: T; }
-type Result<T, E> = Success<T> | Failure<E>;
-type GameResult = Result<World, Error>
-type GameAction = (world:World, type: Rule, ...params) => GameResult
+type Result<T> = Success<T> | Failure;
+type GameResult = Result<World>
 
-type Rules = {
-    "Build House": (x:number, y:number) => GameResult //MatrixCoordinate instead of x and y? Type reuse vs. extra brackets.
-    "Build City": (x:number, y:number) => GameResult
-    "Build Road": (start:number, end:number) => GameResult
-    "Move Thief": (x:number, y:number) => GameResult
-    "Buy Card": () => GameResult
-    "Play Card": (card: DevelopmentCard) => GameResult
-    "Trade": (resources: Resources) => GameResult
+export type Rules = {
+    "Build House": (playerID: number, x:number, y:number) => (w:World) => GameResult
+    "Build City": (playerID: number, x:number, y:number) => (w:World) => GameResult
+    "Build Road": (playerID: number, x:number, y:number) => (w:World) => GameResult
+    "Move Thief": (playerID: number, x:number, y:number) => (w:World) => GameResult
+    "Buy Card": (playerID: number) => (w:World) => GameResult
+    "Play Card": (playerID: number, card: DevelopmentCard) => (w:World) => GameResult
+    "Trade": (playerID: number, otherPlayerID: number, resources: Resources) => (w:World) => GameResult   
 }
-
-//Example:
-const test = (a: GameResult) => {
-    switch (a.tag) {
-    case "Failure":
-        return undefined;
-    case "Success":
-        const w = a.world;
-        return w;
-    }
-}
-    
