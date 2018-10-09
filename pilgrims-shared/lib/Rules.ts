@@ -19,11 +19,16 @@ const resourcesAreNonNegative = (resources: Resources) => {
         resources.stone && resources.stone >= 0
 }
 
-const canPlaceHouse = (c: MatrixCoordinate, w: World) => {
+const canPlaceHouse = (coord: MatrixCoordinate, w: World) => {
     const all = w.players.reduce((acc: House[], p) => acc.concat(p.houses), [])
-    return all.every(h => h.position.x !== c.x && h.position.y !== c.y) 
-    //TODO: Implement checking for nearby houses on adjecent corners.
+    return all.every(h => 
+        (h.position.x !== coord.x && h.position.y !== coord.y)
+        && (h.position.y !== coord.y-1 && h.position.x !== coord.x-1)  // Adjecent matrix corners.
+        && (h.position.y !== coord.y-1 && h.position.x !== coord.x+1)  // Adjecent matrix corners.
+        && (h.position.y !== coord.y+1 && h.position.x !== coord.x-1)  // Adjecent matrix corners.
+        && (h.position.y !== coord.y+1 && h.position.x !== coord.x+1)) // Adjecent matrix corners.
 }
+
 function fail(reason: string): Failure { return { tag: "Failure", reason: reason } }
 
 // ---- Rule implementations ----
