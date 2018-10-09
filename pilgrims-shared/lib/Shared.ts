@@ -19,8 +19,8 @@ export interface Player {
 
 interface Purchaseable { cost: Resources; }
 export class House implements Purchaseable {
-    position: MatrixCoordinate;
-    cost: {
+    position: MatrixCoordinate = {x: 0, y: 0};
+    cost = {
         wood: 1,
         clay: 1,
         wool: 1,
@@ -29,33 +29,33 @@ export class House implements Purchaseable {
 }
 
 export class Road implements Purchaseable {
-    start: MatrixCoordinate;
-    end: MatrixCoordinate;
-    cost: {
+    start: MatrixCoordinate = {x: 0, y: 0};
+    end: MatrixCoordinate = {x: 0, y: 0};
+    cost = {
         wood: 1,
         clay: 1
     };
 }
 export class Ship implements Purchaseable {
-    start: MatrixCoordinate;
-    end: MatrixCoordinate;
-    cost: {
+    start: MatrixCoordinate = {x: 0, y: 0};
+    end: MatrixCoordinate = {x: 0, y: 0};
+    cost = {
         wood: 1,
         wool: 1
     };
 }
 
 export class City implements Purchaseable {
-    position: MatrixCoordinate;
-    cost: {
+    position: MatrixCoordinate = {x: 0, y: 0};
+    cost = {
         grain: 2,
         stone: 3
     };
 }
 
 export class DevelopmentCard implements Purchaseable {
-    type: "Knight" | "Victory Point" | "Road Building" | "Monopoly" | "Year of Plenty"
-    cost: {
+    type: "Knight" | "Victory Point" | "Road Building" | "Monopoly" | "Year of Plenty" | "None" = "None"
+    cost = {
         grain: 1,
         stone: 1,
         wool: 1
