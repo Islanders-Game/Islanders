@@ -35,7 +35,7 @@ Maybe dont have x,y coordinates but simply ids - seperate logic from positions, 
 - Tiles[]
 
 ### Tile
-- type<Wood, Stone, Clay, Hay, Wool>
+- type<Wood, Stone, Clay, Grain, Wool>
 - 
 
 ## Actions
