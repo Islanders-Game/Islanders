@@ -1,4 +1,4 @@
-import { Rules } from "./Shared";
+import { Rules, World } from "./Shared";
 
 const rules: Rules = {
     "Build House": (p, x, y) => (w) => {
@@ -24,5 +24,23 @@ const rules: Rules = {
     }
 }
 
-const partiallyAppliedBuild = rules["Build City"](2, 2, 2);
-// Call tryBuild() with a World, resulting in hopefully a Result<World>, otherwise a Failure. 
+// Test of above: 
+const world: World = {
+    players: [{
+        id: 0, 
+        resources: {},
+        cities: [],
+        houses: [],
+        roads: [],
+        ships: []
+    }],
+    map: [{type: "Wool", diceRoll: 12}]
+}
+
+
+const tryBuildHouse = rules["Build House"](2, 2, 2)
+const tryBuildCity= rules["Build City"](2, 2, 2)
+const toApply = [tryBuildHouse, tryBuildCity];
+
+// Call tryBuilds with a World, resulting in hopefully a Result<World>, otherwise a Failure. 
+const newWorld = toApply.reduce(rule => rule)
