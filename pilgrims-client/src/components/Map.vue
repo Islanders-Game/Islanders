@@ -20,8 +20,8 @@ export default class Map extends Vue {
     const height = 300;
 
     const draw = SVG.create('Map');
-    //draw.viewbox(0, 0, width, height);
-    //draw.rect(width, height).fill('#dde3e1');
+    // draw.viewbox(0, 0, width, height);
+    // draw.rect(width, height).fill('#dde3e1');
 
     // const Hex = extendHex({ size: 5 });
     // const Grid = defineGrid(Hex);
