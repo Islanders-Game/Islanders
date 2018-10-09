@@ -1,4 +1,4 @@
-import { Rules, World, Result, Success } from "./Shared";
+import { Rules, World } from "./Shared";
 
 const rules: Rules = {
     "Build House": (p, x, y) => (w) => w, //TODO: Implement rules.
@@ -8,11 +8,6 @@ const rules: Rules = {
     "Buy Card": (p) => (w) => w,
     "Play Card": (p, c) => (w) => w,
     "Trade": (p1, p2) => (w) => w
-}
-
-function getOrElse<T>(w: Result<World>, orElse: World): World {
-    if ((<Success<World>>w).world) return (<Success<World>>w).world
-    return orElse;
 }
 
 
