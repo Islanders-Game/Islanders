@@ -1,0 +1,20 @@
+{
+  "name": "pilgrims-server",
+  "version": "0.1.0",
+  "description": "The server for the Pilgrims game.",
+  "main": "dist/app.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node dist/App.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Awia00/Pilgrims.git"
+  },
+  "author": "Anders Wind Steffensen & Anders Fischer-Nielsen",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/Awia00/Pilgrims/issues"
+  },
+  "homepage": "https://github.com/Awia00/Pilgrims#readme"
+}
