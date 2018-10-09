@@ -1,10 +1,10 @@
 <template>
     <div id="Game" class="col">
       <div class="row">
-        <Map msg="Welcome to Your Vue.js + TypeScript App"/>
-        <Overview msg="Welcome to Your Vue.js + TypeScript App"/>
+        <Map/>
+        <Overview/>
       </div>
-      <Player msg="Welcome to Your Vue.js + TypeScript App"/>
+      <Player/>
     </div>
 </template>
 
