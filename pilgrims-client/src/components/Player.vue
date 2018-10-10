@@ -1,9 +1,58 @@
 <template>
     <div id="Player">
-      <v-container fluid>
-        <h1 style="color: white">
-          Player
-        </h1>
+      <v-container dark fluid>
+        <v-layout row justify-space-around>
+          <v-flex xs2>
+            <v-layout align-center justify-start row fill-height>
+              <v-avatar color="grey lighten-4">
+                <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
+              </v-avatar>
+              <h1 style="padding:10px">Player</h1>
+            </v-layout>
+          </v-flex>
+          <v-flex xs6>
+            <v-layout align-space-around justify-start column fill-height>
+              <v-layout row align-center justify-start>
+                <v-icon color="white">shopping_cart</v-icon>
+                <v-chip>
+                  Lumber: 5
+                </v-chip>
+                <v-chip>
+                  Brick: 5
+                </v-chip>
+                <v-chip>
+                  Wool: 5
+                </v-chip>
+                <v-chip>
+                  Grain: 5
+                </v-chip>
+                <v-chip>
+                  Ore: 5
+                </v-chip>
+              </v-layout>
+              <v-layout row align-center justify-start>
+                <v-icon color="white">shopping_cart</v-icon>
+                <v-chip>
+                  Dev-Cards: 5
+                </v-chip>
+                <v-chip>
+                  Army: 5
+                </v-chip>
+                <v-chip>
+                  Longest Road: 5
+                </v-chip>
+              </v-layout>
+            </v-layout>
+          </v-flex>
+          <v-flex xs4>
+            <v-layout row align-center justify-space-between fill-height>
+              <v-btn>Build</v-btn>
+              <v-btn>Trade</v-btn>
+              <v-btn>Dev Cards</v-btn>
+              <v-btn>End Turn</v-btn>
+            </v-layout>
+          </v-flex>
+        </v-layout>
       </v-container>
     </div>
 </template>
@@ -20,6 +69,6 @@ export default class Player extends Vue {
 
 <style lang="scss" scoped>
 #Player {
-  background-color: red;
+  background-color: #bcaaa4;
 }
 </style>

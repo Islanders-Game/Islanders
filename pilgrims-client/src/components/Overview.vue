@@ -1,6 +1,6 @@
 <template>
     <v-container fluid fill-height id="Overview">
-      <v-layout col justify-start>
+      <v-layout justify-start>
          <v-tabs centered color="cyan" dark icons-and-text class="fill-width">
           <v-tabs-slider color="yellow"></v-tabs-slider>
 
@@ -18,13 +18,17 @@
             Logs
             <v-icon>account_box</v-icon>
           </v-tab>
-
-          <v-tab-item
-            v-for="i in 3"
-            :id="'tab-' + i"
-            :key="i">
+          <v-tab-item :id="'tab-1'" :key="1">
             <v-card flat white>
-              <v-card-text>{{ text }}</v-card-text>
+              <v-card-text>Make a component here</v-card-text>
+            </v-card>
+          </v-tab-item>
+          <v-tab-item :id="'tab-2'" :key="2">
+            <Chat></Chat>
+          </v-tab-item>
+          <v-tab-item :id="'tab-3'" :key="3">
+            <v-card flat white>
+              <v-card-text>Make a component here</v-card-text>
             </v-card>
           </v-tab-item>
         </v-tabs>
@@ -34,12 +38,14 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import Chat from './Chat.vue';
 
-@Component
-export default class Overview extends Vue {
-  @Prop()
-  private text: string = 'make a component here';
-}
+@Component({
+  components: {
+    Chat,
+  },
+})
+export default class Overview extends Vue {}
 </script>
 
 <style scoped lang="scss">
