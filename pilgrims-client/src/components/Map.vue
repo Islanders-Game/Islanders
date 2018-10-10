@@ -27,6 +27,8 @@ export default class Map extends Vue {
 
     window.addEventListener('load', (event) => {
       this.DrawMap();
+      // Make the map drag+zoomable
+      svgPanZoom.default('#drawingMap');
     });
   }
 
@@ -41,9 +43,7 @@ export default class Map extends Vue {
     const Grid = defineGrid(Hex);
     const corners = Hex().corners();
 
-    // an SVG symbol can be reused
     const points: SVG.PointArrayAlias = corners.map(({ x, y }) => [x, y]);
-
     const hexSymbols: SVG.Polygon[] = [
       draw.polygon(points).stroke({ width: 1, color: '#999' })
         .fill(new SVG.Image().load(this.tiles[0]).size(this.tileHeight, this.tileWidth)),
@@ -67,8 +67,6 @@ export default class Map extends Vue {
         .use(hexSymbols[Math.floor(Math.random() * this.tiles.length)])
         .translate(x, y);
     });
-
-    svgPanZoom.default('#drawingMap');
   }
 }
 </script>
