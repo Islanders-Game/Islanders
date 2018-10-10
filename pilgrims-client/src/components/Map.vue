@@ -45,19 +45,19 @@ export default class Map extends Vue {
 
     const points: SVG.PointArrayAlias = corners.map(({ x, y }) => [x, y]);
     const hexSymbols: SVG.Polygon[] = [
-      draw.polygon(points).stroke({ width: 10, color: '#D6D6D6' })
+      draw.polygon(points).stroke({ width: 20, color: '#D6D6D6' })
         .fill(new SVG.Image().load(this.tiles[0]).size(this.tileHeight, this.tileWidth)),
-      draw.polygon(points).stroke({ width: 10, color: '#D6D6D6' })
+      draw.polygon(points).stroke({ width: 20, color: '#D6D6D6' })
         .fill(new SVG.Image().load(this.tiles[1]).size(this.tileHeight, this.tileWidth)),
-      draw.polygon(points).stroke({ width: 10, color: '#D6D6D6' })
+      draw.polygon(points).stroke({ width: 20, color: '#D6D6D6' })
         .fill(new SVG.Image().load(this.tiles[2]).size(this.tileHeight, this.tileWidth)),
-      draw.polygon(points).stroke({ width: 10, color: '#D6D6D6' })
+      draw.polygon(points).stroke({ width: 20, color: '#D6D6D6' })
         .fill(new SVG.Image().load(this.tiles[3]).size(this.tileHeight, this.tileWidth)),
-      draw.polygon(points).stroke({ width: 10, color: '#D6D6D6' })
+      draw.polygon(points).stroke({ width: 20, color: '#D6D6D6' })
         .fill(new SVG.Image().load(this.tiles[4]).size(this.tileHeight, this.tileWidth)),
-      draw.polygon(points).stroke({ width: 10, color: '#D6D6D6' })
+      draw.polygon(points).stroke({ width: 20, color: '#D6D6D6' })
         .fill(new SVG.Image().load(this.tiles[5]).size(this.tileHeight, this.tileWidth)),
-      draw.polygon(points).stroke({ width: 10, color: '#D6D6D6' })
+      draw.polygon(points).stroke({ width: 20, color: '#D6D6D6' })
         .fill(new SVG.Image().load(this.tiles[6]).size(this.tileHeight, this.tileWidth))];
 
     Grid.rectangle({ width: 12, height: 10 }).forEach((hex) => {

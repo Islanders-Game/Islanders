@@ -32,22 +32,22 @@ const canPlaceHouse = (coord: MatrixCoordinate, w: World) => {
 function fail(reason: string): Failure { return { tag: 'Failure', reason }; }
 function success<T>(t: T): Success<T> { return { tag: 'Success', world: t }; }
 
-type validationFunction = (x: Result<boolean>) => (Result<boolean>);
-const validationReducer = (acc: Result<boolean>, curr: validationFunction) => curr(acc);
+type validationFunction = (x: Result<World>) => (Result<World>);
+const validationReducer = (acc: Result<World>, curr: validationFunction) => curr(acc);
 
 // Validation functions can take more parameters - just end up as a validation function
-const hasEnoughResources: (t: World) => validationFunction = (w: World) => (t: Result<boolean>) => {
+const purchaseHouse: (t: Resources) => validationFunction = (w: Resources) => (t: Result<World>) => {
     if (t.tag === 'Success') {
         // make check
-        return t;
+        return success(t.world);
     } else {
         return t;
     }
 };
-const canPlaceHouseHere: (t: World) => validationFunction = (w: World) => (t: Result<boolean>) => {
+const placeHouse: (t: World) => validationFunction = (w: World) => (t: Result<World>) => {
     if (t.tag === 'Success') {
         // make check
-        return t;
+        return success(t.world);
     } else {
         return t;
     }
@@ -82,14 +82,11 @@ const rules: Rules = {
         switch (w.tag) {
             case 'Success': {
                 // Validate that the rule is legal
-                const validationFunctions = [hasEnoughResources(w.world), canPlaceHouseHere(w.world)];
-                const validationResult = validationFunctions.reduce(validationReducer, success(true));
-                if (validationResult.tag === 'Failure') {
-                    return fail(validationResult.reason);
-                }
-
-                // Modify World here
-                return success(w.world);
+                const effectFunctions = [
+                    purchaseHouse(w.world.players[0].resources),
+                    placeHouse(w.world)];
+                const result = effectFunctions.reduce(validationReducer, success(w.world));
+                return result;
             }
             case 'Failure': {
                 return w;
