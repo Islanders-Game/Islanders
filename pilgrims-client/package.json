@@ -9,13 +9,17 @@
     "test:unit": "vue-cli-service test:unit"
   },
   "dependencies": {
+    "@babel/polyfill": "^7.0.0-rc.1",
     "honeycomb-grid": "^1.4.0",
+    "material-design-icons-iconfont": "^3.0.3",
     "register-service-worker": "^1.0.0",
+    "roboto-fontface": "*",
     "svg-pan-zoom": "github:ariutta/svg-pan-zoom",
     "svg.js": "^2.6.6",
     "vue": "^2.5.17",
     "vue-class-component": "^6.0.0",
     "vue-property-decorator": "^7.0.0",
+    "vuetify": "^1.2.0",
     "vuex": "^3.0.1"
   },
   "devDependencies": {
@@ -31,6 +35,7 @@
     "sass-loader": "^7.0.1",
     "ts-jest": "^23.0.0",
     "typescript": "^3.0.0",
+    "vue-cli-plugin-vuetify": "^0.2.1",
     "vue-template-compiler": "^2.5.17"
   }
 }
