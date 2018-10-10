@@ -1,0 +1,12 @@
+{
+  "name": "pilgrims-shared",
+  "version": "1.0.0",
+  "description": "",
+  "main": "lib/shared.ts",
+  "scripts": {
+    "build": "tsc",
+    "test": "jest"
+  },
+  "author": "",
+  "license": "ISC"
+}

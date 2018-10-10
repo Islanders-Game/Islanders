@@ -1,7 +1,7 @@
 import { Rules, World, Resources, MatrixCoordinate, House, Failure, Success, Result } from './Shared';
 
 // ---- Helpers ----
-const subtractResources = (resources: Resources, toSubtract: Resources) => {
+export const subtractResources = (resources: Resources, toSubtract: Resources) => {
     return {
         clay: resources.clay && toSubtract.clay ? resources.clay - toSubtract.clay : resources.clay,
         grain: resources.grain && toSubtract.grain ? resources.grain - toSubtract.grain : resources.grain,
