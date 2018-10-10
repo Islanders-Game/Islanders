@@ -11,33 +11,23 @@ import * as svgPanZoom from 'svg-pan-zoom';
 
 @Component
 export default class Map extends Vue {
+  private tileHeight: number = 400;
+  private tileWidth: number = 346;
+  private tiles: string[] = [
+    './img/tilesets/modern/brick.gif',
+    './img/tilesets/modern/desert.gif',
+    './img/tilesets/modern/grain.gif',
+    './img/tilesets/modern/lumber.gif',
+    './img/tilesets/modern/ore.gif',
+    './img/tilesets/modern/sea.gif',
+    './img/tilesets/modern/wool.gif'];
+
   constructor() {
     super();
 
     window.addEventListener('load', (event) => {
       this.DrawMap();
     });
-  }
-
-  // Generally not the way to go - we want to load these.
-  private getTileImg(tileRand: number, draw: SVG.Doc): SVG.Image {
-    switch (Math.floor(tileRand)) {
-      case 0:
-        return draw.image('./img/tilesets/modern/brick.gif', 400, 346);
-      case 1:
-        return draw.image('./img/tilesets/modern/desert.gif', 400, 346);
-      case 2:
-        return draw.image('./img/tilesets/modern/grain.gif', 400, 346);
-      case 3:
-        return draw.image('./img/tilesets/modern/lumber.gif', 400, 346);
-      case 4:
-        return draw.image('./img/tilesets/modern/ore.gif', 400, 346);
-      case 5:
-        return draw.image('./img/tilesets/modern/sea.gif', 400, 346);
-      case 5:
-        return draw.image('./img/tilesets/modern/wool.gif', 400, 346);
-    }
-    return draw.image();
   }
 
   private DrawMap(): void {
@@ -53,14 +43,28 @@ export default class Map extends Vue {
 
     // an SVG symbol can be reused
     const points: SVG.PointArrayAlias = corners.map(({ x, y }) => [x, y]);
-    const hexSymbol = draw.polygon(points).stroke({ width: 1, color: '#999' });
 
-    // render 10,000 hexes
+    const hexSymbols: SVG.Polygon[] = [
+      draw.polygon(points).stroke({ width: 1, color: '#999' })
+        .fill(new SVG.Image().load(this.tiles[0]).size(this.tileHeight, this.tileWidth)),
+      draw.polygon(points).stroke({ width: 1, color: '#999' })
+        .fill(new SVG.Image().load(this.tiles[1]).size(this.tileHeight, this.tileWidth)),
+      draw.polygon(points).stroke({ width: 1, color: '#999' })
+        .fill(new SVG.Image().load(this.tiles[2]).size(this.tileHeight, this.tileWidth)),
+      draw.polygon(points).stroke({ width: 1, color: '#999' })
+        .fill(new SVG.Image().load(this.tiles[3]).size(this.tileHeight, this.tileWidth)),
+      draw.polygon(points).stroke({ width: 1, color: '#999' })
+        .fill(new SVG.Image().load(this.tiles[4]).size(this.tileHeight, this.tileWidth)),
+      draw.polygon(points).stroke({ width: 1, color: '#999' })
+        .fill(new SVG.Image().load(this.tiles[5]).size(this.tileHeight, this.tileWidth)),
+      draw.polygon(points).stroke({ width: 1, color: '#999' })
+        .fill(new SVG.Image().load(this.tiles[6]).size(this.tileHeight, this.tileWidth))];
+
     Grid.rectangle({ width: 12, height: 10 }).forEach((hex) => {
       const { x, y } = hex.toPoint();
       // use hexSymbol and set its position for each hex
       draw
-        .use(hexSymbol.clone().fill(this.getTileImg(Math.random() * 6, draw)))
+        .use(hexSymbols[Math.floor(Math.random() * this.tiles.length)])
         .translate(x, y);
     });
 
