@@ -81,8 +81,18 @@ export interface Resources {
     wool?: number;
 }
 
-export interface Failure { tag: "Failure", reason: string; }
-export interface Success<T> { tag: "Success", world: T; }
+export class Failure {
+    public reason: string; 
+    constructor(t: string) { 
+        this.reason = t
+    }
+}
+export class Success<T> {
+    public world: T;
+    constructor(t: T) { 
+        this.world = t
+    }
+}
 export type Result<T> = Success<T> | Failure
 
 export type Rules = {
