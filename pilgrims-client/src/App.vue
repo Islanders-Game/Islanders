@@ -1,7 +1,9 @@
 <template>
-  <div id="app">
-    <Game></Game>
-  </div>
+<div id="app">
+    <v-app>
+      <Game></Game>
+    </v-app>
+</div>
 </template>
 
 <script lang="ts">

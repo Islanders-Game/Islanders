@@ -1,11 +1,17 @@
 <template>
-    <div id="Game" class="col">
-      <div class="row">
-        <Map/>
-        <Overview/>
-      </div>
+  <v-container fluid id="Game">
+    <v-layout column fill-height>
+      <v-layout row>
+        <v-flex xs8>
+          <Map/>
+        </v-flex>
+        <v-flex>
+          <Overview/>
+        </v-flex>
+      </v-layout>
       <Player/>
-    </div>
+    </v-layout>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -29,23 +35,6 @@ export default class Game extends Vue {
 
 <style lang="scss" scoped>
 #Game {
-  min-height: 100vh;
-}
-.row {
-  flex: 6;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-content: stretch;
-  align-items: stretch;
-}
-.col {
-  display: flex;
-  flex-direction: column;
-  flex-wrap: nowrap;
-  justify-content: flex-start;
-  align-content: stretch;
-  align-items: stretch;
+  padding: 0px;
 }
 </style>
