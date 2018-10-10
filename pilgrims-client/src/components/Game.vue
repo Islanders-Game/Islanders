@@ -2,7 +2,7 @@
   <v-container fluid id="Game">
     <v-layout column fill-height>
       <v-layout row>
-        <v-flex xs8>
+        <v-flex xs9>
           <Map/>
         </v-flex>
         <v-flex>
