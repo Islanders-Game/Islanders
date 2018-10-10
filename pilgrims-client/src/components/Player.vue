@@ -11,7 +11,7 @@
             </v-layout>
           </v-flex>
           <v-flex xs6>
-            <v-layout align-space-around justify-start column fill-height>
+            <v-layout column align-space-around justify-start fill-height>
               <v-layout row align-center justify-start>
                 <v-icon color="white">shopping_cart</v-icon>
                 <v-chip>

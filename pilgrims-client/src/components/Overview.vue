@@ -19,17 +19,13 @@
             <v-icon>account_box</v-icon>
           </v-tab>
           <v-tab-item :id="'tab-1'" :key="1">
-            <v-card flat white>
-              <v-card-text>Make a component here</v-card-text>
-            </v-card>
+            <Players></Players>
           </v-tab-item>
           <v-tab-item :id="'tab-2'" :key="2">
             <Chat></Chat>
           </v-tab-item>
           <v-tab-item :id="'tab-3'" :key="3">
-            <v-card flat white>
-              <v-card-text>Make a component here</v-card-text>
-            </v-card>
+            <Log></Log>
           </v-tab-item>
         </v-tabs>
       </v-layout>
@@ -39,10 +35,14 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import Chat from './Chat.vue';
+import Log from './Log.vue';
+import Players from './Players.vue';
 
 @Component({
   components: {
+    Players,
     Chat,
+    Log,
   },
 })
 export default class Overview extends Vue {}
