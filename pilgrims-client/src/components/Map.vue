@@ -14,13 +14,13 @@ export default class Map extends Vue {
   private tileHeight: number = 400;
   private tileWidth: number = 346;
   private tiles: string[] = [
-    './img/tilesets/modern/brick.gif',
-    './img/tilesets/modern/desert.gif',
-    './img/tilesets/modern/grain.gif',
-    './img/tilesets/modern/lumber.gif',
-    './img/tilesets/modern/ore.gif',
-    './img/tilesets/modern/sea.gif',
-    './img/tilesets/modern/wool.gif'];
+    './img/tilesets/watercolor/brick.gif',
+    './img/tilesets/watercolor/desert.gif',
+    './img/tilesets/watercolor/grain.gif',
+    './img/tilesets/watercolor/lumber.gif',
+    './img/tilesets/watercolor/ore.gif',
+    './img/tilesets/watercolor/sea.gif',
+    './img/tilesets/watercolor/wool.gif'];
 
   constructor() {
     super();
