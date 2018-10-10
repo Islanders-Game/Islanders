@@ -19,37 +19,48 @@ export interface Player {
 
 interface Purchaseable { cost: Resources; }
 export class House implements Purchaseable {
-    public position: MatrixCoordinate = {x: 0, y: 0};
+    public position: MatrixCoordinate;
     public cost = {
         wood: 1,
         clay: 1,
         wool: 1,
         grain: 1,
     };
+
+    constructor(coordinates: MatrixCoordinate = {x: 0, y: 0}) {
+        this.position = coordinates;
+    }
+}
+
+export class City extends House {
+    public cost = {
+        grain: 2,
+        stone: 3,
+        wool: 0,
+        wood: 0,
+        clay: 0
+    };
 }
 
 export class Road implements Purchaseable {
-    public start: MatrixCoordinate = {x: 0, y: 0};
-    public end: MatrixCoordinate = {x: 0, y: 0};
+    public start: MatrixCoordinate;
+    public end: MatrixCoordinate;
     public cost = {
         wood: 1,
         clay: 1,
     };
+
+    constructor(start: MatrixCoordinate = {x: 0, y: 0}, end: MatrixCoordinate = {x: 0, y: 0}) {
+        this.start = start;
+        this.end = end;
+    }
 }
-export class Ship implements Purchaseable {
-    public start: MatrixCoordinate = {x: 0, y: 0};
-    public end: MatrixCoordinate = {x: 0, y: 0};
+
+export class Ship extends Road {
     public cost = {
         wood: 1,
         wool: 1,
-    };
-}
-
-export class City implements Purchaseable {
-    public position: MatrixCoordinate = {x: 0, y: 0};
-    public cost = {
-        grain: 2,
-        stone: 3,
+        clay: 0
     };
 }
 
@@ -92,10 +103,11 @@ export interface Success<T> {
 export type Result<T> = Success<T> | Failure;
 
 export interface Rules {
-    'Build House': (playerID: number, x: number, y: number) => (w: Result<World>) => Result<World>;
-    'Build City': (playerID: number, x: number, y: number) => (w: Result<World>) => Result<World>;
-    'Build Road': (playerID: number, x: number, y: number) => (w: Result<World>) => Result<World>;
-    'Move Thief': (playerID: number, x: number, y: number) => (w: Result<World>) => Result<World>;
+    'Build House': (playerID: number, coordinates: MatrixCoordinate) => (w: Result<World>) => Result<World>;
+    'Build City': (playerID: number, coordinates: MatrixCoordinate) => (w: Result<World>) => Result<World>;
+    'Build Road': (playerID: number, start: MatrixCoordinate, end: MatrixCoordinate)
+        => (w: Result<World>) => Result<World>;
+    'Move Thief': (playerID: number, coordinates: HexCoordinate) => (w: Result<World>) => Result<World>;
     'Buy Card': (playerID: number) => (w: Result<World>) => Result<World>;
     'Play Card': (playerID: number, card: DevelopmentCard) => (w: Result<World>) => Result<World>;
     'Trade': (playerID: number, otherPlayerID: number, resources: Resources) => (w: Result<World>) => Result<World>;
