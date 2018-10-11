@@ -11,16 +11,18 @@ import * as svgPanZoom from 'svg-pan-zoom';
 
 @Component
 export default class Map extends Vue {
+  private tileFiletype = '.gif';
+  private tileStyle = 'watercolor';
   private tileHeight: number = 400;
   private tileWidth: number = 346;
   private tiles: string[] = [
-    './img/tilesets/watercolor/brick.gif',
-    './img/tilesets/watercolor/desert.gif',
-    './img/tilesets/watercolor/grain.gif',
-    './img/tilesets/watercolor/lumber.gif',
-    './img/tilesets/watercolor/ore.gif',
-    './img/tilesets/watercolor/sea.gif',
-    './img/tilesets/watercolor/wool.gif',
+    `./img/tilesets/${this.tileStyle}/clay${this.tileFiletype}`,
+    `./img/tilesets/${this.tileStyle}/desert${this.tileFiletype}`,
+    `./img/tilesets/${this.tileStyle}/grain${this.tileFiletype}`,
+    `./img/tilesets/${this.tileStyle}/wood${this.tileFiletype}`,
+    `./img/tilesets/${this.tileStyle}/stone${this.tileFiletype}`,
+    `./img/tilesets/${this.tileStyle}/ocean${this.tileFiletype}`,
+    `./img/tilesets/${this.tileStyle}/wool${this.tileFiletype}`,
   ];
 
   constructor() {
