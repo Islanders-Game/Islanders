@@ -62,7 +62,7 @@ export default class Map extends Vue {
     viewport.drag().pinch().wheel().decelerate();
     this.$el.appendChild(app.view);
 
-    Grid.hexagon({ radius: 2 }).forEach((hex) => {
+    Grid.hexagon({ radius: 20 }).forEach((hex) => {
       const point = hex.toPoint();
       const corners = hex.corners().map((corner) => corner.add(point));
       const [firstCorner, ...otherCorners] = corners;
