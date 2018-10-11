@@ -6,7 +6,7 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { defineGrid, extendHex } from 'honeycomb-grid';
-import * as SVG from 'svg.js';
+import { Graphics, Sprite, Application, Point } from 'pixi.js';
 import * as svgPanZoom from 'svg-pan-zoom';
 
 @Component
@@ -16,29 +16,27 @@ export default class Map extends Vue {
   private tileStyle = 'watercolor';
   private tileHeight: number = 400;
   private tileWidth: number = 346;
-  private tiles: string[] = [
-    `${this.tilePath}${this.tileStyle}/clay${this.tileFiletype}`,
-    `${this.tilePath}${this.tileStyle}/desert${this.tileFiletype}`,
-    `${this.tilePath}${this.tileStyle}/grain${this.tileFiletype}`,
-    `${this.tilePath}${this.tileStyle}/wood${this.tileFiletype}`,
-    `${this.tilePath}${this.tileStyle}/stone${this.tileFiletype}`,
-    `${this.tilePath}${this.tileStyle}/ocean${this.tileFiletype}`,
-    `${this.tilePath}${this.tileStyle}/wool${this.tileFiletype}`,
-  ];
+  private sprites: Sprite[] = [
+    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/clay${this.tileFiletype}`),
+    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/desert${this.tileFiletype}`),
+    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/grain${this.tileFiletype}`),
+    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/wood${this.tileFiletype}`),
+    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/stone${this.tileFiletype}`),
+    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/ocean${this.tileFiletype}`),
+    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/wool${this.tileFiletype}`),
+  ].map(s => { s.width = this.tileWidth; s.height = this.tileHeight; return s; });
 
   constructor() {
     super();
-
-    window.addEventListener('load', (event) => {
-      this.DrawMap();
-      // Make the map drag+zoomable
-      svgPanZoom.default('#drawingMap');
-    });
+    this.DrawMap();
   }
 
   private DrawMap(): void {
-    const draw = new SVG.Doc(this.$el).size('100%', '100%');
-    draw.id('drawingMap');
+    const app = new Application({transparent: true});
+    const graphics = new Graphics();
+    graphics.lineStyle(1, 0x999999);
+    document.getElementById('Map') 
+      && document.getElementById('Map')!.appendChild(app.view);
 
     const Hex = extendHex({
       size: 200,
@@ -47,72 +45,14 @@ export default class Map extends Vue {
     const Grid = defineGrid(Hex);
     const corners = Hex().corners();
 
-    const points: SVG.PointArrayAlias = corners.map(({ x, y }) => [x, y]);
-    const hexSymbols: SVG.Polygon[] = [
-      draw
-        .polygon(points)
-        .stroke({ width: 20, color: '#D6D6D6' })
-        .fill(
-          new SVG.Image()
-            .load(this.tiles[0])
-            .size(this.tileHeight, this.tileWidth),
-        ),
-      draw
-        .polygon(points)
-        .stroke({ width: 20, color: '#D6D6D6' })
-        .fill(
-          new SVG.Image()
-            .load(this.tiles[1])
-            .size(this.tileHeight, this.tileWidth),
-        ),
-      draw
-        .polygon(points)
-        .stroke({ width: 20, color: '#D6D6D6' })
-        .fill(
-          new SVG.Image()
-            .load(this.tiles[2])
-            .size(this.tileHeight, this.tileWidth),
-        ),
-      draw
-        .polygon(points)
-        .stroke({ width: 20, color: '#D6D6D6' })
-        .fill(
-          new SVG.Image()
-            .load(this.tiles[3])
-            .size(this.tileHeight, this.tileWidth),
-        ),
-      draw
-        .polygon(points)
-        .stroke({ width: 20, color: '#D6D6D6' })
-        .fill(
-          new SVG.Image()
-            .load(this.tiles[4])
-            .size(this.tileHeight, this.tileWidth),
-        ),
-      draw
-        .polygon(points)
-        .stroke({ width: 20, color: '#D6D6D6' })
-        .fill(
-          new SVG.Image()
-            .load(this.tiles[5])
-            .size(this.tileHeight, this.tileWidth),
-        ),
-      draw
-        .polygon(points)
-        .stroke({ width: 20, color: '#D6D6D6' })
-        .fill(
-          new SVG.Image()
-            .load(this.tiles[6])
-            .size(this.tileHeight, this.tileWidth),
-        ),
-    ];
-
     Grid.rectangle({ width: 12, height: 10 }).forEach((hex) => {
-      const { x, y } = hex.toPoint();
-      // use hexSymbol and set its position for each hex
-      draw
-        .use(hexSymbols[Math.floor(Math.random() * this.tiles.length)])
-        .translate(x, y);
+      const point = hex.toPoint();
+      const corners = hex.corners().map(corner => corner.add(point));
+      const [firstCorner, ...otherCorners] = corners;
+      graphics.moveTo(firstCorner.x, firstCorner.y);
+      otherCorners.forEach(({ x, y }) => graphics.lineTo(x, y));
+      graphics.lineTo(firstCorner.x, firstCorner.y);
+      app.stage.addChild(graphics);
     });
   }
 }
