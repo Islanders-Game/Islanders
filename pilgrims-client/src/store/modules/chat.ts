@@ -1,40 +1,40 @@
 import ChatAPI, { ChatMessage } from '@/api/ChatAPI';
-import {GetterTree, MutationTree, ActionTree, ActionContext} from 'vuex';
+import { GetterTree, MutationTree, ActionTree, ActionContext } from 'vuex';
 
 // The state
 export class State {
-    public messages: ChatMessage[] = [{text: 'store text', user: 'store user'}];
+    public messages: ChatMessage[] = [];
 }
 
-// Synchrounous getters
-const getters = {
+// Synchrounous getters: GetterTree<local state, root state>
+const getters: GetterTree<State, State> = {
     getMessages(state: State): ChatMessage[] {
         return state.messages;
     },
-} as GetterTree<State, any>;
+};
 
-// Synchrounous setters
-const mutations = {
+// Synchrounous setters MutationTree<local state, root state>
+const mutations: MutationTree<State> = {
     addMessage(state: State, message: ChatMessage) {
         state.messages.push(message);
     },
     setMessages(state: State, messages: ChatMessage[]) {
-        state.messages = messages;
+        state.messages = messages.slice(0);
     },
-} as MutationTree<State>;
+};
 
 // Async methods
-const actions = {
-    async getMessages(store: ActionContext<State, any>) {
+const actions: ActionTree<State, State> = {
+    async getMessages({ commit }: ActionContext<State, State>) {
         const messages = await ChatAPI.getMessages();
-        store.commit('setMessages', messages);
+        commit('setMessages', messages);
         return messages;
     },
-    async addMessage(store: ActionContext<State, any>, message: ChatMessage) {
-        await ChatAPI.addMessage(message);
-        store.commit('addMessage', message);
+    async addMessage({ commit }: ActionContext<State, State>, message: ChatMessage) {
+        ChatAPI.addMessage(message);
+        commit('addMessage', message);
     },
-} as ActionTree<State, any>;
+};
 
 export default {
     namespaced: true,

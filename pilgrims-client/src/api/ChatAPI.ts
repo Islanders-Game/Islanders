@@ -1,8 +1,10 @@
+// should be moved to shared.
 export interface ChatMessage {
    text: string;
    user: string;
-
 }
+
+// in memory datastore for now.
 const MESSAGES: ChatMessage[] = [
     { text: 'hej med dig', user: 'Player1' },
     { text: 'hej med dig selv', user: 'Player2' },
@@ -11,16 +13,16 @@ const MESSAGES: ChatMessage[] = [
 
 export default {
     async getMessages(): Promise<ChatMessage[]> {
-        return new Promise<ChatMessage[]>(() => setTimeout(() => {
-            return MESSAGES;
-        }, 100));
+        // tslint:disable-next-line:no-console
+        console.log('ChatAPI::getMessages, started');
+        await setTimeout(() => 0, 100);
+        return MESSAGES;
     },
 
     async addMessage(message: ChatMessage) {
         // tslint:disable-next-line:no-console
         console.log('ChatAPI::addMessage, started');
-        await setTimeout(() => {
-            MESSAGES.push(message);
-        }, 100);
+        await setTimeout(() => 0, 100);
+        MESSAGES.push(message);
     },
 };

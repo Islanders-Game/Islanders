@@ -2,8 +2,8 @@
   <v-container fluid id="Chat">
     <v-layout column fill-height justify-end>    
         <v-list two-line>
-            <template v-for="item in messages">
-                <v-list-tile :key="item" avatar @click="">
+            <template v-for="(item, index) in messages">
+                <v-list-tile :key="index" avatar>
                     <v-list-tile-avatar>
                         <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
                     </v-list-tile-avatar>
@@ -16,7 +16,6 @@
         </v-list>
         <v-layout row style="padding:5px">
             <v-text-field label="Write a message" v-model="message" v-on:keyup.enter="addMessage">
-                
             </v-text-field>
             <v-btn @click="addMessage">
                 Send
@@ -34,6 +33,11 @@ import { mapActions, mapGetters } from 'vuex';
 })
 export default class Chat extends Vue {
     public message: string = '';
+
+    constructor() {
+        super();
+        this.$store.dispatch('chat/getMessages');
+    }
     get messages() {
         return this.$store.getters['chat/getMessages'];
     }
