@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0-rc.1",
+    "@types/pixi.js": "^4.8.1",
     "honeycomb-grid": "^1.4.0",
     "material-design-icons-iconfont": "^3.0.3",
     "pixi.js": "^4.8.2",
