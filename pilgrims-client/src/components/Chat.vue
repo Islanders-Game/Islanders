@@ -2,30 +2,23 @@
   <v-container fluid id="Chat">
     <v-layout column fill-height justify-end>    
         <v-list two-line>
-            <v-list-tile>
-                <v-list-tile-avatar>
-                    <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                    <v-list-tile-title>Player1</v-list-tile-title>
-                    <v-list-tile-sub-title>Hej her er en besked tilbage</v-list-tile-sub-title>
-                </v-list-tile-content>
-            </v-list-tile>
-            <v-list-tile>
-                <v-list-tile-avatar>
-                    <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
-                </v-list-tile-avatar>
-                <v-list-tile-content>
-                    <v-list-tile-title>Player2</v-list-tile-title>
-                    <v-list-tile-sub-title>Hej her er en besked yo</v-list-tile-sub-title>
-                </v-list-tile-content>
-            </v-list-tile>
+            <template v-for="item in messages">
+                <v-list-tile :key="item" avatar @click="">
+                    <v-list-tile-avatar>
+                        <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
+                    </v-list-tile-avatar>
+                    <v-list-tile-content>
+                        <v-list-tile-title v-html="item.user"></v-list-tile-title>
+                        <v-list-tile-sub-title v-html="item.text"></v-list-tile-sub-title>
+                    </v-list-tile-content>
+                </v-list-tile>
+            </template>
         </v-list>
         <v-layout row style="padding:5px">
-            <v-text-field>
+            <v-text-field label="Write a message" v-model="message" v-on:keyup.enter="addMessage">
                 
             </v-text-field>
-            <v-btn>
+            <v-btn @click="addMessage">
                 Send
             </v-btn>
         </v-layout>
@@ -35,13 +28,20 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-
-@Component({
-  components: {},
+import { mapActions, mapGetters } from 'vuex';
+@Component<Chat>({
+    components: {},
 })
 export default class Chat extends Vue {
-  @Prop()
-  private msg!: string;
+    public message: string = '';
+    get messages() {
+        return this.$store.getters['chat/getMessages'];
+    }
+
+    public addMessage(): void {
+        this.$store.dispatch('chat/addMessage', { text: this.message, user: 'Player1' });
+        this.message = '';
+    }
 }
 </script>
 
