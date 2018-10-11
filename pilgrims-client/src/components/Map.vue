@@ -9,7 +9,6 @@ import { defineGrid, extendHex } from 'honeycomb-grid';
 import { Graphics, Sprite, Application, Point, Texture } from 'pixi.js';
 import Viewport from 'pixi-viewport';
 
-
 @Component
 export default class Map extends Vue {
   private tileHeight: number = 348;
@@ -29,25 +28,35 @@ export default class Map extends Vue {
     const tileStyle = 'modern-svg';
 
     return [
-    Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
-    Sprite.fromImage(`${tilePath}${tileStyle}/desert${tileFiletype}`),
-    Sprite.fromImage(`${tilePath}${tileStyle}/grain${tileFiletype}`),
-    Sprite.fromImage(`${tilePath}${tileStyle}/wood${tileFiletype}`),
-    Sprite.fromImage(`${tilePath}${tileStyle}/stone${tileFiletype}`),
-    Sprite.fromImage(`${tilePath}${tileStyle}/wool${tileFiletype}`),
-    Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
-  ].map((s) => { s.width = this.tileWidth; s.height = this.tileHeight; return s; });
+      Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
+      Sprite.fromImage(`${tilePath}${tileStyle}/desert${tileFiletype}`),
+      Sprite.fromImage(`${tilePath}${tileStyle}/grain${tileFiletype}`),
+      Sprite.fromImage(`${tilePath}${tileStyle}/wood${tileFiletype}`),
+      Sprite.fromImage(`${tilePath}${tileStyle}/stone${tileFiletype}`),
+      Sprite.fromImage(`${tilePath}${tileStyle}/wool${tileFiletype}`),
+      Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
+    ].map((s) => {
+      s.width = this.tileWidth;
+      s.height = this.tileHeight;
+      return s;
+    });
   }
 
   private DrawMap(): void {
+    const lineWidth = 13;
     const Hex = extendHex({
-      size: 200,
+      size: 200 + lineWidth / 2,
       orientation: 'flat',
     });
     const Grid = defineGrid(Hex);
     const height = this.$el.clientHeight;
     const width = this.$el.clientWidth;
-    const app = new Application({transparent: true, antialias: true, height, width});
+    const app = new Application({
+      transparent: true,
+      antialias: true,
+      height,
+      width,
+    });
     const graphics = new Graphics();
     const viewport = new Viewport({
       screenWidth: window.innerWidth,
@@ -57,20 +66,29 @@ export default class Map extends Vue {
       interaction: app.renderer!.plugins.interaction,
     });
 
-    graphics.lineStyle(10, 0x000000);
+    graphics.lineStyle(lineWidth, 0xffffff);
     app.stage.addChild(viewport);
-    viewport.drag().pinch().wheel().decelerate();
+    viewport
+      .drag()
+      .pinch()
+      .wheel()
+      .decelerate();
     this.$el.appendChild(app.view);
+
+    const center = Hex(0, 0);
 
     Grid.hexagon({ radius: 20 }).forEach((hex) => {
       const point = hex.toPoint();
       const corners = hex.corners().map((corner) => corner.add(point));
       const [firstCorner, ...otherCorners] = corners;
-
       const ss = this.getSprites();
-      const i = Math.floor(Math.random() * (ss.length - 1));
+
+      let i = Math.floor(Math.random() * (ss.length - 1));
+      if (hex.distance(center) >= 18) {
+        i = ss.length - 1;
+      }
       const s = ss[i];
-      s.position.x = firstCorner.x - this.tileWidth;
+      s.position.x = firstCorner.x - this.tileWidth - lineWidth / 2;
       s.position.y = firstCorner.y - this.tileHeight / 2;
       graphics.addChild(s);
 
@@ -79,8 +97,6 @@ export default class Map extends Vue {
       graphics.lineTo(firstCorner.x, firstCorner.y);
       viewport.addChild(graphics);
     });
-
-
   }
 }
 </script>
