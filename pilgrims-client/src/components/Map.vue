@@ -24,7 +24,7 @@ export default class Map extends Vue {
     Sprite.fromImage(`${this.tilePath}${this.tileStyle}/stone${this.tileFiletype}`),
     Sprite.fromImage(`${this.tilePath}${this.tileStyle}/ocean${this.tileFiletype}`),
     Sprite.fromImage(`${this.tilePath}${this.tileStyle}/wool${this.tileFiletype}`),
-  ].map(s => { s.width = this.tileWidth; s.height = this.tileHeight; return s; });
+  ].map((s) => { s.width = this.tileWidth; s.height = this.tileHeight; return s; });
 
   constructor() {
     super();
@@ -38,19 +38,16 @@ export default class Map extends Vue {
     const app = new Application({transparent: true});
     const graphics = new Graphics();
     graphics.lineStyle(1, 0x999999);
-    document.getElementById('Map') 
-      && document.getElementById('Map')!.appendChild(app.view);
+    document.getElementById('Map')!.appendChild(app.view);
 
     const Hex = extendHex({
       size: 200,
       orientation: 'flat',
     });
     const Grid = defineGrid(Hex);
-    const corners = Hex().corners();
-
     Grid.rectangle({ width: 12, height: 10 }).forEach((hex) => {
       const point = hex.toPoint();
-      const corners = hex.corners().map(corner => corner.add(point));
+      const corners = hex.corners().map((corner) => corner.add(point));
       const [firstCorner, ...otherCorners] = corners;
       graphics.moveTo(firstCorner.x, firstCorner.y);
       otherCorners.forEach(({ x, y }) => graphics.lineTo(x, y));
