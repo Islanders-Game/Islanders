@@ -28,7 +28,10 @@ export default class Map extends Vue {
 
   constructor() {
     super();
-    this.DrawMap();
+
+    window.addEventListener('load', (event) => {
+      this.DrawMap();
+    });
   }
 
   private DrawMap(): void {
