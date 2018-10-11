@@ -12,20 +12,8 @@ import Viewport from 'pixi-viewport';
 
 @Component
 export default class Map extends Vue {
-  private tilePath = './img/tilesets/';
-  private tileFiletype = '.gif';
-  private tileStyle = 'watercolor';
-  private tileHeight: number = 400;
-  private tileWidth: number = 346;
-  private sprites: Sprite[] = [
-    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/clay${this.tileFiletype}`),
-    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/desert${this.tileFiletype}`),
-    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/grain${this.tileFiletype}`),
-    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/wood${this.tileFiletype}`),
-    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/stone${this.tileFiletype}`),
-    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/ocean${this.tileFiletype}`),
-    Sprite.fromImage(`${this.tilePath}${this.tileStyle}/wool${this.tileFiletype}`),
-  ].map((s) => { s.width = this.tileWidth; s.height = this.tileHeight; return s; });
+  private tileHeight: number = 348;
+  private tileWidth: number = 400;
 
   constructor() {
     super();
@@ -35,15 +23,20 @@ export default class Map extends Vue {
     this.DrawMap();
   }
 
-  private gradient(from, to): Texture {
-    const c = document.createElement("canvas");
-    const ctx = c.getContext("2d");
-    const grd = ctx.createLinearGradient(0,0,100,100);
-    grd.addColorStop(0, from);
-    grd.addColorStop(1, to);
-    ctx.fillStyle = grd;
-    ctx.fillRect(0,0,100,100);
-    return Texture.from(c);
+  private getSprites(): Sprite[] {
+    const tilePath = './img/tilesets/';
+    const tileFiletype = '.svg';
+    const tileStyle = 'modern-svg';
+
+    return [
+    Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
+    Sprite.fromImage(`${tilePath}${tileStyle}/desert${tileFiletype}`),
+    Sprite.fromImage(`${tilePath}${tileStyle}/grain${tileFiletype}`),
+    Sprite.fromImage(`${tilePath}${tileStyle}/wood${tileFiletype}`),
+    Sprite.fromImage(`${tilePath}${tileStyle}/stone${tileFiletype}`),
+    Sprite.fromImage(`${tilePath}${tileStyle}/wool${tileFiletype}`),
+    Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
+  ].map((s) => { s.width = this.tileWidth; s.height = this.tileHeight; return s; });
   }
 
   private DrawMap(): void {
@@ -52,34 +45,42 @@ export default class Map extends Vue {
       orientation: 'flat',
     });
     const Grid = defineGrid(Hex);
-
-    const app = new Application({transparent: true, height: this.$el.clientHeight, width: this.$el.clientWidth});
+    const height = this.$el.clientHeight;
+    const width = this.$el.clientWidth;
+    const app = new Application({transparent: true, antialias: true, height, width});
     const graphics = new Graphics();
     const viewport = new Viewport({
       screenWidth: window.innerWidth,
       screenHeight: window.innerHeight,
-      worldWidth: 100,
-      worldHeight: 100,
+      worldWidth: width,
+      worldHeight: height,
       interaction: app.renderer!.plugins.interaction,
     });
 
-    graphics.lineStyle(10, 0xFFFFFF);
+    graphics.lineStyle(10, 0x000000);
     app.stage.addChild(viewport);
     viewport.drag().pinch().wheel().decelerate();
     this.$el.appendChild(app.view);
 
-    Grid.hexagon({ radius: 20 }).forEach((hex) => {
+    Grid.hexagon({ radius: 2 }).forEach((hex) => {
       const point = hex.toPoint();
       const corners = hex.corners().map((corner) => corner.add(point));
       const [firstCorner, ...otherCorners] = corners;
 
-      graphics.beginFill(Math.random());
+      const ss = this.getSprites();
+      const i = Math.floor(Math.random() * (ss.length - 1));
+      const s = ss[i];
+      s.position.x = firstCorner.x - this.tileWidth;
+      s.position.y = firstCorner.y - this.tileHeight / 2;
+      graphics.addChild(s);
+
       graphics.moveTo(firstCorner.x, firstCorner.y);
       otherCorners.forEach(({ x, y }) => graphics.lineTo(x, y));
       graphics.lineTo(firstCorner.x, firstCorner.y);
-      graphics.endFill();
       viewport.addChild(graphics);
     });
+
+
   }
 }
 </script>
