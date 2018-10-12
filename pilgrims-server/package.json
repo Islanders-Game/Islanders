@@ -19,6 +19,7 @@
   },
   "homepage": "https://github.com/Awia00/Pilgrims#readme",
   "dependencies": {
+    "pilgrims-shared": "file:../pilgrims-shared/",
     "@types/body-parser": "^1.17.0",
     "@types/rethinkdb": "^2.3.13",
     "@types/socket.io": "^1.4.38",
