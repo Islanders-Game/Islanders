@@ -10,7 +10,7 @@ node('docker&&linux') {
         def server = docker.build('pilgrims/pilgrims-server', './pilgrims-server')
     }
     stage('Tests') {
-        def test = docker.build('pilgrims/pilgrims-tests', './pilgrims-shared/Dockerfile.test')
+        def test = docker.build('pilgrims/pilgrims-tests', './pilgrims-shared')
         test.inside {
             npm run test
         }
