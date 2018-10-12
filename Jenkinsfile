@@ -6,7 +6,8 @@ node('docker&&linux') {
         checkout scm
     }
     stage('Website Build') {
-        docker.build('pilgrims/pilgrims')
+        def client = docker.build('pilgrims/pilgrims-client', './pilgrims-client')
+        def client = docker.build('pilgrims/pilgrims-server', './pilgrims-server')
     }
     stage('Deploy') {
         sh 'docker-compose up -d'

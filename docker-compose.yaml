@@ -1,7 +1,7 @@
 version: '3.5'
 services:
   pilgrims-client:
-    image: pilgrims-client:latest
+    image: pilgrims/pilgrims-client:latest
     container_name: pilgrims-client
     restart: unless-stopped
     labels:
@@ -13,7 +13,7 @@ services:
       - traefik_proxy
   
   pilgrims-server:
-    image: pilgrims-server:latest
+    image: pilgrims/pilgrims-server:latest
     container_name: pilgrims-server
     restart: unless-stopped
     labels:
