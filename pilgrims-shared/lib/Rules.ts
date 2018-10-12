@@ -39,7 +39,7 @@ export const subtractResources = (resources: Resources, toSubtract: Resources) =
     };
 };
 
-const resourcesAreNonNegative = (resources: Resources) => {
+export const resourcesAreNonNegative = (resources: Resources) => {
     return resources.clay && resources.clay >= 0 &&
         resources.grain && resources.grain >= 0 &&
         resources.wood && resources.wood >= 0 &&
@@ -50,7 +50,7 @@ const resourcesAreNonNegative = (resources: Resources) => {
 function fail(reason: string): Failure { return { tag: 'Failure', reason }; }
 function success<T>(t: T): Success<T> { return { tag: 'Success', world: t }; }
 
-const purchase = (cost: Resources) => (p: Result<Player>) => (r: Result<World>) => {
+export const purchase = (cost: Resources) => (p: Result<Player>) => (r: Result<World>) => {
     if (r.tag === 'Failure') { return r; }
     if (p.tag === 'Failure') { return p; }
     const resources = subtractResources(p.world.resources, cost);
