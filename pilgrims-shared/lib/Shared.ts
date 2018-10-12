@@ -1,3 +1,18 @@
+export interface Turn {
+    player: number;
+    actions: Action[];
+}
+
+export interface Action {
+    buildHouse: undefined | { playerID: number, coordinates: MatrixCoordinate };
+    buildCity:  undefined | { playerID: number, coordinates: MatrixCoordinate };
+    buildRoad:  undefined | { playerID: number, start: MatrixCoordinate, end: MatrixCoordinate };
+    moveThief:  undefined | { playerID: number, coordinates: MatrixCoordinate };
+    buyCard:    undefined | { playerID: number };
+    playCard:   undefined | { playerID: number, card: DevelopmentCard };
+    trade:      undefined | { playerID: number, otherPlayerID: number, resources: Resources };
+}
+
 export interface World {
     players: Player[];
     thief?: Thief;
@@ -92,6 +107,11 @@ export interface Resources {
     wool?: number;
 }
 
+export interface ChatMessage {
+    text: string;
+    user: string;
+}
+
 export interface Failure {
     tag: 'Failure';
     reason: string;
@@ -103,12 +123,12 @@ export interface Success<T> {
 export type Result<T> = Success<T> | Failure;
 
 export interface Rules {
-    'Build House': (playerID: number, coordinates: MatrixCoordinate) => (w: Result<World>) => Result<World>;
-    'Build City': (playerID: number, coordinates: MatrixCoordinate) => (w: Result<World>) => Result<World>;
-    'Build Road': (playerID: number, start: MatrixCoordinate, end: MatrixCoordinate)
+    'Build House':  (playerID: number, coordinates: MatrixCoordinate) => (w: Result<World>) => Result<World>;
+    'Build City':   (playerID: number, coordinates: MatrixCoordinate) => (w: Result<World>) => Result<World>;
+    'Build Road':   (playerID: number, start: MatrixCoordinate, end: MatrixCoordinate)
         => (w: Result<World>) => Result<World>;
-    'Move Thief': (playerID: number, coordinates: HexCoordinate) => (w: Result<World>) => Result<World>;
-    'Buy Card': (playerID: number) => (w: Result<World>) => Result<World>;
-    'Play Card': (playerID: number, card: DevelopmentCard) => (w: Result<World>) => Result<World>;
-    'Trade': (playerID: number, otherPlayerID: number, resources: Resources) => (w: Result<World>) => Result<World>;
+    'Move Thief':   (playerID: number, coordinates: HexCoordinate) => (w: Result<World>) => Result<World>;
+    'Buy Card':     (playerID: number) => (w: Result<World>) => Result<World>;
+    'Play Card':    (playerID: number, card: DevelopmentCard) => (w: Result<World>) => Result<World>;
+    'Trade':        (playerID: number, otherPlayerID: number, resources: Resources) => (w: Result<World>) => Result<World>;
 }
