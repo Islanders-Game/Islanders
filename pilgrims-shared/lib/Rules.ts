@@ -1,8 +1,8 @@
 import { Rules, World, Resources, MatrixCoordinate, House, City, Road, Player, Failure,
-    Success, Result } from './Shared';
+    Success, Result, Action } from './Shared';
 
 // ---- Rule implementations ----
-const rules: Rules = {
+export const rules: Rules = {
     'Build House': (id, coordinates) => (w) => {
         if (w.tag === 'Failure') { return w; }
         const player = findPlayer(id)(w);
@@ -123,7 +123,7 @@ const tryBuildHouse = rules['Build House'](2, {x: 2, y: 2});
 const tryBuildCity = rules['Build City'](2, {x: 2, y: 2});
 const toApply = [tryBuildHouse, tryBuildCity];
 
-const ruleReducer = (acc: Result<World>, curr: ((x: Result<World>) => (Result<World>))) => curr(acc);
+export const ruleReducer = (acc: Result<World>, curr: ((x: Result<World>) => (Result<World>))) => curr(acc);
 const newWorld = toApply.reduce(ruleReducer, success(initialWorld));
 
 if (newWorld.tag === 'Success') {

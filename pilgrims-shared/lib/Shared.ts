@@ -7,7 +7,7 @@ export interface Action {
     buildHouse: undefined | { playerID: number, coordinates: MatrixCoordinate };
     buildCity:  undefined | { playerID: number, coordinates: MatrixCoordinate };
     buildRoad:  undefined | { playerID: number, start: MatrixCoordinate, end: MatrixCoordinate };
-    moveThief:  undefined | { playerID: number, coordinates: MatrixCoordinate };
+    moveThief:  undefined | { playerID: number, coordinates: HexCoordinate };
     buyCard:    undefined | { playerID: number };
     playCard:   undefined | { playerID: number, card: DevelopmentCard };
     trade:      undefined | { playerID: number, otherPlayerID: number, resources: Resources };
@@ -122,6 +122,7 @@ export interface Success<T> {
 }
 export type Result<T> = Success<T> | Failure;
 
+export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
     'Build House':  (playerID: number, coordinates: MatrixCoordinate) => (w: Result<World>) => Result<World>;
     'Build City':   (playerID: number, coordinates: MatrixCoordinate) => (w: Result<World>) => Result<World>;
