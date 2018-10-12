@@ -2,7 +2,7 @@
 import { World, Player, Result } from '../lib/Shared';
 import { subtractResources, resourcesAreNonNegative, purchase } from '../lib/Rules';
 
-describe('This tests the subtractResouces function', () => {
+describe('Resouces sunbtraction', () => {
     test('Check that subtract resources can subtract wood', () => {
         const res = { wood: 5};
         const subRes = { wood: 3};
@@ -10,7 +10,7 @@ describe('This tests the subtractResouces function', () => {
     });
 });
 
-describe('Checking for negative resources', () => {
+describe('Negative resources are detected', () => {
     test('Non-negative resources are detected with any negative resource type', () => {
         const res = [
             { wood: Number.NEGATIVE_INFINITY},
@@ -23,7 +23,7 @@ describe('Checking for negative resources', () => {
         res.forEach((r) => expect(resourcesAreNonNegative(r)).toBeFalsy());
     });
 
-    test('Non-negative resources are not detected with any positive resource type', () => {
+    test('Non-negative resources are NOT detected with any positive resource type', () => {
         const res = [
             { wood: Number.POSITIVE_INFINITY},
             { wool: 1},
@@ -54,7 +54,7 @@ describe('Checking for purchaseability', () => {
         expect(result.tag === 'Success');
     });
 
-    test('Player can not afford purchase', () => {
+    test('Player can NOT afford purchase', () => {
         const res = { wool: 0}
         const cost = { wool: 1}
 
