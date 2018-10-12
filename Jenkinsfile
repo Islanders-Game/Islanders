@@ -9,6 +9,12 @@ node('docker&&linux') {
         def client = docker.build('pilgrims/pilgrims-client', './pilgrims-client')
         def server = docker.build('pilgrims/pilgrims-server', './pilgrims-server')
     }
+    stage('Tests') {
+        def test = docker.build('pilgrims/pilgrims-tests', './pilgrims-shared/Dockerfile.test')
+        test.inside {
+            npm run test
+        }
+    }
     stage('Deploy') {
         sh 'docker-compose up -d'
     }
