@@ -28,25 +28,34 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapActions, mapGetters } from 'vuex';
+import { ChatMessage } from '../../../pilgrims-shared/dist/Shared';
+import io from 'socket.io-client';
+
 @Component<Chat>({
   components: {},
 })
 export default class Chat extends Vue {
   public message: string = '';
+  private socket: SocketIOClient.Socket;
 
   constructor() {
     super();
     this.$store.dispatch('chat/getMessages');
+
+    io.connect('localhost:3000').emit('game_start', '{ "id": "testtest" }');
+    this.socket = io.connect('localhost:3000/testtest');
+    this.socket.on('chat', (newMessage: ChatMessage) => {
+      this.$store.dispatch('chat/addMessage', newMessage);
+    });
   }
+
   get messages() {
     return this.$store.getters['chat/getMessages'];
   }
 
   public addMessage(): void {
-    this.$store.dispatch('chat/addMessage', {
-      text: this.message,
-      user: 'Player1',
-    });
+    console.log(this.socket.connected);
+    this.socket.emit('chat', { text: this.message, user: 'Player1' });
     this.message = '';
   }
 }

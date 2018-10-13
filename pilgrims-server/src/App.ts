@@ -42,7 +42,7 @@ io.on('connection', (socket: SocketIO.Socket) => {
       console.info(`'game_start' with game:`);
       console.info(game);
       io.of(`/${game.id}`)
-        .on('connection', (socket: SocketIO.Socket) => {
+        .on('connection', (socket) => {
           socket
             .on('join', (player: Player) => {
               if (!player) console.info(`'join' with no player.`);
@@ -67,9 +67,9 @@ io.on('connection', (socket: SocketIO.Socket) => {
               socket.emit('chat', chatMessage);
             });
           });
-      } catch (e) {
-        console.error(e);
-      }
+    } catch (e) {
+      console.error(e);
+    }
   });
 });
 //
@@ -126,7 +126,7 @@ const addPlayer = async (id: string, player: Player) => {
 async function findWorld(id: string): Promise<Result<World>> {
   try {
     const db = monk('localhost:27017/pilgrims');
-    const dbResult = await db.get('games').findOne(id)
+    const dbResult = await db.get('games').findOne(id);
     const result = dbResult as World;
     db.close();
     if (!(result as World))
