@@ -1,7 +1,7 @@
 <template>
   <v-container fluid id="Game">
     <v-layout column fill-height>
-      <v-layout row>
+      <v-layout row class="main-area">
         <v-flex xs9>
           <Map/>
         </v-flex>
@@ -9,7 +9,7 @@
           <Overview/>
         </v-flex>
       </v-layout>
-      <Player/>
+      <Player class="bottom-area"/>
     </v-layout>
   </v-container>
 </template>
@@ -36,5 +36,12 @@ export default class Game extends Vue {
 <style lang="scss" scoped>
 #Game {
   padding: 0px;
+}
+.main-area {
+  max-height: 87vh;
+  overflow: auto;
+}
+.bottom-area {
+  min-height: 13vh;
 }
 </style>
