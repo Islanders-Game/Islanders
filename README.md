@@ -5,6 +5,7 @@ A clone of the popular "Settlers of Catan", written in Typescript.
 To play run: 
 
     docker network create traefik_proxy
+    docker build -t pilgrims/pilgrims-shared ./pilgrims-shared
     docker build -t pilgrims/pilgrims-client ./pilgrims-client
     docker build -t pilgrims/pilgrims-server ./pilgrims-server
     docker-compose up -d

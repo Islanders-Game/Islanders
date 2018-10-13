@@ -1,8 +1,13 @@
 import express from 'express';
+<<<<<<< HEAD
 import rethink, { Connection } from 'rethinkdb';
+=======
+>>>>>>> c72902c9559b5b8fa53837f26a67517bbff8fe94
 import http from 'http';
 import bodyParser from 'body-parser';
 import socket from 'socket.io';
+import mongo from 'mongodb';
+import monk from 'monk';
 
 import {
   Result,
@@ -21,22 +26,13 @@ const server = http.createServer(app);
 const io = socket.listen(server);
 const port = 3000;
 
-// RethinkDB
-var connection: Connection;
-rethink.connect({ host: 'localhost' }).then(c => connection = c);
 app.post('/newGame', async (req, res) => {
+  const db = monk('localhost:27017/pilgrims');
   const world = req.body;
-  rethink
-    .table('games')
-    .insert(world)
-    .run(connection, (err, result) => {
-      if (err) {
-        throw err;
-      }
-      res.send(result.generated_keys[0]);
-    });
+  const result = await db.get('games').insert({ world });
+  res.send(result._id);
+  db.close();
 });
-//
 
 //Socket.io
 io.on('connection', (socket: SocketIO.Socket) => {
@@ -132,11 +128,10 @@ const addPlayer = async (id: string, player: Player) => {
 
 async function findWorld(id: string): Promise<Result<World>> {
   try {
-    const dbResult = await rethink
-      .table('games')
-      .get(id)
-      .run(connection);
+    const db = monk('localhost:27017/pilgrims');
+    const dbResult = await db.get('games').findOne(id)
     const result = dbResult as World;
+    db.close();
     if (!(result as World))
       return { tag: 'Failure', reason: 'World could not be found!' };
     return { tag: 'Success', world: result };
