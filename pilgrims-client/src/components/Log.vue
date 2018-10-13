@@ -1,6 +1,6 @@
 <template>
   <v-container fluid id="Log">
-    <v-list two-line>
+    <v-list three-line>
         <v-list-tile>
             <v-list-tile-content>
                 <v-list-tile-title>Info</v-list-tile-title>

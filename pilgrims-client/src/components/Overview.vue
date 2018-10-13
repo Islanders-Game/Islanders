@@ -1,7 +1,7 @@
 <template>
     <v-container fluid id="Overview">
       <v-layout row justify-start>
-         <v-tabs centered color="grey" dark fixed-tabs class="fill-width">
+         <v-tabs centered color="grey" dark class="fill-width">
           <v-tabs-slider color="#d9d9d9" ></v-tabs-slider>
 
           <v-tab href="#tab-1">

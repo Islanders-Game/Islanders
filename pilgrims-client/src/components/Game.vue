@@ -5,7 +5,7 @@
         <v-flex xs9>
           <Map/>
         </v-flex>
-        <v-flex>
+        <v-flex xs3>
           <Overview/>
         </v-flex>
       </v-layout>
