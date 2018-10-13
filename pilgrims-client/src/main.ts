@@ -6,7 +6,6 @@ import store from './store/store';
 import './registerServiceWorker';
 import 'roboto-fontface/css/roboto/roboto-fontface.css';
 import 'material-design-icons-iconfont/dist/material-design-icons.css';
-import { City, HexCoordinate} from 'pilgrims-shared/lib/Shared';
 
 Vue.config.productionTip = false;
 

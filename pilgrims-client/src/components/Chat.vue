@@ -1,7 +1,7 @@
 <template>
   <v-container fluid id="Chat">
-    <v-layout column fill-height justify-end>    
-        <v-list two-line>
+    <v-layout column fill-height justify-end align-content-space-between>
+        <v-list two-line style="overflow-y: scroll">
             <template v-for="(item, index) in messages">
                 <v-list-tile :key="index" avatar>
                     <v-list-tile-avatar>
@@ -29,23 +29,26 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapActions, mapGetters } from 'vuex';
 @Component<Chat>({
-    components: {},
+  components: {},
 })
 export default class Chat extends Vue {
-    public message: string = '';
+  public message: string = '';
 
-    constructor() {
-        super();
-        this.$store.dispatch('chat/getMessages');
-    }
-    get messages() {
-        return this.$store.getters['chat/getMessages'];
-    }
+  constructor() {
+    super();
+    this.$store.dispatch('chat/getMessages');
+  }
+  get messages() {
+    return this.$store.getters['chat/getMessages'];
+  }
 
-    public addMessage(): void {
-        this.$store.dispatch('chat/addMessage', { text: this.message, user: 'Player1' });
-        this.message = '';
-    }
+  public addMessage(): void {
+    this.$store.dispatch('chat/addMessage', {
+      text: this.message,
+      user: 'Player1',
+    });
+    this.message = '';
+  }
 }
 </script>
 

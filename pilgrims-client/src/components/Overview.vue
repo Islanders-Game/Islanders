@@ -1,31 +1,34 @@
 <template>
-    <v-container fluid fill-height id="Overview">
-      <v-layout justify-start>
-         <v-tabs centered color="cyan" dark icons-and-text class="fill-width">
-          <v-tabs-slider color="yellow"></v-tabs-slider>
+    <v-container fluid id="Overview">
+      <v-layout row justify-start>
+         <v-tabs centered color="grey" dark class="fill-width">
+          <v-tabs-slider color="#d9d9d9" ></v-tabs-slider>
 
           <v-tab href="#tab-1">
             Players
-            <v-icon>phone</v-icon>
           </v-tab>
 
           <v-tab href="#tab-2">
             Chat
-            <v-icon>favorite</v-icon>
           </v-tab>
 
           <v-tab href="#tab-3">
             Logs
-            <v-icon>account_box</v-icon>
           </v-tab>
           <v-tab-item :id="'tab-1'" :key="1">
-            <Players></Players>
+            <div class="tab-item-fill-height">
+              <Players></Players>
+            </div>
           </v-tab-item>
           <v-tab-item :id="'tab-2'" :key="2">
-            <Chat></Chat>
+            <div class="tab-item-fill-height">
+              <Chat></Chat>
+            </div>
           </v-tab-item>
           <v-tab-item :id="'tab-3'" :key="3">
-            <Log></Log>
+            <div class="tab-item-fill-height">
+              <Log></Log>
+            </div>
           </v-tab-item>
         </v-tabs>
       </v-layout>
@@ -54,5 +57,9 @@ export default class Overview extends Vue {}
 }
 .fill-width {
   width: 100%;
+}
+// for some reason vuetify tabs must have their child element expanded
+.tab-item-fill-height {
+  height: 79vh;
 }
 </style>

@@ -1,69 +1,75 @@
 <template>
   <v-container fluid id="Players">
-    <v-list two-line>
+    <v-list>
         <v-list-tile class="player-tile">
-            <v-list-tile-avatar>
-                <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
-            </v-list-tile-avatar>
-            <v-list-tile-content>
-                <v-list-tile-title>Player1</v-list-tile-title>
-                <v-list-tile-sub-title>
-                    <v-chip>
-                        <v-icon>shopping_cart</v-icon>
-                        9
-                    </v-chip>
-                    <v-chip>
-                        <v-icon>shopping_cart</v-icon>
-                        4
-                    </v-chip>
-                    <v-chip>
-                        <v-icon>shopping_cart</v-icon>
+            <v-layout column>
+                <v-layout row align-center>
+                    <v-list-tile-avatar>
+                        <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
+                    </v-list-tile-avatar>
+                    <v-list-tile-title>Player1</v-list-tile-title>
+                    <v-spacer></v-spacer>
+                    <div style="display:contents">
                         2
-                    </v-chip>
-                    <v-chip>
-                        <v-icon>shopping_cart</v-icon>
-                        3
-                    </v-chip>
-                </v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-                <v-btn icon ripple>
-                    2
-                    <v-icon color="grey lighten-1">star</v-icon>
-                </v-btn>
-            </v-list-tile-action>
+                        <v-icon color="grey lighten-1">star</v-icon>
+                    </div>
+                </v-layout>
+                <v-list-tile-content>
+                    <v-list-tile-sub-title>
+                        <v-chip small>
+                            <v-icon small>shopping_cart</v-icon>
+                            9
+                        </v-chip>
+                        <v-chip small>
+                            <v-icon small>shopping_cart</v-icon>
+                            4
+                        </v-chip>
+                        <v-chip small>
+                            <v-icon small>shopping_cart</v-icon>
+                            2
+                        </v-chip>
+                        <v-chip small>
+                            <v-icon small>shopping_cart</v-icon>
+                            3
+                        </v-chip>
+                    </v-list-tile-sub-title>
+                </v-list-tile-content>
+            </v-layout>
         </v-list-tile>
         <v-list-tile class="player-tile">
-            <v-list-tile-avatar>
-                <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
-            </v-list-tile-avatar>
-            <v-list-tile-content>
-                <v-list-tile-title>Player2</v-list-tile-title>
-                <v-list-tile-sub-title>
-                    <v-chip>
-                        <v-icon>shopping_cart</v-icon>
-                        9
-                    </v-chip>
-                    <v-chip>
-                        <v-icon>shopping_cart</v-icon>
-                        4
-                    </v-chip>
-                    <v-chip>
-                        <v-icon>shopping_cart</v-icon>
+            <v-layout column>
+                <v-layout row align-center>
+                    <v-list-tile-avatar>
+                        <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
+                    </v-list-tile-avatar>
+                    <v-list-tile-title>Player1</v-list-tile-title>
+                    <v-spacer></v-spacer>
+                    <div style="display:contents">
                         2
-                    </v-chip>
-                    <v-chip>
-                        <v-icon>shopping_cart</v-icon>
-                        3
-                    </v-chip>
-                </v-list-tile-sub-title>
-            </v-list-tile-content>
-            <v-list-tile-action>
-                <v-btn icon ripple>
-                    1
-                    <v-icon color="grey lighten-1">star</v-icon>
-                </v-btn>
-            </v-list-tile-action>
+                        <v-icon color="grey lighten-1">star</v-icon>
+                    </div>
+                </v-layout>
+                <v-list-tile-content>
+                    <v-list-tile-sub-title>
+                        <v-chip small>
+                            <v-icon small>shopping_cart</v-icon>
+                            9
+                        </v-chip>
+                        <v-chip small>
+                            <v-icon small>shopping_cart</v-icon>
+                            4
+                        </v-chip>
+                        <v-chip small>
+                            <v-icon small>shopping_cart</v-icon>
+                            2
+                        </v-chip>
+                        <v-chip small>
+                            <v-icon small>shopping_cart</v-icon>
+                            3
+                        </v-chip>
+                    </v-list-tile-sub-title>
+                </v-list-tile-content>
+            </v-layout>
         </v-list-tile>
     </v-list>
   </v-container>

@@ -11,21 +11,28 @@ import Viewport from 'pixi-viewport';
 
 @Component
 export default class Map extends Vue {
+  private height: number;
+  private width: number;
   private tileHeight: number = 348;
   private tileWidth: number = 400;
-
-  constructor() {
-    super();
-  }
+  private app: Application;
+  private viewport: Viewport;
 
   private mounted() {
+    this.height = this.$el.clientHeight;
+    this.width = this.$el.clientWidth;
     this.DrawMap();
+    const that = this;
+    addEventListener('resize', () => {
+      that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
+      that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
+    });
   }
 
   private getSprites(): Sprite[] {
     const tilePath = './img/tilesets/';
-    const tileFiletype = '.svg';
-    const tileStyle = 'modern-svg';
+    const tileFiletype = '.gif';
+    const tileStyle = 'watercolor';
 
     return [
       Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
@@ -49,31 +56,28 @@ export default class Map extends Vue {
       orientation: 'flat',
     });
     const Grid = defineGrid(Hex);
-    const height = this.$el.clientHeight;
-    const width = this.$el.clientWidth;
-    const app = new Application({
+    this.app = new Application({
+      autoResize: true,
       transparent: true,
       antialias: true,
-      height,
-      width,
+      height: this.height,
+      width: this.width,
     });
     const graphics = new Graphics();
-    const viewport = new Viewport({
-      screenWidth: window.innerWidth,
-      screenHeight: window.innerHeight,
-      worldWidth: width,
-      worldHeight: height,
-      interaction: app.renderer!.plugins.interaction,
+    this.viewport = new Viewport({
+      screenWidth: this.width,
+      screenHeight: this.width,
+      interaction: this.app.renderer!.plugins.interaction,
     });
 
     graphics.lineStyle(lineWidth, 0xffffff);
-    app.stage.addChild(viewport);
-    viewport
+    this.app.stage.addChild(this.viewport);
+    this.viewport
       .drag()
       .pinch()
       .wheel()
       .decelerate();
-    this.$el.appendChild(app.view);
+    this.$el.appendChild(this.app.view);
 
     const center = Hex(0, 0);
 
@@ -95,7 +99,7 @@ export default class Map extends Vue {
       graphics.moveTo(firstCorner.x, firstCorner.y);
       otherCorners.forEach(({ x, y }) => graphics.lineTo(x, y));
       graphics.lineTo(firstCorner.x, firstCorner.y);
-      viewport.addChild(graphics);
+      this.viewport.addChild(graphics);
     });
   }
 }
