@@ -1,4 +1,5 @@
-import ChatAPI, { ChatMessage } from '@/api/ChatAPI';
+import ChatAPI from '@/api/ChatAPI';
+import { ChatMessage } from '../../../../pilgrims-shared/dist/Shared';
 import { GetterTree, MutationTree, ActionTree, ActionContext } from 'vuex';
 
 // The state

@@ -26,36 +26,37 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
-import { mapActions, mapGetters } from "vuex";
-import { ChatMessage } from "../../../pilgrims-shared/dist/Shared";
-import io from "socket.io-client";
+import { Component, Prop, Vue } from 'vue-property-decorator';
+import { mapActions, mapGetters } from 'vuex';
+import { ChatMessage } from '../../../pilgrims-shared/dist/Shared';
+import io from 'socket.io-client';
 
 @Component<Chat>({
-  components: {}
+  components: {},
 })
 export default class Chat extends Vue {
-  public message: string = "";
+  public message: string = '';
   private socket: SocketIOClient.Socket;
 
   constructor() {
     super();
-    this.$store.dispatch("chat/getMessages");
+    this.$store.dispatch('chat/getMessages');
 
-    io.connect("localhost:3000").emit("game_start", { id: "testtest" });
-    this.socket = io.connect("localhost:3000/testtest");
-    this.socket.on("chat", (newMessage: ChatMessage) => {
-      this.$store.dispatch("chat/addMessage", newMessage);
+    io.connect('localhost:3000').emit('game_start', '{ "id": "testtest" }');
+    this.socket = io.connect('localhost:3000/testtest');
+    this.socket.on('chat', (newMessage: ChatMessage) => {
+      this.$store.dispatch('chat/addMessage', newMessage);
     });
   }
 
   get messages() {
-    return this.$store.getters["chat/getMessages"];
+    return this.$store.getters['chat/getMessages'];
   }
 
   public addMessage(): void {
-    this.socket.emit("chat", { text: this.message, user: "Player1" });
-    this.message = "";
+    console.log(this.socket.connected);
+    this.socket.emit('chat', { text: this.message, user: 'Player1' });
+    this.message = '';
   }
 }
 </script>
