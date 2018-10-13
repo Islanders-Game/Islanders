@@ -25,10 +25,7 @@ let connection: rethink.Connection | undefined;
 // RethinkDB
 rethink.connect(
   { host: 'localhost', port: 28015 },
-  (err, c) => {
-    if (err) {
-      throw err;
-    }
+  (_, c) => {
     connection = c;
   },
 );
