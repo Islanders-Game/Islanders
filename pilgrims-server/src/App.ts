@@ -44,29 +44,27 @@ io.on('connection', (socket: SocketIO.Socket) => {
       io.of(`/${game.id}`)
         .on('connection', (socket: SocketIO.Socket) => {
           socket
-            .on('join', (message: string) => {
-              const player: Player = JSON.parse(message);
+            .on('join', (player: Player) => {
+              if (!player) console.info(`'join' with no player.`);
               if (!player || !player.id) return;
               console.info(`'join' on game ${game.id} by ${player.id}.`);
               const result = addPlayer(game.id, player);
-              socket.to(game.id).emit('joined', result);
+              socket.emit('joined', result);
             })
-            .on('turn_end', (message: string) => {
-              if (!message) console.info(`'turn_end' with empty message.`);
-              const turn: Turn = JSON.parse(message);
+            .on('turn_end', (turn: Turn) => {
+              if (!turn) console.info(`'turn_end' with empty turn.`);
               if (!turn || !turn.player || !turn.actions) return;
               console.info(`'turn_end' on game ${game.id} with turn.`);
               console.info(turn);
-              applyTurn(game.id, turn).then((res) => socket.to(game.id).emit('apply_turn', res));
+              applyTurn(game.id, turn).then((res) => socket.emit('apply_turn', res));
             })
-            .on('chat', (message: string) => {
-              if (!message) console.info(`'chat' with empty message.`);
-              const chatMessage: ChatMessage = JSON.parse(message);
+            .on('chat', (chatMessage: ChatMessage) => {
+              if (!chatMessage) console.info(`'chat' with empty message.`);
               if (!chatMessage || !chatMessage.user || !chatMessage.text) return;
               console.info(
                 `'chat' on game ${game.id} by ${chatMessage.user} with text ${chatMessage.text}.`,
               );
-              socket.to(game.id).emit('chat', message);
+              socket.emit('chat', chatMessage);
             });
           });
       } catch (e) {
