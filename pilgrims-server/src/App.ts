@@ -1,8 +1,4 @@
 import express from 'express';
-<<<<<<< HEAD
-import rethink, { Connection } from 'rethinkdb';
-=======
->>>>>>> c72902c9559b5b8fa53837f26a67517bbff8fe94
 import http from 'http';
 import bodyParser from 'body-parser';
 import socket from 'socket.io';
