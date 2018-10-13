@@ -22,7 +22,7 @@ const server = http.createServer(app);
 const io = socket.listen(server);
 const port = 3000;
 
-app.post('/newGame', async (req, res) => {
+app.post('/newgame', async (req, res) => {
   const db = monk('localhost:27017/pilgrims');
   const world = req.body;
   const result = await db.get('games').insert({ world });
@@ -42,30 +42,33 @@ io.on('connection', (socket: SocketIO.Socket) => {
       console.info(`'game_start' with game:`);
       console.info(game);
       io.of(`/${game.id}`)
-        .on('join', (message: string) => {
-          const player: Player = JSON.parse(message);
-          if (!player || !player.id) return;
-          console.info(`'join' on game ${game.id} by ${player.id}.`);
-          const result = addPlayer(game.id, player);
-          socket.to(game.id).emit('joined', result);
-        })
-        .on('turn_end', (message: string) => {
-          if (!message) console.info(`'turn_end' with empty message.`);
-          const turn: Turn = JSON.parse(message);
-          if (!turn || !turn.player || !turn.actions) return;
-          console.info(`'turn_end' on game ${game.id} with turn.`);
-          console.info(turn);
-          applyTurn(game.id, turn).then((res) => socket.to(game.id).emit('apply_turn', res));
-        })
-        .on('chat', (message: string) => {
-          if (!message) console.info(`'chat' with empty message.`);
-          const chatMessage: ChatMessage = JSON.parse(message);
-          if (!chatMessage || !chatMessage.user || !chatMessage.text) return;
-          console.info(
-            `'chat' on game ${game.id} by ${chatMessage.user} with text ${chatMessage.text}.`,
-          );
-          socket.to(game.id).emit('chat', message);
-        });
+        .on('connection', (socket: SocketIO.Socket) => {
+          socket
+            .on('join', (message: string) => {
+              const player: Player = JSON.parse(message);
+              if (!player || !player.id) return;
+              console.info(`'join' on game ${game.id} by ${player.id}.`);
+              const result = addPlayer(game.id, player);
+              socket.to(game.id).emit('joined', result);
+            })
+            .on('turn_end', (message: string) => {
+              if (!message) console.info(`'turn_end' with empty message.`);
+              const turn: Turn = JSON.parse(message);
+              if (!turn || !turn.player || !turn.actions) return;
+              console.info(`'turn_end' on game ${game.id} with turn.`);
+              console.info(turn);
+              applyTurn(game.id, turn).then((res) => socket.to(game.id).emit('apply_turn', res));
+            })
+            .on('chat', (message: string) => {
+              if (!message) console.info(`'chat' with empty message.`);
+              const chatMessage: ChatMessage = JSON.parse(message);
+              if (!chatMessage || !chatMessage.user || !chatMessage.text) return;
+              console.info(
+                `'chat' on game ${game.id} by ${chatMessage.user} with text ${chatMessage.text}.`,
+              );
+              socket.to(game.id).emit('chat', message);
+            });
+          });
       } catch (e) {
         console.error(e);
       }

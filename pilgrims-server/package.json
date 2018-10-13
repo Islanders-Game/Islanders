@@ -19,6 +19,7 @@
   "homepage": "https://github.com/Awia00/Pilgrims#readme",
   "dependencies": {
     "@types/body-parser": "^1.17.0",
+    "@types/mongodb": "^3.1.12",
     "@types/socket.io": "^1.4.38",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
