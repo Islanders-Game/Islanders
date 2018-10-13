@@ -1,5 +1,5 @@
 import express from 'express';
-import rethink from 'rethinkdb';
+import rethink, { Connection } from 'rethinkdb';
 import http from 'http';
 import bodyParser from 'body-parser';
 import socket from 'socket.io';
@@ -17,86 +17,67 @@ import {
 } from '../../pilgrims-shared/dist/Shared';
 
 const app = express();
-const server = new http.Server(app);
-const io = socket(server);
+const server = http.createServer(app);
+const io = socket.listen(server);
 const port = 3000;
-let connection: rethink.Connection | undefined;
 
 // RethinkDB
-rethink.connect(
-  { host: 'localhost', port: 28015 },
-  (_, c) => {
-    connection = c;
-  },
-);
-
-if (connection) {
+var connection: Connection;
+rethink.connect({ host: 'localhost' }).then(c => connection = c);
+app.post('/newGame', async (req, res) => {
+  const world = req.body;
   rethink
-    .db('pilgrims')
-    .tableCreate('games')
+    .table('games')
+    .insert(world)
     .run(connection, (err, result) => {
       if (err) {
         throw err;
       }
-      console.log(JSON.stringify(result, null, 2));
+      res.send(result.generated_keys[0]);
     });
-
-  app.post('/newGame', (req, res) => {
-    const world = req.body;
-    rethink
-      .table('games')
-      .insert(world)
-      .run(connection!, (err, result) => {
-        if (err) {
-          throw err;
-        }
-        res.send(result.generated_keys[0]);
-      });
-  });
-}
-else {
-  throw Error("RethinkDB not set up correctly")
-}
+});
 //
 
 //Socket.io
 io.on('connection', (socket: SocketIO.Socket) => {
   console.info(`Player connected on ${socket.id}.`);
   socket.on('game_start', (message: string) => {
-    const game = JSON.parse(message);
-    if (!game || !game.id) return;
-    console.info(`'game_start' with game ${game}.`);
-    io.of(`/${game.id}`)
-      .on('join', (message: string) => {
-        const player: Player = JSON.parse(message);
-        if (!player || !player.id) return;
-        console.info(`'join' on game ${game.id} by ${player.id}.`);
-        const result = addPlayer(game.id, player);
-        socket.to(game.id).emit('joined', result);
-      })
-      .on('turn_end', (message: string) => {
-        const turn: Turn = JSON.parse(message);
-        if (!turn || !turn.player || !turn.actions) return;
-        console.info(`'turn_end' on game ${game.id} with ${turn}.`);
-        applyTurn(game.id, turn).then((res) =>
-          socket.to(game.id).emit('apply_turn', res),
-        );
-      })
-      .on('chat', (message: string) => {
-        const chatMessage: ChatMessage = JSON.parse(message);
-        if (!chatMessage || !chatMessage.user || !chatMessage.text) return;
-        console.info(
-          `'chat' on game ${game.id} by ${chatMessage.user} with text ${
-            chatMessage.text
-          }.`,
-        );
-        socket.to(game.id).emit('chat', message);
-      });
+    try {
+      console.info(`'game_start' with message: "${message}".`);
+      if (!message) return;
+      const game = JSON.parse(message);
+      if (!game || !game.id) return;
+      console.info(`'game_start' with game:`);
+      console.info(game);
+      io.of(`/${game.id}`)
+        .on('join', (message: string) => {
+          const player: Player = JSON.parse(message);
+          if (!player || !player.id) return;
+          console.info(`'join' on game ${game.id} by ${player.id}.`);
+          const result = addPlayer(game.id, player);
+          socket.to(game.id).emit('joined', result);
+        })
+        .on('turn_end', (message: string) => {
+          if (!message) console.info(`'turn_end' with empty message.`);
+          const turn: Turn = JSON.parse(message);
+          if (!turn || !turn.player || !turn.actions) return;
+          console.info(`'turn_end' on game ${game.id} with turn.`);
+          console.info(turn);
+          applyTurn(game.id, turn).then((res) => socket.to(game.id).emit('apply_turn', res));
+        })
+        .on('chat', (message: string) => {
+          if (!message) console.info(`'chat' with empty message.`);
+          const chatMessage: ChatMessage = JSON.parse(message);
+          if (!chatMessage || !chatMessage.user || !chatMessage.text) return;
+          console.info(
+            `'chat' on game ${game.id} by ${chatMessage.user} with text ${chatMessage.text}.`,
+          );
+          socket.to(game.id).emit('chat', message);
+        });
+      } catch (e) {
+        console.error(e);
+      }
   });
-
-  socket.on('disconnect', (socket) =>
-    console.info(`Socket ${socket.id} disconnected.`),
-  );
 });
 //
 
@@ -151,7 +132,6 @@ const addPlayer = async (id: string, player: Player) => {
 
 async function findWorld(id: string): Promise<Result<World>> {
   try {
-    if (!connection) throw Error('Connection not initialized');
     const dbResult = await rethink
       .table('games')
       .get(id)
@@ -167,6 +147,10 @@ async function findWorld(id: string): Promise<Result<World>> {
 //
 
 //Initialize
+app.get('/', function(req, res) {
+  res.sendFile(__dirname + '/index.html');
+});
+
 app.use(bodyParser.json());
 server.listen(port, () =>
   console.log(`pilgrims-server listening on port ${port}!`),
