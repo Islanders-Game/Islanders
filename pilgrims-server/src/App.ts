@@ -1,9 +1,9 @@
-import express = require('express');
-import rethink = require('rethinkdb');
-import http = require('http');
+import express from 'express';
+import rethink from 'rethinkdb';
+import http from 'http';
+import bodyParser from 'body-parser';
+import socket from 'socket.io';
 
-import * as bodyParser from 'body-parser';
-import * as socket from 'socket.io';
 import {
   Result,
   Rule,
@@ -18,7 +18,7 @@ import {
 
 const app = express();
 const server = new http.Server(app);
-const io = socket.default(server);
+const io = socket(server);
 const port = 3000;
 let connection: rethink.Connection | undefined;
 
