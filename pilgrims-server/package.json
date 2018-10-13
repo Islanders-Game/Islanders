@@ -4,8 +4,10 @@
   "description": "The server for the Pilgrims game.",
   "main": "dist/app.js",
   "scripts": {
+    "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "start": "tsc && node dist/App.js"
+    "dev": "tsc && node dist/App.js",
+    "start": "node dist/App.js"
   },
   "repository": {
     "type": "git",
