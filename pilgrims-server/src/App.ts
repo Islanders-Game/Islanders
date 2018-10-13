@@ -57,6 +57,9 @@ if (connection) {
       });
   });
 }
+else {
+  throw Error("RethinkDB not set up correctly")
+}
 //
 
 //Socket.io
