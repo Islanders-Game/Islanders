@@ -20,12 +20,10 @@
   "homepage": "https://github.com/Awia00/Pilgrims#readme",
   "dependencies": {
     "@types/body-parser": "^1.17.0",
-    "@types/rethinkdb": "^2.3.13",
     "@types/socket.io": "^1.4.38",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
     "pilgrims-shared": "file:../pilgrims-shared",
-    "rethinkdb": "^2.3.3",
     "socket.io": "^2.1.1"
   },
   "devDependencies": {

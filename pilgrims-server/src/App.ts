@@ -1,8 +1,9 @@
 import express from 'express';
-import rethink from 'rethinkdb';
 import http from 'http';
 import bodyParser from 'body-parser';
 import socket from 'socket.io';
+import mongo from 'mongodb';
+import monk from 'monk';
 
 import {
   Result,
@@ -20,44 +21,14 @@ const app = express();
 const server = new http.Server(app);
 const io = socket(server);
 const port = 3000;
-let connection: rethink.Connection | undefined;
 
-// RethinkDB
-rethink.connect(
-  { host: 'localhost', port: 28015 },
-  (_, c) => {
-    connection = c;
-  },
-);
-
-if (connection) {
-  rethink
-    .db('pilgrims')
-    .tableCreate('games')
-    .run(connection, (err, result) => {
-      if (err) {
-        throw err;
-      }
-      console.log(JSON.stringify(result, null, 2));
-    });
-
-  app.post('/newGame', (req, res) => {
-    const world = req.body;
-    rethink
-      .table('games')
-      .insert(world)
-      .run(connection!, (err, result) => {
-        if (err) {
-          throw err;
-        }
-        res.send(result.generated_keys[0]);
-      });
-  });
-}
-else {
-  throw Error("RethinkDB not set up correctly")
-}
-//
+app.post('/newGame', async (req, res) => {
+  const db = monk('localhost:27017/pilgrims');
+  const world = req.body;
+  const result = await db.get('games').insert({ world });
+  res.send(result._id);
+  db.close();
+});
 
 //Socket.io
 io.on('connection', (socket: SocketIO.Socket) => {
@@ -87,7 +58,7 @@ io.on('connection', (socket: SocketIO.Socket) => {
         if (!chatMessage || !chatMessage.user || !chatMessage.text) return;
         console.info(
           `'chat' on game ${game.id} by ${chatMessage.user} with text ${
-            chatMessage.text
+          chatMessage.text
           }.`,
         );
         socket.to(game.id).emit('chat', message);
@@ -151,12 +122,10 @@ const addPlayer = async (id: string, player: Player) => {
 
 async function findWorld(id: string): Promise<Result<World>> {
   try {
-    if (!connection) throw Error('Connection not initialized');
-    const dbResult = await rethink
-      .table('games')
-      .get(id)
-      .run(connection);
+    const db = monk('localhost:27017/pilgrims');
+    const dbResult = await db.get('games').findOne(id)
     const result = dbResult as World;
+    db.close();
     if (!(result as World))
       return { tag: 'Failure', reason: 'World could not be found!' };
     return { tag: 'Success', world: result };
