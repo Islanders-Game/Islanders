@@ -4,18 +4,20 @@
     "module": "commonjs",
     "outDir": "dist",
     "sourceMap": true,
+    "strict": true,
+    "noImplicitAny": true,
+    "strictNullChecks": true,
+    "strictFunctionTypes": true,
+    "strictPropertyInitialization": true,
+    "noImplicitReturns": true,
+    "noFallthroughCasesInSwitch": true,
+    "moduleResolution": "node",
+    "esModuleInterop": true,
     "baseUrl": ".",
     "paths": {
-      "*": [
-          "node_modules/*",
-          "src/types/*"
-      ]
-    },
+      "*": ["node_modules/*", "src/types/*"]
+    }
   },
-  "include": [
-    "src/**/*.ts"
-  ],
-  "exclude": [
-    "node_modules"
-  ]
+  "include": ["src/**/*.ts"],
+  "exclude": ["node_modules"]
 }
