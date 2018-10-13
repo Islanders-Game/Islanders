@@ -1,10 +1,10 @@
-import * as express  from 'express';
-import * as socket from 'socket.io';
-import * as rethink from 'rethinkdb';
+import express = require('express');
+import rethink = require('rethinkdb');
+import http = require('http');
+
 import * as bodyParser from 'body-parser';
-import * as http from 'http';
-import { Result, Rule, Turn, World, Action, Player, ChatMessage, Rules } from 'pilgrims-shared';
-import { rules, ruleReducer } from 'pilgrims-shared/lib/Rules';
+import * as socket from 'socket.io';
+import { Result, Rule, Turn, World, Action, Player, ChatMessage, rules, ruleReducer } from 'pilgrims-shared';
 
 const app = express();
 const server = new http.Server(app);
