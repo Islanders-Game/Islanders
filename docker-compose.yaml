@@ -5,33 +5,37 @@ services:
     image: mongo
     volumes:
       - ./data:/data/db
-    ports:
-      - "27017:27017"
+    labels:
+      - 'traefik.port=27017'
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=traefik_proxy'
+      - 'traefik.backend=pilgrims-mongodb'
+      - 'traefik.frontend.rule=Host:pilgrims-db.localhost'
 
   pilgrims-client:
     image: pilgrims/pilgrims-client:latest
     container_name: pilgrims-client
     restart: unless-stopped
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik_proxy"
-      - "traefik.backend=pilgrims-client"
-      - "traefik.frontend.rule=Host:pilgrims.localhost"
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=traefik_proxy'
+      - 'traefik.backend=pilgrims-client'
+      - 'traefik.frontend.rule=Host:pilgrims.localhost'
     networks:
       - traefik_proxy
-  
+
   pilgrims-server:
     image: pilgrims/pilgrims-server:latest
     container_name: pilgrims-server
     restart: unless-stopped
     labels:
-      - "traefik.enable=true"
-      - "traefik.docker.network=traefik_proxy"
-      - "traefik.backend=pilgrims-server"
-      - "traefik.frontend.rule=Host:pilgrims.localhost;PathPrefix:/api/"
+      - 'traefik.port=3000'
+      - 'traefik.enable=true'
+      - 'traefik.docker.network=traefik_proxy'
+      - 'traefik.backend=pilgrims-server'
+      - 'traefik.frontend.rule=Host:pilgrims-server.localhost'
     networks:
       - traefik_proxy
-
 
 networks:
   traefik_proxy:
