@@ -2,7 +2,7 @@
   "name": "pilgrims-shared",
   "version": "1.0.0",
   "description": "",
-  "main": "lib/shared.ts",
+  "main": "lib/shared.js",
   "scripts": {
     "build": "tsc",
     "test": "jest"

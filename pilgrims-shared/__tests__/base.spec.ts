@@ -1,8 +1,8 @@
 
-import { World, Player, Result } from '../lib/Shared';
-import { subtractResources, resourcesAreNonNegative, purchase } from '../lib/Rules';
+import { World, Player, Result, subtractResources, resourcesAreNonNegative, 
+    purchase } from '../lib/Shared';
 
-describe('Resouces sunbtraction', () => {
+describe('Resource subtraction', () => {
     test('Check that subtract resources can subtract wood', () => {
         const res = { wood: 5};
         const subRes = { wood: 3};
