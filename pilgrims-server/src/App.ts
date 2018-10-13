@@ -41,32 +41,32 @@ io.on('connection', (socket: SocketIO.Socket) => {
       if (!game || !game.id) return;
       console.info(`'game_start' with game:`);
       console.info(game);
-      io.of(`/${game.id}`)
-        .on('connection', (socket) => {
-          socket
-            .on('join', (player: Player) => {
-              if (!player) console.info(`'join' with no player.`);
-              if (!player || !player.id) return;
-              console.info(`'join' on game ${game.id} by ${player.id}.`);
-              const result = addPlayer(game.id, player);
-              socket.emit('joined', result);
-            })
-            .on('turn_end', (turn: Turn) => {
-              if (!turn) console.info(`'turn_end' with empty turn.`);
-              if (!turn || !turn.player || !turn.actions) return;
-              console.info(`'turn_end' on game ${game.id} with turn.`);
-              console.info(turn);
-              applyTurn(game.id, turn).then((res) => socket.emit('apply_turn', res));
-            })
-            .on('chat', (chatMessage: ChatMessage) => {
-              if (!chatMessage) console.info(`'chat' with empty message.`);
-              if (!chatMessage || !chatMessage.user || !chatMessage.text) return;
-              console.info(
-                `'chat' on game ${game.id} by ${chatMessage.user} with text ${chatMessage.text}.`,
-              );
-              socket.emit('chat', chatMessage);
-            });
+      const namespace = io.of(`/${game.id}`);
+      namespace.on('connection', (socket) => {
+        socket
+          .on('join', (player: Player) => {
+            if (!player) console.info(`'join' with no player.`);
+            if (!player || !player.id) return;
+            console.info(`'join' on game ${game.id} by ${player.id}.`);
+            const result = addPlayer(game.id, player);
+            namespace.emit('joined', result);
+          })
+          .on('turn_end', (turn: Turn) => {
+            if (!turn) console.info(`'turn_end' with empty turn.`);
+            if (!turn || !turn.player || !turn.actions) return;
+            console.info(`'turn_end' on game ${game.id} with turn.`);
+            console.info(turn);
+            applyTurn(game.id, turn).then((res) => namespace.emit('apply_turn', res));
+          })
+          .on('chat', (chatMessage: ChatMessage) => {
+            if (!chatMessage) console.info(`'chat' with empty message.`);
+            if (!chatMessage || !chatMessage.user || !chatMessage.text) return;
+            console.info(
+              `'chat' on game ${game.id} by ${chatMessage.user} with text ${chatMessage.text}.`,
+            );
+            namespace.emit('chat', chatMessage);
           });
+        });
     } catch (e) {
       console.error(e);
     }
