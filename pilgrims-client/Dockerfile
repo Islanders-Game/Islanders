@@ -12,7 +12,7 @@ WORKDIR /app
 COPY --from=library /app /app/pilgrims-shared
 
 # App dependencies
-WORKDIR /app/server
+WORKDIR /app/client
 
 # Install Dependencies
 COPY ./package*.json ./
@@ -25,4 +25,4 @@ RUN npm run build
 # Runtime image
 FROM nginx:alpine
 COPY default.conf /etc/nginx/conf.d/default.conf
-COPY --from=builder /app/dist /usr/share/nginx/html/
+COPY --from=builder /app/client/dist /usr/share/nginx/html/

@@ -17,4 +17,4 @@ RUN npm run build
 # Run
 ENV PORT 3001
 EXPOSE 3001
-CMD ["node", "dist/"]
+CMD ["node", "start"]
