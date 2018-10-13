@@ -1,10 +1,19 @@
-#Build image
+# Library
+FROM pilgrims/pilgrims-shared as library
+
+# Builder
 FROM node:alpine as builder
 # Global dependencies
 RUN apk update && apk upgrade && \
     apk add --no-cache bash git openssh
 
 WORKDIR /app
+# Copy over library
+COPY --from=library /app /app/pilgrims-shared
+
+# App dependencies
+WORKDIR /app/server
+
 # Install Dependencies
 COPY ./package*.json ./
 RUN npm install
