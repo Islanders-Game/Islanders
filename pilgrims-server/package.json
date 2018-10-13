@@ -22,6 +22,8 @@
     "@types/socket.io": "^1.4.38",
     "body-parser": "^1.18.3",
     "express": "^4.16.4",
+    "mongodb": "^3.1.8",
+    "monk": "^6.0.6",
     "pilgrims-shared": "file:../pilgrims-shared",
     "socket.io": "^2.1.1"
   },
