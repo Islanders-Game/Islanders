@@ -1,10 +1,12 @@
-FROM node:alpine
+FROM pilgrims/pilgrims-shared as library
 
-# Global dependencies
-RUN npm install -g tsc \
-    && npm install -g typescript
+FROM node:alpine
+WORKDIR /app
+# Copy over library
+COPY --from=library /app /app/pilgrims-shared
 
 # App dependencies
+WORKDIR /app/server
 COPY package.json ./
 RUN npm install
 
