@@ -6,7 +6,7 @@ node('docker&&linux') {
         checkout scm
     }
     stage('Website Build') {
-        def shared = docker build('pilgrims/pilgrims-shared', './pilgrims-shared');
+        def shared = docker.build('pilgrims/pilgrims-shared', './pilgrims-shared')
         def client = docker.build('pilgrims/pilgrims-client', './pilgrims-client')
         def server = docker.build('pilgrims/pilgrims-server', './pilgrims-server')
     }
