@@ -91,7 +91,9 @@ export default class Map extends Vue {
       // Tiles
       const ss = this.getSprites();
       let i = Math.floor(Math.random() * (ss.length - 1));
-      if (hex.distance(center) >= 18) { i = ss.length - 1; }
+      if (hex.distance(center) >= 12) {
+        i = ss.length - 1;
+      } // ocean
       const s = ss[i];
       s.position.x = firstCorner.x - this.tileWidth - lineWidth / 2;
       s.position.y = firstCorner.y - this.tileHeight / 2;
@@ -103,11 +105,11 @@ export default class Map extends Vue {
         const piece = isHouse
           ? Sprite.fromImage(`./img/pieces/house.png`)
           : Sprite.fromImage(`./img/pieces/city.png`);
-        piece.tint = Math.random() * 0xFFFFFF;
+        piece.tint = Math.random() * 0xffffff;
         piece.width = isHouse ? 80 : 128;
         piece.height = isHouse ? 80 : 128;
-        piece.position.x = firstCorner.x - (piece.width / 2);
-        piece.position.y = firstCorner.y - (piece.height / 2);
+        piece.position.x = firstCorner.x - piece.width / 2;
+        piece.position.y = firstCorner.y - piece.height / 2;
         pieceContainer.addChild(piece);
       }
 
