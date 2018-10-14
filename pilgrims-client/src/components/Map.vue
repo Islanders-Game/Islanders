@@ -64,7 +64,7 @@ export default class Map extends Vue {
       height: this.height,
       width: this.width,
     });
-    
+
     this.viewport = new Viewport({
       screenWidth: this.width,
       screenHeight: this.width,
@@ -81,14 +81,14 @@ export default class Map extends Vue {
 
     const center = Hex(0, 0);
     const lineGraphics = new Graphics();
-    const tileContainer = new PIXI.Container;
-    const pieceContainer = new PIXI.Container;
+    const tileContainer = new PIXI.Container();
+    const pieceContainer = new PIXI.Container();
     Grid.hexagon({ radius: 12 }).forEach((hex) => {
       const point = hex.toPoint();
       const corners = hex.corners().map((corner) => corner.add(point));
       const [firstCorner, ...otherCorners] = corners;
-      
-      //Tiles
+
+      // Tiles
       const ss = this.getSprites();
       let i = Math.floor(Math.random() * (ss.length - 1));
       if (hex.distance(center) >= 18) { i = ss.length - 1; }
@@ -96,26 +96,25 @@ export default class Map extends Vue {
       s.position.x = firstCorner.x - this.tileWidth - lineWidth / 2;
       s.position.y = firstCorner.y - this.tileHeight / 2;
       tileContainer.addChild(s);
-      //
 
-      //Game pieces
+      // Game pieces
       if (Math.random() <= 0.2) {
-        const piece = Math.random() >= 0.5 ? Sprite.fromImage(`./img/pieces/house.png`) : Sprite.fromImage(`./img/pieces/city.png`);
+        const piece = Math.random() >= 0.5
+          ? Sprite.fromImage(`./img/pieces/house-extrafat.png`)
+          : Sprite.fromImage(`./img/pieces/city-extrafat.png`);
         piece.tint = Math.random() * 0xFFFFFF;
-        piece.width = 128;
-        piece.height = 128;
-        piece.position.x = firstCorner.x - (piece.width/2);
-        piece.position.y = firstCorner.y - (piece.height/2);
+        piece.width = 80;
+        piece.height = 80;
+        piece.position.x = firstCorner.x - (piece.width / 2);
+        piece.position.y = firstCorner.y - (piece.height / 2);
         pieceContainer.addChild(piece);
       }
-      //
 
-      //Hex lines
+      // Hex lines
       lineGraphics.lineStyle(lineWidth, 0xffffff);
       lineGraphics.moveTo(firstCorner.x, firstCorner.y);
       otherCorners.forEach(({ x, y }) => lineGraphics.lineTo(x, y));
       lineGraphics.lineTo(firstCorner.x, firstCorner.y);
-      //
     });
 
     const tileGraphics = new Graphics();
