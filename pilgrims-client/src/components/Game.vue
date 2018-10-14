@@ -2,10 +2,10 @@
   <v-container fluid id="Game">
     <v-layout column fill-height>
       <v-layout row class="main-area">
-        <v-flex xs9>
+        <v-flex xs10>
           <Map/>
         </v-flex>
-        <v-flex xs3>
+        <v-flex xs2>
           <Overview/>
         </v-flex>
       </v-layout>

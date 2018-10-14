@@ -9,7 +9,7 @@
                 <v-spacer></v-spacer>
                 </v-toolbar>
                 <v-card-text>
-                    <v-text-field
+                    <v-text-field autofocus
                       ref="playerName"
                       prepend-icon="person" 
                       name="playerName" 
