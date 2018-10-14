@@ -7,7 +7,7 @@
               <v-avatar color="grey lighten-4">
                 <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
               </v-avatar>
-              <h1 style="padding:10px">Player</h1>
+              <h1 style="padding:10px">{{playerName}}</h1>
             </v-layout>
           </v-flex>
           <v-flex xs6>
@@ -62,8 +62,11 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component
 export default class Player extends Vue {
-  @Prop()
-  private msg!: string;
+  public playerName: string = undefined;
+  public constructor() {
+    super();
+    this.playerName = this.$store.getters['game/getPlayerName'];
+  }
 }
 </script>
 
