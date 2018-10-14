@@ -99,12 +99,13 @@ export default class Map extends Vue {
 
       // Game pieces
       if (Math.random() <= 0.2) {
-        const piece = Math.random() >= 0.5
-          ? Sprite.fromImage(`./img/pieces/house-extrafat.png`)
-          : Sprite.fromImage(`./img/pieces/city-extrafat.png`);
+        const isHouse = Math.random() >= 0.5;
+        const piece = isHouse
+          ? Sprite.fromImage(`./img/pieces/house.png`)
+          : Sprite.fromImage(`./img/pieces/city.png`);
         piece.tint = Math.random() * 0xFFFFFF;
-        piece.width = 80;
-        piece.height = 80;
+        piece.width = isHouse ? 80 : 128;
+        piece.height = isHouse ? 80 : 128;
         piece.position.x = firstCorner.x - (piece.width / 2);
         piece.position.y = firstCorner.y - (piece.height / 2);
         pieceContainer.addChild(piece);
