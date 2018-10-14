@@ -25,6 +25,7 @@ export default class App extends Vue {
 
   created() {
     this.$on('gameChoosen', (gameId) => {
+      this.$store.commit('game/setGameId', gameId);
       this.showGame = true;
     });
   }

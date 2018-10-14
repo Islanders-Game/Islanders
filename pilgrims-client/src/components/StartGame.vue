@@ -31,6 +31,8 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import io from 'socket.io-client';
+import { setTimeout } from 'timers';
 
 @Component({
   components: {},
@@ -39,17 +41,28 @@ export default class StartGame extends Vue {
   public error: boolean = false;
   public errorMessage: string = 'Could not create game';
 
-  public gameId: string = '';
+  public gameId: string = 'testtest';
   get gameIdEmpty(): boolean {
     return !this.gameId;
   }
 
   public createGame() {
-    this.error = true;
-    this.$parent.$parent.$emit('gameChoosen', this.gameId);
+    if (!this.gameId) {
+      this.error = true;
+      this.errorMessage = 'You need to enter a gameId';
+    }
+    const socket = io.connect('localhost:3000');
+    socket.emit('game_start', `{ "id": "${this.gameId}" }`);
+    socket.on('created', () => {
+      socket.close();
+      this.$parent.$parent.$emit('gameChoosen', this.gameId);
+    });
   }
   public joinGame() {
-    this.error = false;
+    if (!this.gameId) {
+      this.error = true;
+      this.errorMessage = 'You need to enter a gameId';
+    }
     this.$parent.$parent.$emit('gameChoosen', this.gameId);
   }
 }

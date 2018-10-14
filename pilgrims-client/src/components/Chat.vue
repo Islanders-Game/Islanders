@@ -42,8 +42,8 @@ export default class Chat extends Vue {
     super();
     this.$store.dispatch('chat/getMessages');
 
-    io.connect('localhost:3000').emit('game_start', '{ "id": "testtest" }');
-    this.socket = io.connect('localhost:3000/testtest');
+    const gameId = this.$store.getters['game/getGameId'];
+    this.socket = io.connect(`localhost:3000/${gameId}`);
     this.socket.on('chat', (newMessage: ChatMessage) => {
       this.$store.dispatch('chat/addMessage', newMessage);
     });

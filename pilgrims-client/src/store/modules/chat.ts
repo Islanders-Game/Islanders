@@ -8,7 +8,7 @@ export class State {
 }
 
 // Synchrounous getters: GetterTree<local state, root state>
-const getters: GetterTree<State, State> = {
+const getters: GetterTree<State, any> = {
   getMessages(state: State): ChatMessage[] {
     return state.messages;
   },

@@ -40,6 +40,7 @@ io.on('connection', (socket) => {
       if (!game || !game.id) return;
       console.info(`'game_start' with game:`);
       console.info(game);
+      socket.emit('created');
       io.of(`/${game.id}`).on('connection', (socket) => {
         socket.on('join', (player: Player) => {
           if (!player) console.info(`'join' with no player.`);
