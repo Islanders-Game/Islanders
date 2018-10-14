@@ -58,6 +58,7 @@ export default class Map extends Vue {
     const Grid = defineGrid(Hex);
     this.app = new Application({
       autoResize: true,
+      resolution: 2,
       transparent: true,
       antialias: true,
       height: this.height,
@@ -87,16 +88,17 @@ export default class Map extends Vue {
       const corners = hex.corners().map((corner) => corner.add(point));
       const [firstCorner, ...otherCorners] = corners;
       
+      //Tiles
       const ss = this.getSprites();
       let i = Math.floor(Math.random() * (ss.length - 1));
-      if (hex.distance(center) >= 18) {
-        i = ss.length - 1;
-      }
+      if (hex.distance(center) >= 18) { i = ss.length - 1; }
       const s = ss[i];
       s.position.x = firstCorner.x - this.tileWidth - lineWidth / 2;
       s.position.y = firstCorner.y - this.tileHeight / 2;
       tileContainer.addChild(s);
+      //
 
+      //Game pieces
       if (Math.random() <= 0.2) {
         const piece = Math.random() >= 0.5 ? Sprite.fromImage(`./img/pieces/house.png`) : Sprite.fromImage(`./img/pieces/city.png`);
         piece.tint = Math.random() * 0xFFFFFF;
@@ -106,11 +108,14 @@ export default class Map extends Vue {
         piece.position.y = firstCorner.y - (piece.height/2);
         pieceContainer.addChild(piece);
       }
+      //
 
+      //Hex lines
       lineGraphics.lineStyle(lineWidth, 0xffffff);
       lineGraphics.moveTo(firstCorner.x, firstCorner.y);
       otherCorners.forEach(({ x, y }) => lineGraphics.lineTo(x, y));
       lineGraphics.lineTo(firstCorner.x, firstCorner.y);
+      //
     });
 
     const tileGraphics = new Graphics();
