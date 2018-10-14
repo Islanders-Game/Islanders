@@ -1,7 +1,7 @@
 <template>
   <v-container fluid id="Chat">
     <v-layout column fill-height justify-end align-content-space-between>
-        <v-list two-line style="overflow-y: scroll">
+        <v-list two-line class="message-list">
             <template v-for="(item, index) in messages">
                 <v-list-tile :key="index" avatar>
                     <v-list-tile-avatar>
@@ -67,5 +67,10 @@ export default class Chat extends Vue {
 <style lang="scss" scoped>
 #Chat {
   padding: 0px;
+}
+
+.message-list {
+  height: 73vh;
+  overflow-y: auto;
 }
 </style>
