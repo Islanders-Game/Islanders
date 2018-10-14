@@ -9,26 +9,23 @@
                 <v-spacer></v-spacer>
                 </v-toolbar>
                 <v-card-text>
-                    <v-form>
-                        <v-text-field
-                            ref="playerName"
-                            prepend-icon="person" 
-                            name="playerName" 
-                            label="Enter a playername" 
-                            type="text" 
-                            v-model="playerName" 
-                            :rules="rules"
-                            counter="25">
-                            </v-text-field>
-                    </v-form>
+                    <v-text-field
+                      ref="playerName"
+                      prepend-icon="person" 
+                      name="playerName" 
+                      label="Enter a playername" 
+                      type="text" 
+                      v-model="playerName" 
+                      :rules="rules"
+                      counter="25">
+                      </v-text-field>
                     <transition name="fade">
                         <div v-if="playerName !== '' && playerName.length >= 3 && playerName.length <= 25">
                             <v-btn color="primary" @click="createGame">Create Game</v-btn>
                             <v-btn color="primary" disabled v-if="gameIdEmpty">Join Game</v-btn>
                             <v-btn color="primary" v-else @click="joinGame">Join Game</v-btn>
-                            <v-form>
-                                <v-text-field prepend-icon="star" name="gameid" label="To join a game, enter a game Id" type="text" v-model="gameId"></v-text-field>
-                            </v-form>
+                            <v-text-field prepend-icon="star" name="gameid" label="To join a game, enter a game Id" type="text" v-model="gameId"></v-text-field>
+
                             <v-alert :value="error" type="error" transition="scale-transition">
                                 {{errorMessage}}
                             </v-alert>
