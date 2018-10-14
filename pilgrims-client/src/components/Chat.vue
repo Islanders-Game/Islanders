@@ -37,13 +37,17 @@ import io from 'socket.io-client';
 export default class Chat extends Vue {
   public message: string = '';
   private socket: SocketIOClient.Socket;
+  private playerName: string;
+  private gameId: string;
 
   constructor() {
     super();
     this.$store.dispatch('chat/getMessages');
+    this.playerName = this.$store.getters['game/getPlayerName'];
+    this.gameId = this.$store.getters['game/getGameId'];
 
-    const gameId = this.$store.getters['game/getGameId'];
-    this.socket = io.connect(`localhost:3000/${gameId}`);
+    // setup socket
+    this.socket = io.connect(`localhost:3000/${this.gameId}`);
     this.socket.on('chat', (newMessage: ChatMessage) => {
       this.$store.dispatch('chat/addMessage', newMessage);
     });
@@ -54,8 +58,7 @@ export default class Chat extends Vue {
   }
 
   public addMessage(): void {
-    console.log(this.socket.connected);
-    this.socket.emit('chat', { text: this.message, user: 'Player1' });
+    this.socket.emit('chat', { text: this.message, user: this.playerName });
     this.message = '';
   }
 }

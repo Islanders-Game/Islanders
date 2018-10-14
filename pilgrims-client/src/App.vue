@@ -23,9 +23,10 @@ import StartGame from './components/StartGame.vue';
 export default class App extends Vue {
   public showGame: boolean = false;
 
-  created() {
-    this.$on('gameChoosen', (gameId) => {
+  public created() {
+    this.$on('gameChoosen', ({ gameId, playerName }) => {
       this.$store.commit('game/setGameId', gameId);
+      this.$store.commit('game/setPlayerName', playerName);
       this.showGame = true;
     });
   }

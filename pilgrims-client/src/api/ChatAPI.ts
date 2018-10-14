@@ -1,11 +1,7 @@
 import { ChatMessage } from '../../../pilgrims-shared/dist/Shared';
 
 // in memory datastore for now.
-const MESSAGES: ChatMessage[] = [
-  { text: 'hej med dig', user: 'Player1' },
-  { text: 'hej med dig selv', user: 'Player2' },
-  { text: 'hej med dig selv selv', user: 'Player1' },
-];
+const MESSAGES: ChatMessage[] = [];
 
 export default {
   async getMessages(): Promise<ChatMessage[]> {

@@ -9,15 +9,31 @@
                 <v-spacer></v-spacer>
                 </v-toolbar>
                 <v-card-text>
-                    <v-btn color="primary" @click="createGame">Create Game</v-btn>
-                    <v-btn color="primary" disabled v-if="gameIdEmpty">Join Game</v-btn>
-                    <v-btn color="primary" v-else @click="joinGame">Join Game</v-btn>
                     <v-form>
-                        <v-text-field prepend-icon="star" name="gameid" label="To join a game, enter a game Id" type="text" v-model="gameId"></v-text-field>
+                        <v-text-field
+                            ref="playerName"
+                            prepend-icon="person" 
+                            name="playerName" 
+                            label="Enter a playername" 
+                            type="text" 
+                            v-model="playerName" 
+                            :rules="rules"
+                            counter="25">
+                            </v-text-field>
                     </v-form>
-                    <v-alert :value="error" type="error" transition="scale-transition">
-                        {{errorMessage}}
-                    </v-alert>
+                    <transition name="fade">
+                        <div v-if="playerName !== '' && playerName.length >= 3 && playerName.length <= 25">
+                            <v-btn color="primary" @click="createGame">Create Game</v-btn>
+                            <v-btn color="primary" disabled v-if="gameIdEmpty">Join Game</v-btn>
+                            <v-btn color="primary" v-else @click="joinGame">Join Game</v-btn>
+                            <v-form>
+                                <v-text-field prepend-icon="star" name="gameid" label="To join a game, enter a game Id" type="text" v-model="gameId"></v-text-field>
+                            </v-form>
+                            <v-alert :value="error" type="error" transition="scale-transition">
+                                {{errorMessage}}
+                            </v-alert>
+                        </div>
+                    </transition>
                 </v-card-text>
                 <v-card-actions>
                 <v-spacer></v-spacer>
@@ -32,7 +48,6 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import io from 'socket.io-client';
-import { setTimeout } from 'timers';
 
 @Component({
   components: {},
@@ -40,30 +55,51 @@ import { setTimeout } from 'timers';
 export default class StartGame extends Vue {
   public error: boolean = false;
   public errorMessage: string = 'Could not create game';
+  public rules = [(v) => v.length <= 25 || 'Max 25 characters'];
 
+  public playerName: string = '';
   public gameId: string = 'testtest';
   get gameIdEmpty(): boolean {
     return !this.gameId;
   }
 
   public createGame() {
-    if (!this.gameId) {
-      this.error = true;
-      this.errorMessage = 'You need to enter a gameId';
+    if (!this.validate()) {
+      return;
     }
     const socket = io.connect('localhost:3000');
     socket.emit('game_start', `{ "id": "${this.gameId}" }`);
     socket.on('created', () => {
       socket.close();
-      this.$parent.$parent.$emit('gameChoosen', this.gameId);
+      this.$parent.$parent.$emit('gameChoosen', {
+        gameId: this.gameId,
+        playerName: this.playerName,
+      });
     });
   }
+
   public joinGame() {
+    if (!this.validate()) {
+      return;
+    }
+    this.$parent.$parent.$emit('gameChoosen', {
+      gameId: this.gameId,
+      playerName: this.playerName,
+    });
+  }
+
+  private validate(): boolean {
     if (!this.gameId) {
       this.error = true;
       this.errorMessage = 'You need to enter a gameId';
+      return false;
     }
-    this.$parent.$parent.$emit('gameChoosen', this.gameId);
+    if (!this.playerName || this.playerName.length >= 25) {
+      this.error = true;
+      this.errorMessage = 'You need to enter a valid player name';
+      return false;
+    }
+    return true;
   }
 }
 </script>
@@ -71,5 +107,13 @@ export default class StartGame extends Vue {
 <style lang="scss" scoped>
 #StartGame {
   padding: 0px;
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 1s;
+}
+.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+  opacity: 0;
+  transition: opacity 0.3s;
 }
 </style>
