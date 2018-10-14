@@ -53,13 +53,17 @@ io.on('connection', (socket) => {
           if (!turn || !turn.player || !turn.actions) return;
           console.info(`'turn_end' on game ${game.id} with turn.`);
           console.info(turn);
-          applyTurn(game.id, turn).then((res) => io.of(`/${game.id}`).emit('apply_turn', res));
+          applyTurn(game.id, turn).then((res) =>
+            io.of(`/${game.id}`).emit('apply_turn', res),
+          );
         });
         socket.on('chat', (chatMessage: ChatMessage) => {
           if (!chatMessage) console.info(`'chat' with empty message.`);
           if (!chatMessage || !chatMessage.user || !chatMessage.text) return;
           console.info(
-            `'chat' on game ${game.id} by ${chatMessage.user} with text ${chatMessage.text}.`,
+            `'chat' on game ${game.id} by ${chatMessage.user} with text ${
+              chatMessage.text
+            }.`,
           );
           io.of(`/${game.id}`).emit('chat', chatMessage);
         });

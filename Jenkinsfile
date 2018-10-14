@@ -6,12 +6,12 @@ node('docker&&linux') {
         checkout scm
     }
     stage('Website Build') {
+        def shared = docker build('pilgrims/pilgrims-shared', './pilgrims-shared');
         def client = docker.build('pilgrims/pilgrims-client', './pilgrims-client')
         def server = docker.build('pilgrims/pilgrims-server', './pilgrims-server')
     }
     stage('Tests') {
         sh """
-            docker build -t pilgrims/pilgrims-shared ./pilgrims-shared
             docker run --rm pilgrims/pilgrims-shared
         """
     }
