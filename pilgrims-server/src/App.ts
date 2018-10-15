@@ -55,6 +55,7 @@ io.on('connection', (socket) => {
     })
   });
   socket.on('turn_end', (turn: TurnEnd) => {
+    if(!(turn.gameID in socket.rooms)) { console.info(`'turn_end' from player not in game.`); return; };
     if (!turn) console.info(`'turn_end' with empty turn.`);
     if (!turn || !turn.turn.player || !turn.turn.actions) return;
     console.info(`'turn_end' on game ${turn.gameID} with turn.`);
@@ -64,6 +65,7 @@ io.on('connection', (socket) => {
     });
   });
   socket.on('chat', (chat: Chat) => {
+    if(!(chat.gameID in socket.rooms)) { console.info(`'chat' from player not in game.`); return; };
     if (!chat) console.info(`'chat' with empty message.`);
     if (!chat || !chat.message.user || !chat.message.text) return;
     console.info(
@@ -74,6 +76,7 @@ io.on('connection', (socket) => {
       io.sockets.in(chat.gameID).emit('chat', chat.message);
   });
   socket.on('init_world', (init: Init) => {
+    if(!(init.gameID in socket.rooms)) { console.info(`'init_world' from player not in game.`); return; };
     if (!init) console.info(`'init_world' with empty message.`);
     if (!init || !init.gameID || !init.world) return;
     const db = monk('localhost:27017/pilgrims');
