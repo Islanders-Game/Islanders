@@ -19,6 +19,7 @@ import { Action } from './Action';
 import { Rules, purchase, Rule, ruleReducer, rules } from './Rules';
 import { ChatMessage } from './ChatMessage';
 import { Result, Failure, Success, success, fail } from './Result';
+import { Init, Chat, Join, TurnEnd } from './SocketTypes';
 
 export {
   Action,
@@ -48,4 +49,8 @@ export {
   rules,
   subtractResources,
   resourcesAreNonNegative,
+  Init, 
+  Chat, 
+  Join, 
+  TurnEnd
 };

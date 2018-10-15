@@ -6,4 +6,5 @@ export interface World {
   players: Player[];
   thief?: Thief;
   map: Tile[];
+  started: boolean;
 }

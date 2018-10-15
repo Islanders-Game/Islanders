@@ -3,12 +3,24 @@ import { House } from './Entities/House';
 import { City } from './Entities/City';
 import { Road } from './Entities/Road';
 import { Ship } from './Entities/Ship';
+import { v4 } from 'uuid';
 
-export interface Player {
-  id: number;
-  resources: Resources;
-  houses: House[];
-  cities: City[];
-  roads: Road[];
-  ships: Ship[];
+export class Player {
+  public id: string;
+  public name: string;
+  public resources: Resources;
+  public houses: House[];
+  public cities: City[];
+  public roads: Road[];
+  public ships: Ship[];
+
+  constructor(name: string) {
+    this.id = v4();
+    this.name = name;
+    this.resources = {};
+    this.houses = [];
+    this.cities = [];
+    this.roads = [];
+    this.ships = [];
+  }
 }
