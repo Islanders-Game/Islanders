@@ -19,7 +19,6 @@ import {
   rules,
   ruleReducer,
 } from '../../pilgrims-shared/dist/Shared';
-import uuid = require('uuid');
 
 const app = express();
 const server = http.createServer(app);
