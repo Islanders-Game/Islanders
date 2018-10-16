@@ -1,5 +1,5 @@
 import Vue from 'vue';
-import Vuex from 'vuex';
+import Vuex, { GetterTree, MutationTree } from 'vuex';
 import chat from './modules/chat';
 import game from './modules/game';
 import io from 'socket.io-client';
@@ -8,21 +8,47 @@ import Axios from 'axios';
 Vue.use(Vuex);
 
 const debug = process.env.NODE_ENV !== 'production';
+export let Socket: SocketIOClient.Socket;
 
-const actionSet: ActionTree<any, any> = {
+export class State {
+  // public socket: SocketIOClient.Socket = undefined;
+}
+
+const getterTree: GetterTree<State, any> = {
+  // getSocket(state: State): SocketIOClient.Socket {
+  //   return state.socket;
+  // },
+};
+
+const mutationTree: MutationTree<State> = {
+  // setSocket(state: State, socket: SocketIOClient.Socket) {
+  //   state.socket = socket;
+  // },
+};
+
+const actionTree: ActionTree<any, any> = {
   async createGame({ commit }: ActionContext<any, any>, playerName: string) {
-    const result = await Axios.get('http://localhost:3000/newgame');
     // todo use result to check for errors.
-    const { data } = await result;
+    const { data } = await (await Axios.get('http://localhost:3000/newgame'));
     const gameId = data;
-    SocketWrapper.connectSocket(`localhost:3000/${gameId}`);
-    SocketWrapper.getSocket().emit('join', playerName);
+    console.log(gameId);
+
+    const socket = io.connect(`localhost:3000/${gameId}`);
+    socket.on('created', () => {
+      socket.emit('join', playerName);
+    });
+    Socket = socket;
+
     commit('game/setGameId', gameId);
     commit('game/setPlayerName', playerName);
   },
   joinGame({ commit }: ActionContext<any, any>, gameStartInfo: { gameId: string, playerName: string }) {
-    SocketWrapper.connectSocket(`localhost:3000/${gameStartInfo.gameId}`);
-    SocketWrapper.getSocket().emit('join', gameStartInfo.playerName);
+    const socket = io.connect(`localhost:3000/${gameStartInfo.gameId}`);
+    socket.on('created', () => {
+      socket.emit('join', gameStartInfo.playerName);
+    });
+    Socket = socket;
+
     commit('game/setGameId', gameStartInfo.gameId);
     commit('game/setPlayerName', gameStartInfo.playerName);
   },
@@ -34,29 +60,9 @@ export default new Vuex.Store({
     chat,
     game,
   },
-  actions: actionSet,
+  state: new State(),
+  getters: getterTree,
+  mutations: mutationTree,
+  actions: actionTree,
 });
 
-export interface ISocketWrapper {
-  socket: SocketIOClient.Socket;
-  connected: boolean;
-  getSocket: () => SocketIOClient.Socket;
-  connectSocket: (url: string) => void;
-}
-
-// todo move to state
-export const SocketWrapper: ISocketWrapper = {
-  socket: undefined,
-  connected : false,
-  getSocket: (): SocketIOClient.Socket => {
-    if (!SocketWrapper.connected) {
-      throw new Error('Tried to access socket before it was initialized');
-    } else {
-      return SocketWrapper.socket;
-    }
-  },
-  connectSocket: (url: string) => {
-    SocketWrapper.socket = io.connect(url);
-    SocketWrapper.connected = true;
-  },
-};
