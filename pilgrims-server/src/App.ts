@@ -1,8 +1,6 @@
 import express from 'express';
 import http from 'http';
-import bodyParser from 'body-parser';
 import socket from 'socket.io';
-import mongo from 'mongodb';
 import monk from 'monk';
 
 import {
@@ -23,7 +21,7 @@ const server = http.createServer(app);
 const io = socket.listen(server);
 const port = 3000;
 
-app.post('/newgame', async (_, res) => {
+app.get('/newgame', async (_, res) => {
   const world: World = {
     players: [],
     map: [{type: 'Desert', diceRoll: 'None' }],
@@ -37,58 +35,65 @@ app.post('/newgame', async (_, res) => {
 
 //Socket.io
 io.on('connection', (socket) => {
-  socket.on('join', (join: Join) => {
-    if (!join.name) {
-      console.info(`'join' with no player name.`);
-      return;
-    }
-    if (!join.gameID) {
-      console.info(`'join' with no game ID.`);
-      return;
-    }
-    console.info(`'join' on game ${join.gameID} by player named: ${join.name}.`);
-    const gameID = `/${join.gameID}`;
-    const namespace = io.of(gameID);
-
-    socket.on('turn_end', (turn: Turn) => {
-      if (!turn) console.info(`'turn_end' with empty turn.`);
-      if (!turn || !turn.player || !turn.actions) return;
-      console.info(`'turn_end' on game ${gameID} with turn:`);
-      console.info(turn);
-      applyTurn(gameID, turn).then((res) => {
-        namespace.emit('world', res);
-      });
-    });
-
-    socket.on('chat', (chat: ChatMessage) => {
-      if (!chat) console.info(`'chat' with empty message.`);
-      if (!chat || !chat.user || !chat.text) return;
-      console.info(
-        `'chat' on game ${gameID} by ${chat.user} with text ${
-          chat.text
-        }.`,
-      );
-      namespace.emit('chat', chat);
-    });
-
-    socket.on('init_world', (init: World) => {
-      if (!init) console.info(`'init_world' with empty message.`);
-      if (!init || !gameID) return;
-      console.info(`'init_world' on game ${gameID} with world:`);
-      console.info(init);
-      const db = monk('localhost:27017/pilgrims');
-      db.get('games').findOne({ world: init }).then(world => {
-        if (!world.started) { namespace.emit('world', init); };
-      });
-      db.close();
-    });
-
-    addPlayer(gameID, join.name).then(r => namespace.emit('world', r));
+  const gameID = socket.nsp.name.replace('/', '');
+  socket.on('join', (name: string) => {
+    const playerName = name ? name : socket.id;
+    console.info(`'join' on game ${gameID} by player named: ${playerName}.`);
+    
+    socket.on('init_world', (init: World) => initWorld(init, gameID, socket.nsp));
+    socket.on('chat', (chat: ChatMessage) => chatMessage(chat, gameID, socket.nsp));
+    socket.on('turn_end', (turn: Turn) => turnEnd(turn, gameID, socket.nsp));
+    addPlayer(gameID, playerName).then(r => socket.nsp.emit('world', r));
   });
 });
 //
 
 //Game
+const initWorld = (init: World, gameID: string, namespace: SocketIO.Namespace) => {
+  if (!init) console.info(`'init_world' with empty message.`);
+  if (!init || !gameID) return;
+  console.info(`'init_world' on game ${gameID} with world:`);
+  console.info(init);
+  const db = monk('localhost:27017/pilgrims');
+  db.get('games').findOne({ world: init }).then(world => {
+    if (!world.started) { namespace.emit('world', init); };
+  });
+  db.close();
+}
+
+const chatMessage = (chat: ChatMessage, gameID: string, namespace: SocketIO.Namespace) => {
+  if (!chat) console.info(`'chat' with empty message.`);
+  if (!chat || !chat.user || !chat.text) return;
+  console.info(
+    `'chat' on game ${gameID} by ${chat.user} with text ${
+      chat.text
+    }.`,
+  );
+  namespace.emit('chat', chat);
+}
+
+const turnEnd = (turn: Turn, gameID: string, namespace: SocketIO.Namespace) => {
+  if (!turn) console.info(`'turn_end' with empty turn.`);
+  if (!turn || !turn.player || !turn.actions) return;
+  console.info(`'turn_end' on game ${gameID} with turn:`);
+  console.info(turn);
+  applyTurn(gameID, turn).then((res) => {
+    namespace.emit('world', res);
+  });
+}
+
+async function addPlayer (gameID: string, name: string) {
+  try {
+    const result: Result<World> = await findWorld(gameID);
+    if (result.tag === 'Failure') return result;
+    const player = new Player(name);
+    const players = result.world.players.concat(player);
+    return { tag: 'Success', world: { ...result.world, players } };
+  } catch {
+    return { tag: 'Failure', reason: `Could not add player ${name}!` };
+  }
+};
+
 const applyTurn = async (id: string, turn: Turn) => {
   const toApply = mapRules(turn.actions);
   if (toApply.tag === 'Failure') return toApply;
@@ -131,18 +136,6 @@ const mapRules = (actions: Action[]): Result<Rule[]> => {
   return { tag: 'Success', world: mapped as Rule[] };
 };
 
-async function addPlayer (gameID: string, name: string) {
-  try {
-    const result: Result<World> = await findWorld(gameID);
-    if (result.tag === 'Failure') return result;
-    const player = new Player(name);
-    const players = result.world.players.concat(player);
-    return { tag: 'Success', world: { ...result.world, players } };
-  } catch {
-    return { tag: 'Failure', reason: `Could not add player ${name}!` };
-  }
-};
-
 async function findWorld(id: string): Promise<Result<World>> {
   try {
     const db = monk('localhost:27017/pilgrims');
@@ -163,7 +156,6 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
-app.use(bodyParser.json());
 server.listen(port, () =>
   console.log(`pilgrims-server listening on port ${port}!`),
 );
