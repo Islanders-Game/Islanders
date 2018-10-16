@@ -55,7 +55,7 @@ export default class StartGame extends Vue {
   public rules = [(v) => v.length <= 25 || 'Max 25 characters'];
 
   public playerName: string = '';
-  public gameId: string = 'testtest';
+  public gameId: string = '';
   get gameIdEmpty(): boolean {
     return !this.gameId;
   }
