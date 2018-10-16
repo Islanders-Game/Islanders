@@ -18,7 +18,13 @@ export default class Map extends Vue {
   private app: Application;
   private viewport: Viewport;
 
+  get world() {
+    return this.$store.getters['game/getWorld'];
+  }
+
   private mounted() {
+    this.$store.dispatch('game/bindToWorld');
+    
     this.height = this.$el.clientHeight;
     this.width = this.$el.clientWidth;
     this.DrawMap();

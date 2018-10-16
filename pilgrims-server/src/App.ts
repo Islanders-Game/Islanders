@@ -1,6 +1,7 @@
 import express from 'express';
 import http from 'http';
 import socket from 'socket.io';
+import { ObjectId } from 'mongodb';
 import monk from 'monk';
 
 import {
@@ -32,7 +33,7 @@ app.get('/newgame', async (_, res) => {
     started: false
   };
   const db = monk('localhost:27017/pilgrims');
-  const result = await db.get('games').insert({ world });
+  const result = await db.get('games').insert(world);
   const id = result._id;
   console.log('Created game with id: ' + id);
 
@@ -41,10 +42,9 @@ app.get('/newgame', async (_, res) => {
   db.close();
 });
 
-const setupSocketOnNamespace = (id: string) => {
-  const nsp = io.of(`/${id}`);
+const setupSocketOnNamespace = (gameID: string) => {
+  const nsp = io.of(`/${gameID}`);
   nsp.on('connection', (socket) => {
-    const gameID = nsp.name;
     console.log('Player connected to socket with namespace ' + gameID);
     socket.emit('created');
     socket.on('join', (name: string) => {
@@ -52,6 +52,7 @@ const setupSocketOnNamespace = (id: string) => {
       const playerName = name ? name : socket.id;
       console.info(`'join' on game ${gameID} by player named: ${playerName}.`);
       
+      socket.on('get_world', () => socket.emit('world', findWorld(gameID)));
       socket.on('init_world', (init: World) => initWorld(init, gameID, nsp));
       socket.on('chat', (chat: ChatMessage) => chatMessage(chat, gameID, nsp));
       socket.on('turn_end', (turn: Turn) => turnEnd(turn, gameID, nsp));
@@ -101,10 +102,10 @@ async function addPlayer (gameID: string, name: string) {
     const result: Result<World> = await findWorld(gameID);
     if (result.tag === 'Failure') return result;
     const player = new Player(name);
-    const players = result.world.players.concat(player);
+    const players = result.world.players.concat([player]);
     return { tag: 'Success', world: { ...result.world, players } };
-  } catch {
-    return { tag: 'Failure', reason: `Could not add player ${name}!` };
+  } catch(ex) {
+    return { tag: 'Failure', reason: `Could not add player ${name}!, due to ${ex}` };
   }
 };
 
@@ -151,16 +152,17 @@ const mapRules = (actions: Action[]): Result<Rule[]> => {
 };
 
 async function findWorld(id: string): Promise<Result<World>> {
+  const db = monk('localhost:27017/pilgrims');
   try {
-    const db = monk('localhost:27017/pilgrims');
-    const dbResult = await db.get('games').findOne(id);
+    const dbResult = await db.get('games').findOne(new ObjectId(id));
     const result = dbResult as World;
-    db.close();
     if (!(result as World))
       return { tag: 'Failure', reason: 'World could not be found!' };
     return { tag: 'Success', world: result };
   } catch {
     return { tag: 'Failure', reason: 'World could not be found!' };
+  } finally {
+    db.close();
   }
 }
 

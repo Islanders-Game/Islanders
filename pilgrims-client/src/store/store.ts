@@ -11,19 +11,12 @@ const debug = process.env.NODE_ENV !== 'production';
 export let Socket: SocketIOClient.Socket;
 
 export class State {
-  // public socket: SocketIOClient.Socket = undefined;
 }
 
 const getterTree: GetterTree<State, any> = {
-  // getSocket(state: State): SocketIOClient.Socket {
-  //   return state.socket;
-  // },
 };
 
 const mutationTree: MutationTree<State> = {
-  // setSocket(state: State, socket: SocketIOClient.Socket) {
-  //   state.socket = socket;
-  // },
 };
 
 const actionTree: ActionTree<any, any> = {
@@ -34,9 +27,7 @@ const actionTree: ActionTree<any, any> = {
     console.log(gameId);
 
     const socket = io.connect(`localhost:3000/${gameId}`);
-    socket.on('created', () => {
-      socket.emit('join', playerName);
-    });
+    socket.emit('join', playerName);
     Socket = socket;
 
     commit('game/setGameId', gameId);
@@ -44,9 +35,7 @@ const actionTree: ActionTree<any, any> = {
   },
   joinGame({ commit }: ActionContext<any, any>, gameStartInfo: { gameId: string, playerName: string }) {
     const socket = io.connect(`localhost:3000/${gameStartInfo.gameId}`);
-    socket.on('created', () => {
-      socket.emit('join', gameStartInfo.playerName);
-    });
+    socket.emit('join', gameStartInfo.playerName);
     Socket = socket;
 
     commit('game/setGameId', gameStartInfo.gameId);
