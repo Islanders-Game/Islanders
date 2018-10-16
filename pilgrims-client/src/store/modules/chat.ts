@@ -1,21 +1,20 @@
-import ChatAPI from '@/api/ChatAPI';
 import { ChatMessage } from '../../../../pilgrims-shared/dist/Shared';
 import { GetterTree, MutationTree, ActionTree, ActionContext } from 'vuex';
-
+import { Socket, State as RootState } from '../store';
 // The state
 export class State {
   public messages: ChatMessage[] = [];
 }
 
 // Synchrounous getters: GetterTree<local state, root state>
-const getters: GetterTree<State, any> = {
+const getterTree: GetterTree<State, RootState> = {
   getMessages(state: State): ChatMessage[] {
     return state.messages;
   },
 };
 
 // Synchrounous setters MutationTree<local state, root state>
-const mutations: MutationTree<State> = {
+const mutationTree: MutationTree<State> = {
   addMessage(state: State, message: ChatMessage) {
     state.messages.unshift(message);
   },
@@ -25,25 +24,26 @@ const mutations: MutationTree<State> = {
 };
 
 // Async methods
-const actions: ActionTree<State, State> = {
-  async getMessages({ commit }: ActionContext<State, State>) {
-    const messages = await ChatAPI.getMessages();
-    commit('setMessages', messages);
-    return messages;
+const actionTree: ActionTree<State, RootState> = {
+  async bindToMessages(
+    { commit, rootState }: ActionContext<State, RootState>) {
+      // Connect to socket and setup listener for listening to events.
+      Socket.on('chat', (message: ChatMessage) => {
+        commit('addMessage', message);
+      });
   },
   async addMessage(
-    { commit }: ActionContext<State, State>,
-    message: ChatMessage,
-  ) {
-    ChatAPI.addMessage(message);
-    commit('addMessage', message);
+    { rootState }: ActionContext<State, RootState>,
+    message: ChatMessage) {
+    // emit chat message to socket.
+    Socket.emit('chat', message);
   },
 };
 
 export default {
   namespaced: true,
   state: new State(),
-  getters,
-  actions,
-  mutations,
+  getters: getterTree,
+  actions: actionTree,
+  mutations: mutationTree,
 };

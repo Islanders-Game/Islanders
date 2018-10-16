@@ -16,30 +16,30 @@ import { Player } from './Player';
 export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
   BuildHouse: (
-    playerID: number,
+    playerID: string,
     coordinates: MatrixCoordinate,
   ) => (w: Result<World>) => Result<World>;
   BuildCity: (
-    playerID: number,
+    playerID: string,
     coordinates: MatrixCoordinate,
   ) => (w: Result<World>) => Result<World>;
   BuildRoad: (
-    playerID: number,
+    playerID: string,
     start: MatrixCoordinate,
     end: MatrixCoordinate,
   ) => (w: Result<World>) => Result<World>;
   MoveThief: (
-    playerID: number,
+    playerID: string,
     coordinates: HexCoordinate,
   ) => (w: Result<World>) => Result<World>;
-  BuyCard: (playerID: number) => (w: Result<World>) => Result<World>;
+  BuyCard: (playerID: string) => (w: Result<World>) => Result<World>;
   PlayCard: (
-    playerID: number,
+    playerID: string,
     card: DevelopmentCard,
   ) => (w: Result<World>) => Result<World>;
   Trade: (
-    playerID: number,
-    otherPlayerID: number,
+    playerID: string,
+    otherPlayerID: string,
     resources: Resources,
   ) => (w: Result<World>) => Result<World>;
 }
@@ -103,13 +103,13 @@ export const purchase = (cost: Resources) => (p: Result<Player>) => (
   return success({ ...r.world, players });
 };
 
-const findPlayer = (id: number) => (r: Result<World>) => {
+const findPlayer = (uuid: string) => (r: Result<World>) => {
   if (r.tag === 'Failure') {
     return r;
   }
-  const player = r.world.players.find((pl) => pl.id === id);
+  const player = r.world.players.find((pl) => pl.id === uuid);
   if (!player) {
-    return fail(`Player ${id} not found.`);
+    return fail(`Player ${uuid} not found.`);
   }
   return success(player);
 };

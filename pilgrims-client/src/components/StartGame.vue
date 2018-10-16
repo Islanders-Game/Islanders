@@ -60,29 +60,33 @@ export default class StartGame extends Vue {
     return !this.gameId;
   }
 
-  public createGame() {
+  public async createGame() {
     if (!this.validate()) {
       return;
     }
-    const socket = io.connect('localhost:3000');
-    socket.emit('game_start', `{ "id": "${this.gameId}" }`);
-    socket.on('created', () => {
-      socket.close();
-      this.$parent.$parent.$emit('gameChoosen', {
-        gameId: this.gameId,
-        playerName: this.playerName,
-      });
-    });
+
+    await this.$store.dispatch('createGame', this.playerName);
+    // todo check for createGame fail.
+    if (this.$store.getters['game/getGameId']) {
+      this.$parent.$parent.$emit('gameChoosen');
+    } else {
+      this.error = true;
+      this.errorMessage = 'An error occured while connecting to the server';
+    }
   }
 
-  public joinGame() {
+  public async joinGame() {
     if (!this.validate()) {
       return;
     }
-    this.$parent.$parent.$emit('gameChoosen', {
-      gameId: this.gameId,
-      playerName: this.playerName,
-    });
+
+    await this.$store.dispatch('joinGame', { gameId: this.gameId, playerName: this.playerName });
+    if (this.$store.getters['game/getGameId']) {
+      this.$parent.$parent.$emit('gameChoosen');
+    } else {
+      this.error = true;
+      this.errorMessage = 'An error occured while connecting to the server';
+    }
   }
 
   private validate(): boolean {

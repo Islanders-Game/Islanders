@@ -1,8 +1,6 @@
 import express from 'express';
 import http from 'http';
-import bodyParser from 'body-parser';
 import socket from 'socket.io';
-import mongo from 'mongodb';
 import monk from 'monk';
 
 import {
@@ -12,81 +10,117 @@ import {
   World,
   Action,
   Player,
-  ChatMessage,
   rules,
   ruleReducer,
+  ChatMessage,
 } from '../../pilgrims-shared/dist/Shared';
 
 const app = express();
 const server = http.createServer(app);
 const io = socket.listen(server);
 const port = 3000;
+app.use(function(req, res, next) {
+  res.header("Access-Control-Allow-Origin", "*");
+  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  next();
+});
 
-app.post('/newgame', async (req, res) => {
+app.get('/newgame', async (_, res) => {
+  const world: World = {
+    players: [],
+    map: [{type: 'Desert', diceRoll: 'None' }],
+    started: false
+  };
   const db = monk('localhost:27017/pilgrims');
-  const world = req.body;
   const result = await db.get('games').insert({ world });
-  res.send(result._id);
+  const id = result._id;
+  console.log('Created game with id: ' + id);
+
+  setupSocketOnNamespace(id);
+  res.send(id);
   db.close();
 });
 
-//Socket.io
-io.on('connection', (socket) => {
-  socket.on('game_start', (message: string) => {
-    try {
-      console.info(`'game_start' with message: "${message}".`);
-      if (!message) return;
-      const game = JSON.parse(message);
-      if (!game || !game.id) return;
-      console.info(`'game_start' with game:`);
-      console.info(game);
-      socket.emit('created');
-      io.of(`/${game.id}`).on('connection', (socket) => {
-        socket.on('join', (player: Player) => {
-          if (!player) console.info(`'join' with no player.`);
-          if (!player || !player.id) return;
-          console.info(`'join' on game ${game.id} by ${player.id}.`);
-          const result = addPlayer(game.id, player);
-          io.of(`/${game.id}`).emit('joined', result);
-        });
-        socket.on('turn_end', (turn: Turn) => {
-          if (!turn) console.info(`'turn_end' with empty turn.`);
-          if (!turn || !turn.player || !turn.actions) return;
-          console.info(`'turn_end' on game ${game.id} with turn.`);
-          console.info(turn);
-          applyTurn(game.id, turn).then((res) =>
-            io.of(`/${game.id}`).emit('apply_turn', res),
-          );
-        });
-        socket.on('chat', (chatMessage: ChatMessage) => {
-          if (!chatMessage) console.info(`'chat' with empty message.`);
-          if (!chatMessage || !chatMessage.user || !chatMessage.text) return;
-          console.info(
-            `'chat' on game ${game.id} by ${chatMessage.user} with text ${
-              chatMessage.text
-            }.`,
-          );
-          io.of(`/${game.id}`).emit('chat', chatMessage);
-        });
-      });
-    } catch (e) {
-      console.error(e);
-    }
-  });
-});
-//
+const setupSocketOnNamespace = (id: string) => {
+  const nsp = io.of(`/${id}`);
+  nsp.on('connection', (socket) => {
+    const gameID = nsp.name;
+    console.log('Player connected to socket with namespace ' + gameID);
+    socket.emit('created');
+    socket.on('join', (name: string) => {
+      socket.emit('connected');
+      const playerName = name ? name : socket.id;
+      console.info(`'join' on game ${gameID} by player named: ${playerName}.`);
+      
+      socket.on('init_world', (init: World) => initWorld(init, gameID, nsp));
+      socket.on('chat', (chat: ChatMessage) => chatMessage(chat, gameID, nsp));
+      socket.on('turn_end', (turn: Turn) => turnEnd(turn, gameID, nsp));
+      addPlayer(gameID, playerName).then(r => nsp.emit('world', r));
+    });
+  
+    setInterval(() => clearNamespaceIfEmpty(nsp, io), 18000000); // Clear every half hour. 
+  })
+}
 
 //Game
+const initWorld = (init: World, gameID: string, namespace: SocketIO.Namespace) => {
+  if (!init) console.info(`'init_world' with empty message.`);
+  if (!init || !gameID) return;
+  console.info(`'init_world' on game ${gameID} with world:`);
+  console.info(init);
+  const db = monk('localhost:27017/pilgrims');
+  db.get('games').findOne({ world: init }).then(world => {
+    if (!world.started) { namespace.emit('world', init); };
+  });
+  db.close();
+}
+
+const chatMessage = (chat: ChatMessage, gameID: string, namespace: SocketIO.Namespace) => {
+  if (!chat) console.info(`'chat' with empty message.`);
+  if (!chat || !chat.user || !chat.text) return;
+  console.info(
+    `'chat' on game ${gameID} by ${chat.user} with text ${
+      chat.text
+    }.`,
+  );
+  namespace.emit('chat', chat);
+}
+
+const turnEnd = (turn: Turn, gameID: string, namespace: SocketIO.Namespace) => {
+  if (!turn) console.info(`'turn_end' with empty turn.`);
+  if (!turn || !turn.player || !turn.actions) return;
+  console.info(`'turn_end' on game ${gameID} with turn:`);
+  console.info(turn);
+  applyTurn(gameID, turn).then((res) => {
+    namespace.emit('world', res);
+  });
+}
+
+async function addPlayer (gameID: string, name: string) {
+  try {
+    const result: Result<World> = await findWorld(gameID);
+    if (result.tag === 'Failure') return result;
+    const player = new Player(name);
+    const players = result.world.players.concat(player);
+    return { tag: 'Success', world: { ...result.world, players } };
+  } catch {
+    return { tag: 'Failure', reason: `Could not add player ${name}!` };
+  }
+};
+
 const applyTurn = async (id: string, turn: Turn) => {
   const toApply = mapRules(turn.actions);
   if (toApply.tag === 'Failure') return toApply;
-  const world = await findWorld(id);
-  const result = toApply.world.reduce(ruleReducer, world);
-  return result;
+  const result = await findWorld(id);
+  if (result.tag === 'Failure') return result;
+  if (result.world.started) return { tag: 'Failure', reason: 'Game is not started!' };
+  const apply = toApply.world.reduce(ruleReducer, result);
+  return apply;
 };
 
 const mapRules = (actions: Action[]): Result<Rule[]> => {
-  const mapped: (Rule | undefined)[] = actions.map((a) => {
+  if (!actions) return { tag: 'Failure', reason: 'No rules given!' };
+  const mapped: (Rule | string)[] = actions.map((a) => {
     if (a.buildCity)
       return rules.BuildCity(a.buildCity.playerID, a.buildCity.coordinates);
     if (a.buildHouse)
@@ -107,22 +141,13 @@ const mapRules = (actions: Action[]): Result<Rule[]> => {
         a.trade.otherPlayerID,
         a.trade.resources,
       );
-    return undefined;
+    return `Could not map Action: { ${Object.keys(a).join(', ')} }!`;
   });
-  if (mapped.some((r) => r === undefined))
-    return { tag: 'Failure', reason: 'Unknown rule' };
-  return { tag: 'Success', world: mapped as Rule[] };
-};
-
-const addPlayer = async (id: string, player: Player) => {
-  try {
-    const result: Result<World> = await findWorld(id);
-    if (result.tag === 'Failure') return result;
-    const players = result.world.players.concat(player);
-    return { tag: 'Success', world: { ...result, players } };
-  } catch {
-    return { tag: 'Failure' };
+  if (mapped.some((r) => typeof r === 'string')) {
+    const reasons = mapped.filter(r => typeof r === 'string').join(', ');
+    return { tag: 'Failure', reason: reasons };
   }
+  return { tag: 'Success', world: mapped as Rule[] };
 };
 
 async function findWorld(id: string): Promise<Result<World>> {
@@ -138,6 +163,16 @@ async function findWorld(id: string): Promise<Result<World>> {
     return { tag: 'Failure', reason: 'World could not be found!' };
   }
 }
+
+const clearNamespaceIfEmpty = (namespace: SocketIO.Namespace, server: SocketIO.Server) => {
+  const connectedSockets = Object.keys(namespace.connected);
+    if (connectedSockets.length < 0) return;
+    connectedSockets.forEach(socketId => {
+        namespace.connected[socketId].disconnect();
+    });
+    namespace.removeAllListeners();
+    delete server.nsps[namespace.name];
+}
 //
 
 //Initialize
@@ -145,7 +180,6 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
-app.use(bodyParser.json());
 server.listen(port, () =>
   console.log(`pilgrims-server listening on port ${port}!`),
 );
