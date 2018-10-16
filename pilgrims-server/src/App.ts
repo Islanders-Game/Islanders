@@ -47,38 +47,43 @@ io.on('connection', (socket) => {
       return;
     }
     console.info(`'join' on game ${join.gameID} by player named: ${join.name}.`);
-    socket.join(join.gameID);
-    addPlayer(join.gameID, join.name).then(r => {
-      io.sockets.in(join.gameID).emit('world', r);
-    })
-  });
-  socket.on('turn_end', (turn: TurnEnd) => {
-    if (!turn) console.info(`'turn_end' with empty turn.`);
-    if (!turn || !turn.turn.player || !turn.turn.actions) return;
-    console.info(`'turn_end' on game ${turn.gameID} with turn.`);
-    console.info(turn);
-    applyTurn(turn.gameID, turn.turn).then((res) => {
-      io.sockets.in(turn.gameID).emit('world', res);
+    const gameID = `/${join.gameID}`;
+    const namespace = io.of(gameID);
+
+    socket.on('turn_end', (turn: Turn) => {
+      if (!turn) console.info(`'turn_end' with empty turn.`);
+      if (!turn || !turn.player || !turn.actions) return;
+      console.info(`'turn_end' on game ${gameID} with turn:`);
+      console.info(turn);
+      applyTurn(gameID, turn).then((res) => {
+        namespace.emit('world', res);
+      });
     });
-  });
-  socket.on('chat', (chat: Chat) => {
-    if (!chat) console.info(`'chat' with empty message.`);
-    if (!chat || !chat.message.user || !chat.message.text) return;
-    console.info(
-      `'chat' on game ${chat.gameID} by ${chat.message.user} with text ${
-        chat.message.text
-      }.`,
-    );
-      io.sockets.in(chat.gameID).emit('chat', chat.message);
-  });
-  socket.on('init_world', (init: Init) => {
-    if (!init) console.info(`'init_world' with empty message.`);
-    if (!init || !init.gameID || !init.world) return;
-    const db = monk('localhost:27017/pilgrims');
-    db.get('games').findOne({ world: init.world }).then(world => {
-      if (!world.started) { io.sockets.in(init.gameID).emit('world', init.world); };
+
+    socket.on('chat', (chat: ChatMessage) => {
+      if (!chat) console.info(`'chat' with empty message.`);
+      if (!chat || !chat.user || !chat.text) return;
+      console.info(
+        `'chat' on game ${gameID} by ${chat.user} with text ${
+          chat.text
+        }.`,
+      );
+      namespace.emit('chat', chat);
     });
-    db.close();
+
+    socket.on('init_world', (init: World) => {
+      if (!init) console.info(`'init_world' with empty message.`);
+      if (!init || !gameID) return;
+      console.info(`'init_world' on game ${gameID} with world:`);
+      console.info(init);
+      const db = monk('localhost:27017/pilgrims');
+      db.get('games').findOne({ world: init }).then(world => {
+        if (!world.started) { namespace.emit('world', init); };
+      });
+      db.close();
+    });
+
+    addPlayer(gameID, join.name).then(r => namespace.emit('world', r));
   });
 });
 //
@@ -95,7 +100,8 @@ const applyTurn = async (id: string, turn: Turn) => {
 };
 
 const mapRules = (actions: Action[]): Result<Rule[]> => {
-  const mapped: (Rule | undefined)[] = actions.map((a) => {
+  if (!actions) return { tag: 'Failure', reason: 'No rules given!' };
+  const mapped: (Rule | string)[] = actions.map((a) => {
     if (a.buildCity)
       return rules.BuildCity(a.buildCity.playerID, a.buildCity.coordinates);
     if (a.buildHouse)
@@ -116,10 +122,12 @@ const mapRules = (actions: Action[]): Result<Rule[]> => {
         a.trade.otherPlayerID,
         a.trade.resources,
       );
-    return undefined;
+    return `Could not map Action: { ${Object.keys(a).join(', ')} }!`;
   });
-  if (mapped.some((r) => r === undefined))
-    return { tag: 'Failure', reason: 'Unknown rule' };
+  if (mapped.some((r) => typeof r === 'string')) {
+    const reasons = mapped.filter(r => typeof r === 'string').join(', ');
+    return { tag: 'Failure', reason: reasons };
+  }
   return { tag: 'Success', world: mapped as Rule[] };
 };
 
