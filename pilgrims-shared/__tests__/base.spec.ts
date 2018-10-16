@@ -40,13 +40,10 @@ describe('Checking for purchaseability', () => {
     test('Player can afford purchase', () => {
         const res = { wool: 1}
 
-        const p: Player = {
-            id: 0,
-            resources: res,
-            houses: [], roads: [], cities: [], ships: [],
-        }
+        const p: Player = new Player("P");
+        p.resources = res;
 
-        const w: World = { map: [], players: [p] };
+        const w: World = { map: [], players: [p], started: false };
         const wr: Result<World> = { tag: 'Success', world: w };
         const pr: Result<Player> = { tag: 'Success', world: p };
         const result = purchase(res)(pr)(wr);
@@ -57,14 +54,10 @@ describe('Checking for purchaseability', () => {
     test('Player can NOT afford purchase', () => {
         const res = { wool: 0}
         const cost = { wool: 1}
-
-        const p: Player = {
-            id: 0,
-            resources: res,
-            houses: [], roads: [], cities: [], ships: [],
-        }
-
-        const w: World = { map: [], players: [p] };
+        const p = new Player("P");
+        p.resources = res;
+        
+        const w: World = { map: [], players: [p], started: false };
         const wr: Result<World> = { tag: 'Success', world: w };
         const pr: Result<Player> = { tag: 'Success', world: p };
         const result = purchase(cost)(pr)(wr);

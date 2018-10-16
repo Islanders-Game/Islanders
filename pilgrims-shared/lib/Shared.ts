@@ -19,7 +19,6 @@ import { Action } from './Action';
 import { Rules, purchase, Rule, ruleReducer, rules } from './Rules';
 import { ChatMessage } from './ChatMessage';
 import { Result, Failure, Success, success, fail } from './Result';
-import { Join } from './Join';
 
 export {
   Action,
@@ -49,5 +48,4 @@ export {
   rules,
   subtractResources,
   resourcesAreNonNegative,
-  Join, 
   };

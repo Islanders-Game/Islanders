@@ -1,1 +1,0 @@
-export interface Join { gameID: string, name: string }
