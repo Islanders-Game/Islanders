@@ -1,6 +1,6 @@
-import ChatAPI from '@/api/ChatAPI';
 import { ChatMessage } from '../../../../pilgrims-shared/dist/Shared';
 import { GetterTree, MutationTree, ActionTree, ActionContext } from 'vuex';
+import { SocketWrapper } from '../store';
 
 // The state
 export class State {
@@ -26,17 +26,18 @@ const mutations: MutationTree<State> = {
 
 // Async methods
 const actions: ActionTree<State, State> = {
-  async getMessages({ commit }: ActionContext<State, State>) {
-    const messages = await ChatAPI.getMessages();
-    commit('setMessages', messages);
-    return messages;
+  async bindToMessages(
+    { commit }: ActionContext<State, State>) {
+      // Connect to socket and setup listener for listening to events.
+    SocketWrapper.getSocket().on('chat', (message: ChatMessage) => {
+      commit('addMessage', message);
+    });
   },
   async addMessage(
     { commit }: ActionContext<State, State>,
-    message: ChatMessage,
-  ) {
-    ChatAPI.addMessage(message);
-    commit('addMessage', message);
+    message: ChatMessage) {
+    // emit chat message to socket.
+    SocketWrapper.getSocket().emit('chat', message);
   },
 };
 
