@@ -3,10 +3,14 @@
     <v-container fluid fill-height>
         <v-layout align-center justify-center>
             <v-flex xs12 sm8 md4>
-            <v-card class="elevation-12">
+            <v-card class="elevation-12" style="height:30vh">
                 <v-toolbar dark color="primary">
-                <v-toolbar-title>Pilgrims</v-toolbar-title>
-                <v-spacer></v-spacer>
+                  <v-toolbar-title>Pilgrims</v-toolbar-title>
+                  <v-spacer></v-spacer>
+                  <v-btn-toggle class="transparent" v-model="toggle_exclusive">
+                      <v-btn :value="2" flat @click="isCreatingGame = true">Create</v-btn>
+                      <v-btn flat @click="isCreatingGame = false">Join</v-btn>
+                    </v-btn-toggle>
                 </v-toolbar>
                 <v-card-text>
                     <v-text-field autofocus
@@ -20,17 +24,22 @@
                       counter="25">
                       </v-text-field>
                     <transition name="fade">
-                        <div v-if="playerName !== '' && playerName.length >= 3 && playerName.length <= 25">
-                            <v-btn color="primary" @click="createGame">Create Game</v-btn>
-                            <v-btn color="primary" disabled v-if="gameIdEmpty">Join Game</v-btn>
-                            <v-btn color="primary" v-else @click="joinGame">Join Game</v-btn>
-                            <v-text-field prepend-icon="star" name="gameid" label="To join a game, enter a game Id" type="text" v-model="gameId"></v-text-field>
-
-                            <v-alert :value="error" type="error" transition="scale-transition">
-                                {{errorMessage}}
-                            </v-alert>
-                        </div>
+                      <div v-if="!isCreatingGame">
+                        <v-text-field prepend-icon="star" name="gameid" label="To join a game, enter a game Id" type="text" v-model="gameId"></v-text-field>
+                        <v-btn color="primary" disabled v-if="!validatePlayerName || !validateGameId">Join Game</v-btn>
+                        <v-btn color="primary" v-else @click="joinGame">Join Game</v-btn>
+                      </div>
                     </transition>
+                    <transition name="fade">
+                      <div v-if="isCreatingGame">
+                        <v-btn color="primary" disabled v-if="!validatePlayerName">Create Game</v-btn>
+                        <v-btn color="primary" v-else @click="createGame">Create Game</v-btn>
+                      </div>
+                    </transition>
+                    
+                    <v-alert :value="error" type="error" transition="scale-transition">
+                        {{errorMessage}}
+                    </v-alert>
                 </v-card-text>
                 <v-card-actions>
                 <v-spacer></v-spacer>
@@ -53,15 +62,15 @@ export default class StartGame extends Vue {
   public error: boolean = false;
   public errorMessage: string = 'Could not create game';
   public rules = [(v) => v.length <= 25 || 'Max 25 characters'];
-
+  public isCreatingGame = true;
   public playerName: string = '';
   public gameId: string = '';
-  get gameIdEmpty(): boolean {
-    return !this.gameId;
-  }
+  public toggle_exclusive = 2;
 
   public async createGame() {
-    if (!this.validate()) {
+    if (!this.validatePlayerName) {
+      this.error = true;
+      this.errorMessage = 'You need to enter a valid player name';
       return;
     }
 
@@ -76,11 +85,19 @@ export default class StartGame extends Vue {
   }
 
   public async joinGame() {
-    if (!this.validate()) {
+    if (!this.validateGameId) {
+      this.error = true;
+      this.errorMessage = 'You need to enter a gameId';
       return;
+    } else if (!this.validatePlayerName) {
+      this.error = true;
+      this.errorMessage = 'You need to enter a valid player name';
     }
 
-    await this.$store.dispatch('joinGame', { gameId: this.gameId, playerName: this.playerName });
+    await this.$store.dispatch('joinGame', {
+      gameId: this.gameId,
+      playerName: this.playerName,
+    });
     if (this.$store.getters['game/getGameId']) {
       this.$parent.$parent.$emit('gameChoosen');
     } else {
@@ -89,15 +106,15 @@ export default class StartGame extends Vue {
     }
   }
 
-  private validate(): boolean {
+  get validateGameId(): boolean {
     if (!this.gameId) {
-      this.error = true;
-      this.errorMessage = 'You need to enter a gameId';
       return false;
     }
+    return true;
+  }
+
+  get validatePlayerName(): boolean {
     if (!this.playerName || this.playerName.length >= 25) {
-      this.error = true;
-      this.errorMessage = 'You need to enter a valid player name';
       return false;
     }
     return true;
@@ -109,12 +126,12 @@ export default class StartGame extends Vue {
 #StartGame {
   padding: 0px;
 }
+
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 1s;
+  transition: opacity 0s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
   opacity: 0;
-  transition: opacity 0.3s;
 }
 </style>
