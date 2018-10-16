@@ -35,16 +35,19 @@ app.get('/newgame', async (_, res) => {
 
 //Socket.io
 io.on('connection', (socket) => {
-  const gameID = socket.nsp.name.replace('/', '');
+  const namespace = socket.nsp;
+  const gameID = namespace.name.replace('/', '');
   socket.on('join', (name: string) => {
     const playerName = name ? name : socket.id;
     console.info(`'join' on game ${gameID} by player named: ${playerName}.`);
     
-    socket.on('init_world', (init: World) => initWorld(init, gameID, socket.nsp));
-    socket.on('chat', (chat: ChatMessage) => chatMessage(chat, gameID, socket.nsp));
-    socket.on('turn_end', (turn: Turn) => turnEnd(turn, gameID, socket.nsp));
-    addPlayer(gameID, playerName).then(r => socket.nsp.emit('world', r));
+    socket.on('init_world', (init: World) => initWorld(init, gameID, namespace));
+    socket.on('chat', (chat: ChatMessage) => chatMessage(chat, gameID, namespace));
+    socket.on('turn_end', (turn: Turn) => turnEnd(turn, gameID, namespace));
+    addPlayer(gameID, playerName).then(r => namespace.emit('world', r));
   });
+
+  setInterval(() => clearNamespaceIfEmpty(namespace, io), 18000000); // Clear every half hour. 
 });
 //
 
@@ -148,6 +151,16 @@ async function findWorld(id: string): Promise<Result<World>> {
   } catch {
     return { tag: 'Failure', reason: 'World could not be found!' };
   }
+}
+
+const clearNamespaceIfEmpty = (namespace: SocketIO.Namespace, server: SocketIO.Server) => {
+  const connectedSockets = Object.keys(namespace.connected);
+    if (connectedSockets.length < 0) return;
+    connectedSockets.forEach(socketId => {
+        namespace.connected[socketId].disconnect();
+    });
+    namespace.removeAllListeners();
+    delete server.nsps[namespace.name];
 }
 //
 
