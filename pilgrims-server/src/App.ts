@@ -58,22 +58,24 @@ const setupSocketOnNamespace = (gameID: string) => {
       socket.on('turn_end', (turn: Turn) => turnEnd(turn, gameID, nsp));
       addPlayer(gameID, playerName).then(r => nsp.emit('world', r));
     });
-  
+
     setInterval(() => clearNamespaceIfEmpty(nsp, io), 18000000); // Clear every half hour. 
   })
 }
 
 //Game
-const initWorld = (init: World, gameID: string, namespace: SocketIO.Namespace) => {
+const initWorld = async (init: World, gameID: string, namespace: SocketIO.Namespace) => {
   if (!init) console.info(`'init_world' with empty message.`);
   if (!init || !gameID) return;
   console.info(`'init_world' on game ${gameID} with world:`);
   console.info(init);
-  const db = monk('localhost:27017/pilgrims');
-  db.get('games').findOne({ world: init }).then(world => {
-    if (!world.started) { namespace.emit('world', init); };
-  });
-  db.close();
+  const r = await findWorld(gameID);  
+  if (r.tag === 'Success' && !r.world.started) {
+    const db = monk('localhost:27017/pilgrims');
+    await db.get('games').insert(init);
+    db.close();
+    namespace.emit('world', init);
+  }
 }
 
 const chatMessage = (chat: ChatMessage, gameID: string, namespace: SocketIO.Namespace) => {
@@ -103,9 +105,13 @@ async function addPlayer (gameID: string, name: string) {
     if (result.tag === 'Failure') return result;
     const player = new Player(name);
     const players = result.world.players.concat([player]);
-    return { tag: 'Success', world: { ...result.world, players } };
+    const world = { ...result.world, players };
+    const db = monk('localhost:27017/pilgrims');
+    await db.get('games').insert(world);
+    db.close();
+    return { tag: 'Success', world};
   } catch(ex) {
-    return { tag: 'Failure', reason: `Could not add player ${name}!, due to ${ex}` };
+    return { tag: 'Failure', reason: `Could not add player ${name}!` };
   }
 };
 
@@ -116,6 +122,8 @@ const applyTurn = async (id: string, turn: Turn) => {
   if (result.tag === 'Failure') return result;
   if (result.world.started) return { tag: 'Failure', reason: 'Game is not started!' };
   const apply = toApply.world.reduce(ruleReducer, result);
+  const db = monk('localhost:27017/pilgrims');
+  await db.get('games').insert(apply);
   return apply;
 };
 
