@@ -67,7 +67,12 @@ export default class StartGame extends Vue {
 
     this.$store.dispatch('createGame', { gameId: this.gameId, playerName: this.playerName });
     // todo check for createGame fail.
-    this.$parent.$parent.$emit('gameChoosen');
+    if(this.$store.getters['game/getGameId']) {
+      this.$parent.$parent.$emit('gameChoosen');
+    } else {
+      this.error = true;
+      this.errorMessage = 'An error occured while connecting to the server';
+    }
   }
 
   public joinGame() {
@@ -76,8 +81,13 @@ export default class StartGame extends Vue {
     }
 
     this.$store.dispatch('joinGame', { gameId: this.gameId, playerName: this.playerName });
+    if(this.$store.getters['game/getGameId']) {
+      this.$parent.$parent.$emit('gameChoosen');
+    } else {
+      this.error = true;
+      this.errorMessage = 'An error occured while connecting to the server';
+    }
     // todo check for joinGame fail.
-    this.$parent.$parent.$emit('gameChoosen');
   }
 
   private validate(): boolean {

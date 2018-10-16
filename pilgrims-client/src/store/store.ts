@@ -12,6 +12,7 @@ const debug = process.env.NODE_ENV !== 'production';
 const actionSet: ActionTree<any, any> = {
   async createGame({ commit }: ActionContext<any, any>, gameStartInfo: { gameId: string, playerName: string }) {
     const result = await Axios.post('localhost:3000', gameStartInfo);
+    // todo use result to check for errors.
     SocketWrapper.connectSocket(`localhost:3000/${gameStartInfo.gameId}`);
     commit('game/setGameId', gameStartInfo.gameId);
     commit('game/setPlayerName', gameStartInfo.playerName);
