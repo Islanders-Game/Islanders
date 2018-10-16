@@ -79,6 +79,7 @@ export default class StartGame extends Vue {
     if (!this.validate()) {
       return;
     }
+
     this.$store.dispatch('joinGame', { gameId: this.gameId, playerName: this.playerName });
     if(this.$store.getters['game/getGameId']) {
       this.$parent.$parent.$emit('gameChoosen');

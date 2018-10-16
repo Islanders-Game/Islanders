@@ -29,14 +29,12 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { mapActions, mapGetters } from 'vuex';
 import { ChatMessage } from '../../../pilgrims-shared/dist/Shared';
-import io from 'socket.io-client';
 
 @Component<Chat>({
   components: {},
 })
 export default class Chat extends Vue {
   public message: string = '';
-  private socket: SocketIOClient.Socket;
   private playerName: string;
   private gameId: string;
 
@@ -45,7 +43,7 @@ export default class Chat extends Vue {
 
     this.playerName = this.$store.getters['game/getPlayerName'];
     this.gameId = this.$store.getters['game/getGameId'];
-
+    this.$store.dispatch('chat/bindToMessages');
   }
 
   get messages() {
@@ -53,7 +51,7 @@ export default class Chat extends Vue {
   }
 
   public addMessage(): void {
-    this.socket.emit('chat', { text: this.message, user: this.playerName });
+    this.$store.dispatch('chat/addMessage', { text: this.message, user: this.playerName });
     this.message = '';
   }
 }
