@@ -1,7 +1,7 @@
-export const SocketAction = {
-    getWorld: 'get_world',
-    initWorld: 'get_world',
-    chat: 'get_world',
-    turnEnd: 'get_world',
+export const SocketActions = {
+    getWorld: 'getWorld',
+    initWorld: 'initWorld',
+    chat: 'chat',
+    turnEnd: 'turnEnd',
     join: 'join',
-}
+};

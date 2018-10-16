@@ -18,7 +18,7 @@ import { Player } from './Player';
 import { Action } from './Action';
 import { Rules, purchase, Rule, ruleReducer, rules } from './Rules';
 import { ChatMessage } from './ChatMessage';
-import { SocketAction } from './SocketAction';
+import { SocketActions } from './SocketAction';
 import { Result, Failure, Success, success, fail } from './Result';
 
 export {
@@ -49,5 +49,5 @@ export {
   rules,
   subtractResources,
   resourcesAreNonNegative,
-  SocketAction, 
+  SocketActions,
   };

@@ -14,7 +14,7 @@ import {
   rules,
   ruleReducer,
   ChatMessage,
-  SocketAction
+  SocketActions,
 } from '../../pilgrims-shared/dist/Shared';
 
 const app = express();
@@ -47,13 +47,13 @@ const setupSocketOnNamespace = (gameID: string) => {
   const nsp = io.of(`/${gameID}`);
   nsp.on('connection', (socket) => {
     console.log(`Player connected to socket with namespace ${gameID}`);
-    socket.on(SocketAction.join, (name: string) => {
+    socket.on(SocketActions.join, (name: string) => {
       const playerName = name ? name : socket.id;
       console.info(`'join' on game ${gameID} by player named: ${playerName}.`);
-      socket.on(SocketAction.getWorld, () => socket.emit('world', findWorld(gameID)));
-      socket.on(SocketAction.initWorld, (init: World) => initWorld(init, gameID, nsp));
-      socket.on(SocketAction.turnEnd, (turn: Turn) => turnEnd(turn, gameID, nsp));
-      socket.on(SocketAction.chat, (chat: ChatMessage) => chatMessage(chat, gameID, nsp));
+      socket.on(SocketActions.getWorld, () => socket.emit('world', findWorld(gameID)));
+      socket.on(SocketActions.initWorld, (init: World) => initWorld(init, gameID, nsp));
+      socket.on(SocketActions.turnEnd, (turn: Turn) => turnEnd(turn, gameID, nsp));
+      socket.on(SocketActions.chat, (chat: ChatMessage) => chatMessage(chat, gameID, nsp));
       addPlayer(gameID, playerName).then(r => nsp.emit('world', r));
     });
 
