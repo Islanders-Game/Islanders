@@ -15,6 +15,7 @@ import {
   ruleReducer,
   ChatMessage,
 } from '../../pilgrims-shared/dist/Shared';
+import { emit } from 'cluster';
 
 const app = express();
 const server = http.createServer(app);
@@ -34,27 +35,34 @@ app.get('/newgame', async (_, res) => {
   };
   const db = monk('localhost:27017/pilgrims');
   const result = await db.get('games').insert({ world });
-  res.send(result._id);
+  const id = result._id;
+  console.log('Created game with id: ' + id);
+
+  setupSocketOnNamespace(id);
+  res.send(id);
   db.close();
 });
 
-//Socket.io
-io.on('connection', (socket) => {
-  const namespace = socket.nsp;
-  const gameID = namespace.name.replace('/', '');
-  socket.on('join', (name: string) => {
-    const playerName = name ? name : socket.id;
-    console.info(`'join' on game ${gameID} by player named: ${playerName}.`);
-    
-    socket.on('init_world', (init: World) => initWorld(init, gameID, namespace));
-    socket.on('chat', (chat: ChatMessage) => chatMessage(chat, gameID, namespace));
-    socket.on('turn_end', (turn: Turn) => turnEnd(turn, gameID, namespace));
-    addPlayer(gameID, playerName).then(r => namespace.emit('world', r));
-  });
-
-  setInterval(() => clearNamespaceIfEmpty(namespace, io), 18000000); // Clear every half hour. 
-});
-//
+const setupSocketOnNamespace = (id: string) => {
+  const nsp = io.of(`/${id}`);
+  nsp.on('connection', (socket) => {
+    const gameID = nsp.name;
+    console.log('Player connected to socket with namespace ' + gameID);
+    socket.emit('created');
+    socket.on('join', (name: string) => {
+      socket.emit('connected');
+      const playerName = name ? name : socket.id;
+      console.info(`'join' on game ${gameID} by player named: ${playerName}.`);
+      
+      socket.on('init_world', (init: World) => initWorld(init, gameID, nsp));
+      socket.on('chat', (chat: ChatMessage) => chatMessage(chat, gameID, nsp));
+      socket.on('turn_end', (turn: Turn) => turnEnd(turn, gameID, nsp));
+      addPlayer(gameID, playerName).then(r => nsp.emit('world', r));
+    });
+  
+    setInterval(() => clearNamespaceIfEmpty(nsp, io), 18000000); // Clear every half hour. 
+  })
+}
 
 //Game
 const initWorld = (init: World, gameID: string, namespace: SocketIO.Namespace) => {
