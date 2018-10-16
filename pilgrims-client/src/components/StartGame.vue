@@ -24,14 +24,14 @@
                       counter="25">
                       </v-text-field>
                     <transition name="fade">
-                      <div v-if="!isCreatingGame">
+                      <div v-if="!isCreatingGame" class="fade-element">
                         <v-text-field prepend-icon="star" name="gameid" label="To join a game, enter a game Id" type="text" v-model="gameId"></v-text-field>
                         <v-btn color="primary" disabled v-if="!validatePlayerName || !validateGameId">Join Game</v-btn>
                         <v-btn color="primary" v-else @click="joinGame">Join Game</v-btn>
                       </div>
                     </transition>
                     <transition name="fade">
-                      <div v-if="isCreatingGame">
+                      <div v-if="isCreatingGame" class="fade-element">
                         <v-btn color="primary" disabled v-if="!validatePlayerName">Create Game</v-btn>
                         <v-btn color="primary" v-else @click="createGame">Create Game</v-btn>
                       </div>
@@ -129,9 +129,13 @@ export default class StartGame extends Vue {
 
 .fade-enter-active,
 .fade-leave-active {
-  transition: opacity 0s;
+  transition: opacity 0.2s;
 }
 .fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0;
+  opacity: 0.1s;
+}
+.fade-element {
+  position: absolute;
+  width: 93%;
 }
 </style>
