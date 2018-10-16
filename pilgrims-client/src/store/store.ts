@@ -13,7 +13,8 @@ const actionSet: ActionTree<any, any> = {
   async createGame({ commit }: ActionContext<any, any>, playerName: string) {
     const result = await Axios.get('http://localhost:3000/newgame');
     // todo use result to check for errors.
-    const gameId = result.data;
+    const { data } = await result;
+    const gameId = data;
     SocketWrapper.connectSocket(`localhost:3000/${gameId}`);
     SocketWrapper.getSocket().emit('join', playerName);
     commit('game/setGameId', gameId);
@@ -43,18 +44,19 @@ export interface ISocketWrapper {
   connectSocket: (url: string) => void;
 }
 
+// todo move to state
 export const SocketWrapper: ISocketWrapper = {
   socket: undefined,
   connected : false,
   getSocket: (): SocketIOClient.Socket => {
-    if (!this.connected) {
+    if (!SocketWrapper.connected) {
       throw new Error('Tried to access socket before it was initialized');
     } else {
-      return this.socket;
+      return SocketWrapper.socket;
     }
   },
   connectSocket: (url: string) => {
-    this.socket = io.connect(url);
-    this.connected = true;
+    SocketWrapper.socket = io.connect(url);
+    SocketWrapper.connected = true;
   },
 };
