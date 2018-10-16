@@ -9,24 +9,21 @@ import {
   Result,
   Rule,
   Turn,
-  Init, 
-  TurnEnd, 
-  Chat,
   Join,
   World,
   Action,
   Player,
   rules,
   ruleReducer,
+  ChatMessage,
 } from '../../pilgrims-shared/dist/Shared';
-import uuid = require('uuid');
 
 const app = express();
 const server = http.createServer(app);
 const io = socket.listen(server);
 const port = 3000;
 
-app.post('/newgame', async (req, res) => {
+app.post('/newgame', async (_, res) => {
   const world: World = {
     players: [],
     map: [{type: 'Desert', diceRoll: 'None' }],
