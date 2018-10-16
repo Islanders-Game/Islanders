@@ -1,7 +1,6 @@
 version: '3.5'
 services:
   mongo:
-    container_name: mongo
     image: mongo
     volumes:
       - ./data:/data/db
@@ -14,7 +13,6 @@ services:
 
   pilgrims-client:
     image: pilgrims/pilgrims-client:latest
-    container_name: pilgrims-client
     restart: unless-stopped
     labels:
       - 'traefik.enable=true'
@@ -26,7 +24,6 @@ services:
 
   pilgrims-server:
     image: pilgrims/pilgrims-server:latest
-    container_name: pilgrims-server
     restart: unless-stopped
     labels:
       - 'traefik.port=3000'
