@@ -4,10 +4,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { defineGrid, extendHex } from 'honeycomb-grid';
 import { Graphics, Sprite, Application, Point, Texture } from 'pixi.js';
 import Viewport from 'pixi-viewport';
+import { World, Tile } from '../../../pilgrims-shared/dist/Shared';
 
 @Component
 export default class Map extends Vue {
@@ -18,16 +19,21 @@ export default class Map extends Vue {
   private app: Application;
   private viewport: Viewport;
 
-  get world() {
-    return this.$store.getters['game/getWorld'];
+  @Watch('world')
+  onPropertyChanged(value: World, oldValue: World) {
+    // Do stuff with the watcher here.
   }
 
-  private mounted() {
-    this.$store.dispatch('game/bindToWorld');
-    
+  get world() {
+    return this.$store.state.game.world as World;
+  }
+
+  private async mounted() {
+    await this.$store.dispatch('game/bindToWorld');
+
     this.height = this.$el.clientHeight;
     this.width = this.$el.clientWidth;
-    this.DrawMap();
+    this.SetupCanvas();
     const that = this;
     addEventListener('resize', () => {
       that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
@@ -55,13 +61,7 @@ export default class Map extends Vue {
     });
   }
 
-  private DrawMap(): void {
-    const lineWidth = 24;
-    const Hex = extendHex({
-      size: 200,
-      orientation: 'flat',
-    });
-    const Grid = defineGrid(Hex);
+  private SetupCanvas(): void {
     this.app = new Application({
       autoResize: true,
       resolution: 2,
@@ -84,12 +84,26 @@ export default class Map extends Vue {
       .wheel()
       .decelerate();
     this.$el.appendChild(this.app.view);
+  }
+
+  @Watch('world')
+  private DrawMap(oldWorld, newWorld): void {
+    let map: Tile[] = [];
+    if (newWorld) map = newWorld.map;
+
+    const lineWidth = 24;
+    const Hex = extendHex({
+      size: 200,
+      orientation: 'flat',
+    });
+    const Grid = defineGrid(Hex);
 
     const center = Hex(0, 0);
     const lineGraphics = new Graphics();
     const tileContainer = new PIXI.Container();
     const pieceContainer = new PIXI.Container();
-    Grid.hexagon({ radius: 12 }).forEach((hex) => {
+    map.forEach((tile) => {
+      const hex = Hex(tile.coord.x, tile.coord.y);
       const point = hex.toPoint();
       const corners = hex.corners().map((corner) => corner.add(point));
       const [firstCorner, ...otherCorners] = corners;

@@ -1,5 +1,9 @@
 import { GetterTree, MutationTree, ActionTree, ActionContext } from 'vuex';
-import { World } from '../../../../pilgrims-shared/dist/Shared';
+import {
+  World,
+  SocketActions,
+  Result,
+} from '../../../../pilgrims-shared/dist/Shared';
 import { Socket, State as RootState } from '../store';
 // The state
 export class State {
@@ -36,13 +40,14 @@ const mutations: MutationTree<State> = {
 
 // Async methods
 const actions: ActionTree<State, State> = {
-  async bindToWorld(
-    { commit }: ActionContext<State, RootState>) {
-      // Connect to socket and setup listener for listening to events.
-      Socket.on('world', (world: World) => {
-        commit('setWorld', world);
-      });
-      Socket.emit('get_world');
+  async bindToWorld({ commit }: ActionContext<State, RootState>) {
+    // Connect to socket and setup listener for listening to events.
+    Socket.on('world', (world: Result<World>) => {
+      if (world.tag === 'Success') {
+        commit('setWorld', world.world);
+      }
+    });
+    Socket.emit(SocketActions.getWorld);
   },
 };
 

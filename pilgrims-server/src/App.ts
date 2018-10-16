@@ -22,16 +22,19 @@ const server = http.createServer(app);
 const io = socket.listen(server);
 const port = 3000;
 app.use(function(req, res, next) {
-  res.header("Access-Control-Allow-Origin", "*");
-  res.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
+  res.header('Access-Control-Allow-Origin', '*');
+  res.header(
+    'Access-Control-Allow-Headers',
+    'Origin, X-Requested-With, Content-Type, Accept',
+  );
   next();
 });
 
 app.get('/newgame', async (_, res) => {
   const world: World = {
     players: [],
-    map: [{type: 'Desert', diceRoll: 'None' }],
-    started: false
+    map: [{ type: 'Desert', diceRoll: 'None', coord: { x: 0, y: 0 } }],
+    started: false,
   };
   const db = monk('localhost:27017/pilgrims');
   const result = await db.get('games').insert(world);
@@ -50,42 +53,60 @@ const setupSocketOnNamespace = (gameID: string) => {
     socket.on(SocketActions.join, (name: string) => {
       const playerName = name ? name : socket.id;
       console.info(`'join' on game ${gameID} by player named: ${playerName}.`);
-      socket.on(SocketActions.getWorld, () => socket.emit('world', findWorld(gameID)));
-      socket.on(SocketActions.initWorld, (init: World) => initWorld(init, gameID, nsp));
-      socket.on(SocketActions.turnEnd, (turn: Turn) => turnEnd(turn, gameID, nsp));
-      socket.on(SocketActions.chat, (chat: ChatMessage) => chatMessage(chat, gameID, nsp));
-      addPlayer(gameID, playerName).then(r => nsp.emit('world', r));
+      socket.on(SocketActions.getWorld, async () => {
+        console.log('Recieved a ' + SocketActions.getWorld);
+        socket.emit('world', await findWorld(gameID));
+      });
+      socket.on(SocketActions.initWorld, (init: World) => {
+        console.log('Recieved a ' + SocketActions.initWorld);
+        initWorld(init, gameID, nsp);
+      });
+      socket.on(SocketActions.turnEnd, (turn: Turn) => {
+        console.log('Recieved a ' + SocketActions.turnEnd);
+        turnEnd(turn, gameID, nsp);
+      });
+      socket.on(SocketActions.chat, (chat: ChatMessage) => {
+        console.log('Recieved a ' + SocketActions.chat);
+        chatMessage(chat, gameID, nsp);
+      });
+      addPlayer(gameID, playerName).then((r) => nsp.emit('world', r));
     });
 
-    setInterval(() => clearNamespaceIfEmpty(nsp, io), 18000000); // Clear every half hour. 
-  })
-}
+    setInterval(() => clearNamespaceIfEmpty(nsp, io), 18000000); // Clear every half hour.
+  });
+};
 
 //Game
-const initWorld = async (init: World, gameID: string, namespace: SocketIO.Namespace) => {
+const initWorld = async (
+  init: World,
+  gameID: string,
+  namespace: SocketIO.Namespace,
+) => {
   if (!init) console.info(`'init_world' with empty message.`);
   if (!init || !gameID) return;
   console.info(`'init_world' on game ${gameID} with world:`);
   console.info(init);
-  const r = await findWorld(gameID);  
+  const r = await findWorld(gameID);
   if (r.tag === 'Success' && !r.world.started) {
     const db = monk('localhost:27017/pilgrims');
     await db.get('games').insert(init);
     db.close();
     namespace.emit('world', init);
   }
-}
+};
 
-const chatMessage = (chat: ChatMessage, gameID: string, namespace: SocketIO.Namespace) => {
+const chatMessage = (
+  chat: ChatMessage,
+  gameID: string,
+  namespace: SocketIO.Namespace,
+) => {
   if (!chat) console.info(`'chat' with empty message.`);
   if (!chat || !chat.user || !chat.text) return;
   console.info(
-    `'chat' on game ${gameID} by ${chat.user} with text ${
-      chat.text
-    }.`,
+    `'chat' on game ${gameID} by ${chat.user} with text ${chat.text}.`,
   );
   namespace.emit('chat', chat);
-}
+};
 
 const turnEnd = (turn: Turn, gameID: string, namespace: SocketIO.Namespace) => {
   if (!turn) console.info(`'turn_end' with empty turn.`);
@@ -95,9 +116,9 @@ const turnEnd = (turn: Turn, gameID: string, namespace: SocketIO.Namespace) => {
   applyTurn(gameID, turn).then((res) => {
     namespace.emit('world', res);
   });
-}
+};
 
-async function addPlayer (gameID: string, name: string) {
+async function addPlayer(gameID: string, name: string) {
   try {
     const result: Result<World> = await findWorld(gameID);
     if (result.tag === 'Failure') return result;
@@ -105,20 +126,24 @@ async function addPlayer (gameID: string, name: string) {
     const players = result.world.players.concat([player]);
     const world = { ...result.world, players };
     const db = monk('localhost:27017/pilgrims');
-    await db.get('games').insert(world);
+    await db.get('games').update(new ObjectId(gameID), world);
     db.close();
-    return { tag: 'Success', world};
-  } catch(ex) {
-    return { tag: 'Failure', reason: `Could not add player ${name}!` };
+    return { tag: 'Success', world };
+  } catch (ex) {
+    return {
+      tag: 'Failure',
+      reason: `Could not add player ${name}! Ex: ${ex}`,
+    };
   }
-};
+}
 
 const applyTurn = async (id: string, turn: Turn) => {
   const toApply = mapRules(turn.actions);
   if (toApply.tag === 'Failure') return toApply;
   const result = await findWorld(id);
   if (result.tag === 'Failure') return result;
-  if (result.world.started) return { tag: 'Failure', reason: 'Game is not started!' };
+  if (result.world.started)
+    return { tag: 'Failure', reason: 'Game is not started!' };
   const apply = toApply.world.reduce(ruleReducer, result);
   const db = monk('localhost:27017/pilgrims');
   await db.get('games').insert(apply);
@@ -151,7 +176,7 @@ const mapRules = (actions: Action[]): Result<Rule[]> => {
     return `Could not map Action: { ${Object.keys(a).join(', ')} }!`;
   });
   if (mapped.some((r) => typeof r === 'string')) {
-    const reasons = mapped.filter(r => typeof r === 'string').join(', ');
+    const reasons = mapped.filter((r) => typeof r === 'string').join(', ');
     return { tag: 'Failure', reason: reasons };
   }
   return { tag: 'Success', world: mapped as Rule[] };
@@ -172,15 +197,18 @@ async function findWorld(id: string): Promise<Result<World>> {
   }
 }
 
-const clearNamespaceIfEmpty = (namespace: SocketIO.Namespace, server: SocketIO.Server) => {
+const clearNamespaceIfEmpty = (
+  namespace: SocketIO.Namespace,
+  server: SocketIO.Server,
+) => {
   const connectedSockets = Object.keys(namespace.connected);
-    if (connectedSockets.length < 0) return;
-    connectedSockets.forEach(socketId => {
-        namespace.connected[socketId].disconnect();
-    });
-    namespace.removeAllListeners();
-    delete server.nsps[namespace.name];
-}
+  if (connectedSockets.length < 0) return;
+  connectedSockets.forEach((socketId) => {
+    namespace.connected[socketId].disconnect();
+  });
+  namespace.removeAllListeners();
+  delete server.nsps[namespace.name];
+};
 //
 
 //Initialize
