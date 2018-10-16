@@ -64,25 +64,20 @@ export default class StartGame extends Vue {
     if (!this.validate()) {
       return;
     }
-    const socket = io.connect('localhost:3000');
-    socket.emit('game_start', `{ "id": "${this.gameId}" }`);
-    socket.on('created', () => {
-      socket.close();
-      this.$parent.$parent.$emit('gameChoosen', {
-        gameId: this.gameId,
-        playerName: this.playerName,
-      });
-    });
+
+    this.$store.dispatch('createGame', { gameId: this.gameId, playerName: this.playerName });
+    // todo check for createGame fail.
+    this.$parent.$parent.$emit('gameChoosen');
   }
 
   public joinGame() {
     if (!this.validate()) {
       return;
     }
-    this.$parent.$parent.$emit('gameChoosen', {
-      gameId: this.gameId,
-      playerName: this.playerName,
-    });
+
+    this.$store.dispatch('joinGame', { gameId: this.gameId, playerName: this.playerName });
+    // todo check for joinGame fail.
+    this.$parent.$parent.$emit('gameChoosen');
   }
 
   private validate(): boolean {

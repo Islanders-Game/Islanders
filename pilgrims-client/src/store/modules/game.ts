@@ -1,4 +1,5 @@
 import { GetterTree, MutationTree, ActionTree, ActionContext } from 'vuex';
+import { SocketWrapper } from '../store';
 
 // The state
 export class State {
