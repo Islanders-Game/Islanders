@@ -2,6 +2,7 @@ import express from 'express';
 import http from 'http';
 import socket from 'socket.io';
 import monk from 'monk';
+import cors from 'cors';
 
 import {
   Result,
@@ -17,6 +18,7 @@ import {
 } from '../../pilgrims-shared/dist/Shared';
 
 const app = express();
+app.use(cors);
 const server = http.createServer(app);
 const io = socket.listen(server);
 const port = 3000;

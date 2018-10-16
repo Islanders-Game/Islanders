@@ -60,14 +60,14 @@ export default class StartGame extends Vue {
     return !this.gameId;
   }
 
-  public createGame() {
+  public async createGame() {
     if (!this.validate()) {
       return;
     }
 
-    this.$store.dispatch('createGame', { gameId: this.gameId, playerName: this.playerName });
+    await this.$store.dispatch('createGame', this.playerName);
     // todo check for createGame fail.
-    if(this.$store.getters['game/getGameId']) {
+    if (this.$store.getters['game/getGameId']) {
       this.$parent.$parent.$emit('gameChoosen');
     } else {
       this.error = true;
@@ -75,13 +75,13 @@ export default class StartGame extends Vue {
     }
   }
 
-  public joinGame() {
+  public async joinGame() {
     if (!this.validate()) {
       return;
     }
 
-    this.$store.dispatch('joinGame', { gameId: this.gameId, playerName: this.playerName });
-    if(this.$store.getters['game/getGameId']) {
+    await this.$store.dispatch('joinGame', { gameId: this.gameId, playerName: this.playerName });
+    if (this.$store.getters['game/getGameId']) {
       this.$parent.$parent.$emit('gameChoosen');
     } else {
       this.error = true;
