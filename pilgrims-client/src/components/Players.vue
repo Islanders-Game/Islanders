@@ -3,35 +3,43 @@
     <v-list>
         <template v-for="player in players">
             <v-list-tile class="player-tile" :key="player.name">
-                <v-layout column>
-                    <v-layout row align-center>
-                        <v-list-tile-title>{{player.name}}</v-list-tile-title>
-                        <v-spacer></v-spacer>
-                        <div style="display:contents">
-                            {{ playerPoints(player.name) }}
-                            <v-icon color="grey lighten-1">star</v-icon>
-                        </div>
-                    </v-layout>
-                    <v-list-tile-content>
-                        <v-list-tile-sub-title>
-                            <v-chip small>
-                                <v-icon small>shopping_cart</v-icon>
-                                {{ playerResources(player) }}
-                            </v-chip>
-                            <v-chip small>
-                                <v-icon small>shopping_cart</v-icon>
-                                {{ playerDevCards(player) }}
-                            </v-chip>
-                            <v-chip small>
-                                <v-icon small>shopping_cart</v-icon>
-                                {{ playerKnightCards(player) }}                                
-                            </v-chip>
-                            <v-chip small>
-                                <v-icon small>shopping_cart</v-icon>
-                                {{ playerRoad(player) }}
-                            </v-chip>
-                        </v-list-tile-sub-title>
-                    </v-list-tile-content>
+                <v-layout column align-left>
+                  <v-layout row align-left>
+                      <v-list-tile-title>
+                        <h3>{{player.name}}</h3>
+                      </v-list-tile-title>
+                      <v-spacer></v-spacer>
+                      <div style="display:contents">
+                          {{ playerPoints(player.name) }}
+                          <v-icon color="grey lighten-1">star</v-icon>
+                      </div>
+                  </v-layout>
+                  <v-list-tile-sub-title>
+                      <v-chip small>
+                        <v-avatar small class="grey">
+                          <v-icon small>build</v-icon>
+                        </v-avatar>
+                        {{ playerResources(player) }}
+                      </v-chip>
+                      <v-chip small>
+                        <v-avatar small class="grey">
+                          <v-icon small>crop_portrait</v-icon>
+                        </v-avatar>
+                        {{ playerDevCards(player) }}
+                      </v-chip>
+                      <v-chip small>
+                          <v-avatar small class="grey">
+                            <v-icon small>people</v-icon>
+                          </v-avatar>
+                          {{ playerKnightCards(player) }}                                
+                      </v-chip>
+                      <v-chip small>
+                        <v-avatar small class="grey">
+                          <v-icon small>traffic</v-icon>
+                        </v-avatar>
+                        {{ playerRoad(player) }}
+                      </v-chip>
+                  </v-list-tile-sub-title>
                 </v-layout>
             </v-list-tile>
         </template>
