@@ -56,6 +56,8 @@ app.get('/joingame', async (req, res) => {
   let game: World | undefined;
   try {
     game = (await db.get('games').findOne(new ObjectId(gameID))) as World;
+  } catch (ex) {
+    // to ensure the await is handled properly.
   } finally {
     if (!game) {
       res.send(fail('Game did not exist'));
