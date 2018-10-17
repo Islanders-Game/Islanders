@@ -6,6 +6,8 @@ import monk from 'monk';
 
 import {
   Result,
+  success,
+  fail,
   Rule,
   Turn,
   World,
@@ -46,6 +48,25 @@ app.get('/newgame', async (_, res) => {
   db.close();
 });
 
+app.get('/joingame', async (req, res) => {
+  const playerName = req.query.playerName;
+  const gameID = req.query.gameId;
+  console.info(`Player ${playerName} trying to join game ${gameID}`);
+  const db = monk('localhost:27017/pilgrims');
+  let game: World | undefined;
+  try {
+    game = (await db.get('games').findOne(new ObjectId(gameID))) as World;
+  } finally {
+    if (!game) {
+      res.send(fail('Game did not exist'));
+    } else if (game.players.some((x) => x.name === playerName)) {
+      res.send(fail('A player with that name already exists on this game'));
+    }
+    res.send(success('Game exists and playername not taken'));
+    db.close();
+  }
+});
+
 const setupSocketOnNamespace = (gameID: string) => {
   const nsp = io.of(`/${gameID}`);
   nsp.on('connection', (socket) => {
@@ -69,7 +90,9 @@ const setupSocketOnNamespace = (gameID: string) => {
         console.log(`Received a ${SocketActions.chat} socket event`);
         chatMessage(chat, gameID, nsp);
       });
-      addPlayer(gameID, playerName).then((r) => nsp.emit(SocketActions.newWorld, r));
+      addPlayer(gameID, playerName).then((r) =>
+        nsp.emit(SocketActions.newWorld, r),
+      );
     });
 
     setInterval(() => clearNamespaceIfEmpty(nsp, io), 18000000); // Clear every half hour.
