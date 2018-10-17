@@ -4,6 +4,9 @@
         <v-list two-line class="message-list">
             <template v-for="(item, index) in messages">
                 <v-list-tile :key="index" avatar>
+                    <v-list-tile-avatar>
+                        <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
+                    </v-list-tile-avatar>
                     <v-list-tile-content>
                         <v-list-tile-title v-html="item.user"></v-list-tile-title>
                         <v-list-tile-sub-title v-html="item.text"></v-list-tile-sub-title>
