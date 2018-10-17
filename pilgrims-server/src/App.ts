@@ -3,6 +3,7 @@ import http from 'http';
 import socket from 'socket.io';
 import { ObjectId } from 'mongodb';
 import monk from 'monk';
+import * as dotenv from 'dotenv';
 
 import {
   Result,
@@ -20,7 +21,9 @@ import {
 const app = express();
 const server = http.createServer(app);
 const io = socket.listen(server);
-const port = 3000;
+dotenv.config();
+const mongoURL = `${process.env.MONGO_URL}:${process.env.MONGO_PORT}/pilgrims`
+
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
@@ -36,7 +39,7 @@ app.get('/newgame', async (_, res) => {
     map: [{ type: 'Desert', diceRoll: 'None', coord: { x: 0, y: 0 } }],
     started: false,
   };
-  const db = monk('localhost:27017/pilgrims');
+  const db = monk(mongoURL);
   const result = await db.get('games').insert(world);
   const id = result._id;
   console.info('Created game with id: ' + id);
@@ -88,7 +91,7 @@ const initWorld = async (
   console.info(init);
   const r = await findWorld(gameID);
   if (r.tag === 'Success' && !r.world.started) {
-    const db = monk('localhost:27017/pilgrims');
+    const db = monk(mongoURL);
     await db.get('games').insert(init);
     db.close();
     namespace.emit(SocketActions.newWorld, init);
@@ -125,7 +128,7 @@ async function addPlayer(gameID: string, name: string) {
     const player = new Player(name);
     const players = result.world.players.concat([player]);
     const world = { ...result.world, players };
-    const db = monk('localhost:27017/pilgrims');
+    const db = monk(mongoURL);
     await db.get('games').update(new ObjectId(gameID), world);
     db.close();
     return { tag: 'Success', world };
@@ -145,7 +148,7 @@ const applyTurn = async (id: string, turn: Turn) => {
   if (result.world.started)
     return { tag: 'Failure', reason: 'Game is not started!' };
   const apply = toApply.world.reduce(ruleReducer, result);
-  const db = monk('localhost:27017/pilgrims');
+  const db = monk(mongoURL);
   await db.get('games').insert(apply);
   return apply;
 };
@@ -183,7 +186,7 @@ const mapRules = (actions: Action[]): Result<Rule[]> => {
 };
 
 async function findWorld(id: string): Promise<Result<World>> {
-  const db = monk('localhost:27017/pilgrims');
+  const db = monk(mongoURL);
   try {
     const dbResult = await db.get('games').findOne(new ObjectId(id));
     const result = dbResult as World;
@@ -216,7 +219,7 @@ app.get('/', function(req, res) {
   res.sendFile(__dirname + '/index.html');
 });
 
-server.listen(port, () =>
-  console.log(`pilgrims-server listening on port ${port}!`),
+server.listen(process.env.PORT, () =>
+  console.log(`pilgrims-server listening on port ${process.env.PORT}!`),
 );
 //

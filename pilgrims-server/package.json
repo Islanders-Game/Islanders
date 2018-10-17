@@ -24,6 +24,7 @@
     "@types/mongodb": "^3.1.12",
     "@types/socket.io": "^1.4.38",
     "body-parser": "^1.18.3",
+    "dotenv": "^6.1.0",
     "express": "^4.16.4",
     "mongodb": "^3.1.8",
     "monk": "^6.0.6",
@@ -32,6 +33,7 @@
     "uuid": "^3.3.2"
   },
   "devDependencies": {
+    "@types/dotenv": "^4.0.3",
     "@types/express": "^4.16.0",
     "@types/uuid": "^3.4.4",
     "typescript": "^3.1.3"

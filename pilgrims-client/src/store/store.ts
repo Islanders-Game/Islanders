@@ -22,11 +22,11 @@ const mutationTree: MutationTree<State> = {
 const actionTree: ActionTree<any, any> = {
   async createGame({ commit }: ActionContext<any, any>, playerName: string) {
     // todo use result to check for errors.
-    const { data } = await (await Axios.get('http://localhost:3000/newgame'));
+    const { data } = await (await Axios.get(`http://${process.env.SERVER}:${process.env.SERVER_PORT}/newgame`));
     const gameId = data;
     console.info(gameId);
 
-    const socket = io.connect(`localhost:3000/${gameId}`);
+    const socket = io.connect(`${process.env.SERVER}:${process.env.SERVER_PORT}/${gameId}`);
     socket.emit('join', playerName);
     Socket = socket;
 
@@ -34,7 +34,7 @@ const actionTree: ActionTree<any, any> = {
     commit('game/setPlayerName', playerName);
   },
   joinGame({ commit }: ActionContext<any, any>, gameStartInfo: { gameId: string, playerName: string }) {
-    const socket = io.connect(`localhost:3000/${gameStartInfo.gameId}`);
+    const socket = io.connect(`${process.env.SERVER}:${process.env.SERVER_PORT}/${gameStartInfo.gameId}`);
     socket.emit('join', gameStartInfo.playerName);
     Socket = socket;
 
