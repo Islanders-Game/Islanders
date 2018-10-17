@@ -8,6 +8,7 @@ import { v4 } from 'uuid';
 
 export class Player {
   public id: string;
+  public color: number;
   public name: string;
   public resources: Resources;
   public houses: House[];
@@ -18,6 +19,7 @@ export class Player {
 
   constructor(name: string) {
     this.id = v4();
+    this.color = 0xFFFFFF * Math.random();
     this.name = name;
     this.resources = {};
     this.houses = [];
