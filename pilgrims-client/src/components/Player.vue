@@ -12,19 +12,19 @@
               <v-layout row align-center justify-start>
                 <v-icon color="white">shopping_cart</v-icon>
                 <v-chip>
-                  Lumber: {{ getResourceCount('wood') }}
+                  Lumber: {{ resourceCount('wood') }}
                 </v-chip>
                 <v-chip>
-                  Brick: {{ getResourceCount('clay')}}
+                  Brick: {{ resourceCount('clay')}}
                 </v-chip>
                 <v-chip>
-                  Wool: {{ getResourceCount('wool') }}
+                  Wool: {{ resourceCount('wool') }}
                 </v-chip>
                 <v-chip>
-                  Grain: {{ getResourceCount('grain') }}
+                  Grain: {{ resourceCount('grain') }}
                 </v-chip>
                 <v-chip>
-                  Ore: {{ getResourceCount('stone') }}
+                  Ore: {{ resourceCount('stone') }}
                 </v-chip>
               </v-layout>
               <v-layout row align-center justify-start>
@@ -56,7 +56,7 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared.js';
+import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 @Component
 export default class Player extends Vue {
   public playerName: string = undefined;
@@ -66,12 +66,12 @@ export default class Player extends Vue {
     this.playerName = this.$store.getters['game/getPlayerName'];
   }
 
-  get getPlayer(): PlayerState {
+  get player(): PlayerState {
     return this.$store.getters['game/getPlayer'](this.playerName);
   }
 
-  getResourceCount(type: string) {
-    const player = this.getPlayer;
+  resourceCount(type: string) {
+    const player = this.player;
     if (!player) {
       return 0;
     }
@@ -80,7 +80,7 @@ export default class Player extends Vue {
   }
 
   get devCardsLength() {
-    const player = this.getPlayer;
+    const player = this.player;
     if (!player) {
       return 0;
     }
@@ -88,7 +88,7 @@ export default class Player extends Vue {
   }
 
   get knightCardsLength() {
-    const player = this.getPlayer;
+    const player = this.player;
     if (!player) {
       return 0;
     }
@@ -96,7 +96,7 @@ export default class Player extends Vue {
   }
 
   get roadLength() {
-    const player = this.getPlayer;
+    const player = this.player;
     if (!player) {
       return 0;
     }
