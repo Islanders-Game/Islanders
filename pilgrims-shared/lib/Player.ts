@@ -3,6 +3,7 @@ import { House } from './Entities/House';
 import { City } from './Entities/City';
 import { Road } from './Entities/Road';
 import { Ship } from './Entities/Ship';
+import { DevelopmentCard } from './Entities/DevelopmentCard';
 import { v4 } from 'uuid';
 
 export class Player {
@@ -13,6 +14,7 @@ export class Player {
   public cities: City[];
   public roads: Road[];
   public ships: Ship[];
+  public devCards: DevelopmentCard[];
 
   constructor(name: string) {
     this.id = v4();
@@ -22,5 +24,6 @@ export class Player {
     this.cities = [];
     this.roads = [];
     this.ships = [];
+    this.devCards = [];
   }
 }
