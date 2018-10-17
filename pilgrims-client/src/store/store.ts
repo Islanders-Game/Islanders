@@ -24,7 +24,7 @@ const actionTree: ActionTree<any, any> = {
     // todo use result to check for errors.
     const { data } = await (await Axios.get('http://localhost:3000/newgame'));
     const gameId = data;
-    console.log(gameId);
+    console.info(gameId);
 
     const socket = io.connect(`localhost:3000/${gameId}`);
     socket.emit('join', playerName);

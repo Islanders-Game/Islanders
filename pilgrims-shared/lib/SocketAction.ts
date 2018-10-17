@@ -4,4 +4,5 @@ export const SocketActions = {
     chat: 'chat',
     turnEnd: 'turnEnd',
     join: 'join',
+    newWorld: 'world',
 };

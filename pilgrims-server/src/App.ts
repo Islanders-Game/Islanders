@@ -39,7 +39,7 @@ app.get('/newgame', async (_, res) => {
   const db = monk('localhost:27017/pilgrims');
   const result = await db.get('games').insert(world);
   const id = result._id;
-  console.log('Created game with id: ' + id);
+  console.info('Created game with id: ' + id);
 
   setupSocketOnNamespace(id);
   res.send(id);
@@ -49,27 +49,27 @@ app.get('/newgame', async (_, res) => {
 const setupSocketOnNamespace = (gameID: string) => {
   const nsp = io.of(`/${gameID}`);
   nsp.on('connection', (socket) => {
-    console.log(`Player connected to socket with namespace ${gameID}`);
+    console.info(`Player connected to socket with namespace ${gameID}`);
     socket.on(SocketActions.join, (name: string) => {
       const playerName = name ? name : socket.id;
       console.info(`'join' on game ${gameID} by player named: ${playerName}.`);
       socket.on(SocketActions.getWorld, async () => {
-        console.log('Recieved a ' + SocketActions.getWorld);
-        socket.emit('world', await findWorld(gameID));
+        console.log(`Received a ${SocketActions.getWorld} socket event`);
+        socket.emit(SocketActions.newWorld, await findWorld(gameID));
       });
       socket.on(SocketActions.initWorld, (init: World) => {
-        console.log('Recieved a ' + SocketActions.initWorld);
+        console.log(`Received a ${SocketActions.initWorld} socket event`);
         initWorld(init, gameID, nsp);
       });
       socket.on(SocketActions.turnEnd, (turn: Turn) => {
-        console.log('Recieved a ' + SocketActions.turnEnd);
+        console.log(`Received a ${SocketActions.turnEnd} socket event`);
         turnEnd(turn, gameID, nsp);
       });
       socket.on(SocketActions.chat, (chat: ChatMessage) => {
-        console.log('Recieved a ' + SocketActions.chat);
+        console.log(`Received a ${SocketActions.chat} socket event`);
         chatMessage(chat, gameID, nsp);
       });
-      addPlayer(gameID, playerName).then((r) => nsp.emit('world', r));
+      addPlayer(gameID, playerName).then((r) => nsp.emit(SocketActions.newWorld, r));
     });
 
     setInterval(() => clearNamespaceIfEmpty(nsp, io), 18000000); // Clear every half hour.
@@ -91,7 +91,7 @@ const initWorld = async (
     const db = monk('localhost:27017/pilgrims');
     await db.get('games').insert(init);
     db.close();
-    namespace.emit('world', init);
+    namespace.emit(SocketActions.newWorld, init);
   }
 };
 
@@ -114,7 +114,7 @@ const turnEnd = (turn: Turn, gameID: string, namespace: SocketIO.Namespace) => {
   console.info(`'turn_end' on game ${gameID} with turn:`);
   console.info(turn);
   applyTurn(gameID, turn).then((res) => {
-    namespace.emit('world', res);
+    namespace.emit(SocketActions.newWorld, res);
   });
 };
 
