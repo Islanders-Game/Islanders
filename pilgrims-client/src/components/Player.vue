@@ -12,31 +12,31 @@
               <v-layout row align-center justify-start>
                 <v-icon color="white">shopping_cart</v-icon>
                 <v-chip>
-                  Lumber: 5
+                  Lumber: {{ resourceCount('wood') }}
                 </v-chip>
                 <v-chip>
-                  Brick: 5
+                  Brick: {{ resourceCount('clay')}}
                 </v-chip>
                 <v-chip>
-                  Wool: 5
+                  Wool: {{ resourceCount('wool') }}
                 </v-chip>
                 <v-chip>
-                  Grain: 5
+                  Grain: {{ resourceCount('grain') }}
                 </v-chip>
                 <v-chip>
-                  Ore: 5
+                  Ore: {{ resourceCount('stone') }}
                 </v-chip>
               </v-layout>
               <v-layout row align-center justify-start>
                 <v-icon color="white">shopping_cart</v-icon>
                 <v-chip>
-                  Dev-Cards: 5
+                  Dev-Cards: {{ devCardsLength }}
                 </v-chip>
                 <v-chip>
-                  Army: 5
+                  Army: {{ knightCardsLength }}
                 </v-chip>
                 <v-chip>
-                  Longest Road: 5
+                  Longest Road: {{ roadLength }}
                 </v-chip>
               </v-layout>
             </v-layout>
@@ -56,13 +56,51 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-
+import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 @Component
 export default class Player extends Vue {
   public playerName: string = undefined;
+
   public constructor() {
     super();
     this.playerName = this.$store.getters['game/getPlayerName'];
+  }
+
+  get player(): PlayerState {
+    return this.$store.getters['game/getPlayer'](this.playerName);
+  }
+
+  resourceCount(type: string) {
+    const player = this.player;
+    if (!player) {
+      return 0;
+    }
+    const result = player.resources[type];
+    return result ? result : 0;
+  }
+
+  get devCardsLength() {
+    const player = this.player;
+    if (!player) {
+      return 0;
+    }
+    return player.devCards.filter((x) => x.type !== 'Knight').length;
+  }
+
+  get knightCardsLength() {
+    const player = this.player;
+    if (!player) {
+      return 0;
+    }
+    return player.devCards.filter((x) => x.type === 'Knight').length;
+  }
+
+  get roadLength() {
+    const player = this.player;
+    if (!player) {
+      return 0;
+    }
+    return player.roads.length; // todo calculate longest path ;D
   }
 }
 </script>

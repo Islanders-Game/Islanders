@@ -1,5 +1,12 @@
-import { GetterTree, MutationTree, ActionTree, ActionContext } from 'vuex';
 import {
+  GetterTree,
+  MutationTree,
+  ActionTree,
+  ActionContext,
+  Getter,
+} from 'vuex';
+import {
+  Player,
   World,
   SocketActions,
   Result,
@@ -22,6 +29,18 @@ const getters: GetterTree<State, any> = {
   },
   getWorld(state: State): World {
     return state.world;
+  },
+  getPlayers(state: State): Player[] {
+    if (!state.world) {
+      return undefined;
+    }
+    return state.world.players;
+  },
+  getPlayer: (state: State) => (name: string) => {
+    if (!state.world) {
+      return undefined;
+    }
+    return state.world.players.find((x) => x.name === name);
   },
 };
 
