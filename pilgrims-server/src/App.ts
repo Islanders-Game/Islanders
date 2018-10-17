@@ -55,7 +55,7 @@ app.get('/joingame', async (req, res) => {
   const playerName = req.query.playerName;
   const gameID = req.query.gameId;
   console.info(`Player ${playerName} trying to join game ${gameID}`);
-  const db = monk('localhost:27017/pilgrims');
+  const db = monk(mongoURL);
   let game: World | undefined;
   try {
     game = (await db.get('games').findOne(new ObjectId(gameID))) as World;
