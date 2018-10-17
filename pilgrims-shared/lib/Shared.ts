@@ -5,7 +5,11 @@ import {
   resourcesAreNonNegative,
 } from './Resources';
 import { HexCoordinate } from './HexCoordinate';
-import { MatrixCoordinate } from './MatrixCoordinate';
+import {
+  MatrixCoordinate,
+  neighbouringHexCoord,
+  neighbouringMatrixCoord,
+} from './MatrixCoordinate';
 import { Thief } from './Thief';
 import { Ship } from './Entities/Ship';
 import { Road } from './Entities/Road';
@@ -28,6 +32,8 @@ export {
   Resources,
   HexCoordinate,
   MatrixCoordinate,
+  neighbouringHexCoord,
+  neighbouringMatrixCoord,
   Thief,
   Ship,
   Road,
