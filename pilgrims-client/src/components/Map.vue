@@ -6,9 +6,9 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { defineGrid, extendHex } from 'honeycomb-grid';
-import { Graphics, Sprite, Application, Point, Texture } from 'pixi.js';
+import { Graphics, Sprite, Application, Point, Texture, Container } from 'pixi.js';
 import Viewport from 'pixi-viewport';
-import { World, Tile } from '../../../pilgrims-shared/dist/Shared';
+import { World, Tile, Player, House, MatrixCoordinate } from '../../../pilgrims-shared/dist/Shared';
 
 @Component
 export default class Map extends Vue {
@@ -18,6 +18,10 @@ export default class Map extends Vue {
   private tileWidth: number = 400;
   private app: Application;
   private viewport: Viewport;
+  private tileGraphics: Graphics = new Graphics();
+  private pieceGraphics: Graphics = new Graphics();
+  private lineGraphics: Graphics = new Graphics();
+  private sprites: { [s:string]: () => Sprite } = this.generateSprites();
 
   @Watch('world')
   onPropertyChanged(value: World, oldValue: World) {
@@ -30,7 +34,6 @@ export default class Map extends Vue {
 
   private async mounted() {
     await this.$store.dispatch('game/bindToWorld');
-
     this.height = this.$el.clientHeight;
     this.width = this.$el.clientWidth;
     this.SetupCanvas();
@@ -41,24 +44,23 @@ export default class Map extends Vue {
     });
   }
 
-  private getSprites(): Sprite[] {
+    private generateSprites(): { [s:string]: () => Sprite } {
     const tilePath = './img/tilesets/';
     const tileFiletype = '.gif';
     const tileStyle = 'watercolor';
 
-    return [
-      Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
-      Sprite.fromImage(`${tilePath}${tileStyle}/desert${tileFiletype}`),
-      Sprite.fromImage(`${tilePath}${tileStyle}/grain${tileFiletype}`),
-      Sprite.fromImage(`${tilePath}${tileStyle}/wood${tileFiletype}`),
-      Sprite.fromImage(`${tilePath}${tileStyle}/stone${tileFiletype}`),
-      Sprite.fromImage(`${tilePath}${tileStyle}/wool${tileFiletype}`),
-      Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
-    ].map((s) => {
-      s.width = this.tileWidth;
-      s.height = this.tileHeight;
-      return s;
-    });
+    const sprites = {
+      Clay: () => Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
+      Desert: () => Sprite.fromImage(`${tilePath}${tileStyle}/desert${tileFiletype}`),
+      Grain: () => Sprite.fromImage(`${tilePath}${tileStyle}/grain${tileFiletype}`),
+      Wood: () => Sprite.fromImage(`${tilePath}${tileStyle}/wood${tileFiletype}`),
+      Stone: () => Sprite.fromImage(`${tilePath}${tileStyle}/stone${tileFiletype}`),
+      Wool: () => Sprite.fromImage(`${tilePath}${tileStyle}/wool${tileFiletype}`),
+      Ocean: () => Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
+      House: () => Sprite.fromImage(`./img/pieces/house.png`),
+      City: () => Sprite.fromImage(`./img/pieces/city.png`),
+    }
+    return sprites;
   }
 
   private SetupCanvas(): void {
@@ -73,7 +75,7 @@ export default class Map extends Vue {
 
     this.viewport = new Viewport({
       screenWidth: this.width,
-      screenHeight: this.width,
+      screenHeight: this.height,
       interaction: this.app.renderer!.plugins.interaction,
     });
 
@@ -86,67 +88,118 @@ export default class Map extends Vue {
     this.$el.appendChild(this.app.view);
   }
 
+  private compareWorlds = (oldWorld: World, newWorld: World) => {
+    if (oldWorld === undefined) {
+      return [true, true];
+    }
+    const tiles = oldWorld.map !== newWorld.map;
+    const pieces = !oldWorld.thief 
+      || oldWorld.thief !== newWorld.thief 
+      || oldWorld.players !== newWorld.players;
+
+    return [tiles, pieces];
+  } 
+
+  private createPiece = (spriteType: string, dimensions: { x:number, y:number }, 
+    tint: number, coord: MatrixCoordinate) => {
+    const generator = this.sprites[spriteType];
+    const piece = generator();
+    piece.width = dimensions.x; 
+    piece.height = dimensions.y;
+    piece.tint = tint;
+    piece.position.x = coord.x; //TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9 
+    piece.position.y = coord.y; //TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9 
+    return piece;
+  };
+
+  private addPiecesToContainer = (p: Player, container: Container) => {
+    const color = p.color;
+    p.roads.forEach((r) => {
+      this.pieceGraphics.lineStyle(24, color);
+      const startScreenX = r.start.x; //TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9 
+      const startScreenY = r.start.y; //TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9 
+      const endScreenX = r.end.x;     //TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9 
+      const endScreenY = r.end.y;     //TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9 
+      this.pieceGraphics.moveTo(startScreenX, startScreenY);
+      this.pieceGraphics.lineTo(endScreenX, endScreenY);
+    });
+    p.houses.forEach((h) => {
+      const piece = this.createPiece('House', {x: 80, y: 80}, p.color, h.position);
+      container.addChild(piece);
+    });
+    p.cities.forEach((c) => {
+      const piece = this.createPiece('City', {x: 124, y: 124}, p.color, c.position);
+      container.addChild(piece);
+    });
+  }
+
+  private generateTile = (tile: Tile, corner, lineWidth) => {
+    const generator = this.sprites[tile.type.toString()];
+      const s = generator();
+      s.width = this.tileWidth;
+      s.height = this.tileHeight;
+      s.position.x = corner.x - this.tileWidth - lineWidth / 2;
+      s.position.y = corner.y - this.tileHeight / 2;
+      return s;
+      
+  }
+
   @Watch('world')
-  private DrawMap(oldWorld, newWorld): void {
-    let map: Tile[] = [];
-    if (newWorld) map = newWorld.map;
+  private DrawMap(oldWorld: World, newWorld: World): void {
+    if (!newWorld) return;
+    const compare = this.compareWorlds(oldWorld, newWorld);
+    const redrawTiles = compare[0];
+    const redrawPieces = compare[1];
+    let tileContainer: Container; 
+    let pieceContainer: Container;  
+    
+    if (redrawTiles) {
+      tileContainer = new PIXI.Container();
+      const map: Tile[] = !newWorld || !newWorld.map ? [] : newWorld.map;
+      const lineWidth = 24;
+      const Hex = extendHex({
+        size: 200,
+        orientation: 'flat',
+      });
+      const Grid = defineGrid(Hex);
+      const center = Hex(0, 0);
+      map.forEach((tile) => {
+        const hex = Hex(tile.coord.x, tile.coord.y);
+        const point = hex.toPoint();
+        const corners = hex.corners().map((corner) => corner.add(point));
+        const [firstCorner, ...otherCorners] = corners;
+        // Tiles
+        const tileSprite = this.generateTile(tile, firstCorner, lineWidth);
+        tileContainer.addChild(tileSprite);
+        // Hex lines
+        this.lineGraphics.lineStyle(lineWidth, 0xffffff);
+        this.lineGraphics.moveTo(firstCorner.x, firstCorner.y);
+        otherCorners.forEach(({ x, y }) => this.lineGraphics.lineTo(x, y));
+        this.lineGraphics.lineTo(firstCorner.x, firstCorner.y);
+      });
+    }
 
-    const lineWidth = 24;
-    const Hex = extendHex({
-      size: 200,
-      orientation: 'flat',
-    });
-    const Grid = defineGrid(Hex);
+    // Game pieces
+    if (redrawPieces) {
+      pieceContainer = new PIXI.Container();
+      newWorld.players.forEach((p) => {
+        this.addPiecesToContainer(p, pieceContainer);
+      })
+    }
 
-    const center = Hex(0, 0);
-    const lineGraphics = new Graphics();
-    const tileContainer = new PIXI.Container();
-    const pieceContainer = new PIXI.Container();
-    map.forEach((tile) => {
-      const hex = Hex(tile.coord.x, tile.coord.y);
-      const point = hex.toPoint();
-      const corners = hex.corners().map((corner) => corner.add(point));
-      const [firstCorner, ...otherCorners] = corners;
+    if (redrawTiles) {
+      this.tileGraphics.clear(); 
+      this.tileGraphics.addChild(tileContainer);
+    }
+    if (redrawPieces) {
+      this.pieceGraphics.clear();
+      this.pieceGraphics.addChild(pieceContainer);
+    }
 
-      // Tiles
-      const ss = this.getSprites();
-      let i = Math.floor(Math.random() * (ss.length - 1));
-      if (hex.distance(center) >= 12) {
-        i = ss.length - 1;
-      } // ocean
-      const s = ss[i];
-      s.position.x = firstCorner.x - this.tileWidth - lineWidth / 2;
-      s.position.y = firstCorner.y - this.tileHeight / 2;
-      tileContainer.addChild(s);
-
-      // Game pieces
-      if (Math.random() <= 0.2) {
-        const isHouse = Math.random() >= 0.5;
-        const piece = isHouse
-          ? Sprite.fromImage(`./img/pieces/house.png`)
-          : Sprite.fromImage(`./img/pieces/city.png`);
-        piece.tint = Math.random() * 0xffffff;
-        piece.width = isHouse ? 80 : 128;
-        piece.height = isHouse ? 80 : 128;
-        piece.position.x = firstCorner.x - piece.width / 2;
-        piece.position.y = firstCorner.y - piece.height / 2;
-        pieceContainer.addChild(piece);
-      }
-
-      // Hex lines
-      lineGraphics.lineStyle(lineWidth, 0xffffff);
-      lineGraphics.moveTo(firstCorner.x, firstCorner.y);
-      otherCorners.forEach(({ x, y }) => lineGraphics.lineTo(x, y));
-      lineGraphics.lineTo(firstCorner.x, firstCorner.y);
-    });
-
-    const tileGraphics = new Graphics();
-    const pieceGraphics = new Graphics();
-    tileGraphics.addChild(tileContainer);
-    pieceGraphics.addChild(pieceContainer);
-    this.viewport.addChild(tileGraphics);
-    this.viewport.addChild(lineGraphics);
-    this.viewport.addChild(pieceGraphics);
+    this.viewport.removeChildren();
+    this.viewport.addChild(this.tileGraphics);
+    this.viewport.addChild(this.lineGraphics);
+    this.viewport.addChild(this.pieceGraphics);
   }
 }
 </script>
