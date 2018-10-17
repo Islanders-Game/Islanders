@@ -1,5 +1,7 @@
 ![header](doc/header-simple.jpg "Pilgrims")
 
+[![Build Status](https://jenkins.anderswind.dk/buildStatus/icon?job=Pilgrims/master)](https://jenkins.anderswind.dk/job/Pilgrims/job/master/)
+
 A clone of the popular "Settlers of Catan", written in Typescript.
 
 To play run: 
