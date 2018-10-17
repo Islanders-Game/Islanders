@@ -1,5 +1,6 @@
 <template>
 <v-container fluid fill-height id="Map">
+    <span v-if="gameID" id=gameID>Tell your friends to join this game at: <b>{{gameID}}</b></span>
 </v-container>
 </template>
 
@@ -30,6 +31,10 @@ export default class Map extends Vue {
 
   get world() {
     return this.$store.state.game.world as World;
+  }
+
+  get gameID() {
+    return this.$store.getters['game/getGameId'];
   }
 
   private async mounted() {
@@ -208,5 +213,15 @@ export default class Map extends Vue {
 #Map {
   background-color: #e4e4e4;
   padding: 0px;
+}
+
+#gameID {
+  position: absolute;
+  top: 0;
+  background-color: rgba(255, 255, 255, 0.4);
+  text-align: left;
+  width: 100%;
+  padding-left: 6px;
+  font-size: 12px;
 }
 </style>

@@ -10,7 +10,7 @@
           <v-flex xs6>
             <v-layout column align-space-around justify-start fill-height>
               <v-layout row align-center justify-start>
-                <v-flex xs1>
+                <v-flex xs2>
                   <v-icon color="white">build</v-icon>
                 </v-flex>
                 <v-chip>
@@ -30,23 +30,18 @@
                 </v-chip>
               </v-layout>
               <v-layout row align-center justify-start>
-                <v-flex xs1>
+                <v-flex xs2>
                   <v-icon color="white">crop_portrait</v-icon>
-                </v-flex
-                ><v-chip>
-                  {{ devCardsLength }} dev-cards
-                </v-chip>
-                <v-flex xs1>
-                  <v-icon color="white">people</v-icon>
-                </v-flex>
-                <v-chip>
-                  {{ knightCardsLength }} knights
-                </v-chip>
-                <v-flex xs1>
                   <v-icon color="white">traffic</v-icon>
                 </v-flex>
                 <v-chip>
-                  {{ roadLength }} roads
+                  <v-avatar class="white">{{ devCardsLength }}</v-avatar> dev-cards
+                </v-chip>
+                <v-chip>
+                  <v-avatar class="white">{{ knightCardsLength }}</v-avatar> knights
+                </v-chip>
+                <v-chip>
+                  <v-avatar class="white">{{ roadLength }}</v-avatar> roads
                 </v-chip>
               </v-layout>
             </v-layout>
