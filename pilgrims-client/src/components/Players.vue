@@ -4,10 +4,7 @@
         <v-list-tile class="player-tile">
             <v-layout column>
                 <v-layout row align-center>
-                    <v-list-tile-avatar>
-                        <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
-                    </v-list-tile-avatar>
-                    <v-list-tile-title>Player1</v-list-tile-title>
+                    <v-list-tile-title>Player</v-list-tile-title>
                     <v-spacer></v-spacer>
                     <div style="display:contents">
                         2
@@ -39,10 +36,7 @@
         <v-list-tile class="player-tile">
             <v-layout column>
                 <v-layout row align-center>
-                    <v-list-tile-avatar>
-                        <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
-                    </v-list-tile-avatar>
-                    <v-list-tile-title>Player1</v-list-tile-title>
+                    <v-list-tile-title>Player</v-list-tile-title>
                     <v-spacer></v-spacer>
                     <div style="display:contents">
                         2
