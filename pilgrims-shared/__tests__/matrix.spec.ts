@@ -13,7 +13,7 @@ describe('neighbouringMatrixCoord', () => {
 
     result.forEach((element) => {
       expect(true).toEqual(
-        expected.some(({ x, y }) => element.x == x && element.y == y),
+        expected.some(({ x, y }) => element.x === x && element.y === y),
       );
     });
   });
@@ -50,7 +50,7 @@ describe('neighbouringHexCoord', () => {
   });
   test('Check correct output { x: 5, y: 2 }', () => {
     const point = { x: 5, y: 2 };
-    const expected = [{ x: 1, y: 1 }, { x: 1, y: 0 }, { x: 2, y: 0 }];
+    const expected = [{ x: 1, y: 0 }, { x: 2, y: 0 }, { x: 2, y: 1 }];
     const result = neighbouringHexCoord(point);
     expect(result.length).toEqual(expected.length);
     expect(result).toEqual(expect.arrayContaining(expected));
