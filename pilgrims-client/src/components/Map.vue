@@ -46,6 +46,38 @@ export default class Map extends Vue {
     return this.$store.getters['game/getGameId'];
   }
 
+  private handleClick(event) {
+    const distanceFunc = (point, element) => {
+      return Math.sqrt(
+        Math.pow(Math.abs(point.x - element.x), 2) +
+          Math.pow(Math.abs(point.y - element.y), 2),
+      );
+    };
+    const point = this.viewport.toWorld(
+      event.data.global.x,
+      event.data.global.y,
+    );
+    const hexToFind = this.grid.pointToHex(new Point(point.x, point.y));
+    let closestPoint = {
+      point: hexToFind.center(),
+      index: -1,
+      distance: distanceFunc(point, hexToFind.center()),
+    };
+    if (closestPoint.distance >= 100) {
+      const corners = hexToFind.corners();
+      for (let i = 0; i < corners.length; i++) {
+        const corner = corners[i];
+        const cornerDist = distanceFunc(point, corner);
+        if (closestPoint.distance >= cornerDist) {
+          closestPoint = { point: corner, index: i, distance: cornerDist };
+        }
+      }
+    }
+    console.log(
+      `corner ${closestPoint.index} distance: ${closestPoint.distance}`,
+    );
+  }
+
   private async mounted() {
     await this.$store.dispatch('game/bindToWorld');
     this.height = this.$el.clientHeight;
@@ -56,26 +88,7 @@ export default class Map extends Vue {
       that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
       that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
     });
-    that.viewport.addListener('pointerup', (event) => {
-      const point = that.viewport.toWorld(
-        event.data.global.x,
-        event.data.global.y,
-      );
-      const hexToFind = this.grid.pointToHex(new Point(point.x, point.y));
-      const corners = hexToFind.corners();
-      for (let i = 0; i < corners.length; i++) {
-        const corner = corners[i];
-        console.log(
-          `corner ${i} distance: ${Math.sqrt(
-            Math.pow(Math.abs(point.x - corner.x), 2) +
-              Math.pow(Math.abs(point.y - corner.y), 2),
-          )}`,
-        );
-      }
-      // hexToFind.center();
-      console.log(`x: ${point.x}, y: ${point.y}`);
-      console.log(`x: ${hexToFind.x}, y: ${hexToFind.y}`);
-    });
+    that.viewport.addListener('pointerup', this.handleClick);
   }
 
   private generateSprites(): { [s: string]: () => Sprite } {
