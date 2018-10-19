@@ -18,6 +18,7 @@ import {
   ruleReducer,
   ChatMessage,
   SocketActions,
+  Tile,
 } from '../../pilgrims-shared/dist/Shared';
 
 const app = express();
@@ -95,7 +96,11 @@ const setupSocketOnNamespace = (gameID: string) => {
       socket.on(SocketActions.startGame, () => {
         console.log(`Received a ${SocketActions.startGame} socket event`);
         startGame(gameID, nsp);
-      })
+      });
+      socket.on(SocketActions.newMap, (map: Tile[]) => {
+        console.log(`Received a ${SocketActions.newMap} socket event`);
+        updateMap(map, gameID, nsp);
+      });
       socket.on(SocketActions.chat, (chat: ChatMessage) => {
         console.log(`Received a ${SocketActions.chat} socket event`);
         chatMessage(chat, gameID, nsp);
@@ -159,6 +164,16 @@ const startGame = async (gameID: string, namespace: SocketIO.Namespace) => {
   await db.get('games').update(new ObjectId(gameID), result);
   namespace.emit(SocketActions.newWorld, success(result));
 }
+
+const updateMap = async (map: Tile[], gameID: string, namespace: SocketIO.Namespace) => {
+  const db = monk(mongoURL);
+  const dbResult = await db.get('games').findOne(new ObjectId(gameID));
+  const result = dbResult as World;
+  result.map = map;
+  await db.get('games').update(new ObjectId(gameID), result);
+  namespace.emit(SocketActions.newWorld, success(result));
+}
+
 
 async function addPlayer(gameID: string, name: string) {
   try {

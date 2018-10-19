@@ -6,4 +6,5 @@ export const SocketActions = {
     join: 'join',
     newWorld: 'world',
     startGame: 'startGame',
+    newMap: 'newMap',
 };

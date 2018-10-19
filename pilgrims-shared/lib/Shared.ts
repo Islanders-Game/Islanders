@@ -16,7 +16,11 @@ import { Road } from './Entities/Road';
 import { House } from './Entities/House';
 import { City } from './Entities/City';
 import { Purchaseable } from './Entities/Purchaseable';
-import { Tile } from './Tile';
+import {
+  Tile,
+  TileType,
+  DiceRollType,
+} from './Tile';
 import { World } from './World';
 import { GameRules } from './GameRules';
 import { Player } from './Player';
@@ -37,6 +41,7 @@ import {
   success,
   fail,
 } from './Result';
+import { WorldGenerator } from './WorldGenerator';
 
 export {
   Action,
@@ -51,6 +56,8 @@ export {
   Ship,
   Road,
   Tile,
+  TileType,
+  DiceRollType,
   Result,
   World,
   GameRules,
@@ -70,4 +77,5 @@ export {
   subtractResources,
   resourcesAreNonNegative,
   SocketActions,
+  WorldGenerator,
 };

@@ -10,7 +10,7 @@
           <v-flex xs6>
             <v-layout column align-space-around justify-start fill-height>
               <v-layout row align-center justify-start>
-
+                <v-btn @click="randomizeMap">Randomize Map</v-btn>
               </v-layout>
               <v-layout row align-center justify-start>
 
@@ -29,17 +29,29 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
+import { World, WorldGenerator, Tile } from '../../../pilgrims-shared/dist/Shared';
 @Component
 export default class CustomizeGame extends Vue {
   public playerName: string = undefined;
+  private worldGenerator: WorldGenerator;
 
   public constructor() {
     super();
     this.playerName = this.$store.getters['game/getPlayerName'];
+    this.worldGenerator = new WorldGenerator();
+  }
+
+  get world() {
+    return this.$store.state.game.world as World;
   }
 
   private async startGame() {
       await this.$store.dispatch('game/startGame');
+  }
+
+  private async randomizeMap() {
+    const map: Tile[] = this.worldGenerator.generateRandomMap();
+    await this.$store.dispatch('game/updateMap', map);
   }
 }
 </script>

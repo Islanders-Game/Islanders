@@ -146,7 +146,7 @@ export default class Map extends Vue {
   }
 
   @Watch('world')
-  private DrawMap(oldWorld: World, newWorld: World): void {
+  private DrawMap(newWorld: World, oldWorld: World): void {
     if (!newWorld) {
       return;
     }

@@ -10,6 +10,7 @@ import {
   World,
   SocketActions,
   Result,
+  Tile,
 } from '../../../../pilgrims-shared/dist/Shared';
 import { Socket, State as RootState } from '../store';
 // The state
@@ -79,6 +80,9 @@ const actions: ActionTree<State, State> = {
   },
   async startGame({ commit }: ActionContext<State, RootState>) {
     Socket.emit(SocketActions.startGame);
+  },
+  async updateMap({ commit }: ActionContext<State, RootState>, map: Tile[]) {
+    Socket.emit(SocketActions.newMap, map);
   },
 };
 
