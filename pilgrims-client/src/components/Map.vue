@@ -7,9 +7,22 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { defineGrid, extendHex } from 'honeycomb-grid';
-import { Graphics, Sprite, Application, Point, Texture, Container } from 'pixi.js';
+import {
+  Graphics,
+  Sprite,
+  Application,
+  Point,
+  Texture,
+  Container,
+} from 'pixi.js';
 import Viewport from 'pixi-viewport';
-import { World, Tile, Player, House, MatrixCoordinate } from '../../../pilgrims-shared/dist/Shared';
+import {
+  World,
+  Tile,
+  Player,
+  House,
+  MatrixCoordinate,
+} from '../../../pilgrims-shared/dist/Shared';
 
 @Component
 export default class Map extends Vue {
@@ -44,12 +57,20 @@ export default class Map extends Vue {
       that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
     });
     that.viewport.addListener('pointerup', (event) => {
-      const point = that.viewport.toWorld(event.data.global.x, event.data.global.y);
+      const point = that.viewport.toWorld(
+        event.data.global.x,
+        event.data.global.y,
+      );
       const hexToFind = this.grid.pointToHex(new Point(point.x, point.y));
       const corners = hexToFind.corners();
       for (let i = 0; i < corners.length; i++) {
         const corner = corners[i];
-        console.log(`corner ${i} distance: ${Math.sqrt(Math.pow(Math.abs(point.x - corner.x),2)+ Math.pow(Math.abs(point.y - corner.y),2))}`);
+        console.log(
+          `corner ${i} distance: ${Math.sqrt(
+            Math.pow(Math.abs(point.x - corner.x), 2) +
+              Math.pow(Math.abs(point.y - corner.y), 2),
+          )}`,
+        );
       }
       // hexToFind.center();
       console.log(`x: ${point.x}, y: ${point.y}`);
@@ -57,19 +78,26 @@ export default class Map extends Vue {
     });
   }
 
-    private generateSprites(): { [s: string]: () => Sprite } {
+  private generateSprites(): { [s: string]: () => Sprite } {
     const tilePath = './img/tilesets/';
     const tileFiletype = '.gif';
     const tileStyle = 'watercolor';
 
     const sprites = {
-      Clay: () => Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
-      Desert: () => Sprite.fromImage(`${tilePath}${tileStyle}/desert${tileFiletype}`),
-      Grain: () => Sprite.fromImage(`${tilePath}${tileStyle}/grain${tileFiletype}`),
-      Wood: () => Sprite.fromImage(`${tilePath}${tileStyle}/wood${tileFiletype}`),
-      Stone: () => Sprite.fromImage(`${tilePath}${tileStyle}/stone${tileFiletype}`),
-      Wool: () => Sprite.fromImage(`${tilePath}${tileStyle}/wool${tileFiletype}`),
-      Ocean: () => Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
+      Clay: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
+      Desert: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/desert${tileFiletype}`),
+      Grain: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/grain${tileFiletype}`),
+      Wood: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/wood${tileFiletype}`),
+      Stone: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/stone${tileFiletype}`),
+      Wool: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/wool${tileFiletype}`),
+      Ocean: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
       House: () => Sprite.fromImage(`./img/pieces/house.png`),
       City: () => Sprite.fromImage(`./img/pieces/city.png`),
     };
@@ -106,17 +134,20 @@ export default class Map extends Vue {
       return [true, true];
     }
     const tiles = oldWorld.map !== newWorld.map;
-    const pieces = !oldWorld.thief
-      || oldWorld.thief !== newWorld.thief
-      || oldWorld.players !== newWorld.players;
+    const pieces =
+      !oldWorld.thief ||
+      oldWorld.thief !== newWorld.thief ||
+      oldWorld.players !== newWorld.players;
 
     return [tiles, pieces];
-  }
+  };
 
   private createPiece = (
     spriteType: string,
-    dimensions: { x: number, y: number },
-    tint: number, coord: MatrixCoordinate) => {
+    dimensions: { x: number; y: number },
+    tint: number,
+    coord: MatrixCoordinate,
+  ) => {
     const generator = this.sprites[spriteType];
     const piece = generator();
     piece.width = dimensions.x;
@@ -125,7 +156,7 @@ export default class Map extends Vue {
     piece.position.x = coord.x; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
     piece.position.y = coord.y; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
     return piece;
-  }
+  };
 
   private addPiecesToContainer = (p: Player, container: Container) => {
     const color = p.color;
@@ -139,14 +170,24 @@ export default class Map extends Vue {
       this.pieceGraphics.lineTo(endScreenX, endScreenY);
     });
     p.houses.forEach((h) => {
-      const piece = this.createPiece('House', {x: 80, y: 80}, p.color, h.position);
+      const piece = this.createPiece(
+        'House',
+        { x: 80, y: 80 },
+        p.color,
+        h.position,
+      );
       container.addChild(piece);
     });
     p.cities.forEach((c) => {
-      const piece = this.createPiece('City', {x: 124, y: 124}, p.color, c.position);
+      const piece = this.createPiece(
+        'City',
+        { x: 124, y: 124 },
+        p.color,
+        c.position,
+      );
       container.addChild(piece);
     });
-  }
+  };
 
   private generateTile = (tile: Tile, corner, lineWidth) => {
     const generator = this.sprites[tile.type.toString()];
@@ -156,7 +197,7 @@ export default class Map extends Vue {
     s.position.x = corner.x - this.tileWidth - lineWidth / 2;
     s.position.y = corner.y - this.tileHeight / 2;
     return s;
-  }
+  };
 
   @Watch('world')
   private DrawMap(newWorld: World, oldWorld: World): void {
@@ -184,7 +225,8 @@ export default class Map extends Vue {
       this.lineGraphics.clear();
       map.forEach((tile) => {
         const hex = Hex(tile.coord.x, tile.coord.y);
-        const corners = hex.corners();
+        const point = hex.toPoint();
+        const corners = hex.corners().map((corner) => corner.add(point));
         const [firstCorner, ...otherCorners] = corners;
         // Tiles
         const tileSprite = this.generateTile(tile, firstCorner, lineWidth);
