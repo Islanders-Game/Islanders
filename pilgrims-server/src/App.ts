@@ -169,6 +169,10 @@ const updateMap = async (map: Tile[], gameID: string, namespace: SocketIO.Namesp
   const db = monk(mongoURL);
   const dbResult = await db.get('games').findOne(new ObjectId(gameID));
   const result = dbResult as World;
+  if (result.started) {
+    namespace.emit(SocketActions.newWorld, fail('You cannot update the map once the game has started'));
+    return;
+  }
   result.map = map;
   await db.get('games').update(new ObjectId(gameID), result);
   namespace.emit(SocketActions.newWorld, success(result));
