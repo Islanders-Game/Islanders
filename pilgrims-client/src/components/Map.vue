@@ -23,6 +23,7 @@ export default class Map extends Vue {
   private pieceGraphics: Graphics = new Graphics();
   private lineGraphics: Graphics = new Graphics();
   private sprites: { [s: string]: () => Sprite } = this.generateSprites();
+  private grid;
 
   get world() {
     return this.$store.state.game.world as World;
@@ -41,6 +42,18 @@ export default class Map extends Vue {
     addEventListener('resize', () => {
       that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
       that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
+    });
+    that.viewport.addListener('pointerup', (event) => {
+      const point = that.viewport.toWorld(event.data.global.x, event.data.global.y);
+      const hexToFind = this.grid.pointToHex(new Point(point.x, point.y));
+      const corners = hexToFind.corners();
+      for (let i = 0; i < corners.length; i++) {
+        const corner = corners[i];
+        console.log(`corner ${i} distance: ${Math.sqrt(Math.pow(Math.abs(point.x - corner.x),2)+ Math.pow(Math.abs(point.y - corner.y),2))}`);
+      }
+      // hexToFind.center();
+      console.log(`x: ${point.x}, y: ${point.y}`);
+      console.log(`x: ${hexToFind.x}, y: ${hexToFind.y}`);
     });
   }
 
@@ -164,15 +177,14 @@ export default class Map extends Vue {
         size: 200,
         orientation: 'flat',
       });
-      const Grid = defineGrid(Hex);
+      this.grid = defineGrid(Hex);
       const center = Hex(0, 0);
 
       this.lineGraphics.removeChildren();
       this.lineGraphics.clear();
       map.forEach((tile) => {
         const hex = Hex(tile.coord.x, tile.coord.y);
-        const point = hex.toPoint();
-        const corners = hex.corners().map((corner) => corner.add(point));
+        const corners = hex.corners();
         const [firstCorner, ...otherCorners] = corners;
         // Tiles
         const tileSprite = this.generateTile(tile, firstCorner, lineWidth);
