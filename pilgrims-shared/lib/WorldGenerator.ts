@@ -24,7 +24,7 @@ const randomDiceRoll = (): DiceRollType => {
 };
 
 export class WorldGenerator {
-    public size: number = 4;
+    public size: number = 3;
     public generateRandomMap(): Tile[] {
         const Hex = extendHex({
             orientation: 'flat',

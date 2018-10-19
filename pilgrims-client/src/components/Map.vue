@@ -166,6 +166,9 @@ export default class Map extends Vue {
       });
       const Grid = defineGrid(Hex);
       const center = Hex(0, 0);
+
+      this.lineGraphics.removeChildren();
+      this.lineGraphics.clear();
       map.forEach((tile) => {
         const hex = Hex(tile.coord.x, tile.coord.y);
         const point = hex.toPoint();
@@ -191,14 +194,15 @@ export default class Map extends Vue {
     }
 
     if (redrawTiles) {
+      this.tileGraphics.removeChildren();
       this.tileGraphics.clear();
       this.tileGraphics.addChild(tileContainer);
     }
     if (redrawPieces) {
+      this.pieceGraphics.removeChildren();
       this.pieceGraphics.clear();
       this.pieceGraphics.addChild(pieceContainer);
     }
-
     this.viewport.removeChildren();
     this.viewport.addChild(this.tileGraphics);
     this.viewport.addChild(this.lineGraphics);
