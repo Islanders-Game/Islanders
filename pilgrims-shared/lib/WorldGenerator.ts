@@ -24,18 +24,18 @@ const randomDiceRoll = (): DiceRollType => {
 };
 
 export class WorldGenerator {
-    public size: number = 3;
-    public generateRandomMap(): Tile[] {
+    public generateRandomMap(radius: number | undefined): Tile[] {
         const Hex = extendHex({
             orientation: 'flat',
         });
+        const r: number = radius !== undefined ? Number(radius) : 3;
         const Grid = defineGrid(Hex);
         const map: Tile[] = [];
         const center = Hex({ x: 0, y: 0});
-        Grid.hexagon({radius: this.size}).forEach((hex) => {
+        Grid.hexagon({radius: r}).forEach((hex) => {
             let tileType = randomTileType();
             let diceRoll = randomDiceRoll();
-            if (hex.distance(center) >= this.size) {
+            if (hex.distance(center) >= r) {
                 tileType = 'Ocean';
                 diceRoll = 'None';
             }

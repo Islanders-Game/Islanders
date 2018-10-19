@@ -13,7 +13,10 @@
                 <v-btn @click="randomizeMap">Randomize Map</v-btn>
               </v-layout>
               <v-layout row align-center justify-start>
-
+                <v-flex xs1>
+                  <v-text-field dark :mask="mask" v-model="radius" label="Map radius">
+                  </v-text-field>
+                </v-flex>
               </v-layout>
             </v-layout>
           </v-flex>
@@ -33,7 +36,10 @@ import { World, WorldGenerator, Tile } from '../../../pilgrims-shared/dist/Share
 @Component
 export default class CustomizeGame extends Vue {
   public playerName: string = undefined;
+  public mask = '##';
+  public radius: number = 0;
   private worldGenerator: WorldGenerator;
+
 
   public constructor() {
     super();
@@ -50,7 +56,7 @@ export default class CustomizeGame extends Vue {
   }
 
   private async randomizeMap() {
-    const map: Tile[] = this.worldGenerator.generateRandomMap();
+    const map: Tile[] = this.worldGenerator.generateRandomMap(this.radius);
     await this.$store.dispatch('game/updateMap', map);
   }
 }
