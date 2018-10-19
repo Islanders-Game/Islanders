@@ -18,20 +18,15 @@ const getterTree: GetterTree<State, any> = {};
 
 const mutationTree: MutationTree<State> = {};
 
+const host = `http://${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVERPORT}/`;
 const actionTree: ActionTree<any, any> = {
   async createGame({ commit }: ActionContext<any, any>, playerName: string) {
-    // todo use result to check for errors.
-    const { data } = await (
-      await Axios.get(`http://
-      ${process.env.VUE_APP_SERVER}:
-      ${process.env.VUE_APP_SERVERPORT}/newgame`)
+    const { data }: { data: string } = await (
+      await Axios.get(host + 'newgame')
     );
     const gameId = data;
 
-    const socket = io.connect(`
-    ${process.env.VUE_APP_SERVER}:
-    ${process.env.VUE_APP_SERVERPORT}/${gameId}`)
-    ;
+    const socket = io.connect(`${host}${gameId}`);
     socket.emit('join', playerName);
     Socket = socket;
 
@@ -42,18 +37,16 @@ const actionTree: ActionTree<any, any> = {
     { commit }: ActionContext<any, any>,
     gameStartInfo: { gameId: string; playerName: string },
   ) {
-    const { data }: { data: Result<string> } = await await Axios.get(
-      `http://${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVERPORT}/joingame?playerName=${
-        gameStartInfo.playerName
-      }&gameId=${gameStartInfo.gameId}`,
+    const query = `?playerName=${gameStartInfo.playerName}&gameId=${gameStartInfo.gameId}`;
+    const { data }: { data: Result<string> } = await (
+      await Axios.get(`${host}joingame${query}`)
     );
+
     if (data.tag === 'Failure') {
       throw Error(data.reason);
     }
 
-    const socket = io.connect(
-      `${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVERPORT}/${gameStartInfo.gameId}`,
-    );
+    const socket = io.connect(`${host}${gameStartInfo.gameId}`);
     socket.emit('join', gameStartInfo.playerName);
     Socket = socket;
 
