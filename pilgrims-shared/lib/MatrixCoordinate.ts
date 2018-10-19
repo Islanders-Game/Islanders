@@ -2,7 +2,7 @@ import { HexCoordinate } from './HexCoordinate';
 
 export interface MatrixCoordinate extends HexCoordinate {}
 
-export const neighbouringMatrixCoord = (
+export const neighbouringMatrixCoords = (
   coord: MatrixCoordinate,
 ): MatrixCoordinate[] => {
   const result: MatrixCoordinate[] = [];
@@ -31,7 +31,7 @@ export const neighbouringMatrixCoord = (
   return result;
 };
 
-export const neighbouringHexCoord = (
+export const neighbouringHexCoords = (
   coord: MatrixCoordinate,
 ): HexCoordinate[] => {
   const result: HexCoordinate[] = [];

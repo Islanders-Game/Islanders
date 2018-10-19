@@ -7,8 +7,8 @@ import {
 import { HexCoordinate } from './HexCoordinate';
 import {
   MatrixCoordinate,
-  neighbouringHexCoord,
-  neighbouringMatrixCoord,
+  neighbouringHexCoords,
+  neighbouringMatrixCoords,
 } from './MatrixCoordinate';
 import { Thief } from './Thief';
 import { Ship } from './Entities/Ship';
@@ -32,8 +32,8 @@ export {
   Resources,
   HexCoordinate,
   MatrixCoordinate,
-  neighbouringHexCoord,
-  neighbouringMatrixCoord,
+  neighbouringHexCoords,
+  neighbouringMatrixCoords,
   Thief,
   Ship,
   Road,
