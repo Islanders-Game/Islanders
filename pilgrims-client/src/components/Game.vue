@@ -9,7 +9,8 @@
           <Overview/>
         </v-flex>
       </v-layout>
-      <Player class="bottom-area"/>
+      <CustomizeGame v-if="!started"/>
+      <Player v-if="started"/>
     </v-layout>
   </v-container>
 </template>
@@ -19,17 +20,20 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import Overview from './Overview.vue';
 import Map from './Map.vue';
 import Player from './Player.vue';
+import CustomizeGame from './CustomizeGame.vue';
 
 @Component({
   components: {
     Overview,
     Map,
     Player,
+    CustomizeGame,
   },
 })
 export default class Game extends Vue {
-  @Prop()
-  private msg!: string;
+  get started() {
+    return this.$store.getters['game/getIsGameStarted'];
+  }
 }
 </script>
 

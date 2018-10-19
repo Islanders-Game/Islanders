@@ -40,6 +40,7 @@ app.get('/newgame', async (_, res) => {
     players: [],
     map: [{ type: 'Desert', diceRoll: 'None', coord: { x: 0, y: 0 } }],
     started: false,
+    gameRules: { gameType: 'original', maxCities: 15, maxHouses: 15, maxRoads: 15,pointsToWin: 10, rounds: -1},
   };
   const db = monk(mongoURL);
   const result = await db.get('games').insert(world);
@@ -91,6 +92,10 @@ const setupSocketOnNamespace = (gameID: string) => {
         console.log(`Received a ${SocketActions.turnEnd} socket event`);
         turnEnd(turn, gameID, nsp);
       });
+      socket.on(SocketActions.startGame, () => {
+        console.log(`Received a ${SocketActions.startGame} socket event`);
+        startGame(gameID, nsp);
+      })
       socket.on(SocketActions.chat, (chat: ChatMessage) => {
         console.log(`Received a ${SocketActions.chat} socket event`);
         chatMessage(chat, gameID, nsp);
@@ -145,6 +150,15 @@ const turnEnd = (turn: Turn, gameID: string, namespace: SocketIO.Namespace) => {
     namespace.emit(SocketActions.newWorld, res);
   });
 };
+
+const startGame = async (gameID: string, namespace: SocketIO.Namespace) => {
+  const db = monk(mongoURL);
+  const dbResult = await db.get('games').findOne(new ObjectId(gameID));
+  const result = dbResult as World;
+  result.started = true;
+  await db.get('games').update(new ObjectId(gameID), result);
+  namespace.emit(SocketActions.newWorld, success(result));
+}
 
 async function addPlayer(gameID: string, name: string) {
   try {

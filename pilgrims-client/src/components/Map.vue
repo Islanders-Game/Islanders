@@ -22,12 +22,7 @@ export default class Map extends Vue {
   private tileGraphics: Graphics = new Graphics();
   private pieceGraphics: Graphics = new Graphics();
   private lineGraphics: Graphics = new Graphics();
-  private sprites: { [s:string]: () => Sprite } = this.generateSprites();
-
-  @Watch('world')
-  onPropertyChanged(value: World, oldValue: World) {
-    // Do stuff with the watcher here.
-  }
+  private sprites: { [s: string]: () => Sprite } = this.generateSprites();
 
   get world() {
     return this.$store.state.game.world as World;
@@ -49,7 +44,7 @@ export default class Map extends Vue {
     });
   }
 
-    private generateSprites(): { [s:string]: () => Sprite } {
+    private generateSprites(): { [s: string]: () => Sprite } {
     const tilePath = './img/tilesets/';
     const tileFiletype = '.gif';
     const tileStyle = 'watercolor';
@@ -64,7 +59,7 @@ export default class Map extends Vue {
       Ocean: () => Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
       House: () => Sprite.fromImage(`./img/pieces/house.png`),
       City: () => Sprite.fromImage(`./img/pieces/city.png`),
-    }
+    };
     return sprites;
   }
 
@@ -98,33 +93,35 @@ export default class Map extends Vue {
       return [true, true];
     }
     const tiles = oldWorld.map !== newWorld.map;
-    const pieces = !oldWorld.thief 
-      || oldWorld.thief !== newWorld.thief 
+    const pieces = !oldWorld.thief
+      || oldWorld.thief !== newWorld.thief
       || oldWorld.players !== newWorld.players;
 
     return [tiles, pieces];
-  } 
+  }
 
-  private createPiece = (spriteType: string, dimensions: { x:number, y:number }, 
+  private createPiece = (
+    spriteType: string,
+    dimensions: { x: number, y: number },
     tint: number, coord: MatrixCoordinate) => {
     const generator = this.sprites[spriteType];
     const piece = generator();
-    piece.width = dimensions.x; 
+    piece.width = dimensions.x;
     piece.height = dimensions.y;
     piece.tint = tint;
-    piece.position.x = coord.x; //TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9 
-    piece.position.y = coord.y; //TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9 
+    piece.position.x = coord.x; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
+    piece.position.y = coord.y; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
     return piece;
-  };
+  }
 
   private addPiecesToContainer = (p: Player, container: Container) => {
     const color = p.color;
     p.roads.forEach((r) => {
       this.pieceGraphics.lineStyle(24, color);
-      const startScreenX = r.start.x; //TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9 
-      const startScreenY = r.start.y; //TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9 
-      const endScreenX = r.end.x;     //TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9 
-      const endScreenY = r.end.y;     //TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9 
+      const startScreenX = r.start.x; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
+      const startScreenY = r.start.y; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
+      const endScreenX = r.end.x; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
+      const endScreenY = r.end.y; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
       this.pieceGraphics.moveTo(startScreenX, startScreenY);
       this.pieceGraphics.lineTo(endScreenX, endScreenY);
     });
@@ -140,24 +137,25 @@ export default class Map extends Vue {
 
   private generateTile = (tile: Tile, corner, lineWidth) => {
     const generator = this.sprites[tile.type.toString()];
-      const s = generator();
-      s.width = this.tileWidth;
-      s.height = this.tileHeight;
-      s.position.x = corner.x - this.tileWidth - lineWidth / 2;
-      s.position.y = corner.y - this.tileHeight / 2;
-      return s;
-      
+    const s = generator();
+    s.width = this.tileWidth;
+    s.height = this.tileHeight;
+    s.position.x = corner.x - this.tileWidth - lineWidth / 2;
+    s.position.y = corner.y - this.tileHeight / 2;
+    return s;
   }
 
   @Watch('world')
   private DrawMap(oldWorld: World, newWorld: World): void {
-    if (!newWorld) return;
+    if (!newWorld) {
+      return;
+    }
     const compare = this.compareWorlds(oldWorld, newWorld);
     const redrawTiles = compare[0];
     const redrawPieces = compare[1];
-    let tileContainer: Container; 
-    let pieceContainer: Container;  
-    
+    let tileContainer: Container;
+    let pieceContainer: Container;
+
     if (redrawTiles) {
       tileContainer = new PIXI.Container();
       const map: Tile[] = !newWorld || !newWorld.map ? [] : newWorld.map;
@@ -189,11 +187,11 @@ export default class Map extends Vue {
       pieceContainer = new PIXI.Container();
       newWorld.players.forEach((p) => {
         this.addPiecesToContainer(p, pieceContainer);
-      })
+      });
     }
 
     if (redrawTiles) {
-      this.tileGraphics.clear(); 
+      this.tileGraphics.clear();
       this.tileGraphics.addChild(tileContainer);
     }
     if (redrawPieces) {

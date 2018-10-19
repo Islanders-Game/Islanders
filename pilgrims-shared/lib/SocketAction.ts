@@ -5,4 +5,5 @@ export const SocketActions = {
     turnEnd: 'turnEnd',
     join: 'join',
     newWorld: 'world',
+    startGame: 'startGame',
 };

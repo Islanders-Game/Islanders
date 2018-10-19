@@ -42,6 +42,12 @@ const getters: GetterTree<State, any> = {
     }
     return state.world.players.find((x) => x.name === name);
   },
+  getIsGameStarted(state: State): boolean {
+    if (!state.world) {
+      return false;
+    }
+    return state.world.started;
+  },
 };
 
 // Synchrounous setters MutationTree<local state, root state>
@@ -55,18 +61,24 @@ const mutations: MutationTree<State> = {
   setWorld(state: State, world: World) {
     state.world = world;
   },
+  setStarted(state: State, started: boolean) {
+    state.world.started = started;
+  },
 };
 
 // Async methods
 const actions: ActionTree<State, State> = {
   async bindToWorld({ commit }: ActionContext<State, RootState>) {
     // Connect to socket and setup listener for listening to events.
-    Socket.on('world', (world: Result<World>) => {
+    Socket.on(SocketActions.newWorld, (world: Result<World>) => {
       if (world.tag === 'Success') {
         commit('setWorld', world.world);
       }
     });
     Socket.emit(SocketActions.getWorld);
+  },
+  async startGame({ commit }: ActionContext<State, RootState>) {
+    Socket.emit(SocketActions.startGame);
   },
 };
 

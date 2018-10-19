@@ -57,10 +57,10 @@ export default class Players extends Vue {
   get players(): PlayerState[] {
     return this.$store.getters['game/getPlayers'];
   }
-  playerPoints(name: string) {
+  private playerPoints(name: string) {
     return 0; // todo
   }
-  playerResources(player: PlayerState) {
+  private playerResources(player: PlayerState) {
     return (
       (player.resources.wood ? player.resources.wood : 0) +
       (player.resources.stone ? player.resources.stone : 0) +
@@ -69,13 +69,13 @@ export default class Players extends Vue {
       (player.resources.wool ? player.resources.wool : 0)
     );
   }
-  playerDevCards(player: PlayerState) {
+  private playerDevCards(player: PlayerState) {
     return player.devCards.filter((x) => x.type !== 'Knight').length;
   }
-  playerKnightCards(player: PlayerState) {
+  private playerKnightCards(player: PlayerState) {
     return player.devCards.filter((x) => x.type === 'Knight').length;
   }
-  playerRoad(player: PlayerState) {
+  private playerRoad(player: PlayerState) {
     return player.roads.length; // todo longest path :P
   }
 }

@@ -7,7 +7,7 @@
                 <v-toolbar dark color="primary">
                   <v-toolbar-title>Pilgrims</v-toolbar-title>
                   <v-spacer></v-spacer>
-                  <v-btn-toggle class="transparent" v-model="toggle_exclusive">
+                  <v-btn-toggle class="transparent" v-model="toggle">
                       <v-btn :value="2" flat @click="isCreatingGame = true">Create</v-btn>
                       <v-btn flat @click="isCreatingGame = false">Join</v-btn>
                     </v-btn-toggle>
@@ -66,7 +66,7 @@ export default class StartGame extends Vue {
   public isCreatingGame = true;
   public playerName: string = '';
   public gameId: string = '';
-  public toggle_exclusive = 2;
+  public toggle = 2;
 
   public async createGame() {
     if (!this.validatePlayerName) {

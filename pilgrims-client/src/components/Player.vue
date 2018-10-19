@@ -75,7 +75,7 @@ export default class Player extends Vue {
     return this.$store.getters['game/getPlayer'](this.playerName);
   }
 
-  resourceCount(type: string) {
+  private resourceCount(type: string) {
     const player = this.player;
     if (!player) {
       return 0;

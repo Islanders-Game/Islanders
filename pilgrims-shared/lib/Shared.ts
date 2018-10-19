@@ -18,12 +18,25 @@ import { City } from './Entities/City';
 import { Purchaseable } from './Entities/Purchaseable';
 import { Tile } from './Tile';
 import { World } from './World';
+import { GameRules } from './GameRules';
 import { Player } from './Player';
 import { Action } from './Action';
-import { Rules, purchase, Rule, ruleReducer, rules } from './Rules';
+import {
+  Rules,
+  purchase,
+  Rule,
+  ruleReducer,
+  rules,
+} from './Rules';
 import { ChatMessage } from './ChatMessage';
 import { SocketActions } from './SocketAction';
-import { Result, Failure, Success, success, fail } from './Result';
+import {
+  Result,
+  Failure,
+  Success,
+  success,
+  fail,
+} from './Result';
 
 export {
   Action,
@@ -40,6 +53,7 @@ export {
   Tile,
   Result,
   World,
+  GameRules,
   Purchaseable,
   Player,
   House,

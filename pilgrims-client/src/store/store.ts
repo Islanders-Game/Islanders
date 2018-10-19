@@ -21,10 +21,17 @@ const mutationTree: MutationTree<State> = {};
 const actionTree: ActionTree<any, any> = {
   async createGame({ commit }: ActionContext<any, any>, playerName: string) {
     // todo use result to check for errors.
-    const { data } = await (await Axios.get(`http://${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVERPORT}/newgame`));
+    const { data } = await (
+      await Axios.get(`http://
+      ${process.env.VUE_APP_SERVER}:
+      ${process.env.VUE_APP_SERVERPORT}/newgame`)
+    );
     const gameId = data;
 
-    const socket = io.connect(`${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVERPORT}/${gameId}`);
+    const socket = io.connect(`
+    ${process.env.VUE_APP_SERVER}:
+    ${process.env.VUE_APP_SERVERPORT}/${gameId}`)
+    ;
     socket.emit('join', playerName);
     Socket = socket;
 
@@ -44,7 +51,9 @@ const actionTree: ActionTree<any, any> = {
       throw Error(data.reason);
     }
 
-    const socket = io.connect(`${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVERPORT}/${gameStartInfo.gameId}`);
+    const socket = io.connect(
+      `${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVERPORT}/${gameStartInfo.gameId}`,
+    );
     socket.emit('join', gameStartInfo.playerName);
     Socket = socket;
 
