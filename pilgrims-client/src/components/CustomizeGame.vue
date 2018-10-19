@@ -37,7 +37,7 @@ import { World, WorldGenerator, Tile } from '../../../pilgrims-shared/dist/Share
 export default class CustomizeGame extends Vue {
   public playerName: string = undefined;
   public mask = '##';
-  public radius: number = 0;
+  public radius: number = 3;
   private worldGenerator: WorldGenerator;
 
 
