@@ -58,6 +58,7 @@ export default class Map extends Vue {
       event.data.global.y,
     );
     const hexToFind = this.grid.pointToHex(new Point(point.x, point.y));
+    debugger;
     let closestPoint = {
       point: hexToFind.center(),
       index: -1,
