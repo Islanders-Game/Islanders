@@ -13,9 +13,14 @@
                 <v-btn @click="randomizeMap">Randomize Map</v-btn>
               </v-layout>
               <v-layout row align-center justify-start>
-                <v-flex xs1>
-                  <v-text-field dark :mask="mask" v-model="radius" label="Map radius">
-                  </v-text-field>
+                <v-flex xs3 style="margin: 6px 8px">
+                  <v-slider dark 
+                    v-model="radius"
+                    thumb-label
+                    label="Radius"
+                    max="30"
+                    min="1"
+                  ></v-slider>
                 </v-flex>
               </v-layout>
             </v-layout>
