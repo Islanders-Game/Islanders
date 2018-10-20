@@ -37,8 +37,10 @@ export default class Map extends Vue {
   private tileGraphics: Graphics = new Graphics();
   private pieceGraphics: Graphics = new Graphics();
   private lineGraphics: Graphics = new Graphics();
+  private cursorGraphics: Graphics = new Graphics();
   private sprites: { [s: string]: () => Sprite } = this.generateSprites();
   private grid;
+  private isBuilding = true;
 
   get world() {
     return this.$store.state.game.world as World;
@@ -53,52 +55,56 @@ export default class Map extends Vue {
     return map.find((tile) => tile.coord.x === hex.x && tile.coord.y === hex.y);
   }
 
-  private handleClick(event) {
-    const distanceFunc = (point, element) => {
-      return Math.sqrt(
-        Math.pow(Math.abs(point.x - element.x), 2) +
-          Math.pow(Math.abs(point.y - element.y), 2),
-      );
+
+
+  private handle(event) {
+    const getClosestPoint = (point: Point, center: {x:number, y:number}) => {
+      const distanceFunc = (point, element) => {
+        return Math.sqrt(
+          Math.pow(Math.abs(point.x - element.x), 2) +
+            Math.pow(Math.abs(point.y - element.y), 2),
+        );
+      };
+
+      const distance = distanceFunc(point, center);
+      if (distance >= this.hexSize * 0.5) {
+        let closestPoint = undefined;
+        const corners = hexToFind.corners();
+        for (let i = 0; i < corners.length; i++) {
+          const corner = corners[i];
+          corner.x += hexOrigin.x;
+          corner.y += hexOrigin.y;
+          const cornerDist = distanceFunc(point, corner);
+          if (distance >= cornerDist) {
+            closestPoint = { point: corner, index: i, distance: cornerDist };
+          }
+        }
+        return closestPoint;
+      }
     };
-    const point = this.viewport.toWorld(
-      event.data.global.x,
-      event.data.global.y,
-    );
-    const hexToFind = this.grid.pointToHex(point);
+
+    if (!this.isBuilding) return;
+    const inWorld = this.viewport.toWorld(event.data.global);
+    const hexToFind = this.grid.pointToHex(inWorld);
     const hexOrigin = hexToFind.toPoint();
     const centerOfHex = {
       x: hexOrigin.x + hexToFind.width() / 2,
       y: hexOrigin.y + hexToFind.height() / 2,
     };
-    let closestPoint = {
-      point: centerOfHex,
-      index: -1,
-      distance: distanceFunc(point, centerOfHex),
-    };
-    if (closestPoint.distance >= this.hexSize / 2) {
-      const corners = hexToFind.corners();
-      for (let i = 0; i < corners.length; i++) {
-        const corner = corners[i];
-        corner.x += hexOrigin.x;
-        corner.y += hexOrigin.y;
-        const cornerDist = distanceFunc(point, corner);
-        if (closestPoint.distance >= cornerDist) {
-          closestPoint = { point: corner, index: i, distance: cornerDist };
-        }
-      }
-    }
-
-    if (closestPoint.index !== -1) {
-      const mCoord = getMatrixCoordCorner(hexToFind, closestPoint.index);
-      console.log(
-        `Corner ${closestPoint.index}: x: ${mCoord.x}, y: ${mCoord.y}`,
-      );
-    } else {
-      console.log(
-        `Center ${this.findTile(hexToFind).type}: x: ${hexToFind.x}, y: ${
-          hexToFind.y
-        }`,
-      );
+    const closest = getClosestPoint(inWorld, centerOfHex);
+    if (closest) {
+      this.cursorGraphics.clear();
+      this.cursorGraphics.removeChildren();
+      const s = Sprite.fromImage(`./img/pieces/house.png`);
+      s.tint = 0xFF0000;
+      s.alpha = 0.6;
+      s.anchor.x = 0.5;
+      s.anchor.y = 0.5;
+      s.height = 100;
+      s.width = 100;
+      s.x = closest.point.x;
+      s.y = closest.point.y;
+      this.cursorGraphics.addChild(s);
     }
   }
 
@@ -112,7 +118,7 @@ export default class Map extends Vue {
       that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
       that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
     });
-    that.viewport.addListener('pointerup', this.handleClick);
+    that.viewport.on('mousemove', this.handle);
   }
 
   private generateSprites(): { [s: string]: () => Sprite } {
@@ -164,6 +170,10 @@ export default class Map extends Vue {
       .wheel()
       .decelerate();
     this.$el.appendChild(this.app.view);
+    this.viewport.addChild(this.tileGraphics);
+    this.viewport.addChild(this.lineGraphics);
+    this.viewport.addChild(this.pieceGraphics);
+    this.viewport.addChild(this.cursorGraphics);
   }
 
   private compareWorlds(oldWorld: World, newWorld: World) {
@@ -190,8 +200,8 @@ export default class Map extends Vue {
     piece.width = dimensions.x;
     piece.height = dimensions.y;
     piece.tint = tint;
-    piece.position.x = coord.x; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
-    piece.position.y = coord.y; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
+    piece.position.x = coord.x;
+    piece.position.y = coord.y;
     return piece;
   }
 
@@ -199,10 +209,10 @@ export default class Map extends Vue {
     const color = p.color;
     p.roads.forEach((r) => {
       this.pieceGraphics.lineStyle(24, color);
-      const startScreenX = r.start.x; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
-      const startScreenY = r.start.y; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
-      const endScreenX = r.end.x; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
-      const endScreenY = r.end.y; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
+      const startScreenX = r.start.x;
+      const startScreenY = r.start.y;
+      const endScreenX = r.end.x;
+      const endScreenY = r.end.y;
       this.pieceGraphics.moveTo(startScreenX, startScreenY);
       this.pieceGraphics.lineTo(endScreenX, endScreenY);
     });
@@ -294,10 +304,6 @@ export default class Map extends Vue {
       this.pieceGraphics.clear();
       this.pieceGraphics.addChild(pieceContainer);
     }
-    this.viewport.removeChildren();
-    this.viewport.addChild(this.tileGraphics);
-    this.viewport.addChild(this.lineGraphics);
-    this.viewport.addChild(this.pieceGraphics);
   }
 }
 </script>
