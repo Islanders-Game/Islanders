@@ -64,15 +64,21 @@ export default class Map extends Vue {
       event.data.global.y,
     );
     const hexToFind = this.grid.pointToHex(new Point(point.x, point.y));
+    const centerOfHex = {
+      x: hexToFind.toPoint().x + hexToFind.width() / 2,
+      y: hexToFind.toPoint().y + hexToFind.height() / 2,
+    };
     let closestPoint = {
-      point: hexToFind.center(),
+      point: centerOfHex,
       index: -1,
-      distance: distanceFunc(point, hexToFind.center()),
+      distance: distanceFunc(point, centerOfHex),
     };
     if (closestPoint.distance >= 100) {
       const corners = hexToFind.corners();
       for (let i = 0; i < corners.length; i++) {
-        const corner = corners[i];
+        let corner = corners[i];
+        corner.x += hexToFind.toPoint().x;
+        corner.y += hexToFind.toPoint().y;
         const cornerDist = distanceFunc(point, corner);
         if (closestPoint.distance >= cornerDist) {
           closestPoint = { point: corner, index: i, distance: cornerDist };
