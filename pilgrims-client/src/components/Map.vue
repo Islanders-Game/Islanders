@@ -22,6 +22,7 @@ import {
   Player,
   House,
   MatrixCoordinate,
+  getMatrixCoordCorner,
 } from '../../../pilgrims-shared/dist/Shared';
 
 @Component
@@ -46,6 +47,11 @@ export default class Map extends Vue {
     return this.$store.getters['game/getGameId'];
   }
 
+  private findTile(hex) {
+    const map = this.world.map;
+    return map.find((tile) => tile.coord.x === hex.x && tile.coord.y === hex.y);
+  }
+
   private handleClick(event) {
     const distanceFunc = (point, element) => {
       return Math.sqrt(
@@ -58,7 +64,6 @@ export default class Map extends Vue {
       event.data.global.y,
     );
     const hexToFind = this.grid.pointToHex(new Point(point.x, point.y));
-    debugger;
     let closestPoint = {
       point: hexToFind.center(),
       index: -1,
@@ -74,9 +79,19 @@ export default class Map extends Vue {
         }
       }
     }
-    console.log(
-      `corner ${closestPoint.index} distance: ${closestPoint.distance}`,
-    );
+
+    if (closestPoint.index !== -1) {
+      const mCoord = getMatrixCoordCorner(hexToFind, closestPoint.index);
+      console.log(
+        `Corner ${closestPoint.index}: x: ${mCoord.x}, y: ${mCoord.y}`,
+      );
+    } else {
+      console.log(
+        `Center ${this.findTile(hexToFind).type}: x: ${hexToFind.x}, y: ${
+          hexToFind.y
+        }`,
+      );
+    }
   }
 
   private async mounted() {
@@ -143,7 +158,7 @@ export default class Map extends Vue {
     this.$el.appendChild(this.app.view);
   }
 
-  private compareWorlds = (oldWorld: World, newWorld: World) => {
+  private compareWorlds(oldWorld: World, newWorld: World) {
     if (oldWorld === undefined) {
       return [true, true];
     }
@@ -154,14 +169,14 @@ export default class Map extends Vue {
       oldWorld.players !== newWorld.players;
 
     return [tiles, pieces];
-  };
+  }
 
-  private createPiece = (
+  private createPiece(
     spriteType: string,
     dimensions: { x: number; y: number },
     tint: number,
     coord: MatrixCoordinate,
-  ) => {
+  ) {
     const generator = this.sprites[spriteType];
     const piece = generator();
     piece.width = dimensions.x;
@@ -170,9 +185,9 @@ export default class Map extends Vue {
     piece.position.x = coord.x; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
     piece.position.y = coord.y; // TODO: See issue: https://github.com/Awia00/Pilgrims/issues/9
     return piece;
-  };
+  }
 
-  private addPiecesToContainer = (p: Player, container: Container) => {
+  private addPiecesToContainer(p: Player, container: Container) {
     const color = p.color;
     p.roads.forEach((r) => {
       this.pieceGraphics.lineStyle(24, color);
@@ -201,9 +216,9 @@ export default class Map extends Vue {
       );
       container.addChild(piece);
     });
-  };
+  }
 
-  private generateTile = (tile: Tile, corner, lineWidth) => {
+  private generateTile(tile: Tile, corner, lineWidth) {
     const generator = this.sprites[tile.type.toString()];
     const s = generator();
     s.width = this.tileWidth;
@@ -211,7 +226,7 @@ export default class Map extends Vue {
     s.position.x = corner.x - this.tileWidth - lineWidth / 2;
     s.position.y = corner.y - this.tileHeight / 2;
     return s;
-  };
+  }
 
   @Watch('world')
   private DrawMap(newWorld: World, oldWorld: World): void {
