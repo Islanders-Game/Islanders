@@ -32,7 +32,7 @@ export interface Rules {
     playerID: string,
     coordinates: HexCoordinate,
   ) => (w: Result<World>) => Result<World>;
-  BuyCard: (playerID: string) => (w: Result<World>) => Result<World>;
+  BuyCard: (playerID: string, card: DevelopmentCard) => (w: Result<World>) => Result<World>;
   PlayCard: (
     playerID: string,
     card: DevelopmentCard,
