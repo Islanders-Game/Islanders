@@ -7,14 +7,29 @@
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { defineGrid, extendHex } from 'honeycomb-grid';
-import { Graphics, Sprite, Application, Point, Texture, Container } from 'pixi.js';
+import {
+  Graphics,
+  Sprite,
+  Application,
+  Point,
+  Texture,
+  Container,
+} from 'pixi.js';
 import Viewport from 'pixi-viewport';
-import { World, Tile, Player, House, MatrixCoordinate } from '../../../pilgrims-shared/dist/Shared';
+import {
+  World,
+  Tile,
+  Player,
+  House,
+  MatrixCoordinate,
+  getMatrixCoordCorner,
+} from '../../../pilgrims-shared/dist/Shared';
 
 @Component
 export default class Map extends Vue {
   private height: number;
   private width: number;
+  private hexSize: number = 200;
   private tileHeight: number = 348;
   private tileWidth: number = 400;
   private app: Application;
@@ -23,6 +38,7 @@ export default class Map extends Vue {
   private pieceGraphics: Graphics = new Graphics();
   private lineGraphics: Graphics = new Graphics();
   private sprites: { [s: string]: () => Sprite } = this.generateSprites();
+  private grid;
 
   get world() {
     return this.$store.state.game.world as World;
@@ -30,6 +46,60 @@ export default class Map extends Vue {
 
   get gameID() {
     return this.$store.getters['game/getGameId'];
+  }
+
+  private findTile(hex) {
+    const map = this.world.map;
+    return map.find((tile) => tile.coord.x === hex.x && tile.coord.y === hex.y);
+  }
+
+  private handleClick(event) {
+    const distanceFunc = (point, element) => {
+      return Math.sqrt(
+        Math.pow(Math.abs(point.x - element.x), 2) +
+          Math.pow(Math.abs(point.y - element.y), 2),
+      );
+    };
+    const point = this.viewport.toWorld(
+      event.data.global.x,
+      event.data.global.y,
+    );
+    const hexToFind = this.grid.pointToHex(point);
+    const hexOrigin = hexToFind.toPoint();
+    const centerOfHex = {
+      x: hexOrigin.x + hexToFind.width() / 2,
+      y: hexOrigin.y + hexToFind.height() / 2,
+    };
+    let closestPoint = {
+      point: centerOfHex,
+      index: -1,
+      distance: distanceFunc(point, centerOfHex),
+    };
+    if (closestPoint.distance >= this.hexSize / 2) {
+      const corners = hexToFind.corners();
+      for (let i = 0; i < corners.length; i++) {
+        const corner = corners[i];
+        corner.x += hexOrigin.x;
+        corner.y += hexOrigin.y;
+        const cornerDist = distanceFunc(point, corner);
+        if (closestPoint.distance >= cornerDist) {
+          closestPoint = { point: corner, index: i, distance: cornerDist };
+        }
+      }
+    }
+
+    if (closestPoint.index !== -1) {
+      const mCoord = getMatrixCoordCorner(hexToFind, closestPoint.index);
+      console.log(
+        `Corner ${closestPoint.index}: x: ${mCoord.x}, y: ${mCoord.y}`,
+      );
+    } else {
+      console.log(
+        `Center ${this.findTile(hexToFind).type}: x: ${hexToFind.x}, y: ${
+          hexToFind.y
+        }`,
+      );
+    }
   }
 
   private async mounted() {
@@ -42,21 +112,29 @@ export default class Map extends Vue {
       that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
       that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
     });
+    that.viewport.addListener('pointerup', this.handleClick);
   }
 
-    private generateSprites(): { [s: string]: () => Sprite } {
+  private generateSprites(): { [s: string]: () => Sprite } {
     const tilePath = './img/tilesets/';
     const tileFiletype = '.gif';
     const tileStyle = 'watercolor';
 
     const sprites = {
-      Clay: () => Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
-      Desert: () => Sprite.fromImage(`${tilePath}${tileStyle}/desert${tileFiletype}`),
-      Grain: () => Sprite.fromImage(`${tilePath}${tileStyle}/grain${tileFiletype}`),
-      Wood: () => Sprite.fromImage(`${tilePath}${tileStyle}/wood${tileFiletype}`),
-      Stone: () => Sprite.fromImage(`${tilePath}${tileStyle}/stone${tileFiletype}`),
-      Wool: () => Sprite.fromImage(`${tilePath}${tileStyle}/wool${tileFiletype}`),
-      Ocean: () => Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
+      Clay: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
+      Desert: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/desert${tileFiletype}`),
+      Grain: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/grain${tileFiletype}`),
+      Wood: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/wood${tileFiletype}`),
+      Stone: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/stone${tileFiletype}`),
+      Wool: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/wool${tileFiletype}`),
+      Ocean: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
       House: () => Sprite.fromImage(`./img/pieces/house.png`),
       City: () => Sprite.fromImage(`./img/pieces/city.png`),
     };
@@ -88,22 +166,25 @@ export default class Map extends Vue {
     this.$el.appendChild(this.app.view);
   }
 
-  private compareWorlds = (oldWorld: World, newWorld: World) => {
+  private compareWorlds(oldWorld: World, newWorld: World) {
     if (oldWorld === undefined) {
       return [true, true];
     }
     const tiles = oldWorld.map !== newWorld.map;
-    const pieces = !oldWorld.thief
-      || oldWorld.thief !== newWorld.thief
-      || oldWorld.players !== newWorld.players;
+    const pieces =
+      !oldWorld.thief ||
+      oldWorld.thief !== newWorld.thief ||
+      oldWorld.players !== newWorld.players;
 
     return [tiles, pieces];
   }
 
-  private createPiece = (
+  private createPiece(
     spriteType: string,
-    dimensions: { x: number, y: number },
-    tint: number, coord: MatrixCoordinate) => {
+    dimensions: { x: number; y: number },
+    tint: number,
+    coord: MatrixCoordinate,
+  ) {
     const generator = this.sprites[spriteType];
     const piece = generator();
     piece.width = dimensions.x;
@@ -114,7 +195,7 @@ export default class Map extends Vue {
     return piece;
   }
 
-  private addPiecesToContainer = (p: Player, container: Container) => {
+  private addPiecesToContainer(p: Player, container: Container) {
     const color = p.color;
     p.roads.forEach((r) => {
       this.pieceGraphics.lineStyle(24, color);
@@ -126,16 +207,26 @@ export default class Map extends Vue {
       this.pieceGraphics.lineTo(endScreenX, endScreenY);
     });
     p.houses.forEach((h) => {
-      const piece = this.createPiece('House', {x: 80, y: 80}, p.color, h.position);
+      const piece = this.createPiece(
+        'House',
+        { x: 80, y: 80 },
+        p.color,
+        h.position,
+      );
       container.addChild(piece);
     });
     p.cities.forEach((c) => {
-      const piece = this.createPiece('City', {x: 124, y: 124}, p.color, c.position);
+      const piece = this.createPiece(
+        'City',
+        { x: 124, y: 124 },
+        p.color,
+        c.position,
+      );
       container.addChild(piece);
     });
   }
 
-  private generateTile = (tile: Tile, corner, lineWidth) => {
+  private generateTile(tile: Tile, corner, lineWidth) {
     const generator = this.sprites[tile.type.toString()];
     const s = generator();
     s.width = this.tileWidth;
@@ -161,10 +252,10 @@ export default class Map extends Vue {
       const map: Tile[] = !newWorld || !newWorld.map ? [] : newWorld.map;
       const lineWidth = 24;
       const Hex = extendHex({
-        size: 200,
+        size: this.hexSize,
         orientation: 'flat',
       });
-      const Grid = defineGrid(Hex);
+      this.grid = defineGrid(Hex);
       const center = Hex(0, 0);
 
       this.lineGraphics.removeChildren();
