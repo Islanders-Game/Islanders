@@ -214,25 +214,24 @@ const applyTurn = async (id: string, turn: Turn) => {
 const mapRules = (actions: Action[]): Result<Rule[]> => {
   if (!actions) return { tag: 'Failure', reason: 'No rules given!' };
   const mapped: (Rule | string)[] = actions.map((a) => {
-    if (a.buildCity)
-      return rules.BuildCity(a.buildCity.playerID, a.buildCity.coordinates);
-    if (a.buildHouse)
-      return rules.BuildHouse(a.buildHouse.playerID, a.buildHouse.coordinates);
-    if (a.buildRoad)
+    if (a.type === 'buildCity')
+      return rules.BuildCity(a.parameters.playerID, a.parameters.coordinates);
+    if (a.type === 'buildHouse')
+      return rules.BuildHouse(a.parameters.playerID, a.parameters.coordinates);
+    if (a.type === 'buildRoad')
       return rules.BuildRoad(
-        a.buildRoad.playerID,
-        a.buildRoad.start,
-        a.buildRoad.end,
+        a.parameters.playerID,
+        a.parameters.start,
+        a.parameters.end,
       );
-    if (a.buyCard) return rules.BuyCard(a.buyCard.playerID);
-    if (a.moveThief)
-      return rules.MoveThief(a.moveThief.playerID, a.moveThief.coordinates);
-    if (a.playCard) return rules.PlayCard(a.playCard.playerID, a.playCard.card);
-    if (a.trade)
+    if (a.type === 'buyCard') return rules.BuyCard(a.parameters.playerID, a.parameters.card);
+    if (a.type === 'playCard') return rules.PlayCard(a.parameters.playerID, a.parameters.card);
+    if (a.type === 'placeThief') return rules.MoveThief(a.parameters.playerID, a.parameters.coordinates);
+    if (a.type === 'trade')
       return rules.Trade(
-        a.trade.playerID,
-        a.trade.otherPlayerID,
-        a.trade.resources,
+        a.parameters.playerID,
+        a.parameters.otherPlayerID,
+        a.parameters.resources,
       );
     return `Could not map Action: { ${Object.keys(a).join(', ')} }!`;
   });
