@@ -1,6 +1,7 @@
 <template>
 <v-container fluid fill-height id="Map">
     <span v-if="gameID" id=gameID>Tell your friends to join this game at: <b>{{gameID}}</b></span>
+    <v-alert id="error" dismissible :value="error" type="error"> {{error}}</v-alert> 
 </v-container>
 </template>
 
@@ -50,12 +51,14 @@ export default class Map extends Vue {
     return this.$store.getters['game/getGameId'];
   }
 
+  get error() {
+    return this.$store.getters['game/getError'];
+  }
+
   private findTile(hex) {
     const map = this.world.map;
     return map.find((tile) => tile.coord.x === hex.x && tile.coord.y === hex.y);
   }
-
-
 
   private handle(event) {
     const getClosestPoint = (point: Point, center: {x:number, y:number}) => {
@@ -312,6 +315,11 @@ export default class Map extends Vue {
 #Map {
   background-color: #e4e4e4;
   padding: 0px;
+}
+
+#error {
+  position: absolute;
+  top: 2%;
 }
 
 #gameID {

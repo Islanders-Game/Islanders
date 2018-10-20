@@ -48,7 +48,9 @@ import Players from './Players.vue';
     Log,
   },
 })
-export default class Overview extends Vue {}
+export default class Overview extends Vue {
+  
+}
 </script>
 
 <style scoped lang="scss">

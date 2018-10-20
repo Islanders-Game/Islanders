@@ -18,6 +18,7 @@ export class State {
   public gameId: string = undefined;
   public playerName: string = undefined;
   public world: World = undefined;
+  public error: string = undefined;
 }
 
 // Synchrounous getters: GetterTree<local state, root state>
@@ -30,6 +31,9 @@ const getters: GetterTree<State, any> = {
   },
   getWorld(state: State): World {
     return state.world;
+  },
+  getError(state: State): string {
+    return state.error;
   },
   getPlayers(state: State): Player[] {
     if (!state.world) {
@@ -62,6 +66,9 @@ const mutations: MutationTree<State> = {
   setWorld(state: State, world: World) {
     state.world = world;
   },
+  setFailure(state: State, reason: string) {
+    state.error = reason;
+  },
   setStarted(state: State, started: boolean) {
     state.world.started = started;
   },
@@ -71,10 +78,11 @@ const mutations: MutationTree<State> = {
 const actions: ActionTree<State, State> = {
   async bindToWorld({ commit }: ActionContext<State, RootState>) {
     // Connect to socket and setup listener for listening to events.
-    Socket.on(SocketActions.newWorld, (world: Result<World>) => {
-      if (world.tag === 'Success') {
-        commit('setWorld', world.world);
+    Socket.on(SocketActions.newWorld, (result: Result<World>) => {
+      if (result.tag === 'Success') {
+        commit('setWorld', result.world);
       }
+      if (result.tag === 'Failure') { commit('setError', result.reason); }
     });
     Socket.emit(SocketActions.getWorld);
   },
