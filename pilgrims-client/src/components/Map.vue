@@ -29,6 +29,7 @@ import {
 export default class Map extends Vue {
   private height: number;
   private width: number;
+  private hexSize: number = 200;
   private tileHeight: number = 348;
   private tileWidth: number = 400;
   private app: Application;
@@ -63,22 +64,23 @@ export default class Map extends Vue {
       event.data.global.x,
       event.data.global.y,
     );
-    const hexToFind = this.grid.pointToHex(new Point(point.x, point.y));
+    const hexToFind = this.grid.pointToHex(point);
+    const hexOrigin = hexToFind.toPoint();
     const centerOfHex = {
-      x: hexToFind.toPoint().x + hexToFind.width() / 2,
-      y: hexToFind.toPoint().y + hexToFind.height() / 2,
+      x: hexOrigin.x + hexToFind.width() / 2,
+      y: hexOrigin.y + hexToFind.height() / 2,
     };
     let closestPoint = {
       point: centerOfHex,
       index: -1,
       distance: distanceFunc(point, centerOfHex),
     };
-    if (closestPoint.distance >= 100) {
+    if (closestPoint.distance >= this.hexSize / 2) {
       const corners = hexToFind.corners();
       for (let i = 0; i < corners.length; i++) {
-        let corner = corners[i];
-        corner.x += hexToFind.toPoint().x;
-        corner.y += hexToFind.toPoint().y;
+        const corner = corners[i];
+        corner.x += hexOrigin.x;
+        corner.y += hexOrigin.y;
         const cornerDist = distanceFunc(point, corner);
         if (closestPoint.distance >= cornerDist) {
           closestPoint = { point: corner, index: i, distance: cornerDist };
@@ -250,7 +252,7 @@ export default class Map extends Vue {
       const map: Tile[] = !newWorld || !newWorld.map ? [] : newWorld.map;
       const lineWidth = 24;
       const Hex = extendHex({
-        size: 200,
+        size: this.hexSize,
         orientation: 'flat',
       });
       this.grid = defineGrid(Hex);
