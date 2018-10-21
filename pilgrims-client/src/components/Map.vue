@@ -43,6 +43,19 @@ export default class Map extends Vue {
   private grid;
   private isBuilding = true;
 
+  private async mounted() {
+    await this.$store.dispatch('game/bindToWorld');
+    this.height = this.$el.clientHeight;
+    this.width = this.$el.clientWidth;
+    this.SetupCanvas();
+    const that = this;
+    addEventListener('resize', () => {
+      that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
+      that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
+    });
+    that.viewport.on('mousemove', this.handle);
+  }
+
   get world() {
     return this.$store.state.game.world as World;
   }
@@ -60,35 +73,37 @@ export default class Map extends Vue {
     return map.find((tile) => tile.coord.x === hex.x && tile.coord.y === hex.y);
   }
 
-  private handle(event) {
-    const getClosestPoint = (
-      point: Point,
-      center: { x: number; y: number },
-    ) => {
-      const distanceFunc = (from, to) => {
-        return Math.sqrt(
-          Math.pow(Math.abs(from.x - to.x), 2) +
-            Math.pow(Math.abs(from.y - to.y), 2),
-        );
-      };
-
-      const distance = distanceFunc(point, center);
-      if (distance >= this.hexSize * 0.5) {
-        let closestPoint;
-        const corners = hexToFind.corners();
-        for (let i = 0; i < corners.length; i++) {
-          const corner = corners[i];
-          corner.x += hexOrigin.x;
-          corner.y += hexOrigin.y;
-          const cornerDist = distanceFunc(point, corner);
-          if (distance >= cornerDist) {
-            closestPoint = { point: corner, index: i, distance: cornerDist };
-          }
-        }
-        return closestPoint;
-      }
+  private getClosestPoint = (
+    point: Point,
+    center: { x: number; y: number },
+    hexToFind,
+    hexOrigin,
+  ) => {
+    const distanceFunc = (from, to) => {
+      return Math.sqrt(
+        Math.pow(Math.abs(from.x - to.x), 2) +
+          Math.pow(Math.abs(from.y - to.y), 2),
+      );
     };
 
+    const distance = distanceFunc(point, center);
+    if (distance >= this.hexSize * 0.5) {
+      let closestPoint;
+      const corners = hexToFind.corners();
+      for (let i = 0; i < corners.length; i++) {
+        const corner = corners[i];
+        corner.x += hexOrigin.x;
+        corner.y += hexOrigin.y;
+        const cornerDist = distanceFunc(point, corner);
+        if (distance >= cornerDist) {
+          closestPoint = { point: corner, index: i, distance: cornerDist };
+        }
+      }
+      return closestPoint;
+    }
+  };
+
+  private handle(event) {
     if (!this.isBuilding) {
       return;
     }
@@ -99,7 +114,12 @@ export default class Map extends Vue {
       x: hexOrigin.x + hexToFind.width() / 2,
       y: hexOrigin.y + hexToFind.height() / 2,
     };
-    const closest = getClosestPoint(inWorld, centerOfHex);
+    const closest = this.getClosestPoint(
+      inWorld,
+      centerOfHex,
+      hexToFind,
+      hexOrigin,
+    );
     if (closest) {
       this.cursorGraphics.clear();
       this.cursorGraphics.removeChildren();
@@ -114,19 +134,6 @@ export default class Map extends Vue {
       s.y = closest.point.y;
       this.cursorGraphics.addChild(s);
     }
-  }
-
-  private async mounted() {
-    await this.$store.dispatch('game/bindToWorld');
-    this.height = this.$el.clientHeight;
-    this.width = this.$el.clientWidth;
-    this.SetupCanvas();
-    const that = this;
-    addEventListener('resize', () => {
-      that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
-      that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
-    });
-    that.viewport.on('mousemove', this.handle);
   }
 
   private generateSprites(): { [s: string]: () => Sprite } {
