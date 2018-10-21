@@ -25,7 +25,7 @@ const app = express();
 const server = http.createServer(app);
 const io = socket.listen(server);
 dotenv.config();
-const mongoURL = `${process.env.MONGO_URL}:${process.env.MONGO_PORT}/pilgrims`
+const mongoURL = `${process.env.MONGO_URL}:${process.env.MONGO_PORT}/pilgrims`;
 
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -41,7 +41,14 @@ app.get('/newgame', async (_, res) => {
     players: [],
     map: [{ type: 'Desert', diceRoll: 'None', coord: { x: 0, y: 0 } }],
     started: false,
-    gameRules: { gameType: 'original', maxCities: 15, maxHouses: 15, maxRoads: 15,pointsToWin: 10, rounds: -1},
+    gameRules: {
+      gameType: 'original',
+      maxCities: 15,
+      maxHouses: 15,
+      maxRoads: 15,
+      pointsToWin: 10,
+      rounds: -1,
+    },
   };
   const db = monk(mongoURL);
   const result = await db.get('games').insert(world);
@@ -163,21 +170,27 @@ const startGame = async (gameID: string, namespace: SocketIO.Namespace) => {
   result.started = true;
   await db.get('games').update(new ObjectId(gameID), result);
   namespace.emit(SocketActions.newWorld, success(result));
-}
+};
 
-const updateMap = async (map: Tile[], gameID: string, namespace: SocketIO.Namespace) => {
+const updateMap = async (
+  map: Tile[],
+  gameID: string,
+  namespace: SocketIO.Namespace,
+) => {
   const db = monk(mongoURL);
   const dbResult = await db.get('games').findOne(new ObjectId(gameID));
   const result = dbResult as World;
   if (result.started) {
-    namespace.emit(SocketActions.newWorld, fail('You cannot update the map once the game has started'));
+    namespace.emit(
+      SocketActions.newWorld,
+      fail('You cannot update the map once the game has started'),
+    );
     return;
   }
   result.map = map;
   await db.get('games').update(new ObjectId(gameID), result);
   namespace.emit(SocketActions.newWorld, success(result));
-}
-
+};
 
 async function addPlayer(gameID: string, name: string) {
   try {
@@ -214,26 +227,24 @@ const applyTurn = async (id: string, turn: Turn) => {
 const mapRules = (actions: Action[]): Result<Rule[]> => {
   if (!actions) return { tag: 'Failure', reason: 'No rules given!' };
   const mapped: (Rule | string)[] = actions.map((a) => {
-    if (a.type === 'buildCity')
-      return rules.BuildCity(a.parameters.playerID, a.parameters.coordinates);
-    if (a.type === 'buildHouse')
-      return rules.BuildHouse(a.parameters.playerID, a.parameters.coordinates);
-    if (a.type === 'buildRoad')
-      return rules.BuildRoad(
-        a.parameters.playerID,
-        a.parameters.start,
-        a.parameters.end,
-      );
-    if (a.type === 'buyCard') return rules.BuyCard(a.parameters.playerID, a.parameters.card);
-    if (a.type === 'playCard') return rules.PlayCard(a.parameters.playerID, a.parameters.card);
-    if (a.type === 'placeThief') return rules.MoveThief(a.parameters.playerID, a.parameters.coordinates);
-    if (a.type === 'trade')
-      return rules.Trade(
-        a.parameters.playerID,
-        a.parameters.otherPlayerID,
-        a.parameters.resources,
-      );
-    return `Could not map Action: { ${Object.keys(a).join(', ')} }!`;
+    switch (a.type) {
+      case 'buildCity':
+        return rules.BuildCity(a);
+      case 'buildHouse':
+        return rules.BuildHouse(a);
+      case 'buildRoad':
+        return rules.BuildRoad(a);
+      case 'buyCard':
+        return rules.BuyCard(a);
+      case 'playCard':
+        return rules.PlayCard(a);
+      case 'placeThief':
+        return rules.MoveThief(a);
+      case 'trade':
+        return rules.Trade(a);
+      default:
+        return `Could not map Action: { ${Object.keys(a).join(', ')} }!`;
+    }
   });
   if (mapped.some((r) => typeof r === 'string')) {
     const reasons = mapped.filter((r) => typeof r === 'string').join(', ');

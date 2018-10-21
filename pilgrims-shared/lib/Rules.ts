@@ -12,36 +12,25 @@ import { Road } from './Entities/Road';
 import { City } from './Entities/City';
 import { House } from './Entities/House';
 import { Player } from './Player';
+import {
+  BuildHouseAction,
+  BuildCityAction,
+  BuildRoadAction,
+  PlaceThiefAction,
+  BuyCardAction,
+  PlayCardAction,
+  TradeAction,
+} from './Action';
 
 export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
-  BuildHouse: (
-    playerID: string,
-    coordinates: MatrixCoordinate,
-  ) => (w: Result<World>) => Result<World>;
-  BuildCity: (
-    playerID: string,
-    coordinates: MatrixCoordinate,
-  ) => (w: Result<World>) => Result<World>;
-  BuildRoad: (
-    playerID: string,
-    start: MatrixCoordinate,
-    end: MatrixCoordinate,
-  ) => (w: Result<World>) => Result<World>;
-  MoveThief: (
-    playerID: string,
-    coordinates: HexCoordinate,
-  ) => (w: Result<World>) => Result<World>;
-  BuyCard: (playerID: string, card: DevelopmentCard) => (w: Result<World>) => Result<World>;
-  PlayCard: (
-    playerID: string,
-    card: DevelopmentCard,
-  ) => (w: Result<World>) => Result<World>;
-  Trade: (
-    playerID: string,
-    otherPlayerID: string,
-    resources: Resources,
-  ) => (w: Result<World>) => Result<World>;
+  BuildHouse: (data: BuildHouseAction) => (w: Result<World>) => Result<World>;
+  BuildCity: (data: BuildCityAction) => (w: Result<World>) => Result<World>;
+  BuildRoad: (data: BuildRoadAction) => (w: Result<World>) => Result<World>;
+  MoveThief: (data: PlaceThiefAction) => (w: Result<World>) => Result<World>;
+  BuyCard: (data: BuyCardAction) => (w: Result<World>) => Result<World>;
+  PlayCard: (data: PlayCardAction) => (w: Result<World>) => Result<World>;
+  Trade: (data: TradeAction) => (w: Result<World>) => Result<World>;
 }
 
 export const ruleReducer = (
@@ -53,35 +42,35 @@ export const ruleReducer = (
 // ---- Rule implementations ----
 //
 export const rules: Rules = {
-  BuildHouse: (id, coordinates) => (w) => {
+  BuildHouse: ({ type, parameters }) => (w) => {
     if (w.tag === 'Failure') {
       return w;
     }
-    const player = findPlayer(id)(w);
+    const player = findPlayer(parameters.playerID)(w);
     const purchased = purchase(new House().cost)(player)(w);
-    const placed = placeHouse(coordinates)(player)(purchased);
+    const placed = placeHouse(parameters.coordinates)(player)(purchased);
     return placed;
   },
-  BuildCity: (id, coordinates) => (w) => {
+  BuildCity: ({ type, parameters }) => (w) => {
     if (w.tag === 'Failure') {
       return w;
     }
-    const player = findPlayer(id)(w);
+    const player = findPlayer(parameters.playerID)(w);
     const purchased = purchase(new City().cost)(player)(w);
-    return placeCity(coordinates)(player)(purchased);
+    return placeCity(parameters.coordinates)(player)(purchased);
   },
-  BuildRoad: (id, start, end) => (w) => {
+  BuildRoad: ({ type, parameters }) => (w) => {
     if (w.tag === 'Failure') {
       return w;
     }
-    const player = findPlayer(id)(w);
+    const player = findPlayer(parameters.playerID)(w);
     const purchased = purchase(new Road().cost)(player)(w);
-    return placeRoad(start, end)(player)(purchased);
+    return placeRoad(parameters.start, parameters.end)(player)(purchased);
   },
-  MoveThief: (p, { x, y }) => (w) => w, // TODO: Implement rules.
-  BuyCard: (p) => (w) => w,
-  PlayCard: (p, c) => (w) => w,
-  Trade: (p1, p2) => (w) => w,
+  MoveThief: ({ type, parameters }) => (w) => w, // TODO: Implement rules.
+  BuyCard: ({ type, parameters }) => (w) => w,
+  PlayCard: ({ type, parameters }) => (w) => w,
+  Trade: ({ type, parameters }) => (w) => w,
 };
 
 export const purchase = (cost: Resources) => (p: Result<Player>) => (
