@@ -80,7 +80,7 @@ const actions: ActionTree<State, RootState> = {
     // Connect to socket and setup listener for listening to events.
     Socket.on(SocketActions.newWorld, (result: Result<World>) => {
       if (result.tag === 'Success') {
-        commit('setWorld', result.world);
+        commit('setWorld', result.value);
       }
       if (result.tag === 'Failure') {
         commit('setError', result.reason);

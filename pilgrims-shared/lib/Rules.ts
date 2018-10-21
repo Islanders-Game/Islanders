@@ -80,21 +80,21 @@ export const purchase = (cost: Resources) => (p: Result<Player>) => (
   if (p.tag === 'Failure') {
     return p;
   }
-  const resources = subtractResources(p.world.resources, cost);
+  const resources = subtractResources(p.value.resources, cost);
   if (!resourcesAreNonNegative(resources)) {
-    return fail(`Player ${p.world.id} cannot afford this.`);
+    return fail(`Player ${p.value.id} cannot afford this.`);
   }
-  const players = r.world.players.map(
-    (pl) => (pl.id === p.world.id ? { ...p.world, resources } : pl),
+  const players = r.value.players.map(
+    (pl) => (pl.id === p.value.id ? { ...p.value, resources } : pl),
   );
-  return success({ ...r.world, players });
+  return success({ ...r.value, players });
 };
 
 const findPlayer = (name: string) => (r: Result<World>) => {
   if (r.tag === 'Failure') {
     return r;
   }
-  const player = r.world.players.find((pl) => pl.name === name);
+  const player = r.value.players.find((pl) => pl.name === name);
   if (!player) {
     return fail(`Player ${name} not found.`);
   }
@@ -110,7 +110,7 @@ const placeHouse = (coord: MatrixCoordinate) => (p: Result<Player>) => (
   if (p.tag === 'Failure') {
     return p;
   }
-  const allHouses = r.world.players.reduce(
+  const allHouses = r.value.players.reduce(
     (acc: House[], p) => acc.concat(p.houses),
     [],
   );
@@ -126,11 +126,11 @@ const placeHouse = (coord: MatrixCoordinate) => (p: Result<Player>) => (
   if (!canPlace) {
     return fail('Cannot place a house here!');
   }
-  const addedHouse = p.world.houses.concat([new House(coord)]);
-  const players = r.world.players.map(
-    (pl) => (pl.id === p.world.id ? { ...p.world, houses: addedHouse } : pl),
+  const addedHouse = p.value.houses.concat([new House(coord)]);
+  const players = r.value.players.map(
+    (pl) => (pl.id === p.value.id ? { ...p.value, houses: addedHouse } : pl),
   );
-  return success({ ...r.world, players });
+  return success({ ...r.value, players });
 };
 
 const placeCity = (coord: MatrixCoordinate) => (p: Result<Player>) => (
@@ -142,18 +142,18 @@ const placeCity = (coord: MatrixCoordinate) => (p: Result<Player>) => (
   if (p.tag === 'Failure') {
     return p;
   }
-  const canPlace = p.world.houses.some(
+  const canPlace = p.value.houses.some(
     (h) => h.position.x === coord.x && h.position.y === coord.y,
   );
   if (!canPlace) {
     return fail('Cannot place a house here!');
   }
-  const houses = p.world.houses.filter((h) => h.position !== coord);
-  const cities = p.world.cities.concat([new City(coord)]);
-  const players = r.world.players.map(
-    (pl) => (pl.id === p.world.id ? { ...p.world, houses, cities } : pl),
+  const houses = p.value.houses.filter((h) => h.position !== coord);
+  const cities = p.value.cities.concat([new City(coord)]);
+  const players = r.value.players.map(
+    (pl) => (pl.id === p.value.id ? { ...p.value, houses, cities } : pl),
   );
-  return success({ ...r.world, players });
+  return success({ ...r.value, players });
 };
 
 const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
@@ -165,15 +165,15 @@ const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
   if (p.tag === 'Failure') {
     return p;
   }
-  const canPlace = p.world.roads.some(
+  const canPlace = p.value.roads.some(
     (ro) => ro.start !== start && ro.end !== end,
   );
   if (!canPlace) {
     return fail('Cannot place a road here!');
   }
-  const roads = p.world.roads.concat([new Road(start, end)]);
-  const players = r.world.players.map(
-    (pl) => (pl.id === p.world.id ? { ...p.world, roads } : pl),
+  const roads = p.value.roads.concat([new Road(start, end)]);
+  const players = r.value.players.map(
+    (pl) => (pl.id === p.value.id ? { ...p.value, roads } : pl),
   );
-  return success({ ...r.world, players });
+  return success({ ...r.value, players });
 };

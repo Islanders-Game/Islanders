@@ -7,14 +7,22 @@ import { success, fail, World } from '../../pilgrims-shared/dist/Shared';
 import { GameSocket } from './GameSocket';
 import { GameService } from './services/GameService';
 import { ChatService } from './services/ChatService';
+import { GameRepository } from './repositories/GameRepository';
 
 const app = express();
 const server = http.createServer(app);
 dotenv.config();
 const mongoURL = `${process.env.MONGO_URL}:${process.env.MONGO_PORT}/pilgrims`;
-const gameService = new GameService(mongoURL);
-const chatService = new ChatService(mongoURL);
-const gameSocket = new GameSocket(server, gameService, chatService);
+
+const gameRepository = new GameRepository(mongoURL);
+const gameService = new GameService(gameRepository);
+const chatService = new ChatService();
+const gameSocket = new GameSocket(
+  server,
+  gameService,
+  chatService,
+  gameRepository,
+);
 
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');

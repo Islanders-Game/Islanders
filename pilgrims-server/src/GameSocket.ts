@@ -10,20 +10,24 @@ import { World } from '../../pilgrims-shared/dist/World';
 import { Turn } from '../../pilgrims-shared/dist/Turn';
 import { Tile } from '../../pilgrims-shared/dist/Tile';
 import { ChatService } from './services/ChatService';
+import { GameRepository } from './repositories/GameRepository';
 
 export class GameSocket {
   private io: SocketIO.Server;
   private gameService: GameService;
   private chatService: ChatService;
+  private gameRepository: GameRepository;
 
   constructor(
     server: http.Server,
     gameService: GameService,
     chatService: ChatService,
+    gameRepository: GameRepository,
   ) {
     this.io = socket.listen(server);
     this.gameService = gameService;
     this.chatService = chatService;
+    this.gameRepository = gameRepository;
   }
 
   public setupSocketOnNamespace(gameID: string) {
@@ -39,7 +43,7 @@ export class GameSocket {
           console.log(`Received a ${SocketActions.getWorld} socket event`);
           socket.emit(
             SocketActions.newWorld,
-            await this.gameService.findWorld(gameID),
+            await this.gameRepository.getWorld(gameID),
           );
         });
         socket.on(SocketActions.initWorld, (init: World) => {

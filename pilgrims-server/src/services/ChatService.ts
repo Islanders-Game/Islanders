@@ -1,11 +1,6 @@
 import { ChatMessage } from '../../../pilgrims-shared/dist/Shared';
 
 export class ChatService {
-  private mongoURL: string;
-  constructor(dbConnectionString: string) {
-    this.mongoURL = dbConnectionString;
-  }
-
   public chatMessage(
     chat: ChatMessage,
     gameID: string,

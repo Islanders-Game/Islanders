@@ -12,13 +12,12 @@ import {
   Rule,
   rules,
 } from '../../../pilgrims-shared/dist/Shared';
-import monk from 'monk';
-import { ObjectId } from 'bson';
+import { GameRepository } from '../repositories/GameRepository';
 
 export class GameService {
-  private mongoURL: string;
-  constructor(dbConnectionString: string) {
-    this.mongoURL = dbConnectionString;
+  private gameRepository: GameRepository;
+  constructor(gameRepository: GameRepository) {
+    this.gameRepository = gameRepository;
   }
 
   public async initWorld(
@@ -30,22 +29,22 @@ export class GameService {
     if (!init || !gameID) return;
     console.info(`'init_world' on game ${gameID} with world:`);
     console.info(init);
-    const r = await this.findWorld(gameID);
-    if (r.tag === 'Success' && !r.world.started) {
-      const db = monk(this.mongoURL);
-      await db.get('games').insert(init);
-      db.close();
+    const r = await this.gameRepository.getWorld(gameID);
+    if (r.tag === 'Success' && !r.value.started) {
+      await this.gameRepository.createGame(init);
       namespace.emit(SocketActions.newWorld, init);
     }
   }
 
   public async startGame(gameID: string, namespace: SocketIO.Namespace) {
-    const db = monk(this.mongoURL);
-    const dbResult = await db.get('games').findOne(new ObjectId(gameID));
-    const result = dbResult as World;
-    result.started = true;
-    await db.get('games').update(new ObjectId(gameID), result);
-    namespace.emit(SocketActions.newWorld, success(result));
+    const result = await this.gameRepository.getWorld(gameID);
+    if (result.tag === 'Failure') {
+      console.log(result.reason);
+      return;
+    }
+    result.value.started = true;
+    await this.gameRepository.updateGame(gameID, result.value);
+    namespace.emit(SocketActions.newWorld, result);
   }
 
   public turnEnd(turn: Turn, gameID: string, namespace: SocketIO.Namespace) {
@@ -63,31 +62,33 @@ export class GameService {
     gameID: string,
     namespace: SocketIO.Namespace,
   ) {
-    const db = monk(this.mongoURL);
-    const dbResult = await db.get('games').findOne(new ObjectId(gameID));
-    const result = dbResult as World;
-    if (result.started) {
+    const result = await this.gameRepository.getWorld(gameID);
+    if (result.tag === 'Failure') {
+      console.log(result.reason);
+      return;
+    }
+
+    if (result.value.started) {
       namespace.emit(
         SocketActions.newWorld,
         fail('You cannot update the map once the game has started'),
       );
       return;
     }
-    result.map = map;
-    await db.get('games').update(new ObjectId(gameID), result);
+    result.value.map = map;
+    await this.gameRepository.updateGame(gameID, result.value);
     namespace.emit(SocketActions.newWorld, success(result));
   }
 
   public async addPlayer(gameID: string, name: string) {
     try {
-      const result: Result<World> = await this.findWorld(gameID);
+      const result: Result<World> = await this.gameRepository.getWorld(gameID);
       if (result.tag === 'Failure') return result;
       const player = new Player(name);
-      const players = result.world.players.concat([player]);
-      const world = { ...result.world, players };
-      const db = monk(this.mongoURL);
-      await db.get('games').update(new ObjectId(gameID), world);
-      db.close();
+      const players = result.value.players.concat([player]);
+      const world = { ...result.value, players };
+
+      await this.gameRepository.updateGame(gameID, world);
       return { tag: 'Success', world };
     } catch (ex) {
       return {
@@ -100,42 +101,29 @@ export class GameService {
   public async applyTurn(id: string, turn: Turn) {
     const toApply = this.mapRules(turn.actions);
     if (toApply.tag === 'Failure') return toApply;
-    const result = await this.findWorld(id);
+    const result = await this.gameRepository.getWorld(id);
     if (result.tag === 'Failure') return result;
-    if (!result.world.started)
+    if (!result.value.started)
       return { tag: 'Failure', reason: 'Game is not started!' };
-    const apply = toApply.world.reduce(ruleReducer, result);
-    const db = monk(this.mongoURL);
-    await db.get('games').insert(apply);
+    const apply = toApply.value.reduce(ruleReducer, result);
+    if (apply.tag === 'Failure') return apply;
+
+    await this.gameRepository.updateGame(id, apply.value);
     return apply;
   }
 
   public async applyAction(id: string, action: Action) {
     const toApply = this.mapRules([action]);
     if (toApply.tag === 'Failure') return toApply;
-    const result = await this.findWorld(id);
+    const result = await this.gameRepository.getWorld(id);
     if (result.tag === 'Failure') return result;
-    if (!result.world.started)
+    if (!result.value.started)
       return { tag: 'Failure', reason: 'Game is not started!' };
-    const apply = toApply.world.reduce(ruleReducer, result);
-    const db = monk(this.mongoURL);
-    await db.get('games').update(new ObjectId(id), apply);
-    return apply;
-  }
+    const apply = toApply.value.reduce(ruleReducer, result);
+    if (apply.tag === 'Failure') return apply;
 
-  public async findWorld(id: string): Promise<Result<World>> {
-    const db = monk(this.mongoURL);
-    try {
-      const dbResult = await db.get('games').findOne(new ObjectId(id));
-      const result = dbResult as World;
-      if (!(result as World))
-        return { tag: 'Failure', reason: 'World could not be found!' };
-      return { tag: 'Success', world: result };
-    } catch {
-      return { tag: 'Failure', reason: 'World could not be found!' };
-    } finally {
-      db.close();
-    }
+    this.gameRepository.updateGame(id, apply.value);
+    return apply;
   }
 
   private mapRules(actions: Action[]): Result<Rule[]> {
@@ -164,6 +152,6 @@ export class GameService {
       const reasons = mapped.filter((r) => typeof r === 'string').join(', ');
       return { tag: 'Failure', reason: reasons };
     }
-    return { tag: 'Success', world: mapped as Rule[] };
+    return { tag: 'Success', value: mapped as Rule[] };
   }
 }

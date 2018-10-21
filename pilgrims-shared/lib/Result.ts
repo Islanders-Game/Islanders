@@ -4,7 +4,7 @@ export interface Failure {
 }
 export interface Success<T> {
   tag: 'Success';
-  world: T;
+  value: T;
 }
 export type Result<T> = Success<T> | Failure;
 
@@ -12,5 +12,5 @@ export function fail(reason: string): Failure {
   return { tag: 'Failure', reason };
 }
 export function success<T>(t: T): Success<T> {
-  return { tag: 'Success', world: t };
+  return { tag: 'Success', value: t };
 }
