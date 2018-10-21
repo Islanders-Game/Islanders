@@ -38,17 +38,20 @@ export default class Chat extends Vue {
   constructor() {
     super();
 
-    this.playerName = this.$store.getters['game/getPlayerName'];
-    this.gameId = this.$store.getters['game/getGameId'];
+    this.playerName = this.$store.state.game.playerName;
+    this.gameId = this.$store.state.game.gameId;
     this.$store.dispatch('chat/bindToMessages');
   }
 
   get messages() {
-    return this.$store.getters['chat/getMessages'];
+    return this.$store.state.chat.messages;
   }
 
   public addMessage(): void {
-    this.$store.dispatch('chat/addMessage', { text: this.message, user: this.playerName });
+    this.$store.dispatch('chat/addMessage', {
+      text: this.message,
+      user: this.playerName,
+    });
     this.message = '';
   }
 }

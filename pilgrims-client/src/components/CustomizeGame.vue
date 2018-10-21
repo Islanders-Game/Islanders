@@ -37,7 +37,11 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { World, WorldGenerator, Tile } from '../../../pilgrims-shared/dist/Shared';
+import {
+  World,
+  WorldGenerator,
+  Tile,
+} from '../../../pilgrims-shared/dist/Shared';
 @Component
 export default class CustomizeGame extends Vue {
   public playerName: string = undefined;
@@ -45,10 +49,9 @@ export default class CustomizeGame extends Vue {
   public radius: number = 3;
   private worldGenerator: WorldGenerator;
 
-
   public constructor() {
     super();
-    this.playerName = this.$store.getters['game/getPlayerName'];
+    this.playerName = this.$store.state.game.playerName;
     this.worldGenerator = new WorldGenerator();
   }
 
@@ -57,7 +60,7 @@ export default class CustomizeGame extends Vue {
   }
 
   private async startGame() {
-      await this.$store.dispatch('game/startGame');
+    await this.$store.dispatch('game/startGame');
   }
 
   private async randomizeMap() {

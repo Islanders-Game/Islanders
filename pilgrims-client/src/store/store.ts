@@ -6,7 +6,7 @@ import ui from './modules/ui';
 import io from 'socket.io-client';
 import { ActionTree, ActionContext } from 'vuex';
 import Axios from 'axios';
-import { Result, Failure, Success } from '../../../pilgrims-shared/dist/Shared';
+import { Result } from '../../../pilgrims-shared/dist/Shared';
 
 Vue.use(Vuex);
 

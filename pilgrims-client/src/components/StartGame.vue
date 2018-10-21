@@ -84,7 +84,7 @@ export default class StartGame extends Vue {
     }
 
     // todo check for createGame fail.
-    if (this.$store.getters['game/getGameId']) {
+    if (this.$store.state.game.gameId) {
       this.$parent.$parent.$emit('gameChoosen');
     } else {
       this.error = true;
@@ -114,7 +114,7 @@ export default class StartGame extends Vue {
       return;
     }
 
-    if (this.$store.getters['game/getGameId']) {
+    if (this.$store.state.game.gameId) {
       this.$parent.$parent.$emit('gameChoosen');
     } else {
       this.error = true;

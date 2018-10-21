@@ -23,13 +23,8 @@ export class State {
 }
 
 // Synchrounous getters: GetterTree<local state, root state>
+// Getters should only be used if caching the result gives performance ie. dont just return state objects.
 const getters: GetterTree<State, any> = {
-  getGameId(state: State): string {
-    return state.gameId;
-  },
-  getPlayerName(state: State): string {
-    return state.playerName;
-  },
   getWorld(state: State): World {
     return state.world;
   },

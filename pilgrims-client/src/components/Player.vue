@@ -68,7 +68,7 @@ export default class Player extends Vue {
 
   public constructor() {
     super();
-    this.playerName = this.$store.getters['game/getPlayerName'];
+    this.playerName = this.$store.state.game.playerName;
   }
 
   get player(): PlayerState {

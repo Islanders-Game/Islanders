@@ -48,7 +48,7 @@ export default class Map extends Vue {
   }
 
   get gameID() {
-    return this.$store.getters['game/getGameId'];
+    return this.$store.state.game.gameId;
   }
 
   get error() {
@@ -61,17 +61,20 @@ export default class Map extends Vue {
   }
 
   private handle(event) {
-    const getClosestPoint = (point: Point, center: {x:number, y:number}) => {
-      const distanceFunc = (point, element) => {
+    const getClosestPoint = (
+      point: Point,
+      center: { x: number; y: number },
+    ) => {
+      const distanceFunc = (from, to) => {
         return Math.sqrt(
-          Math.pow(Math.abs(point.x - element.x), 2) +
-            Math.pow(Math.abs(point.y - element.y), 2),
+          Math.pow(Math.abs(from.x - to.x), 2) +
+            Math.pow(Math.abs(from.y - to.y), 2),
         );
       };
 
       const distance = distanceFunc(point, center);
       if (distance >= this.hexSize * 0.5) {
-        let closestPoint = undefined;
+        let closestPoint;
         const corners = hexToFind.corners();
         for (let i = 0; i < corners.length; i++) {
           const corner = corners[i];
@@ -86,7 +89,9 @@ export default class Map extends Vue {
       }
     };
 
-    if (!this.isBuilding) return;
+    if (!this.isBuilding) {
+      return;
+    }
     const inWorld = this.viewport.toWorld(event.data.global);
     const hexToFind = this.grid.pointToHex(inWorld);
     const hexOrigin = hexToFind.toPoint();
@@ -99,7 +104,7 @@ export default class Map extends Vue {
       this.cursorGraphics.clear();
       this.cursorGraphics.removeChildren();
       const s = Sprite.fromImage(`./img/pieces/house.png`);
-      s.tint = 0xFF0000;
+      s.tint = 0xff0000;
       s.alpha = 0.6;
       s.anchor.x = 0.5;
       s.anchor.y = 0.5;
