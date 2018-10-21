@@ -62,9 +62,9 @@
                   </v-list-tile>
                 </v-list>
               </v-menu>
-              <v-btn dark>Trade</v-btn>
+              <Trade></Trade>
               <v-btn dark>Dev Cards</v-btn>
-              <v-btn>End Turn</v-btn>
+              <v-btn >End Turn</v-btn>
             </v-layout>
           </v-flex>
         </v-layout>
@@ -75,7 +75,13 @@
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
-@Component
+import Trade from './Trade.vue';
+
+@Component({
+  components: {
+    Trade,
+  },
+})
 export default class Player extends Vue {
   public playerName: string = undefined;
 
