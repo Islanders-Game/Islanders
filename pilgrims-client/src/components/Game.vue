@@ -12,6 +12,7 @@
       <CustomizeGame v-if="!started"/>
       <Player v-if="started"/>
     </v-layout>
+    <Error></Error>
   </v-container>
 </template>
 
@@ -21,6 +22,7 @@ import Overview from './Overview.vue';
 import Map from './Map.vue';
 import Player from './Player.vue';
 import CustomizeGame from './CustomizeGame.vue';
+import Error from './Error.vue';
 
 @Component({
   components: {
@@ -28,6 +30,7 @@ import CustomizeGame from './CustomizeGame.vue';
     Map,
     Player,
     CustomizeGame,
+    Error,
   },
 })
 export default class Game extends Vue {

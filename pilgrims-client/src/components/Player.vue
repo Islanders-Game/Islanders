@@ -48,7 +48,20 @@
           </v-flex>
           <v-flex xs3>
             <v-layout align-center row wrap fill-height>
-              <v-btn dark @click="setIsBuildingHouse">Build</v-btn>
+              <v-menu bottom offset-y>
+                <v-btn dark slot="activator">Build</v-btn>
+                <v-list dark>
+                  <v-list-tile @click="setIsBuildingHouse(true)">
+                    <v-list-tile-title>House</v-list-tile-title>
+                  </v-list-tile>
+                  <v-list-tile @click="setIsBuildingCity(true)">
+                    <v-list-tile-title>City</v-list-tile-title>
+                  </v-list-tile>
+                  <v-list-tile @click="setIsBuildingRoad(true)">
+                    <v-list-tile-title dark>Road</v-list-tile-title>
+                  </v-list-tile>
+                </v-list>
+              </v-menu>
               <v-btn dark>Trade</v-btn>
               <v-btn dark>Dev Cards</v-btn>
               <v-btn>End Turn</v-btn>
@@ -71,8 +84,16 @@ export default class Player extends Vue {
     this.playerName = this.$store.state.game.playerName;
   }
 
-  public setIsBuildingHouse() {
-    this.$store.commit('ui/setIsBuildingHouse', !this.isBuildingHouse);
+  public setIsBuildingHouse(flag: boolean) {
+    this.$store.commit('ui/setIsBuildingHouse', flag);
+  }
+
+  public setIsBuildingCity(flag: boolean) {
+    this.$store.commit('ui/setIsBuildingCity', flag);
+  }
+
+  public setIsBuildingRoad(flag: boolean) {
+    this.$store.commit('ui/setIsBuildingRoad', flag);
   }
 
   get player(): PlayerState {
