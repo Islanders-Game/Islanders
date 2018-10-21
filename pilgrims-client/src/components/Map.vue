@@ -93,15 +93,15 @@ export default class Map extends Vue {
     };
 
     const distance = distanceFunc(point, centerOfHex);
-    let closestPoint;
+    let closestPoint = { point: centerOfHex, index: -1, distance: distance };
     const corners = hexToFind.corners();
     for (let i = 0; i < corners.length; i++) {
       const corner = corners[i];
       corner.x += hexOrigin.x;
       corner.y += hexOrigin.y;
       const cornerDist = distanceFunc(point, corner);
-      if (distance >= cornerDist) {
-        closestPoint = { point: corner, index: i, distance: cornerDist };
+      if (closestPoint.distance >= cornerDist) {
+        closestPoint = { point: corners[i], index: i, distance: cornerDist };
       }
     }
     return closestPoint;
@@ -113,6 +113,9 @@ export default class Map extends Vue {
     }
     const inWorld = this.viewport.toWorld(event.data.global);
     const closest = this.getClosestPoint(inWorld);
+    if (closest.index === -1) {
+      return;
+    }
 
     this.cursorGraphics.clear();
     this.cursorGraphics.removeChildren();
@@ -129,7 +132,7 @@ export default class Map extends Vue {
     }
     const inWorld = this.viewport.toWorld(event.data.global);
     const closest = this.getClosestPoint(inWorld);
-    if (closest) {
+    if (closest.index != -1) {
       this.cursorGraphics.clear();
       this.cursorGraphics.removeChildren();
       const s = Sprite.fromImage(`./img/pieces/house.png`);

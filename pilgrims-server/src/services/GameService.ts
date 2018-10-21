@@ -32,7 +32,7 @@ export class GameService {
     const r = await this.gameRepository.getWorld(gameID);
     if (r.tag === 'Success' && !r.value.started) {
       await this.gameRepository.createGame(init);
-      namespace.emit(SocketActions.newWorld, init);
+      namespace.emit(SocketActions.newWorld, success(init));
     }
   }
 
@@ -77,7 +77,7 @@ export class GameService {
     }
     result.value.map = map;
     await this.gameRepository.updateGame(gameID, result.value);
-    namespace.emit(SocketActions.newWorld, success(result));
+    namespace.emit(SocketActions.newWorld, result);
   }
 
   public async addPlayer(gameID: string, name: string) {

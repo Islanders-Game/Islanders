@@ -43,7 +43,8 @@ export class GameRepository {
     try {
       const result = await db.get(this.tableName).findOne(new ObjectId(gameId));
       if (!result) {
-        return fail('World with id: ${gameId} not found');
+        // todo don't know if this is neccesary
+        return fail(`World with id: ${gameId} not found`);
       }
       return success(result as World);
     } catch (ex) {
