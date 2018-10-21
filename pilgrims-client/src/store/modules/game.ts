@@ -13,6 +13,7 @@ import {
   Tile,
 } from '../../../../pilgrims-shared/dist/Shared';
 import { Socket, State as RootState } from '../store';
+
 // The state
 export class State {
   public gameId: string = undefined;
@@ -75,14 +76,16 @@ const mutations: MutationTree<State> = {
 };
 
 // Async methods
-const actions: ActionTree<State, State> = {
+const actions: ActionTree<State, RootState> = {
   async bindToWorld({ commit }: ActionContext<State, RootState>) {
     // Connect to socket and setup listener for listening to events.
     Socket.on(SocketActions.newWorld, (result: Result<World>) => {
       if (result.tag === 'Success') {
         commit('setWorld', result.world);
       }
-      if (result.tag === 'Failure') { commit('setError', result.reason); }
+      if (result.tag === 'Failure') {
+        commit('setError', result.reason);
+      }
     });
     Socket.emit(SocketActions.getWorld);
   },

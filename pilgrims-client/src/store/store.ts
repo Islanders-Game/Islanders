@@ -2,6 +2,7 @@ import Vue from 'vue';
 import Vuex, { GetterTree, MutationTree } from 'vuex';
 import chat from './modules/chat';
 import game from './modules/game';
+import ui from './modules/ui';
 import io from 'socket.io-client';
 import { ActionTree, ActionContext } from 'vuex';
 import Axios from 'axios';
@@ -18,12 +19,12 @@ const getterTree: GetterTree<State, any> = {};
 
 const mutationTree: MutationTree<State> = {};
 
-const host = `http://${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVERPORT}/`;
+const host = `http://${process.env.VUE_APP_SERVER}:${
+  process.env.VUE_APP_SERVERPORT
+}/`;
 const actionTree: ActionTree<any, any> = {
   async createGame({ commit }: ActionContext<any, any>, playerName: string) {
-    const { data }: { data: string } = await (
-      await Axios.get(host + 'newgame')
-    );
+    const { data }: { data: string } = await await Axios.get(host + 'newgame');
     const gameId = data;
 
     const socket = io.connect(`${host}${gameId}`);
@@ -37,9 +38,11 @@ const actionTree: ActionTree<any, any> = {
     { commit }: ActionContext<any, any>,
     gameStartInfo: { gameId: string; playerName: string },
   ) {
-    const query = `?playerName=${gameStartInfo.playerName}&gameId=${gameStartInfo.gameId}`;
-    const { data }: { data: Result<string> } = await (
-      await Axios.get(`${host}joingame${query}`)
+    const query = `?playerName=${gameStartInfo.playerName}&gameId=${
+      gameStartInfo.gameId
+    }`;
+    const { data }: { data: Result<string> } = await await Axios.get(
+      `${host}joingame${query}`,
     );
 
     if (data.tag === 'Failure') {
@@ -60,6 +63,7 @@ export default new Vuex.Store({
   modules: {
     chat,
     game,
+    ui,
   },
   state: new State(),
   getters: getterTree,
