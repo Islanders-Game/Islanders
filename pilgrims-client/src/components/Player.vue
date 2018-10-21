@@ -48,7 +48,7 @@
           </v-flex>
           <v-flex xs3>
             <v-layout align-center row wrap fill-height>
-              <v-btn dark>Build</v-btn>
+              <v-btn dark @click="setIsBuildingHouse">Build</v-btn>
               <v-btn dark>Trade</v-btn>
               <v-btn dark>Dev Cards</v-btn>
               <v-btn>End Turn</v-btn>
@@ -69,6 +69,10 @@ export default class Player extends Vue {
   public constructor() {
     super();
     this.playerName = this.$store.state.game.playerName;
+  }
+
+  public setIsBuildingHouse() {
+    this.$store.commit('ui/setIsBuildingHouse', !this.isBuildingHouse);
   }
 
   get player(): PlayerState {
@@ -106,6 +110,10 @@ export default class Player extends Vue {
       return 0;
     }
     return player.roads.length; // todo calculate longest path ;D
+  }
+
+  get isBuildingHouse() {
+    return this.$store.state.ui.isBuildingHouse;
   }
 }
 </script>

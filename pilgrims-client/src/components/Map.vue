@@ -25,6 +25,7 @@ import {
   MatrixCoordinate,
   getMatrixCoordCorner,
 } from '../../../pilgrims-shared/dist/Shared';
+import { BuildHouseAction } from '../../../pilgrims-shared/dist/Action';
 
 @Component
 export default class Map extends Vue {
@@ -41,7 +42,6 @@ export default class Map extends Vue {
   private cursorGraphics: Graphics = new Graphics();
   private sprites: { [s: string]: () => Sprite } = this.generateSprites();
   private grid;
-  private isBuilding = true;
 
   private async mounted() {
     await this.$store.dispatch('game/bindToWorld');
@@ -53,7 +53,12 @@ export default class Map extends Vue {
       that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
       that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
     });
-    that.viewport.on('mousemove', this.handle);
+    that.viewport.on('mousemove', this.handleMove);
+    that.viewport.on('pointerup', this.handleClick);
+  }
+
+  get isBuildingHouse() {
+    return this.$store.state.ui.isBuildingHouse;
   }
 
   get world() {
@@ -73,53 +78,57 @@ export default class Map extends Vue {
     return map.find((tile) => tile.coord.x === hex.x && tile.coord.y === hex.y);
   }
 
-  private getClosestPoint = (
-    point: Point,
-    center: { x: number; y: number },
-    hexToFind,
-    hexOrigin,
-  ) => {
+  private getClosestPoint(point: Point) {
     const distanceFunc = (from, to) => {
       return Math.sqrt(
         Math.pow(Math.abs(from.x - to.x), 2) +
           Math.pow(Math.abs(from.y - to.y), 2),
       );
     };
-
-    const distance = distanceFunc(point, center);
-    if (distance >= this.hexSize * 0.5) {
-      let closestPoint;
-      const corners = hexToFind.corners();
-      for (let i = 0; i < corners.length; i++) {
-        const corner = corners[i];
-        corner.x += hexOrigin.x;
-        corner.y += hexOrigin.y;
-        const cornerDist = distanceFunc(point, corner);
-        if (distance >= cornerDist) {
-          closestPoint = { point: corner, index: i, distance: cornerDist };
-        }
-      }
-      return closestPoint;
-    }
-  };
-
-  private handle(event) {
-    if (!this.isBuilding) {
-      return;
-    }
-    const inWorld = this.viewport.toWorld(event.data.global);
-    const hexToFind = this.grid.pointToHex(inWorld);
+    const hexToFind = this.grid.pointToHex(point);
     const hexOrigin = hexToFind.toPoint();
     const centerOfHex = {
       x: hexOrigin.x + hexToFind.width() / 2,
       y: hexOrigin.y + hexToFind.height() / 2,
     };
-    const closest = this.getClosestPoint(
-      inWorld,
-      centerOfHex,
-      hexToFind,
-      hexOrigin,
+
+    const distance = distanceFunc(point, centerOfHex);
+    let closestPoint;
+    const corners = hexToFind.corners();
+    for (let i = 0; i < corners.length; i++) {
+      const corner = corners[i];
+      corner.x += hexOrigin.x;
+      corner.y += hexOrigin.y;
+      const cornerDist = distanceFunc(point, corner);
+      if (distance >= cornerDist) {
+        closestPoint = { point: corner, index: i, distance: cornerDist };
+      }
+    }
+    return closestPoint;
+  }
+
+  private handleClick(event) {
+    if (!this.isBuildingHouse) {
+      return;
+    }
+    const inWorld = this.viewport.toWorld(event.data.global);
+    const closest = this.getClosestPoint(inWorld);
+
+    this.cursorGraphics.clear();
+    this.cursorGraphics.removeChildren();
+    this.$store.dispatch(
+      'game/sendAction',
+      new BuildHouseAction(this.$store.state.game.playerName, closest.point),
     );
+    this.$store.commit('ui/setIsBuildingHouse', false);
+  }
+
+  private handleMove(event) {
+    if (!this.isBuildingHouse) {
+      return;
+    }
+    const inWorld = this.viewport.toWorld(event.data.global);
+    const closest = this.getClosestPoint(inWorld);
     if (closest) {
       this.cursorGraphics.clear();
       this.cursorGraphics.removeChildren();

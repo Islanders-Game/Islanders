@@ -11,6 +11,7 @@ import {
   SocketActions,
   Result,
   Tile,
+  Action,
 } from '../../../../pilgrims-shared/dist/Shared';
 import { Socket, State as RootState } from '../store';
 
@@ -68,6 +69,9 @@ const mutations: MutationTree<State> = {
   setStarted(state: State, started: boolean) {
     state.world.started = started;
   },
+  setError(state: State, errorMessage: string) {
+    state.error = errorMessage;
+  },
 };
 
 // Async methods
@@ -89,6 +93,12 @@ const actions: ActionTree<State, RootState> = {
   },
   async updateMap({ commit }: ActionContext<State, RootState>, map: Tile[]) {
     Socket.emit(SocketActions.newMap, map);
+  },
+  async sendAction(
+    { commit }: ActionContext<State, RootState>,
+    action: Action,
+  ) {
+    Socket.emit(SocketActions.sendAction, action);
   },
 };
 

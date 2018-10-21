@@ -19,9 +19,9 @@ export class Player {
 
   constructor(name: string) {
     this.id = v4();
-    this.color = 0xFFFFFF * Math.random();
+    this.color = 0xffffff * Math.random();
     this.name = name;
-    this.resources = {};
+    this.resources = { clay: 10, grain: 10, stone: 10, wood: 10, wool: 10 };
     this.houses = [];
     this.cities = [];
     this.roads = [];

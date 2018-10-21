@@ -102,11 +102,24 @@ export class GameService {
     if (toApply.tag === 'Failure') return toApply;
     const result = await this.findWorld(id);
     if (result.tag === 'Failure') return result;
-    if (result.world.started)
+    if (!result.world.started)
       return { tag: 'Failure', reason: 'Game is not started!' };
     const apply = toApply.world.reduce(ruleReducer, result);
     const db = monk(this.mongoURL);
     await db.get('games').insert(apply);
+    return apply;
+  }
+
+  public async applyAction(id: string, action: Action) {
+    const toApply = this.mapRules([action]);
+    if (toApply.tag === 'Failure') return toApply;
+    const result = await this.findWorld(id);
+    if (result.tag === 'Failure') return result;
+    if (!result.world.started)
+      return { tag: 'Failure', reason: 'Game is not started!' };
+    const apply = toApply.world.reduce(ruleReducer, result);
+    const db = monk(this.mongoURL);
+    await db.get('games').update(new ObjectId(id), apply);
     return apply;
   }
 

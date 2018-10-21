@@ -1,8 +1,6 @@
 import { Result, success, fail } from './Result';
 import { World } from './World';
 import { MatrixCoordinate } from './MatrixCoordinate';
-import { HexCoordinate } from './HexCoordinate';
-import { DevelopmentCard } from './Entities/DevelopmentCard';
 import {
   Resources,
   subtractResources,
@@ -92,13 +90,13 @@ export const purchase = (cost: Resources) => (p: Result<Player>) => (
   return success({ ...r.world, players });
 };
 
-const findPlayer = (uuid: string) => (r: Result<World>) => {
+const findPlayer = (name: string) => (r: Result<World>) => {
   if (r.tag === 'Failure') {
     return r;
   }
-  const player = r.world.players.find((pl) => pl.id === uuid);
+  const player = r.world.players.find((pl) => pl.name === name);
   if (!player) {
-    return fail(`Player ${uuid} not found.`);
+    return fail(`Player ${name} not found.`);
   }
   return success(player);
 };

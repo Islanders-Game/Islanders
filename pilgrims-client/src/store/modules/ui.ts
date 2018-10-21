@@ -10,7 +10,11 @@ export class State {
 const getterTree: GetterTree<State, RootState> = {};
 
 // Synchrounous setters MutationTree<local state, root state>
-const mutationTree: MutationTree<State> = {};
+const mutationTree: MutationTree<State> = {
+  setIsBuildingHouse(state: State, flag: boolean) {
+    state.isBuildingHouse = flag;
+  },
+};
 
 // Async methods
 const actionTree: ActionTree<State, RootState> = {};

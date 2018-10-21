@@ -1,6 +1,10 @@
 import socket from 'socket.io';
 import http from 'http';
-import { SocketActions, ChatMessage } from '../../pilgrims-shared/dist/Shared';
+import {
+  SocketActions,
+  ChatMessage,
+  Action,
+} from '../../pilgrims-shared/dist/Shared';
 import { GameService } from './services/GameService';
 import { World } from '../../pilgrims-shared/dist/World';
 import { Turn } from '../../pilgrims-shared/dist/Turn';
@@ -57,6 +61,11 @@ export class GameSocket {
         socket.on(SocketActions.chat, (chat: ChatMessage) => {
           console.log(`Received a ${SocketActions.chat} socket event`);
           this.chatService.chatMessage(chat, gameID, nsp);
+        });
+        socket.on(SocketActions.sendAction, async (action: Action) => {
+          console.log(`Received a ${SocketActions.sendAction} socket event`);
+          const result = await this.gameService.applyAction(gameID, action);
+          nsp.emit(SocketActions.newWorld, result);
         });
         this.gameService
           .addPlayer(gameID, playerName)
