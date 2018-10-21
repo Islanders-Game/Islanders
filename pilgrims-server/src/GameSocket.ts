@@ -85,7 +85,7 @@ export class GameSocket {
     server: SocketIO.Server,
   ) {
     const connectedSockets = Object.keys(namespace.connected);
-    if (connectedSockets.length < 0) return;
+    if (connectedSockets.length <= 0) return;
     connectedSockets.forEach((socketId) => {
       namespace.connected[socketId].disconnect();
     });
