@@ -61,8 +61,8 @@ describe('Checking for purchaseability', () => {
         rounds: 0,
       },
     };
-    const wr: Result<World> = { tag: 'Success', world: w };
-    const pr: Result<Player> = { tag: 'Success', world: p };
+    const wr: Result<World> = { tag: 'Success', value: w };
+    const pr: Result<Player> = { tag: 'Success', value: p };
     const result = purchase(res)(pr)(wr);
 
     expect(result.tag === 'Success');
@@ -87,8 +87,8 @@ describe('Checking for purchaseability', () => {
         rounds: 0,
       },
     };
-    const wr: Result<World> = { tag: 'Success', world: w };
-    const pr: Result<Player> = { tag: 'Success', world: p };
+    const wr: Result<World> = { tag: 'Success', value: w };
+    const pr: Result<Player> = { tag: 'Success', value: p };
     const result = purchase(cost)(pr)(wr);
 
     expect(result.tag === 'Failure');
