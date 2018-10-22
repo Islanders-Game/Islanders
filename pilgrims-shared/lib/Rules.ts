@@ -1,8 +1,6 @@
 import { Result, success, fail } from './Result';
 import { World } from './World';
 import { MatrixCoordinate } from './MatrixCoordinate';
-import { HexCoordinate } from './HexCoordinate';
-import { DevelopmentCard } from './Entities/DevelopmentCard';
 import {
   Resources,
   subtractResources,
@@ -12,36 +10,25 @@ import { Road } from './Entities/Road';
 import { City } from './Entities/City';
 import { House } from './Entities/House';
 import { Player } from './Player';
+import {
+  BuildHouseAction,
+  BuildCityAction,
+  BuildRoadAction,
+  PlaceThiefAction,
+  BuyCardAction,
+  PlayCardAction,
+  TradeAction,
+} from './Action';
 
 export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
-  BuildHouse: (
-    playerID: string,
-    coordinates: MatrixCoordinate,
-  ) => (w: Result<World>) => Result<World>;
-  BuildCity: (
-    playerID: string,
-    coordinates: MatrixCoordinate,
-  ) => (w: Result<World>) => Result<World>;
-  BuildRoad: (
-    playerID: string,
-    start: MatrixCoordinate,
-    end: MatrixCoordinate,
-  ) => (w: Result<World>) => Result<World>;
-  MoveThief: (
-    playerID: string,
-    coordinates: HexCoordinate,
-  ) => (w: Result<World>) => Result<World>;
-  BuyCard: (playerID: string) => (w: Result<World>) => Result<World>;
-  PlayCard: (
-    playerID: string,
-    card: DevelopmentCard,
-  ) => (w: Result<World>) => Result<World>;
-  Trade: (
-    playerID: string,
-    otherPlayerID: string,
-    resources: Resources,
-  ) => (w: Result<World>) => Result<World>;
+  BuildHouse: (data: BuildHouseAction) => (w: Result<World>) => Result<World>;
+  BuildCity: (data: BuildCityAction) => (w: Result<World>) => Result<World>;
+  BuildRoad: (data: BuildRoadAction) => (w: Result<World>) => Result<World>;
+  MoveThief: (data: PlaceThiefAction) => (w: Result<World>) => Result<World>;
+  BuyCard: (data: BuyCardAction) => (w: Result<World>) => Result<World>;
+  PlayCard: (data: PlayCardAction) => (w: Result<World>) => Result<World>;
+  Trade: (data: TradeAction) => (w: Result<World>) => Result<World>;
 }
 
 export const ruleReducer = (
@@ -53,35 +40,35 @@ export const ruleReducer = (
 // ---- Rule implementations ----
 //
 export const rules: Rules = {
-  BuildHouse: (id, coordinates) => (w) => {
+  BuildHouse: ({ type, parameters }) => (w) => {
     if (w.tag === 'Failure') {
       return w;
     }
-    const player = findPlayer(id)(w);
+    const player = findPlayer(parameters.playerID)(w);
     const purchased = purchase(new House().cost)(player)(w);
-    const placed = placeHouse(coordinates)(player)(purchased);
+    const placed = placeHouse(parameters.coordinates)(player)(purchased);
     return placed;
   },
-  BuildCity: (id, coordinates) => (w) => {
+  BuildCity: ({ type, parameters }) => (w) => {
     if (w.tag === 'Failure') {
       return w;
     }
-    const player = findPlayer(id)(w);
+    const player = findPlayer(parameters.playerID)(w);
     const purchased = purchase(new City().cost)(player)(w);
-    return placeCity(coordinates)(player)(purchased);
+    return placeCity(parameters.coordinates)(player)(purchased);
   },
-  BuildRoad: (id, start, end) => (w) => {
+  BuildRoad: ({ type, parameters }) => (w) => {
     if (w.tag === 'Failure') {
       return w;
     }
-    const player = findPlayer(id)(w);
+    const player = findPlayer(parameters.playerID)(w);
     const purchased = purchase(new Road().cost)(player)(w);
-    return placeRoad(start, end)(player)(purchased);
+    return placeRoad(parameters.start, parameters.end)(player)(purchased);
   },
-  MoveThief: (p, { x, y }) => (w) => w, // TODO: Implement rules.
-  BuyCard: (p) => (w) => w,
-  PlayCard: (p, c) => (w) => w,
-  Trade: (p1, p2) => (w) => w,
+  MoveThief: ({ type, parameters }) => (w) => w, // TODO: Implement rules.
+  BuyCard: ({ type, parameters }) => (w) => w,
+  PlayCard: ({ type, parameters }) => (w) => w,
+  Trade: ({ type, parameters }) => (w) => w,
 };
 
 export const purchase = (cost: Resources) => (p: Result<Player>) => (
@@ -93,23 +80,23 @@ export const purchase = (cost: Resources) => (p: Result<Player>) => (
   if (p.tag === 'Failure') {
     return p;
   }
-  const resources = subtractResources(p.world.resources, cost);
+  const resources = subtractResources(p.value.resources, cost);
   if (!resourcesAreNonNegative(resources)) {
-    return fail(`Player ${p.world.id} cannot afford this.`);
+    return fail(`Player ${p.value.id} cannot afford this.`);
   }
-  const players = r.world.players.map(
-    (pl) => (pl.id === p.world.id ? { ...p.world, resources } : pl),
+  const players = r.value.players.map(
+    (pl) => (pl.id === p.value.id ? { ...p.value, resources } : pl),
   );
-  return success({ ...r.world, players });
+  return success({ ...r.value, players });
 };
 
-const findPlayer = (uuid: string) => (r: Result<World>) => {
+const findPlayer = (name: string) => (r: Result<World>) => {
   if (r.tag === 'Failure') {
     return r;
   }
-  const player = r.world.players.find((pl) => pl.id === uuid);
+  const player = r.value.players.find((pl) => pl.name === name);
   if (!player) {
-    return fail(`Player ${uuid} not found.`);
+    return fail(`Player ${name} not found.`);
   }
   return success(player);
 };
@@ -123,7 +110,7 @@ const placeHouse = (coord: MatrixCoordinate) => (p: Result<Player>) => (
   if (p.tag === 'Failure') {
     return p;
   }
-  const allHouses = r.world.players.reduce(
+  const allHouses = r.value.players.reduce(
     (acc: House[], p) => acc.concat(p.houses),
     [],
   );
@@ -139,11 +126,11 @@ const placeHouse = (coord: MatrixCoordinate) => (p: Result<Player>) => (
   if (!canPlace) {
     return fail('Cannot place a house here!');
   }
-  const addedHouse = p.world.houses.concat([new House(coord)]);
-  const players = r.world.players.map(
-    (pl) => (pl.id === p.world.id ? { ...p.world, houses: addedHouse } : pl),
+  const addedHouse = p.value.houses.concat([new House(coord)]);
+  const players = r.value.players.map(
+    (pl) => (pl.id === p.value.id ? { ...p.value, houses: addedHouse } : pl),
   );
-  return success({ ...r.world, players });
+  return success({ ...r.value, players });
 };
 
 const placeCity = (coord: MatrixCoordinate) => (p: Result<Player>) => (
@@ -155,18 +142,18 @@ const placeCity = (coord: MatrixCoordinate) => (p: Result<Player>) => (
   if (p.tag === 'Failure') {
     return p;
   }
-  const canPlace = p.world.houses.some(
+  const canPlace = p.value.houses.some(
     (h) => h.position.x === coord.x && h.position.y === coord.y,
   );
   if (!canPlace) {
     return fail('Cannot place a house here!');
   }
-  const houses = p.world.houses.filter((h) => h.position !== coord);
-  const cities = p.world.cities.concat([new City(coord)]);
-  const players = r.world.players.map(
-    (pl) => (pl.id === p.world.id ? { ...p.world, houses, cities } : pl),
+  const houses = p.value.houses.filter((h) => h.position !== coord);
+  const cities = p.value.cities.concat([new City(coord)]);
+  const players = r.value.players.map(
+    (pl) => (pl.id === p.value.id ? { ...p.value, houses, cities } : pl),
   );
-  return success({ ...r.world, players });
+  return success({ ...r.value, players });
 };
 
 const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
@@ -178,15 +165,15 @@ const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
   if (p.tag === 'Failure') {
     return p;
   }
-  const canPlace = p.world.roads.some(
+  const canPlace = p.value.roads.some(
     (ro) => ro.start !== start && ro.end !== end,
   );
   if (!canPlace) {
     return fail('Cannot place a road here!');
   }
-  const roads = p.world.roads.concat([new Road(start, end)]);
-  const players = r.world.players.map(
-    (pl) => (pl.id === p.world.id ? { ...p.world, roads } : pl),
+  const roads = p.value.roads.concat([new Road(start, end)]);
+  const players = r.value.players.map(
+    (pl) => (pl.id === p.value.id ? { ...p.value, roads } : pl),
   );
-  return success({ ...r.world, players });
+  return success({ ...r.value, players });
 };

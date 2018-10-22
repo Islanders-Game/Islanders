@@ -7,7 +7,7 @@
                 <v-toolbar dark color="primary">
                   <v-toolbar-title>Pilgrims</v-toolbar-title>
                   <v-spacer></v-spacer>
-                  <v-btn-toggle class="transparent" v-model="toggle_exclusive">
+                  <v-btn-toggle class="transparent" v-model="toggle">
                       <v-btn :value="2" flat @click="isCreatingGame = true">Create</v-btn>
                       <v-btn flat @click="isCreatingGame = false">Join</v-btn>
                     </v-btn-toggle>
@@ -23,6 +23,7 @@
                       :rules="rules"
                       counter="25">
                       </v-text-field>
+                      <div>
                     <transition name="fade">
                       <div v-if="!isCreatingGame" class="fade-element">
                         <v-text-field prepend-icon="star" name="gameid" label="To join a game, enter a game Id" type="text" v-model="gameId"></v-text-field>
@@ -36,15 +37,15 @@
                         <v-btn color="primary" v-else @click="createGame">Create Game</v-btn>
                       </div>
                     </transition>
-                    
-                    <v-alert :value="error" type="error" transition="scale-transition">
-                        {{errorMessage}}
-                    </v-alert>
+                    </div>
                 </v-card-text>
                 <v-card-actions>
                 <v-spacer></v-spacer>
                 </v-card-actions>
             </v-card>
+            <v-alert :value="error" type="error" transition="scale-transition">
+                {{errorMessage}}
+            </v-alert>
             </v-flex>
         </v-layout>
     </v-container>
@@ -65,7 +66,7 @@ export default class StartGame extends Vue {
   public isCreatingGame = true;
   public playerName: string = '';
   public gameId: string = '';
-  public toggle_exclusive = 2;
+  public toggle = 2;
 
   public async createGame() {
     if (!this.validatePlayerName) {
@@ -74,9 +75,16 @@ export default class StartGame extends Vue {
       return;
     }
 
-    await this.$store.dispatch('createGame', this.playerName);
+    try {
+      await this.$store.dispatch('createGame', this.playerName);
+    } catch (ex) {
+      this.error = true;
+      this.errorMessage = ex.message;
+      return;
+    }
+
     // todo check for createGame fail.
-    if (this.$store.getters['game/getGameId']) {
+    if (this.$store.state.game.gameId) {
       this.$parent.$parent.$emit('gameChoosen');
     } else {
       this.error = true;
@@ -92,13 +100,21 @@ export default class StartGame extends Vue {
     } else if (!this.validatePlayerName) {
       this.error = true;
       this.errorMessage = 'You need to enter a valid player name';
+      return;
     }
 
-    await this.$store.dispatch('joinGame', {
-      gameId: this.gameId,
-      playerName: this.playerName,
-    });
-    if (this.$store.getters['game/getGameId']) {
+    try {
+      await this.$store.dispatch('joinGame', {
+        gameId: this.gameId,
+        playerName: this.playerName,
+      });
+    } catch (ex) {
+      this.error = true;
+      this.errorMessage = ex.message;
+      return;
+    }
+
+    if (this.$store.state.game.gameId) {
       this.$parent.$parent.$emit('gameChoosen');
     } else {
       this.error = true;

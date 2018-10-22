@@ -1,89 +1,83 @@
 <template>
   <v-container fluid id="Players">
     <v-list>
-        <v-list-tile class="player-tile">
-            <v-layout column>
-                <v-layout row align-center>
-                    <v-list-tile-avatar>
-                        <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
-                    </v-list-tile-avatar>
-                    <v-list-tile-title>Player1</v-list-tile-title>
-                    <v-spacer></v-spacer>
-                    <div style="display:contents">
-                        2
-                        <v-icon color="grey lighten-1">star</v-icon>
-                    </div>
+        <template v-for="player in players">
+            <v-list-tile class="player-tile" :key="player.name">
+                <v-layout column align-left>
+                  <v-layout row align-left>
+                      <v-list-tile-title>
+                        <h3>{{player.name}}</h3>
+                      </v-list-tile-title>
+                      <v-spacer></v-spacer>
+                      <div style="display:contents">
+                          {{ playerPoints(player.name) }}
+                          <v-icon color="grey lighten-1">star</v-icon>
+                      </div>
+                  </v-layout>
+                  <v-list-tile-sub-title>
+                      <v-chip small>
+                        <v-avatar small class="grey">
+                          <v-icon small>build</v-icon>
+                        </v-avatar>
+                        {{ playerResources(player) }}
+                      </v-chip>
+                      <v-chip small>
+                        <v-avatar small class="grey">
+                          <v-icon small>crop_portrait</v-icon>
+                        </v-avatar>
+                        {{ playerDevCards(player) }}
+                      </v-chip>
+                      <v-chip small>
+                          <v-avatar small class="grey">
+                            <v-icon small>people</v-icon>
+                          </v-avatar>
+                          {{ playerKnightCards(player) }}                                
+                      </v-chip>
+                      <v-chip small>
+                        <v-avatar small class="grey">
+                          <v-icon small>traffic</v-icon>
+                        </v-avatar>
+                        {{ playerRoad(player) }}
+                      </v-chip>
+                  </v-list-tile-sub-title>
                 </v-layout>
-                <v-list-tile-content>
-                    <v-list-tile-sub-title>
-                        <v-chip small>
-                            <v-icon small>shopping_cart</v-icon>
-                            9
-                        </v-chip>
-                        <v-chip small>
-                            <v-icon small>shopping_cart</v-icon>
-                            4
-                        </v-chip>
-                        <v-chip small>
-                            <v-icon small>shopping_cart</v-icon>
-                            2
-                        </v-chip>
-                        <v-chip small>
-                            <v-icon small>shopping_cart</v-icon>
-                            3
-                        </v-chip>
-                    </v-list-tile-sub-title>
-                </v-list-tile-content>
-            </v-layout>
-        </v-list-tile>
-        <v-list-tile class="player-tile">
-            <v-layout column>
-                <v-layout row align-center>
-                    <v-list-tile-avatar>
-                        <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
-                    </v-list-tile-avatar>
-                    <v-list-tile-title>Player1</v-list-tile-title>
-                    <v-spacer></v-spacer>
-                    <div style="display:contents">
-                        2
-                        <v-icon color="grey lighten-1">star</v-icon>
-                    </div>
-                </v-layout>
-                <v-list-tile-content>
-                    <v-list-tile-sub-title>
-                        <v-chip small>
-                            <v-icon small>shopping_cart</v-icon>
-                            9
-                        </v-chip>
-                        <v-chip small>
-                            <v-icon small>shopping_cart</v-icon>
-                            4
-                        </v-chip>
-                        <v-chip small>
-                            <v-icon small>shopping_cart</v-icon>
-                            2
-                        </v-chip>
-                        <v-chip small>
-                            <v-icon small>shopping_cart</v-icon>
-                            3
-                        </v-chip>
-                    </v-list-tile-sub-title>
-                </v-list-tile-content>
-            </v-layout>
-        </v-list-tile>
+            </v-list-tile>
+        </template>
     </v-list>
   </v-container>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-
+import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 @Component({
   components: {},
 })
 export default class Players extends Vue {
-  @Prop()
-  private msg!: string;
+  get players(): PlayerState[] {
+    return this.$store.getters['game/getPlayers'];
+  }
+  private playerPoints(name: string) {
+    return 0; // todo
+  }
+  private playerResources(player: PlayerState) {
+    return (
+      (player.resources.wood ? player.resources.wood : 0) +
+      (player.resources.stone ? player.resources.stone : 0) +
+      (player.resources.clay ? player.resources.clay : 0) +
+      (player.resources.grain ? player.resources.grain : 0) +
+      (player.resources.wool ? player.resources.wool : 0)
+    );
+  }
+  private playerDevCards(player: PlayerState) {
+    return player.devCards.filter((x) => x.type !== 'Knight').length;
+  }
+  private playerKnightCards(player: PlayerState) {
+    return player.devCards.filter((x) => x.type === 'Knight').length;
+  }
+  private playerRoad(player: PlayerState) {
+    return player.roads.length; // todo longest path :P
+  }
 }
 </script>
 

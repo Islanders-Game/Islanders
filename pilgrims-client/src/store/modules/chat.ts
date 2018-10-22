@@ -7,11 +7,8 @@ export class State {
 }
 
 // Synchrounous getters: GetterTree<local state, root state>
-const getterTree: GetterTree<State, RootState> = {
-  getMessages(state: State): ChatMessage[] {
-    return state.messages;
-  },
-};
+// Getters should only be used if caching the result gives performance ie. dont just return state objects.
+const getterTree: GetterTree<State, RootState> = {};
 
 // Synchrounous setters MutationTree<local state, root state>
 const mutationTree: MutationTree<State> = {
@@ -25,16 +22,16 @@ const mutationTree: MutationTree<State> = {
 
 // Async methods
 const actionTree: ActionTree<State, RootState> = {
-  async bindToMessages(
-    { commit, rootState }: ActionContext<State, RootState>) {
-      // Connect to socket and setup listener for listening to events.
-      Socket.on('chat', (message: ChatMessage) => {
-        commit('addMessage', message);
-      });
+  async bindToMessages({ commit, rootState }: ActionContext<State, RootState>) {
+    // Connect to socket and setup listener for listening to events.
+    Socket.on('chat', (message: ChatMessage) => {
+      commit('addMessage', message);
+    });
   },
   async addMessage(
     { rootState }: ActionContext<State, RootState>,
-    message: ChatMessage) {
+    message: ChatMessage,
+  ) {
     // emit chat message to socket.
     Socket.emit('chat', message);
   },

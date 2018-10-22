@@ -2,15 +2,17 @@
   <v-container fluid id="Game">
     <v-layout column fill-height>
       <v-layout row class="main-area">
-        <v-flex xs10>
+        <v-flex xs9>
           <Map/>
         </v-flex>
-        <v-flex xs2>
+        <v-flex xs3>
           <Overview/>
         </v-flex>
       </v-layout>
-      <Player class="bottom-area"/>
+      <CustomizeGame v-if="!started"/>
+      <Player v-if="started"/>
     </v-layout>
+    <Error></Error>
   </v-container>
 </template>
 
@@ -19,29 +21,27 @@ import { Component, Prop, Vue } from 'vue-property-decorator';
 import Overview from './Overview.vue';
 import Map from './Map.vue';
 import Player from './Player.vue';
+import CustomizeGame from './CustomizeGame.vue';
+import Error from './Error.vue';
 
 @Component({
   components: {
     Overview,
     Map,
     Player,
+    CustomizeGame,
+    Error,
   },
 })
 export default class Game extends Vue {
-  @Prop()
-  private msg!: string;
+  get started() {
+    return this.$store.getters['game/getIsGameStarted'];
+  }
 }
 </script>
 
 <style lang="scss" scoped>
 #Game {
   padding: 0px;
-}
-.main-area {
-  max-height: 87vh;
-  overflow: auto;
-}
-.bottom-area {
-  min-height: 13vh;
 }
 </style>

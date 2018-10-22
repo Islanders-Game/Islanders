@@ -1,36 +1,49 @@
 <template>
 <v-container fluid fill-height id="Map">
+    <span v-if="gameID" id=gameID>Tell your friends to join this game at: <b>{{gameID}}</b></span>
 </v-container>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import { defineGrid, extendHex } from 'honeycomb-grid';
-import { Graphics, Sprite, Application, Point, Texture } from 'pixi.js';
+import {
+  Graphics,
+  Sprite,
+  Application,
+  Point,
+  Texture,
+  Container,
+} from 'pixi.js';
 import Viewport from 'pixi-viewport';
-import { World, Tile } from '../../../pilgrims-shared/dist/Shared';
+import {
+  World,
+  Tile,
+  Player,
+  House,
+  MatrixCoordinate,
+  getMatrixCoordCorner,
+} from '../../../pilgrims-shared/dist/Shared';
+import { BuildHouseAction } from '../../../pilgrims-shared/dist/Action';
 
 @Component
 export default class Map extends Vue {
   private height: number;
   private width: number;
+  private hexSize: number = 200;
   private tileHeight: number = 348;
   private tileWidth: number = 400;
   private app: Application;
   private viewport: Viewport;
-
-  @Watch('world')
-  onPropertyChanged(value: World, oldValue: World) {
-    // Do stuff with the watcher here.
-  }
-
-  get world() {
-    return this.$store.state.game.world as World;
-  }
+  private tileGraphics: Graphics = new Graphics();
+  private pieceGraphics: Graphics = new Graphics();
+  private lineGraphics: Graphics = new Graphics();
+  private cursorGraphics: Graphics = new Graphics();
+  private sprites: { [s: string]: () => Sprite } = this.generateSprites();
+  private grid;
 
   private async mounted() {
     await this.$store.dispatch('game/bindToWorld');
-
     this.height = this.$el.clientHeight;
     this.width = this.$el.clientWidth;
     this.SetupCanvas();
@@ -39,26 +52,121 @@ export default class Map extends Vue {
       that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
       that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
     });
+    that.viewport.on('mousemove', this.handleMove);
+    that.viewport.on('pointerup', this.handleClick);
   }
 
-  private getSprites(): Sprite[] {
+  get isBuildingHouse() {
+    return this.$store.state.ui.isBuildingHouse;
+  }
+
+  get world() {
+    return this.$store.state.game.world as World;
+  }
+
+  get gameID() {
+    return this.$store.state.game.gameId;
+  }
+
+  private findTile(hex) {
+    const map = this.world.map;
+    return map.find((tile) => tile.coord.x === hex.x && tile.coord.y === hex.y);
+  }
+
+  private getClosestPoint(point: Point) {
+    const distanceFunc = (from, to) => {
+      return Math.sqrt(
+        Math.pow(Math.abs(from.x - to.x), 2) +
+          Math.pow(Math.abs(from.y - to.y), 2),
+      );
+    };
+    const hexToFind = this.grid.pointToHex(point);
+    const hexOrigin = hexToFind.toPoint();
+    const centerOfHex = {
+      x: hexOrigin.x + hexToFind.width() / 2,
+      y: hexOrigin.y + hexToFind.height() / 2,
+    };
+
+    const distance = distanceFunc(point, centerOfHex);
+    let closestPoint = { point: centerOfHex, index: -1, distance: distance };
+    const corners = hexToFind.corners();
+    for (let i = 0; i < corners.length; i++) {
+      const corner = corners[i];
+      corner.x += hexOrigin.x;
+      corner.y += hexOrigin.y;
+      const cornerDist = distanceFunc(point, corner);
+      if (closestPoint.distance >= cornerDist) {
+        closestPoint = { point: corners[i], index: i, distance: cornerDist };
+      }
+    }
+    return closestPoint;
+  }
+
+  private handleClick(event) {
+    if (!this.isBuildingHouse) {
+      return;
+    }
+    const inWorld = this.viewport.toWorld(event.data.global);
+    const closest = this.getClosestPoint(inWorld);
+    if (closest.index === -1) {
+      return;
+    }
+
+    this.cursorGraphics.clear();
+    this.cursorGraphics.removeChildren();
+    this.$store.dispatch(
+      'game/sendAction',
+      new BuildHouseAction(this.$store.state.game.playerName, closest.point),
+    );
+    this.$store.commit('ui/setIsBuildingHouse', false);
+  }
+
+  private handleMove(event) {
+    if (!this.isBuildingHouse) {
+      return;
+    }
+    const inWorld = this.viewport.toWorld(event.data.global);
+    const closest = this.getClosestPoint(inWorld);
+    if (closest.index != -1) {
+      this.cursorGraphics.clear();
+      this.cursorGraphics.removeChildren();
+      const s = Sprite.fromImage(`./img/pieces/house.png`);
+      s.tint = 0xff0000;
+      s.alpha = 0.6;
+      s.anchor.x = 0.5;
+      s.anchor.y = 0.5;
+      s.height = 100;
+      s.width = 100;
+      s.x = closest.point.x;
+      s.y = closest.point.y;
+      this.cursorGraphics.addChild(s);
+    }
+  }
+
+  private generateSprites(): { [s: string]: () => Sprite } {
     const tilePath = './img/tilesets/';
     const tileFiletype = '.gif';
     const tileStyle = 'watercolor';
 
-    return [
-      Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
-      Sprite.fromImage(`${tilePath}${tileStyle}/desert${tileFiletype}`),
-      Sprite.fromImage(`${tilePath}${tileStyle}/grain${tileFiletype}`),
-      Sprite.fromImage(`${tilePath}${tileStyle}/wood${tileFiletype}`),
-      Sprite.fromImage(`${tilePath}${tileStyle}/stone${tileFiletype}`),
-      Sprite.fromImage(`${tilePath}${tileStyle}/wool${tileFiletype}`),
-      Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
-    ].map((s) => {
-      s.width = this.tileWidth;
-      s.height = this.tileHeight;
-      return s;
-    });
+    const sprites = {
+      Clay: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
+      Desert: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/desert${tileFiletype}`),
+      Grain: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/grain${tileFiletype}`),
+      Wood: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/wood${tileFiletype}`),
+      Stone: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/stone${tileFiletype}`),
+      Wool: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/wool${tileFiletype}`),
+      Ocean: () =>
+        Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
+      House: () => Sprite.fromImage(`./img/pieces/house.png`),
+      City: () => Sprite.fromImage(`./img/pieces/city.png`),
+    };
+    return sprites;
   }
 
   private SetupCanvas(): void {
@@ -73,7 +181,7 @@ export default class Map extends Vue {
 
     this.viewport = new Viewport({
       screenWidth: this.width,
-      screenHeight: this.width,
+      screenHeight: this.height,
       interaction: this.app.renderer!.plugins.interaction,
     });
 
@@ -84,76 +192,159 @@ export default class Map extends Vue {
       .wheel()
       .decelerate();
     this.$el.appendChild(this.app.view);
+    this.viewport.addChild(this.tileGraphics);
+    this.viewport.addChild(this.lineGraphics);
+    this.viewport.addChild(this.pieceGraphics);
+    this.viewport.addChild(this.cursorGraphics);
+  }
+
+  private compareWorlds(oldWorld: World, newWorld: World) {
+    if (oldWorld === undefined) {
+      return [true, true];
+    }
+    const tiles = oldWorld.map !== newWorld.map;
+    const pieces =
+      !oldWorld.thief ||
+      oldWorld.thief !== newWorld.thief ||
+      oldWorld.players !== newWorld.players;
+
+    return [tiles, pieces];
+  }
+
+  private createPiece(
+    spriteType: string,
+    dimensions: { x: number; y: number },
+    tint: number,
+    coord: MatrixCoordinate,
+  ) {
+    const generator = this.sprites[spriteType];
+    const piece = generator();
+    piece.width = dimensions.x;
+    piece.height = dimensions.y;
+    piece.tint = tint;
+    piece.position.x = coord.x;
+    piece.position.y = coord.y;
+    piece.anchor.x = 0.5;
+    piece.anchor.y = 0.5;
+    return piece;
+  }
+
+  private addPiecesToContainer(p: Player, container: Container) {
+    const color = p.color;
+    p.roads.forEach((r) => {
+      this.pieceGraphics.lineStyle(24, color);
+      const startScreenX = r.start.x;
+      const startScreenY = r.start.y;
+      const endScreenX = r.end.x;
+      const endScreenY = r.end.y;
+      this.pieceGraphics.moveTo(startScreenX, startScreenY);
+      this.pieceGraphics.lineTo(endScreenX, endScreenY);
+    });
+    p.houses.forEach((h) => {
+      const piece = this.createPiece(
+        'House',
+        { x: 80, y: 80 },
+        p.color,
+        h.position,
+      );
+      container.addChild(piece);
+    });
+    p.cities.forEach((c) => {
+      const piece = this.createPiece(
+        'City',
+        { x: 124, y: 124 },
+        p.color,
+        c.position,
+      );
+      container.addChild(piece);
+    });
+  }
+
+  private generateTile(tile: Tile, corner, lineWidth) {
+    const generator = this.sprites[tile.type.toString()];
+    const s = generator();
+    s.width = this.tileWidth;
+    s.height = this.tileHeight;
+    s.position.x = corner.x - this.tileWidth - lineWidth / 2;
+    s.position.y = corner.y - this.tileHeight / 2;
+    return s;
   }
 
   @Watch('world')
-  private DrawMap(oldWorld, newWorld): void {
-    let map: Tile[] = [];
-    if (newWorld) map = newWorld.map;
+  private DrawMap(newWorld: World, oldWorld: World): void {
+    if (!newWorld) {
+      return;
+    }
+    const compare = this.compareWorlds(oldWorld, newWorld);
+    const redrawTiles = compare[0];
+    const redrawPieces = compare[1];
+    let tileContainer: Container;
+    let pieceContainer: Container;
 
-    const lineWidth = 24;
-    const Hex = extendHex({
-      size: 200,
-      orientation: 'flat',
-    });
-    const Grid = defineGrid(Hex);
+    if (redrawTiles) {
+      tileContainer = new PIXI.Container();
+      const map: Tile[] = !newWorld || !newWorld.map ? [] : newWorld.map;
+      const lineWidth = 24;
+      const Hex = extendHex({
+        size: this.hexSize,
+        orientation: 'flat',
+      });
+      this.grid = defineGrid(Hex);
+      const center = Hex(0, 0);
 
-    const center = Hex(0, 0);
-    const lineGraphics = new Graphics();
-    const tileContainer = new PIXI.Container();
-    const pieceContainer = new PIXI.Container();
-    map.forEach((tile) => {
-      const hex = Hex(tile.coord.x, tile.coord.y);
-      const point = hex.toPoint();
-      const corners = hex.corners().map((corner) => corner.add(point));
-      const [firstCorner, ...otherCorners] = corners;
+      this.lineGraphics.removeChildren();
+      this.lineGraphics.clear();
+      map.forEach((tile) => {
+        const hex = Hex(tile.coord.x, tile.coord.y);
+        const point = hex.toPoint();
+        const corners = hex.corners().map((corner) => corner.add(point));
+        const [firstCorner, ...otherCorners] = corners;
+        // Tiles
+        const tileSprite = this.generateTile(tile, firstCorner, lineWidth);
+        tileContainer.addChild(tileSprite);
+        // Hex lines
+        this.lineGraphics.lineStyle(lineWidth, 0xffffff);
+        this.lineGraphics.moveTo(firstCorner.x, firstCorner.y);
+        otherCorners.forEach(({ x, y }) => this.lineGraphics.lineTo(x, y));
+        this.lineGraphics.lineTo(firstCorner.x, firstCorner.y);
+      });
+    }
 
-      // Tiles
-      const ss = this.getSprites();
-      let i = Math.floor(Math.random() * (ss.length - 1));
-      if (hex.distance(center) >= 12) {
-        i = ss.length - 1;
-      } // ocean
-      const s = ss[i];
-      s.position.x = firstCorner.x - this.tileWidth - lineWidth / 2;
-      s.position.y = firstCorner.y - this.tileHeight / 2;
-      tileContainer.addChild(s);
+    // Game pieces
+    if (redrawPieces) {
+      pieceContainer = new PIXI.Container();
+      newWorld.players.forEach((p) => {
+        this.addPiecesToContainer(p, pieceContainer);
+      });
+    }
 
-      // Game pieces
-      if (Math.random() <= 0.2) {
-        const isHouse = Math.random() >= 0.5;
-        const piece = isHouse
-          ? Sprite.fromImage(`./img/pieces/house.png`)
-          : Sprite.fromImage(`./img/pieces/city.png`);
-        piece.tint = Math.random() * 0xffffff;
-        piece.width = isHouse ? 80 : 128;
-        piece.height = isHouse ? 80 : 128;
-        piece.position.x = firstCorner.x - piece.width / 2;
-        piece.position.y = firstCorner.y - piece.height / 2;
-        pieceContainer.addChild(piece);
-      }
-
-      // Hex lines
-      lineGraphics.lineStyle(lineWidth, 0xffffff);
-      lineGraphics.moveTo(firstCorner.x, firstCorner.y);
-      otherCorners.forEach(({ x, y }) => lineGraphics.lineTo(x, y));
-      lineGraphics.lineTo(firstCorner.x, firstCorner.y);
-    });
-
-    const tileGraphics = new Graphics();
-    const pieceGraphics = new Graphics();
-    tileGraphics.addChild(tileContainer);
-    pieceGraphics.addChild(pieceContainer);
-    this.viewport.addChild(tileGraphics);
-    this.viewport.addChild(lineGraphics);
-    this.viewport.addChild(pieceGraphics);
+    if (redrawTiles) {
+      this.tileGraphics.removeChildren();
+      this.tileGraphics.clear();
+      this.tileGraphics.addChild(tileContainer);
+    }
+    if (redrawPieces) {
+      this.pieceGraphics.removeChildren();
+      this.pieceGraphics.clear();
+      this.pieceGraphics.addChild(pieceContainer);
+    }
   }
 }
 </script>
 
 <style lang="scss" scoped>
 #Map {
-  background-color: #fff3d3;
+  background-color: #e4e4e4;
   padding: 0px;
+}
+
+#gameID {
+  position: absolute;
+  top: 0;
+  background-color: rgba(255, 255, 255, 0.4);
+  text-align: left;
+  width: 100%;
+  padding-left: 6px;
+  font-size: 12px;
 }
 </style>

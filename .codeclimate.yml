@@ -1,0 +1,3 @@
+exclude_patterns:
+- "pilgrims-shared/__tests__/"
+- "pilgrims-shared/dist/"
