@@ -224,6 +224,8 @@ export default class Map extends Vue {
     piece.tint = tint;
     piece.position.x = coord.x;
     piece.position.y = coord.y;
+    piece.anchor.x = 0.5;
+    piece.anchor.y = 0.5;
     return piece;
   }
 
