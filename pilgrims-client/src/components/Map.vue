@@ -24,7 +24,8 @@ import {
   MatrixCoordinate,
   getMatrixCoordCorner,
 } from '../../../pilgrims-shared/dist/Shared';
-import { BuildHouseAction } from '../../../pilgrims-shared/dist/Action';
+import { BuildHouseAction, Action, BuildCityAction } from '../../../pilgrims-shared/dist/Action';
+import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 
 @Component
 export default class Map extends Vue {
@@ -53,11 +54,23 @@ export default class Map extends Vue {
       that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
     });
     that.viewport.on('mousemove', this.handleMove);
-    that.viewport.on('pointerup', this.handleClick);
+    that.viewport.on('pointerup', this.handleBuildClick);
   }
 
   get isBuildingHouse() {
     return this.$store.state.ui.isBuildingHouse;
+  }
+
+  get player(): PlayerState {
+    return this.$store.getters['game/getPlayer'](this.$store.state.game.playerName);
+  }
+
+  get isBuildingCity() {
+    return this.$store.state.ui.isBuildingCity;
+  }
+
+  get isBuildingRoad() {
+    return this.$store.state.ui.isBuildingRoad;
   }
 
   get world() {
@@ -102,44 +115,65 @@ export default class Map extends Vue {
     return closestPoint;
   }
 
-  private handleClick(event) {
-    if (!this.isBuildingHouse) {
-      return;
-    }
+  private dispatchBuildAction(event, action: Action) {
+      this.cursorGraphics.clear();
+      this.cursorGraphics.removeChildren();
+      this.$store.dispatch(
+        'game/sendAction',
+        action,
+      );
+  }
+
+  private handleBuildClick(event) {
     const inWorld = this.viewport.toWorld(event.data.global);
     const closest = this.getClosestPoint(inWorld);
     if (closest.index === -1) {
       return;
     }
 
-    this.cursorGraphics.clear();
-    this.cursorGraphics.removeChildren();
-    this.$store.dispatch(
-      'game/sendAction',
-      new BuildHouseAction(this.$store.state.game.playerName, closest.point),
-    );
-    this.$store.commit('ui/setIsBuildingHouse', false);
+    if (this.isBuildingHouse) {
+      this.dispatchBuildAction(event, new BuildHouseAction(this.$store.state.game.playerName, closest.point))
+      this.$store.commit('ui/setIsBuildingHouse', false);
+    }
+    if (this.isBuildingCity) {
+      this.dispatchBuildAction(event, new BuildCityAction(this.$store.state.game.playerName, closest.point))
+      this.$store.commit('ui/setIsBuildingCity', false);
+    }
+    if (this.isBuildingRoad) {
+      this.dispatchBuildAction(event, new BuildHouseAction(this.$store.state.game.playerName, closest.point))
+      this.$store.commit('ui/setIsBuildingRoad', false);
+    }
+  }
+
+  private cursorForSprite(event, type: string) {
+    const inWorld = this.viewport.toWorld(event.data.global);
+      const closest = this.getClosestPoint(inWorld);
+      if (closest.index != -1) {
+        this.cursorGraphics.clear();
+        this.cursorGraphics.removeChildren();
+        const piece = this.createPiece(
+          type,
+          { x: 100, y: 100 },
+          this.player.color,
+          closest.point
+        );
+        piece.alpha = 0.6;
+        this.cursorGraphics.addChild(piece);
+      }
   }
 
   private handleMove(event) {
-    if (!this.isBuildingHouse) {
+    if (this.isBuildingHouse) {
+      this.cursorForSprite(event, 'House')
       return;
     }
-    const inWorld = this.viewport.toWorld(event.data.global);
-    const closest = this.getClosestPoint(inWorld);
-    if (closest.index != -1) {
-      this.cursorGraphics.clear();
-      this.cursorGraphics.removeChildren();
-      const s = Sprite.fromImage(`./img/pieces/house.png`);
-      s.tint = 0xff0000;
-      s.alpha = 0.6;
-      s.anchor.x = 0.5;
-      s.anchor.y = 0.5;
-      s.height = 100;
-      s.width = 100;
-      s.x = closest.point.x;
-      s.y = closest.point.y;
-      this.cursorGraphics.addChild(s);
+    if (this.isBuildingCity) {
+      this.cursorForSprite(event, 'City')
+      return;
+    }
+    if (this.isBuildingRoad) {
+      
+      return;
     }
   }
 
@@ -243,7 +277,7 @@ export default class Map extends Vue {
     p.houses.forEach((h) => {
       const piece = this.createPiece(
         'House',
-        { x: 80, y: 80 },
+        { x: 100, y: 100 },
         p.color,
         h.position,
       );
