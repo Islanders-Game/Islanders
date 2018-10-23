@@ -2,6 +2,24 @@ import { HexCoordinate } from './HexCoordinate';
 
 export interface MatrixCoordinate extends HexCoordinate {}
 
+// Because of decisions, we have to deal with this hex->matrix mapping:
+// 0 1 | 2 3 | 4 5 | 6 7
+// . ._|_. . | . ._|_. .
+// ./. | .\._|_./. | .\.
+// .\._|_./. | .\._|_./.
+// ./. | .\._|_./. | .\.
+//
+// . = MatrixCoordinates
+export const matrixCoordToWorldCoord = (
+  coord: MatrixCoordinate,
+  width: number,
+  height: number,
+): { x: number; y: number } => {
+  const worldX = (coord.x * width) / 4 + Math.floor(coord.x / 2) * (width / 4);
+  const worldY = (coord.y * height) / 2;
+  return { x: worldX, y: worldY };
+};
+
 export const neighbouringMatrixCoords = (
   coord: MatrixCoordinate,
 ): MatrixCoordinate[] => {
@@ -51,7 +69,8 @@ export const neighbouringHexCoords = (
       result.push({ x: hexX - 1, y: hexY - 1 });
       result.push({ x: hexX, y: hexY - 1 });
     }
-  } else { // if (coord.y % 2 === 1)
+  } else {
+    // if (coord.y % 2 === 1)
     // two hexY one hexY-1
     if (coord.x % 4 === 0) {
       // one hexX, two hexX-1

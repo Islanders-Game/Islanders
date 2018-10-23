@@ -4,11 +4,16 @@ import {
   subtractResources,
   resourcesAreNonNegative,
 } from './Resources';
-import { HexCoordinate, getMatrixCoordCorner } from './HexCoordinate';
+import {
+  HexCoordinate,
+  getMatrixCoordCorner,
+  getNeighbouringMatrixCoords,
+} from './HexCoordinate';
 import {
   MatrixCoordinate,
   neighbouringHexCoords,
   neighbouringMatrixCoords,
+  matrixCoordToWorldCoord,
 } from './MatrixCoordinate';
 import { Thief } from './Thief';
 import { Ship } from './Entities/Ship';
@@ -37,6 +42,8 @@ export {
   MatrixCoordinate,
   neighbouringHexCoords,
   neighbouringMatrixCoords,
+  matrixCoordToWorldCoord,
+  getNeighbouringMatrixCoords,
   Thief,
   Ship,
   Road,

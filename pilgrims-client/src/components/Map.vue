@@ -23,6 +23,7 @@ import {
   House,
   MatrixCoordinate,
   getMatrixCoordCorner,
+  matrixCoordToWorldCoord,
 } from '../../../pilgrims-shared/dist/Shared';
 import {
   BuildHouseAction,
@@ -292,7 +293,11 @@ export default class Map extends Vue {
         'House',
         { x: 100, y: 100 },
         p.color,
-        h.position,
+        matrixCoordToWorldCoord(
+          h.position,
+          this.grid.Hex().width(),
+          this.grid.Hex().height(),
+        ),
       );
       container.addChild(piece);
     });
