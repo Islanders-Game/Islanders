@@ -3,46 +3,47 @@ import { HexCoordinate } from './HexCoordinate';
 import { DevelopmentCard } from './Entities/DevelopmentCard';
 import { Resources } from './Resources';
 
-interface HasPlayerID {
-  playerID: string;
+interface HasPlayerName {
+  playerName: string;
 }
-interface BuildHouseParameters extends HasPlayerID {
+interface BuildHouseParameters extends HasPlayerName {
   coordinates: MatrixCoordinate;
 }
-interface BuildCityParameters extends HasPlayerID {
+interface BuildCityParameters extends HasPlayerName {
   coordinates: MatrixCoordinate;
 }
-interface BuildRoadParameters extends HasPlayerID {
+interface BuildRoadParameters extends HasPlayerName {
   start: MatrixCoordinate;
   end: MatrixCoordinate;
 }
-interface PlaceThiefParameters extends HasPlayerID {
+interface PlaceThiefParameters extends HasPlayerName {
   coordinates: HexCoordinate;
 }
-interface TradeParameters extends HasPlayerID {
+interface TradeParameters extends HasPlayerName {
   otherPlayerID: string;
   resources: Resources;
 }
-interface PlayCardParameters extends HasPlayerID {
+interface PlayCardParameters extends HasPlayerName {
   card: DevelopmentCard;
 }
-interface BuyCardParameters extends HasPlayerID {
+interface BuyCardParameters extends HasPlayerName {
   card: DevelopmentCard;
 }
+interface EndTurnParameters extends HasPlayerName {}
 
 export class BuildHouseAction {
   public type: 'buildHouse' = 'buildHouse';
   public parameters: BuildHouseParameters;
-  constructor(playerID: string, coordinates: MatrixCoordinate) {
-    this.parameters = { playerID, coordinates };
+  constructor(playerName: string, coordinates: MatrixCoordinate) {
+    this.parameters = { playerName, coordinates };
   }
 }
 
 export class BuildCityAction {
   public type: 'buildCity' = 'buildCity';
   public parameters: BuildCityParameters;
-  constructor(playerID: string, coordinates: MatrixCoordinate) {
-    this.parameters = { playerID: playerID, coordinates: coordinates };
+  constructor(playerName: string, coordinates: MatrixCoordinate) {
+    this.parameters = { playerName: playerName, coordinates: coordinates };
   }
 }
 
@@ -50,43 +51,51 @@ export class BuildRoadAction {
   public type: 'buildRoad' = 'buildRoad';
   public parameters: BuildRoadParameters;
   constructor(
-    playerID: string,
+    playerName: string,
     start: MatrixCoordinate,
     end: MatrixCoordinate,
   ) {
-    this.parameters = { playerID, start, end };
+    this.parameters = { playerName, start, end };
   }
 }
 
 export class PlaceThiefAction {
   public type: 'placeThief' = 'placeThief';
   public parameters: PlaceThiefParameters;
-  constructor(playerID: string, coordinates: HexCoordinate) {
-    this.parameters = { playerID, coordinates };
+  constructor(playerName: string, coordinates: HexCoordinate) {
+    this.parameters = { playerName, coordinates };
   }
 }
 
 export class TradeAction {
   public type: 'trade' = 'trade';
   public parameters: TradeParameters;
-  constructor(playerID: string, otherPlayerID: string, resources: Resources) {
-    this.parameters = { playerID, otherPlayerID, resources };
+  constructor(playerName: string, otherPlayerID: string, resources: Resources) {
+    this.parameters = { playerName, otherPlayerID, resources };
   }
 }
 
 export class BuyCardAction {
   public type: 'buyCard' = 'buyCard';
   public parameters: BuyCardParameters;
-  constructor(playerID: string, card: DevelopmentCard) {
-    this.parameters = { playerID, card };
+  constructor(playerName: string, card: DevelopmentCard) {
+    this.parameters = { playerName, card };
   }
 }
 
 export class PlayCardAction {
   public type: 'playCard' = 'playCard';
   public parameters: PlayCardParameters;
-  constructor(playerID: string, card: DevelopmentCard) {
-    this.parameters = { playerID, card };
+  constructor(playerName: string, card: DevelopmentCard) {
+    this.parameters = { playerName, card };
+  }
+}
+
+export class EndTurnAction {
+  public type: 'endTurn' = 'endTurn';
+  public parameters: EndTurnParameters;
+  constructor(playerName: string) {
+    this.parameters = { playerName };
   }
 }
 

@@ -4,10 +4,8 @@ import { City } from './Entities/City';
 import { Road } from './Entities/Road';
 import { Ship } from './Entities/Ship';
 import { DevelopmentCard } from './Entities/DevelopmentCard';
-import { v4 } from 'uuid';
 
 export class Player {
-  public id: string;
   public color: number;
   public name: string;
   public resources: Resources;
@@ -18,7 +16,6 @@ export class Player {
   public devCards: DevelopmentCard[];
 
   constructor(name: string) {
-    this.id = v4();
     this.color = 0xffffff * Math.random();
     this.name = name;
     this.resources = { clay: 10, grain: 10, stone: 10, wood: 10, wool: 10 }; // todo reset to true values

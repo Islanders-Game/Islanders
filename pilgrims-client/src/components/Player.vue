@@ -64,7 +64,7 @@
               </v-menu>
               <Trade></Trade>
               <v-btn dark>Dev Cards</v-btn>
-              <v-btn >End Turn</v-btn>
+              <v-btn @click="endTurn">End Turn</v-btn>
             </v-layout>
           </v-flex>
         </v-layout>
@@ -102,8 +102,8 @@ export default class Player extends Vue {
     this.$store.commit('ui/setIsBuildingRoad', flag);
   }
 
-  get player(): PlayerState {
-    return this.$store.getters['game/getPlayer'](this.playerName);
+  public endTurn() {
+    this.$store.dispatch('game/endTurn');
   }
 
   private resourceCount(type: string) {
@@ -113,6 +113,10 @@ export default class Player extends Vue {
     }
     const result = player.resources[type];
     return result ? result : 0;
+  }
+
+  get player(): PlayerState {
+    return this.$store.getters['game/getPlayer'](this.playerName);
   }
 
   get devCardsLength() {
