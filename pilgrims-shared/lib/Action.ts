@@ -107,4 +107,5 @@ export type Action =
   | PlaceThiefAction
   | TradeAction
   | PlayCardAction
-  | BuyCardAction;
+  | BuyCardAction
+  | EndTurnAction;

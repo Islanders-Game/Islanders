@@ -134,6 +134,8 @@ export class GameService {
           return rules.MoveThief(a);
         case 'trade':
           return rules.Trade(a);
+        case 'endTurn':
+          return rules.EndTurn(a);
         default:
           return `Could not map Action: { ${Object.keys(a).join(', ')} }!`;
       }
