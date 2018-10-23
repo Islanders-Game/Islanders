@@ -50,10 +50,6 @@ export class GameSocket {
           console.log(`Received a ${SocketActions.initWorld} socket event`);
           this.gameService.initWorld(init, gameID, nsp);
         });
-        socket.on(SocketActions.turnEnd, (turn: Turn) => {
-          console.log(`Received a ${SocketActions.turnEnd} socket event`);
-          this.gameService.turnEnd(turn, gameID, nsp);
-        });
         socket.on(SocketActions.startGame, () => {
           console.log(`Received a ${SocketActions.startGame} socket event`);
           this.gameService.startGame(gameID, nsp);

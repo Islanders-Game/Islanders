@@ -9,7 +9,6 @@ import {
 import { Road } from './Entities/Road';
 import { City } from './Entities/City';
 import { House } from './Entities/House';
-import { Player } from './Player';
 import {
   BuildHouseAction,
   BuildCityAction,

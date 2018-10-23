@@ -47,16 +47,6 @@ export class GameService {
     namespace.emit(SocketActions.newWorld, result);
   }
 
-  public turnEnd(turn: Turn, gameID: string, namespace: SocketIO.Namespace) {
-    if (!turn) console.info(`'turn_end' with empty turn.`);
-    if (!turn || !turn.player || !turn.actions) return;
-    console.info(`'turn_end' on game ${gameID} with turn:`);
-    console.info(turn);
-    this.applyTurn(gameID, turn).then((res) => {
-      namespace.emit(SocketActions.newWorld, res);
-    });
-  }
-
   public async updateMap(
     map: Tile[],
     gameID: string,

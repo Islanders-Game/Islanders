@@ -36,6 +36,7 @@ app.use(function(req, res, next) {
 app.get('/newgame', async (_, res) => {
   console.log(`Recieved a http /newgame call`);
   const world: World = {
+    currentPlayer: undefined,
     players: [],
     map: [{ type: 'Desert', diceRoll: 'None', coord: { x: 0, y: 0 } }],
     started: false,
