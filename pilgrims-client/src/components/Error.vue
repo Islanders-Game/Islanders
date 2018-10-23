@@ -10,14 +10,19 @@ export default class Error extends Vue {
 
   get error() {
     const result = this.$store.getters['game/getError'];
-    if (!result) this.visibility = false;
-    else this.visibility = true;
+    if (!result) {
+      this.visibility = false;
+    } else {
+      this.visibility = true;
+    }
     return result;
   }
 
   @Watch('visibility')
   public removeError(newValue, oldValue) {
-    if (!newValue) this.$store.commit('game/setError', '');
+    if (!newValue) {
+      this.$store.commit('game/setError', '');
+    }
   }
 }
 </script>

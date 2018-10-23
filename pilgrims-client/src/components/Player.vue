@@ -76,6 +76,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 import Trade from './Trade.vue';
+import { EndTurnAction } from '../../../pilgrims-shared/dist/Action';
 
 @Component({
   components: {
@@ -103,7 +104,7 @@ export default class Player extends Vue {
   }
 
   public endTurn() {
-    this.$store.dispatch('game/endTurn');
+    this.$store.dispatch('game/sendAction', new EndTurnAction(this.playerName));
   }
 
   private resourceCount(type: string) {

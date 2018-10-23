@@ -24,7 +24,11 @@ import {
   MatrixCoordinate,
   getMatrixCoordCorner,
 } from '../../../pilgrims-shared/dist/Shared';
-import { BuildHouseAction, Action, BuildCityAction } from '../../../pilgrims-shared/dist/Action';
+import {
+  BuildHouseAction,
+  Action,
+  BuildCityAction,
+} from '../../../pilgrims-shared/dist/Action';
 import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 
 @Component
@@ -62,7 +66,9 @@ export default class Map extends Vue {
   }
 
   get player(): PlayerState {
-    return this.$store.getters['game/getPlayer'](this.$store.state.game.playerName);
+    return this.$store.getters['game/getPlayer'](
+      this.$store.state.game.playerName,
+    );
   }
 
   get isBuildingCity() {
@@ -101,27 +107,24 @@ export default class Map extends Vue {
     };
 
     const distance = distanceFunc(point, centerOfHex);
-    let closestPoint = { point: centerOfHex, index: -1, distance: distance };
+    let closestPoint = { point: centerOfHex, index: -1, dist: distance };
     const corners = hexToFind.corners();
     for (let i = 0; i < corners.length; i++) {
       const corner = corners[i];
       corner.x += hexOrigin.x;
       corner.y += hexOrigin.y;
       const cornerDist = distanceFunc(point, corner);
-      if (closestPoint.distance >= cornerDist) {
-        closestPoint = { point: corners[i], index: i, distance: cornerDist };
+      if (closestPoint.dist >= cornerDist) {
+        closestPoint = { point: corners[i], index: i, dist: cornerDist };
       }
     }
     return closestPoint;
   }
 
   private dispatchBuildAction(event, action: Action) {
-      this.cursorGraphics.clear();
-      this.cursorGraphics.removeChildren();
-      this.$store.dispatch(
-        'game/sendAction',
-        action,
-      );
+    this.cursorGraphics.clear();
+    this.cursorGraphics.removeChildren();
+    this.$store.dispatch('game/sendAction', action);
   }
 
   private handleBuildClick(event) {
@@ -132,47 +135,55 @@ export default class Map extends Vue {
     }
 
     if (this.isBuildingHouse) {
-      this.dispatchBuildAction(event, new BuildHouseAction(this.$store.state.game.playerName, closest.point))
+      this.dispatchBuildAction(
+        event,
+        new BuildHouseAction(this.$store.state.game.playerName, closest.point),
+      );
       this.$store.commit('ui/setIsBuildingHouse', false);
     }
     if (this.isBuildingCity) {
-      this.dispatchBuildAction(event, new BuildCityAction(this.$store.state.game.playerName, closest.point))
+      this.dispatchBuildAction(
+        event,
+        new BuildCityAction(this.$store.state.game.playerName, closest.point),
+      );
       this.$store.commit('ui/setIsBuildingCity', false);
     }
     if (this.isBuildingRoad) {
-      this.dispatchBuildAction(event, new BuildHouseAction(this.$store.state.game.playerName, closest.point))
+      this.dispatchBuildAction(
+        event,
+        new BuildHouseAction(this.$store.state.game.playerName, closest.point),
+      );
       this.$store.commit('ui/setIsBuildingRoad', false);
     }
   }
 
   private cursorForSprite(event, type: string) {
     const inWorld = this.viewport.toWorld(event.data.global);
-      const closest = this.getClosestPoint(inWorld);
-      if (closest.index != -1) {
-        this.cursorGraphics.clear();
-        this.cursorGraphics.removeChildren();
-        const piece = this.createPiece(
-          type,
-          { x: 100, y: 100 },
-          this.player.color,
-          closest.point
-        );
-        piece.alpha = 0.6;
-        this.cursorGraphics.addChild(piece);
-      }
+    const closest = this.getClosestPoint(inWorld);
+    if (closest.index !== -1) {
+      this.cursorGraphics.clear();
+      this.cursorGraphics.removeChildren();
+      const piece = this.createPiece(
+        type,
+        { x: 100, y: 100 },
+        this.player.color,
+        closest.point,
+      );
+      piece.alpha = 0.6;
+      this.cursorGraphics.addChild(piece);
+    }
   }
 
   private handleMove(event) {
     if (this.isBuildingHouse) {
-      this.cursorForSprite(event, 'House')
+      this.cursorForSprite(event, 'House');
       return;
     }
     if (this.isBuildingCity) {
-      this.cursorForSprite(event, 'City')
+      this.cursorForSprite(event, 'City');
       return;
     }
     if (this.isBuildingRoad) {
-      
       return;
     }
   }
