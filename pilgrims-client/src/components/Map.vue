@@ -134,24 +134,26 @@ export default class Map extends Vue {
       return;
     }
 
+    const hexToFind = this.grid.pointToHex(inWorld);
+    const coord = getMatrixCoordCorner(hexToFind, closest.index);
     if (this.isBuildingHouse) {
       this.dispatchBuildAction(
         event,
-        new BuildHouseAction(this.$store.state.game.playerName, closest.point),
+        new BuildHouseAction(this.$store.state.game.playerName, coord),
       );
       this.$store.commit('ui/setIsBuildingHouse', false);
     }
     if (this.isBuildingCity) {
       this.dispatchBuildAction(
         event,
-        new BuildCityAction(this.$store.state.game.playerName, closest.point),
+        new BuildCityAction(this.$store.state.game.playerName, coord),
       );
       this.$store.commit('ui/setIsBuildingCity', false);
     }
     if (this.isBuildingRoad) {
       this.dispatchBuildAction(
         event,
-        new BuildHouseAction(this.$store.state.game.playerName, closest.point),
+        new BuildHouseAction(this.$store.state.game.playerName, coord),
       );
       this.$store.commit('ui/setIsBuildingRoad', false);
     }
