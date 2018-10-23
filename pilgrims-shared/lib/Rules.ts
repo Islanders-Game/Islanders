@@ -76,7 +76,7 @@ export const rules: Rules = {
       purchased,
     );
   },
-  MoveThief: ({ type, parameters }) => (w) => w, // TODO: Implement rules.
+  MoveThief: ({ type, parameters }) => (w) => w,
   BuyCard: ({ type, parameters }) => (w) => w,
   PlayCard: ({ type, parameters }) => (w) => w,
   Trade: ({ type, parameters }) => (w) => w,
