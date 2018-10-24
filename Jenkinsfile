@@ -5,10 +5,18 @@ node('docker&&linux') {
     stage('Fetch SCM') {
         checkout scm
     }
-    stage('Website Build') {
+    stage('Build Library') {
         def shared = docker.build('pilgrims/pilgrims-shared', './pilgrims-shared')
-        def client = docker.build('pilgrims/pilgrims-client', './pilgrims-client')
-        def server = docker.build('pilgrims/pilgrims-server', './pilgrims-server')
+    }
+    stage('Website Build') {
+        parallel(
+            client: {
+                def client = docker.build('pilgrims/pilgrims-client', './pilgrims-client')
+            },
+            server: {
+                def server = docker.build('pilgrims/pilgrims-server', './pilgrims-server')
+            }
+        )
     }
     stage('Tests') {
         sh """

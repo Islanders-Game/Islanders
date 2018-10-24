@@ -49,6 +49,7 @@ describe('Checking for purchaseability', () => {
     p.resources = res;
 
     const w: World = {
+      currentPlayer: undefined,
       map: [],
       players: [p],
       started: false,
@@ -63,7 +64,7 @@ describe('Checking for purchaseability', () => {
     };
     const wr: Result<World> = { tag: 'Success', value: w };
     const pr: Result<Player> = { tag: 'Success', value: p };
-    const result = purchase(res)(pr)(wr);
+    const result = purchase(res)(pr.value.name)(wr);
 
     expect(result.tag === 'Success');
   });
@@ -75,6 +76,7 @@ describe('Checking for purchaseability', () => {
     p.resources = res;
 
     const w: World = {
+      currentPlayer: undefined,
       map: [],
       players: [p],
       started: false,
@@ -89,7 +91,7 @@ describe('Checking for purchaseability', () => {
     };
     const wr: Result<World> = { tag: 'Success', value: w };
     const pr: Result<Player> = { tag: 'Success', value: p };
-    const result = purchase(cost)(pr)(wr);
+    const result = purchase(cost)(pr.value.name)(wr);
 
     expect(result.tag === 'Failure');
   });
