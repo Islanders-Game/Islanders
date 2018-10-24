@@ -25,13 +25,11 @@ const randomTileType = (): TileType => {
 };
 
 export const randomDiceRoll = (): DiceRollType => {
-  const rand = Math.floor(Math.random() * 12 + 1);
-  for (let i = 1; i <= 12; i++) {
-    if (rand === i) {
-      return i as DiceRollType;
-    }
-  }
-  return 'None';
+  const dice1 = Math.floor(Math.random() * 6 + 1);
+  const dice2 = Math.floor(Math.random() * 6 + 1);
+  const roll = dice1 + dice2;
+  if (roll === 7) return randomDiceRoll();
+  return roll as DiceRollType;
 };
 
 export class WorldGenerator {
@@ -48,6 +46,9 @@ export class WorldGenerator {
       let diceRoll = randomDiceRoll();
       if (hex.distance(center) >= r) {
         tileType = 'Ocean';
+        diceRoll = 'None';
+      }
+      if (tileType == 'Desert') {
         diceRoll = 'None';
       }
       map.push({ coord: { x: hex.x, y: hex.y }, diceRoll, type: tileType });

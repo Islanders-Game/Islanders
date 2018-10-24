@@ -336,15 +336,16 @@ export default class Map extends Vue {
     return s;
   }
 
-  private generateTileNumber({ x, y }, tile: Tile) {
+  private generateTileNumber(center, origin, tile: Tile) {
+    if (tile.diceRoll === 'None') return undefined;
     const generator = this.sprites[tile.diceRoll.toString()];
     const s = generator();
     s.width = this.tileWidth / 4;
-    s.height = this.tileHeight / 4;
+    s.height = s.width;
     s.anchor.x = 0.5;
     s.anchor.y = 0.5;
-    s.position.x = x;
-    s.position.y = y;
+    s.position.x = center.x+origin.x;
+    s.position.y = center.y+origin.y;
     return s;
   }
 
@@ -380,9 +381,9 @@ export default class Map extends Vue {
         const [firstCorner, ...otherCorners] = corners;
         // Tiles
         const tileSprite = this.generateTile(tile, firstCorner, lineWidth);
-        const tileNumber = this.generateTileNumber(hex.center(), tile);
+        const tileNumber = this.generateTileNumber(hex.center(), hex.toPoint(), tile);
         tileContainer.addChild(tileSprite);
-        tileContainer.addChild(tileNumber);
+        if (tileNumber) { tileContainer.addChild(tileNumber); }
         // Hex lines
         this.lineGraphics.lineStyle(lineWidth, 0xffffff);
         this.lineGraphics.moveTo(firstCorner.x, firstCorner.y);
