@@ -158,7 +158,9 @@ const placeCity = (coord: MatrixCoordinate) => (playerName: string) => (
   if (!canPlace) {
     return fail('Cannot place a house here!');
   }
-  const houses = player.houses.filter((h) => h.position !== coord);
+  const houses = player.houses.filter(
+    (h) => !(h.position.x === coord.x && h.position.y === coord.y),
+  );
   const cities = player.cities.concat([new City(coord)]);
   const players = r.value.players.map(
     (pl) =>
