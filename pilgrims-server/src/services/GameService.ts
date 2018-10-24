@@ -70,16 +70,23 @@ export class GameService {
     namespace.emit(SocketActions.newWorld, result);
   }
 
-  public async addPlayer(gameID: string, name: string) {
+  public async addPlayer(gameID: string, name: string): Promise<Result<World>> {
     try {
       const result: Result<World> = await this.gameRepository.getWorld(gameID);
       if (result.tag === 'Failure') return result;
+      if (result.value.started) return success(result.value); // spectator mode
+
       const player = new Player(name);
       const players = result.value.players.concat([player]);
-      const world = { ...result.value, players };
+      players.sort((x, y) => x.name.localeCompare(y.name));
+      const world = {
+        ...result.value,
+        currentPlayer: players[0].name,
+        players: players,
+      };
 
       await this.gameRepository.updateGame(gameID, world);
-      return { tag: 'Success', world };
+      return { tag: 'Success', value: world };
     } catch (ex) {
       return {
         tag: 'Failure',
@@ -134,6 +141,8 @@ export class GameService {
           return rules.MoveThief(a);
         case 'trade':
           return rules.Trade(a);
+        case 'endTurn':
+          return rules.EndTurn(a);
         default:
           return `Could not map Action: { ${Object.keys(a).join(', ')} }!`;
       }
