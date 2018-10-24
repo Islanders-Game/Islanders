@@ -1,6 +1,5 @@
 <template>
-    <div id="Player">
-      <v-container dark fluid>
+    <v-footer color="#393939" id="Player" height="auto">
         <v-layout row justify-space-around>
           <v-flex xs3>
             <v-layout align-center justify-start row fill-height>
@@ -68,8 +67,7 @@
             </v-layout>
           </v-flex>
         </v-layout>
-      </v-container>
-    </div>
+    </v-footer>
 </template>
 
 <script lang="ts">
@@ -152,6 +150,6 @@ export default class Player extends Vue {
 
 <style lang="scss" scoped>
 #Player {
-  background-color: #393939;
+  padding: 20px;
 }
 </style>

@@ -1,38 +1,36 @@
 <template>
-    <div id="CustomizeGame">
-      <v-container dark fluid>
-        <v-layout row justify-space-around>
-          <v-flex xs3>
-            <v-layout align-center justify-start row fill-height>
-              <h1 style="color: whitesmoke">{{playerName}}</h1>
+    <v-footer dark color="#393939" id="CustomizeGame" height="auto">
+      <v-layout row justify-space-around>
+        <v-flex xs3>
+          <v-layout align-center justify-start row fill-height>
+            <h1 style="color: whitesmoke">{{playerName}}</h1>
+          </v-layout>
+        </v-flex>
+        <v-flex xs6>
+          <v-layout column align-space-around justify-start fill-height>
+            <v-layout row align-center justify-start>
+              <v-btn @click="randomizeMap">Randomize Map</v-btn>
             </v-layout>
-          </v-flex>
-          <v-flex xs6>
-            <v-layout column align-space-around justify-start fill-height>
-              <v-layout row align-center justify-start>
-                <v-btn @click="randomizeMap">Randomize Map</v-btn>
-              </v-layout>
-              <v-layout row align-center justify-start>
-                <v-flex xs3 style="margin: 6px 8px">
-                  <v-slider dark 
-                    v-model="radius"
-                    thumb-label
-                    label="Radius"
-                    max="30"
-                    min="1"
-                  ></v-slider>
-                </v-flex>
-              </v-layout>
+            <v-layout row align-center justify-start>
+              <v-flex xs3 style="margin: 6px 8px">
+                <v-slider dark 
+                  v-model="radius"
+                  thumb-label
+                  label="Radius"
+                  max="30"
+                  min="1"
+                ></v-slider>
+              </v-flex>
             </v-layout>
-          </v-flex>
-          <v-flex xs3>
-            <v-layout align-center row wrap fill-height>
-                <v-btn @click="startGame">Start Game</v-btn>
-            </v-layout>
-          </v-flex>
-        </v-layout>
-      </v-container>
-    </div>
+          </v-layout>
+        </v-flex>
+        <v-flex xs3>
+          <v-layout align-center row wrap fill-height>
+              <v-btn @click="startGame">Start Game</v-btn>
+          </v-layout>
+        </v-flex>
+      </v-layout>
+    </v-footer>
 </template>
 
 <script lang="ts">
@@ -72,6 +70,6 @@ export default class CustomizeGame extends Vue {
 
 <style lang="scss" scoped>
 #CustomizeGame {
-  background-color: #393939;
+  padding: 20px;
 }
 </style>
