@@ -5,6 +5,7 @@ import {
   Resources,
   subtractResources,
   resourcesAreNonNegative,
+  addResources,
 } from './Resources';
 import { Road } from './Entities/Road';
 import { City } from './Entities/City';
@@ -19,7 +20,13 @@ import {
   TradeAction,
   EndTurnAction,
 } from './Action';
-import { neighbouringMatrixCoords } from './Shared';
+import {
+  neighbouringMatrixCoords,
+  neighbouringHexCoords,
+  Tile,
+  Player,
+} from './Shared';
+import { randomDiceRoll } from './WorldGenerator';
 
 export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
@@ -81,7 +88,51 @@ export const rules: Rules = {
   BuyCard: ({ type, parameters }) => (w) => w,
   PlayCard: ({ type, parameters }) => (w) => w,
   Trade: ({ type, parameters }) => (w) => w,
-  EndTurn: ({ type, parameters }) => (w) => w,
+  EndTurn: ({ type, parameters }) => (w) => {
+    if (w.tag === 'Failure') {
+      return w;
+    }
+    const diceRoll = randomDiceRoll();
+    const players: Player[] = w.value.players.map((pl) => {
+      let allTiles: { tile: Tile; amt: number }[] = w.value.map
+        .filter((tile) => {
+          //tile.diceRoll !== diceRoll &&
+          return !(
+            w.value.thief &&
+            (w.value.thief.hexCoordinate.x === tile.coord.x &&
+              w.value.thief.hexCoordinate.y === tile.coord.y)
+          );
+        })
+        .map((tile) => {
+          const houseAmt = pl.houses.reduce((state: number, curr: House) => {
+            const hexes = neighbouringHexCoords(curr.position);
+            for (let i = 0; i < 3; i++) {
+              if (hexes[i].x === tile.coord.x && hexes[i].y === tile.coord.y)
+                return state + 1;
+            }
+            return state;
+          }, 0);
+          const cityAmt = pl.cities.reduce((state: number, curr: House) => {
+            const hexes = neighbouringHexCoords(curr.position);
+            for (let i = 0; i < 3; i++) {
+              if (hexes[i].x === tile.coord.x && hexes[i].y === tile.coord.y)
+                return state + 2;
+            }
+            return state;
+          }, 0);
+          return { tile: tile, amt: houseAmt + cityAmt };
+        });
+      const resources: Resources = allTiles
+        .filter((pair) => pair.amt !== 0)
+        .reduce((state, pair) => {
+          return addResources(state, {
+            [pair.tile.type.toLowerCase()]: pair.amt,
+          });
+        }, pl.resources);
+      return { ...pl, resources: resources };
+    });
+    return success({ ...w.value, players: players });
+  },
 };
 
 export const purchase = (cost: Resources) => (playerName: string) => (
