@@ -131,7 +131,12 @@ export const rules: Rules = {
         }, pl.resources);
       return { ...pl, resources: resources };
     });
-    return success({ ...w.value, players: players });
+    const nextPlayer = w.value.currentPlayer + (1 % w.value.players.length);
+    return success({
+      ...w.value,
+      players: players,
+      currentPlayer: nextPlayer,
+    });
   },
 };
 
@@ -158,9 +163,9 @@ const findPlayer = (name: string) => (r: Result<World>): Result<World> => {
   if (r.tag === 'Failure') {
     return r;
   }
-  const player = r.value.players.find((pl) => pl.name === name);
-  if (!player) {
-    return fail(`Player ${name} not found.`);
+  const player = r.value.players[r.value.currentPlayer];
+  if (player.name !== name) {
+    return fail('It is not your turn!');
   }
   return success(r.value);
 };

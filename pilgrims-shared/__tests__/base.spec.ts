@@ -49,7 +49,7 @@ describe('Checking for purchaseability', () => {
     p.resources = res;
 
     const w: World = {
-      currentPlayer: undefined,
+      currentPlayer: 0,
       map: [],
       players: [p],
       started: false,
@@ -76,7 +76,7 @@ describe('Checking for purchaseability', () => {
     p.resources = res;
 
     const w: World = {
-      currentPlayer: undefined,
+      currentPlayer: 0,
       map: [],
       players: [p],
       started: false,
