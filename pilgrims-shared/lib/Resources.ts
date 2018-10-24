@@ -35,6 +35,36 @@ export const subtractResources = (
   };
 };
 
+export const addResources = (resources: Resources, toAdd: Resources) => {
+  return {
+    clay: resources.clay
+      ? toAdd.clay
+        ? resources.clay + toAdd.clay
+        : resources.clay
+      : toAdd.clay,
+    grain: resources.grain
+      ? toAdd.grain
+        ? resources.grain + toAdd.grain
+        : resources.grain
+      : toAdd.grain,
+    stone: resources.stone
+      ? toAdd.stone
+        ? resources.stone + toAdd.stone
+        : resources.stone
+      : toAdd.stone,
+    wood: resources.wood
+      ? toAdd.wood
+        ? resources.wood + toAdd.wood
+        : resources.wood
+      : toAdd.wood,
+    wool: resources.wool
+      ? toAdd.wool
+        ? resources.wool + toAdd.wool
+        : resources.wool
+      : toAdd.wool,
+  };
+};
+
 export const resourcesAreNonNegative = (resources: Resources) => {
   return (
     resources.clay &&

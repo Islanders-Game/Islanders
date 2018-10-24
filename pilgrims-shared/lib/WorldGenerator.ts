@@ -24,7 +24,7 @@ const randomTileType = (): TileType => {
   return 'Ocean';
 };
 
-const randomDiceRoll = (): DiceRollType => {
+export const randomDiceRoll = (): DiceRollType => {
   const rand = Math.floor(Math.random() * 12 + 1);
   for (let i = 1; i <= 12; i++) {
     if (rand === i) {

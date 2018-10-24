@@ -81,7 +81,6 @@ export class GameService {
       players.sort((x, y) => x.name.localeCompare(y.name));
       const world = {
         ...result.value,
-        currentPlayer: players[0].name,
         players: players,
       };
 
