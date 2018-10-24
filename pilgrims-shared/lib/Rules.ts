@@ -138,7 +138,7 @@ export const rules: Rules = {
         }, pl.resources);
       return { ...pl, resources: resources };
     });
-    const nextPlayer = w.value.currentPlayer + (1 % w.value.players.length);
+    const nextPlayer = (w.value.currentPlayer + 1) % w.value.players.length;
     return success({
       ...w.value,
       players: players,
