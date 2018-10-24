@@ -92,15 +92,22 @@ export const rules: Rules = {
     if (w.tag === 'Failure') {
       return w;
     }
+    const player = findPlayer(parameters.playerName)(w);
+    if (player.tag === 'Failure') {
+      return player;
+    }
+
     const diceRoll = randomDiceRoll();
     const players: Player[] = w.value.players.map((pl) => {
       let allTiles: { tile: Tile; amt: number }[] = w.value.map
         .filter((tile) => {
-          //tile.diceRoll !== diceRoll &&
-          return !(
-            w.value.thief &&
-            (w.value.thief.hexCoordinate.x === tile.coord.x &&
-              w.value.thief.hexCoordinate.y === tile.coord.y)
+          return (
+            tile.diceRoll !== diceRoll &&
+            !(
+              w.value.thief &&
+              (w.value.thief.hexCoordinate.x === tile.coord.x &&
+                w.value.thief.hexCoordinate.y === tile.coord.y)
+            )
           );
         })
         .map((tile) => {
@@ -131,7 +138,7 @@ export const rules: Rules = {
         }, pl.resources);
       return { ...pl, resources: resources };
     });
-    const nextPlayer = w.value.currentPlayer + (1 % w.value.players.length);
+    const nextPlayer = (w.value.currentPlayer + 1) % w.value.players.length;
     return success({
       ...w.value,
       players: players,
