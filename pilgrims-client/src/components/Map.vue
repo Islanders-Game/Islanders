@@ -235,6 +235,8 @@ export default class Map extends Vue {
     this.viewport = new Viewport({
       screenWidth: this.width,
       screenHeight: this.height,
+      worldHeight: 1000,
+      worldWidth: 1000,
       interaction: this.app.renderer!.plugins.interaction,
     });
 
@@ -244,6 +246,7 @@ export default class Map extends Vue {
       .pinch()
       .wheel()
       .decelerate();
+
     this.$el.appendChild(this.app.view);
     this.viewport.addChild(this.tileGraphics);
     this.viewport.addChild(this.lineGraphics);
@@ -339,8 +342,8 @@ export default class Map extends Vue {
     s.height = s.width;
     s.anchor.x = 0.5;
     s.anchor.y = 0.5;
-    s.position.x = center.x+origin.x;
-    s.position.y = center.y+origin.y;
+    s.position.x = center.x + origin.x;
+    s.position.y = center.y + origin.y;
     return s;
   }
 
@@ -349,6 +352,7 @@ export default class Map extends Vue {
     if (!newWorld) {
       return;
     }
+
     const compare = this.compareWorlds(oldWorld, newWorld);
     const redrawTiles = compare[0];
     const redrawPieces = compare[1];
@@ -370,15 +374,21 @@ export default class Map extends Vue {
       this.lineGraphics.clear();
       map.forEach((tile) => {
         const hex = Hex(tile.coord.x, tile.coord.y);
-        hex.center()
+        hex.center();
         const point = hex.toPoint();
         const corners = hex.corners().map((corner) => corner.add(point));
         const [firstCorner, ...otherCorners] = corners;
         // Tiles
         const tileSprite = this.generateTile(tile, firstCorner, lineWidth);
-        const tileNumber = this.generateTileNumber(hex.center(), hex.toPoint(), tile);
+        const tileNumber = this.generateTileNumber(
+          hex.center(),
+          hex.toPoint(),
+          tile,
+        );
         tileContainer.addChild(tileSprite);
-        if (tileNumber) { tileContainer.addChild(tileNumber); }
+        if (tileNumber) {
+          tileContainer.addChild(tileNumber);
+        }
         // Hex lines
         this.lineGraphics.lineStyle(lineWidth, 0xffffff);
         this.lineGraphics.moveTo(firstCorner.x, firstCorner.y);
