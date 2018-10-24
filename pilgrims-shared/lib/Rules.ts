@@ -102,7 +102,7 @@ export const rules: Rules = {
       let allTiles: { tile: Tile; amt: number }[] = w.value.map
         .filter((tile) => {
           return (
-            tile.diceRoll !== diceRoll &&
+            tile.diceRoll === diceRoll &&
             !(
               w.value.thief &&
               (w.value.thief.hexCoordinate.x === tile.coord.x &&
@@ -143,6 +143,7 @@ export const rules: Rules = {
       ...w.value,
       players: players,
       currentPlayer: nextPlayer,
+      currentDie: diceRoll,
     });
   },
 };
