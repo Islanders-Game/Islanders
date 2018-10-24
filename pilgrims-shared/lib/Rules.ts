@@ -19,6 +19,7 @@ import {
   TradeAction,
   EndTurnAction,
 } from './Action';
+import { neighbouringMatrixCoords } from './Shared';
 
 export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
@@ -123,8 +124,13 @@ const placeHouse = (coord: MatrixCoordinate) => (playerName: string) => (
     (acc: House[], p) => acc.concat(p.houses),
     [],
   );
-  const canPlace = allHouses.every(
-    (h) => h.position.x !== coord.x && h.position.y !== coord.y, // todo rest of the check
+  const neighbouring = neighbouringMatrixCoords(coord);
+  const canPlace = !allHouses.some(
+    (h) =>
+      (h.position.x === coord.x && h.position.y === coord.y) ||
+      neighbouring.some(
+        (pos) => pos.x === h.position.x && pos.y === h.position.y,
+      ),
   );
   if (!canPlace) {
     return fail('Cannot place a house here!');
