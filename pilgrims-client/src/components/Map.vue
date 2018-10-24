@@ -306,7 +306,11 @@ export default class Map extends Vue {
         'City',
         { x: 124, y: 124 },
         p.color,
-        c.position,
+        matrixCoordToWorldCoord(
+          c.position,
+          this.grid.Hex().width(),
+          this.grid.Hex().height(),
+        ),
       );
       container.addChild(piece);
     });
