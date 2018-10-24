@@ -213,6 +213,16 @@ export default class Map extends Vue {
         Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
       House: () => Sprite.fromImage(`./img/pieces/house.png`),
       City: () => Sprite.fromImage(`./img/pieces/city.png`),
+      2: () => Sprite.fromImage(`./img/numbers/2.png`),
+      3: () => Sprite.fromImage(`./img/numbers/3.png`),
+      4: () => Sprite.fromImage(`./img/numbers/4.png`),
+      5: () => Sprite.fromImage(`./img/numbers/5.png`),
+      6: () => Sprite.fromImage(`./img/numbers/6.png`),
+      8: () => Sprite.fromImage(`./img/numbers/8.png`),
+      9: () => Sprite.fromImage(`./img/numbers/9.png`),
+      10: () => Sprite.fromImage(`./img/numbers/10.png`),
+      11: () => Sprite.fromImage(`./img/numbers/11.png`),
+      12: () => Sprite.fromImage(`./img/numbers/12.png`),
     };
     return sprites;
   }
@@ -326,6 +336,18 @@ export default class Map extends Vue {
     return s;
   }
 
+  private generateTileNumber({ x, y }, tile: Tile) {
+    const generator = this.sprites[tile.diceRoll.toString()];
+    const s = generator();
+    s.width = this.tileWidth / 4;
+    s.height = this.tileHeight / 4;
+    s.anchor.x = 0.5;
+    s.anchor.y = 0.5;
+    s.position.x = x;
+    s.position.y = y;
+    return s;
+  }
+
   @Watch('world')
   private DrawMap(newWorld: World, oldWorld: World): void {
     if (!newWorld) {
@@ -352,12 +374,15 @@ export default class Map extends Vue {
       this.lineGraphics.clear();
       map.forEach((tile) => {
         const hex = Hex(tile.coord.x, tile.coord.y);
+        hex.center()
         const point = hex.toPoint();
         const corners = hex.corners().map((corner) => corner.add(point));
         const [firstCorner, ...otherCorners] = corners;
         // Tiles
         const tileSprite = this.generateTile(tile, firstCorner, lineWidth);
+        const tileNumber = this.generateTileNumber(hex.center(), tile);
         tileContainer.addChild(tileSprite);
+        tileContainer.addChild(tileNumber);
         // Hex lines
         this.lineGraphics.lineStyle(lineWidth, 0xffffff);
         this.lineGraphics.moveTo(firstCorner.x, firstCorner.y);
