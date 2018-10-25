@@ -21,6 +21,7 @@ Otherwise, run `docker inspect pilgrims-client | grep IPAddress` to find the ip 
 
 # Implementation
 [![Build Status](https://jenkins.anderswind.dk/buildStatus/icon?job=Pilgrims/master)](https://jenkins.anderswind.dk/job/Pilgrims/job/master/)
+[![codebeat badge](https://codebeat.co/badges/9fe73beb-c48f-4772-8d45-ab88e2241782)](https://codebeat.co/projects/github-com-awia00-pilgrims-master)
 [![Maintainability](https://api.codeclimate.com/v1/badges/e9e2a40371b22a5460ad/maintainability)](https://codeclimate.com/github/Awia00/Pilgrims/maintainability)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com) 
 

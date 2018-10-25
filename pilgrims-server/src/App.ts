@@ -35,20 +35,7 @@ app.use(function(req, res, next) {
 
 app.get('/newgame', async (_, res) => {
   console.log(`Recieved a http /newgame call`);
-  const world: World = {
-    currentPlayer: undefined,
-    players: [],
-    map: [{ type: 'Desert', diceRoll: 'None', coord: { x: 0, y: 0 } }],
-    started: false,
-    gameRules: {
-      gameType: 'original',
-      maxCities: 15,
-      maxHouses: 15,
-      maxRoads: 15,
-      pointsToWin: 10,
-      rounds: -1,
-    },
-  };
+  const world: World = new World();
   const db = monk(mongoURL);
   const result = await db.get('games').insert(world);
   const id = result._id;

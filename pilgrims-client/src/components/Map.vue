@@ -1,6 +1,5 @@
 <template>
 <v-container fluid fill-height id="Map">
-    <span v-if="gameID" id=gameID>Tell your friends to join this game at: <b>{{gameID}}</b></span>
 </v-container>
 </template>
 
@@ -82,10 +81,6 @@ export default class Map extends Vue {
 
   get world() {
     return this.$store.state.game.world as World;
-  }
-
-  get gameID() {
-    return this.$store.state.game.gameId;
   }
 
   private findTile(hex) {
@@ -213,6 +208,16 @@ export default class Map extends Vue {
         Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
       House: () => Sprite.fromImage(`./img/pieces/house.png`),
       City: () => Sprite.fromImage(`./img/pieces/city.png`),
+      2: () => Sprite.fromImage(`./img/numbers/2.png`),
+      3: () => Sprite.fromImage(`./img/numbers/3.png`),
+      4: () => Sprite.fromImage(`./img/numbers/4.png`),
+      5: () => Sprite.fromImage(`./img/numbers/5.png`),
+      6: () => Sprite.fromImage(`./img/numbers/6.png`),
+      8: () => Sprite.fromImage(`./img/numbers/8.png`),
+      9: () => Sprite.fromImage(`./img/numbers/9.png`),
+      10: () => Sprite.fromImage(`./img/numbers/10.png`),
+      11: () => Sprite.fromImage(`./img/numbers/11.png`),
+      12: () => Sprite.fromImage(`./img/numbers/12.png`),
     };
     return sprites;
   }
@@ -230,6 +235,8 @@ export default class Map extends Vue {
     this.viewport = new Viewport({
       screenWidth: this.width,
       screenHeight: this.height,
+      worldHeight: 1000,
+      worldWidth: 1000,
       interaction: this.app.renderer!.plugins.interaction,
     });
 
@@ -239,6 +246,7 @@ export default class Map extends Vue {
       .pinch()
       .wheel()
       .decelerate();
+
     this.$el.appendChild(this.app.view);
     this.viewport.addChild(this.tileGraphics);
     this.viewport.addChild(this.lineGraphics);
@@ -306,7 +314,11 @@ export default class Map extends Vue {
         'City',
         { x: 124, y: 124 },
         p.color,
-        c.position,
+        matrixCoordToWorldCoord(
+          c.position,
+          this.grid.Hex().width(),
+          this.grid.Hex().height(),
+        ),
       );
       container.addChild(piece);
     });
@@ -322,11 +334,25 @@ export default class Map extends Vue {
     return s;
   }
 
+  private generateTileNumber(center, origin, tile: Tile) {
+    if (tile.diceRoll === 'None') return undefined;
+    const generator = this.sprites[tile.diceRoll.toString()];
+    const s = generator();
+    s.width = this.tileWidth / 4;
+    s.height = s.width;
+    s.anchor.x = 0.5;
+    s.anchor.y = 0.5;
+    s.position.x = center.x + origin.x;
+    s.position.y = center.y + origin.y;
+    return s;
+  }
+
   @Watch('world')
   private DrawMap(newWorld: World, oldWorld: World): void {
     if (!newWorld) {
       return;
     }
+
     const compare = this.compareWorlds(oldWorld, newWorld);
     const redrawTiles = compare[0];
     const redrawPieces = compare[1];
@@ -348,12 +374,21 @@ export default class Map extends Vue {
       this.lineGraphics.clear();
       map.forEach((tile) => {
         const hex = Hex(tile.coord.x, tile.coord.y);
+        hex.center();
         const point = hex.toPoint();
         const corners = hex.corners().map((corner) => corner.add(point));
         const [firstCorner, ...otherCorners] = corners;
         // Tiles
         const tileSprite = this.generateTile(tile, firstCorner, lineWidth);
+        const tileNumber = this.generateTileNumber(
+          hex.center(),
+          hex.toPoint(),
+          tile,
+        );
         tileContainer.addChild(tileSprite);
+        if (tileNumber) {
+          tileContainer.addChild(tileNumber);
+        }
         // Hex lines
         this.lineGraphics.lineStyle(lineWidth, 0xffffff);
         this.lineGraphics.moveTo(firstCorner.x, firstCorner.y);
@@ -388,15 +423,5 @@ export default class Map extends Vue {
 #Map {
   background-color: #e4e4e4;
   padding: 0px;
-}
-
-#gameID {
-  position: absolute;
-  top: 0;
-  background-color: rgba(255, 255, 255, 0.4);
-  text-align: left;
-  width: 100%;
-  padding-left: 6px;
-  font-size: 12px;
 }
 </style>

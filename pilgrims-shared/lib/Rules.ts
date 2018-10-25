@@ -5,6 +5,7 @@ import {
   Resources,
   subtractResources,
   resourcesAreNonNegative,
+  addResources,
 } from './Resources';
 import { Road } from './Entities/Road';
 import { City } from './Entities/City';
@@ -19,6 +20,13 @@ import {
   TradeAction,
   EndTurnAction,
 } from './Action';
+import {
+  neighbouringMatrixCoords,
+  neighbouringHexCoords,
+  Tile,
+  Player,
+} from './Shared';
+import { randomDiceRoll } from './WorldGenerator';
 
 export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
@@ -80,7 +88,62 @@ export const rules: Rules = {
   BuyCard: ({ type, parameters }) => (w) => w,
   PlayCard: ({ type, parameters }) => (w) => w,
   Trade: ({ type, parameters }) => (w) => w,
-  EndTurn: ({ type, parameters }) => (w) => w,
+  EndTurn: ({ type, parameters }) => (w) => {
+    if (w.tag === 'Failure') {
+      return w;
+    }
+    const player = findPlayer(parameters.playerName)(w);
+    if (player.tag === 'Failure') {
+      return player;
+    }
+
+    const diceRoll = randomDiceRoll();
+    const players: Player[] = w.value.players.map((pl) => {
+      const allTiles: Array<{ tile: Tile; amt: number }> = w.value.map
+        .filter((tile) => {
+          return (
+            tile.diceRoll === diceRoll &&
+            !(
+              w.value.thief &&
+              (w.value.thief.hexCoordinate.x === tile.coord.x &&
+                w.value.thief.hexCoordinate.y === tile.coord.y)
+            )
+          );
+        })
+        .map((tile) => {
+          const houseAmt = numberOfResourcesForPlayer(pl.houses, tile);
+          const cityAmt = numberOfResourcesForPlayer(pl.cities, tile);
+          return { tile, amt: houseAmt + cityAmt };
+        });
+      const resources: Resources = allTiles
+        .filter((pair) => pair.amt !== 0)
+        .reduce((state, pair) => {
+          return addResources(state, {
+            [pair.tile.type.toLowerCase()]: pair.amt,
+          });
+        }, pl.resources);
+      return { ...pl, resources };
+    });
+    const nextPlayer = (w.value.currentPlayer + 1) % w.value.players.length;
+    return success({
+      ...w.value,
+      players,
+      currentPlayer: nextPlayer,
+      currentDie: diceRoll,
+    });
+  },
+};
+
+export const numberOfResourcesForPlayer = (houses: House[], tile: Tile): number => {
+  return houses.reduce((state: number, curr: House) => {
+    const hexes = neighbouringHexCoords(curr.position);
+    for (let i = 0; i < 3; i++) {
+      if (hexes[i].x === tile.coord.x && hexes[i].y === tile.coord.y) {
+        return state + curr.value;
+      }
+    }
+    return state;
+  }, 0);
 };
 
 export const purchase = (cost: Resources) => (playerName: string) => (
@@ -106,9 +169,9 @@ const findPlayer = (name: string) => (r: Result<World>): Result<World> => {
   if (r.tag === 'Failure') {
     return r;
   }
-  const player = r.value.players.find((pl) => pl.name === name);
-  if (!player) {
-    return fail(`Player ${name} not found.`);
+  const player = r.value.players[r.value.currentPlayer];
+  if (player.name !== name) {
+    return fail('It is not your turn!');
   }
   return success(r.value);
 };
@@ -123,8 +186,13 @@ const placeHouse = (coord: MatrixCoordinate) => (playerName: string) => (
     (acc: House[], p) => acc.concat(p.houses),
     [],
   );
-  const canPlace = allHouses.every(
-    (h) => h.position.x !== coord.x && h.position.y !== coord.y, // todo rest of the check
+  const neighbouring = neighbouringMatrixCoords(coord);
+  const canPlace = !allHouses.some(
+    (h) =>
+      (h.position.x === coord.x && h.position.y === coord.y) ||
+      neighbouring.some(
+        (pos) => pos.x === h.position.x && pos.y === h.position.y,
+      ),
   );
   if (!canPlace) {
     return fail('Cannot place a house here!');
@@ -152,11 +220,13 @@ const placeCity = (coord: MatrixCoordinate) => (playerName: string) => (
   if (!canPlace) {
     return fail('Cannot place a house here!');
   }
-  const houses = player.houses.filter((h) => h.position !== coord);
+  const houses = player.houses.filter(
+    (h) => !(h.position.x === coord.x && h.position.y === coord.y),
+  );
   const cities = player.cities.concat([new City(coord)]);
   const players = r.value.players.map(
     (pl) =>
-      pl.name === playerName ? { ...pl, houses: houses, cities: cities } : pl,
+      pl.name === playerName ? { ...pl, houses, cities } : pl,
   );
   return success({ ...r.value, players });
 };

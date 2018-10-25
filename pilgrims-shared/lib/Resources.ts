@@ -35,6 +35,23 @@ export const subtractResources = (
   };
 };
 
+const addResource = (resource: undefined | number, toAdd: undefined | number): undefined | number => {
+  return resource
+      ? toAdd
+        ? resource + toAdd
+        : resource
+      : toAdd;
+};
+export const addResources = (resources: Resources, toAdd: Resources) => {
+  return {
+    clay: addResource(resources.clay, toAdd.clay),
+    grain: addResource(resources.grain, toAdd.grain),
+    stone: addResource(resources.stone, toAdd.stone),
+    wood: addResource(resources.wood, toAdd.wood),
+    wool: addResource(resources.wool, toAdd.wool),
+  };
+};
+
 export const resourcesAreNonNegative = (resources: Resources) => {
   return (
     resources.clay &&
