@@ -33,37 +33,35 @@ export class GameSocket {
   public setupSocketOnNamespace(gameID: string) {
     const nsp = this.io.of(`/${gameID}`);
     nsp.on('connection', (socket) => {
-      console.info(`Player connected to socket with namespace ${gameID}`);
+      this.logConnectEvent(gameID, socket.id);
       socket.on(SocketActions.join, (name: string) => {
         const playerName = name ? name : socket.id;
-        console.info(
-          `'join' on game ${gameID} by player named: ${playerName}.`,
-        );
+        this.logJoinEvent(gameID, playerName);
         socket.on(SocketActions.getWorld, async () => {
-          console.log(`Received a ${SocketActions.getWorld} socket event`);
+          this.logSocketEvent(gameID, SocketActions.getWorld);
           socket.emit(
             SocketActions.newWorld,
             await this.gameRepository.getWorld(gameID),
           );
         });
         socket.on(SocketActions.initWorld, (init: World) => {
-          console.log(`Received a ${SocketActions.initWorld} socket event`);
+          this.logSocketEvent(gameID, SocketActions.initWorld);
           this.gameService.initWorld(init, gameID, nsp);
         });
         socket.on(SocketActions.startGame, () => {
-          console.log(`Received a ${SocketActions.startGame} socket event`);
+          this.logSocketEvent(gameID, SocketActions.startGame);
           this.gameService.startGame(gameID, nsp);
         });
         socket.on(SocketActions.newMap, (map: Tile[]) => {
-          console.log(`Received a ${SocketActions.newMap} socket event`);
+          this.logSocketEvent(gameID, SocketActions.newMap);
           this.gameService.updateMap(map, gameID, nsp);
         });
         socket.on(SocketActions.chat, (chat: ChatMessage) => {
-          console.log(`Received a ${SocketActions.chat} socket event`);
+          this.logSocketEvent(gameID, SocketActions.chat);
           this.chatService.chatMessage(chat, gameID, nsp);
         });
         socket.on(SocketActions.sendAction, async (action: Action) => {
-          console.log(`Received a ${SocketActions.sendAction} socket event`);
+          this.logSocketEvent(gameID, SocketActions.sendAction);
           const result = await this.gameService.applyAction(gameID, action);
           nsp.emit(SocketActions.newWorld, result);
         });
@@ -74,6 +72,16 @@ export class GameSocket {
 
       setInterval(() => this.clearNamespaceIfEmpty(nsp, this.io), 18000000); // Clear every half hour.
     });
+  }
+
+  private logSocketEvent(gameID: string, type: string) {
+    console.info(`[${gameID}] Received a ${type} socket event.`);
+  }
+  private logJoinEvent(gameID: string, playerName: string) {
+    console.info(`[${gameID}] Join by player named: ${playerName}.`);
+  }
+  private logConnectEvent(gameID: string, socketID: string) {
+    console.info(`[${gameID}] Player connected with socket ID ${socketID}.`);
   }
 
   private clearNamespaceIfEmpty(
