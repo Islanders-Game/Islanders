@@ -26,11 +26,14 @@ export class GameRepository {
     }
   }
 
-  public async updateGame(gameId: string, world: World): Promise<Result<any>> {
+  public async updateGame(
+    gameId: string,
+    world: World,
+  ): Promise<Result<World>> {
     const db = monk(this.mongoURL);
     try {
       await db.get(this.tableName).update(new ObjectId(gameId), world);
-      return success(undefined);
+      return success(world);
     } catch (ex) {
       return fail(ex);
     } finally {
@@ -43,8 +46,7 @@ export class GameRepository {
     try {
       const result = await db.get(this.tableName).findOne(new ObjectId(gameId));
       if (!result) {
-        // todo don't know if this is neccesary
-        return fail(`World with id: ${gameId} not found`);
+        return fail(`World with id: ${gameId} not found!`);
       }
       return success(result as World);
     } catch (ex) {

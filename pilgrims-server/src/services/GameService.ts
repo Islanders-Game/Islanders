@@ -13,6 +13,7 @@ import {
   rules,
 } from '../../../pilgrims-shared/dist/Shared';
 import { GameRepository } from '../repositories/GameRepository';
+import { StartGameAction } from '../../../pilgrims-shared/dist/Action';
 
 export class GameService {
   private gameRepository: GameRepository;
@@ -25,26 +26,15 @@ export class GameService {
     gameID: string,
     namespace: SocketIO.Namespace,
   ) {
-    if (!init) console.info(`'init_world' with empty message.`);
+    if (!init) console.info(`[${gameID}] 'init_world' with empty message.`);
     if (!init || !gameID) return;
-    console.info(`'init_world' on game ${gameID} with world:`);
+    console.info(`[${gameID}] 'init_world' with World:`);
     console.info(init);
     const r = await this.gameRepository.getWorld(gameID);
     if (r.tag === 'Success' && !r.value.started) {
       await this.gameRepository.createGame(init);
       namespace.emit(SocketActions.newWorld, success(init));
     }
-  }
-
-  public async startGame(gameID: string, namespace: SocketIO.Namespace) {
-    const result = await this.gameRepository.getWorld(gameID);
-    if (result.tag === 'Failure') {
-      console.log(result.reason);
-      return;
-    }
-    result.value.started = true;
-    await this.gameRepository.updateGame(gameID, result.value);
-    namespace.emit(SocketActions.newWorld, result);
   }
 
   public async updateMap(
@@ -54,14 +44,14 @@ export class GameService {
   ) {
     const result = await this.gameRepository.getWorld(gameID);
     if (result.tag === 'Failure') {
-      console.log(result.reason);
+      console.info(`[${gameID}] 'Failure' with reason: ${result.reason}`);
       return;
     }
 
     if (result.value.started) {
       namespace.emit(
         SocketActions.newWorld,
-        fail('You cannot update the map once the game has started'),
+        fail('You cannot update the map once the game has started!'),
       );
       return;
     }
@@ -108,12 +98,12 @@ export class GameService {
     return apply;
   }
 
-  public async applyAction(id: string, action: Action) {
+  public async applyAction(id: string, action: Action): Promise<Result<World>> {
     const toApply = this.mapRules([action]);
     if (toApply.tag === 'Failure') return toApply;
     const result = await this.gameRepository.getWorld(id);
     if (result.tag === 'Failure') return result;
-    if (!result.value.started)
+    if (!result.value.started && action.type !== 'startGame')
       return { tag: 'Failure', reason: 'Game is not started!' };
     const apply = toApply.value.reduce(ruleReducer, result);
     if (apply.tag === 'Failure') return apply;
@@ -140,6 +130,8 @@ export class GameService {
           return rules.MoveThief(a);
         case 'trade':
           return rules.Trade(a);
+        case 'startGame':
+          return rules.StartGame(a);
         case 'endTurn':
           return rules.EndTurn(a);
         default:

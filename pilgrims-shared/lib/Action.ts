@@ -91,6 +91,10 @@ export class PlayCardAction {
   }
 }
 
+export class StartGameAction {
+  public type: 'startGame' = 'startGame';
+}
+
 export class EndTurnAction {
   public type: 'endTurn' = 'endTurn';
   public parameters: EndTurnParameters;
@@ -108,4 +112,5 @@ export type Action =
   | TradeAction
   | PlayCardAction
   | BuyCardAction
+  | StartGameAction
   | EndTurnAction;
