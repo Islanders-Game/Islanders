@@ -49,7 +49,7 @@ export const ruleReducer = (
 // ---- Rule implementations ----
 //
 export const rules: Rules = {
-  BuildHouse: ({ type, parameters }) => (w) => {
+  BuildHouse: ({ parameters }) => (w) => {
     if (w.tag === 'Failure') {
       return w;
     }
@@ -62,7 +62,7 @@ export const rules: Rules = {
     );
     return placed;
   },
-  BuildCity: ({ type, parameters }) => (w) => {
+  BuildCity: ({ parameters }) => (w) => {
     if (w.tag === 'Failure') {
       return w;
     }
@@ -72,7 +72,7 @@ export const rules: Rules = {
     );
     return placeCity(parameters.coordinates)(parameters.playerName)(purchased);
   },
-  BuildRoad: ({ type, parameters }) => (w) => {
+  BuildRoad: ({ parameters }) => (w) => {
     if (w.tag === 'Failure') {
       return w;
     }
@@ -84,11 +84,11 @@ export const rules: Rules = {
       purchased,
     );
   },
-  MoveThief: ({ type, parameters }) => (w) => w,
-  BuyCard: ({ type, parameters }) => (w) => w,
-  PlayCard: ({ type, parameters }) => (w) => w,
-  Trade: ({ type, parameters }) => (w) => w,
-  EndTurn: ({ type, parameters }) => (w) => {
+  MoveThief: ({ parameters }) => (w) => w,
+  BuyCard: ({ parameters }) => (w) => w,
+  PlayCard: ({ parameters }) => (w) => w,
+  Trade: ({ parameters }) => (w) => w,
+  EndTurn: ({ parameters }) => (w) => {
     if (w.tag === 'Failure') {
       return w;
     }
