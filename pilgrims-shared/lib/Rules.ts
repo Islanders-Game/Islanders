@@ -96,18 +96,10 @@ export const rules: Rules = {
     if (w.tag === 'Failure') {
       return w;
     }
-    const player = findPlayer(parameters.playerName)(w);
-    if (player.tag === 'Failure') {
-      return player;
-    }
-
-    const diceRoll = randomDiceRoll();
     const players = assignRessourcesToPlayers(w, 'None', false);
     return success({
       ...w.value,
       players,
-      currentPlayer: w.value.currentPlayer,
-      currentDie: diceRoll,
     });
   },
   EndTurn: ({ parameters }) => (w) => {

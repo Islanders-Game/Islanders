@@ -13,6 +13,7 @@ import {
   rules,
 } from '../../../pilgrims-shared/dist/Shared';
 import { GameRepository } from '../repositories/GameRepository';
+import { StartGameAction } from '../../../pilgrims-shared/dist/Action';
 
 export class GameService {
   private gameRepository: GameRepository;
@@ -42,7 +43,12 @@ export class GameService {
       console.info(`[${gameID}] 'Failure' with reason: ${result.reason}`);
       return;
     }
-    result.value.started = true;
+
+    const start: StartGameAction = { type: 'startGame' };
+    const applied: Result<World> = await this.applyAction(gameID, start);
+    if (applied.tag === 'Success') {
+      applied.value.started = true;
+    }
     await this.gameRepository.updateGame(gameID, result.value);
     namespace.emit(SocketActions.newWorld, result);
   }
@@ -108,7 +114,7 @@ export class GameService {
     return apply;
   }
 
-  public async applyAction(id: string, action: Action) {
+  public async applyAction(id: string, action: Action): Promise<Result<World>> {
     const toApply = this.mapRules([action]);
     if (toApply.tag === 'Failure') return toApply;
     const result = await this.gameRepository.getWorld(id);
