@@ -99,10 +99,10 @@ export const rules: Rules = {
 
     const diceRoll = randomDiceRoll();
     const players: Player[] = w.value.players.map((pl) => {
-      let allTiles: { tile: Tile; amt: number }[] = w.value.map
+      const allTiles: Array<{ tile: Tile; amt: number }> = w.value.map
         .filter((tile) => {
           return (
-            tile.diceRoll !== diceRoll &&
+            tile.diceRoll === diceRoll &&
             !(
               w.value.thief &&
               (w.value.thief.hexCoordinate.x === tile.coord.x &&
@@ -111,23 +111,9 @@ export const rules: Rules = {
           );
         })
         .map((tile) => {
-          const houseAmt = pl.houses.reduce((state: number, curr: House) => {
-            const hexes = neighbouringHexCoords(curr.position);
-            for (let i = 0; i < 3; i++) {
-              if (hexes[i].x === tile.coord.x && hexes[i].y === tile.coord.y)
-                return state + 1;
-            }
-            return state;
-          }, 0);
-          const cityAmt = pl.cities.reduce((state: number, curr: House) => {
-            const hexes = neighbouringHexCoords(curr.position);
-            for (let i = 0; i < 3; i++) {
-              if (hexes[i].x === tile.coord.x && hexes[i].y === tile.coord.y)
-                return state + 2;
-            }
-            return state;
-          }, 0);
-          return { tile: tile, amt: houseAmt + cityAmt };
+          const houseAmt = numberOfResourcesForPlayer(pl.houses, tile);
+          const cityAmt = numberOfResourcesForPlayer(pl.cities, tile);
+          return { tile, amt: houseAmt + cityAmt };
         });
       const resources: Resources = allTiles
         .filter((pair) => pair.amt !== 0)
@@ -136,15 +122,28 @@ export const rules: Rules = {
             [pair.tile.type.toLowerCase()]: pair.amt,
           });
         }, pl.resources);
-      return { ...pl, resources: resources };
+      return { ...pl, resources };
     });
     const nextPlayer = (w.value.currentPlayer + 1) % w.value.players.length;
     return success({
       ...w.value,
-      players: players,
+      players,
       currentPlayer: nextPlayer,
+      currentDie: diceRoll,
     });
   },
+};
+
+export const numberOfResourcesForPlayer = (houses: House[], tile: Tile): number => {
+  return houses.reduce((state: number, curr: House) => {
+    const hexes = neighbouringHexCoords(curr.position);
+    for (let i = 0; i < 3; i++) {
+      if (hexes[i].x === tile.coord.x && hexes[i].y === tile.coord.y) {
+        return state + curr.value;
+      }
+    }
+    return state;
+  }, 0);
 };
 
 export const purchase = (cost: Resources) => (playerName: string) => (
@@ -227,7 +226,7 @@ const placeCity = (coord: MatrixCoordinate) => (playerName: string) => (
   const cities = player.cities.concat([new City(coord)]);
   const players = r.value.players.map(
     (pl) =>
-      pl.name === playerName ? { ...pl, houses: houses, cities: cities } : pl,
+      pl.name === playerName ? { ...pl, houses, cities } : pl,
   );
   return success({ ...r.value, players });
 };

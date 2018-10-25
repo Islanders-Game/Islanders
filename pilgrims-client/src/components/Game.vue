@@ -2,7 +2,11 @@
   <v-container fluid id="Game">
     <v-layout column fill-height>
       <v-layout row class="main-area">
-        <p v-if="gameID" id=gameID>Tell your friends to join this game at: <b>{{gameID}}</b></p>
+        <p id=gameID>
+          <span v-if="gameID">Tell your friends to join this game at: <b>{{gameID}}</b></span>
+          <span v-if="currentPlayer" class="pad">Current player: <b>{{currentPlayer.name}}</b></span>
+          <span v-if="currentDie" class="pad">Current die: <b>{{currentDie.toString()}}</b></span>
+        </p>
         <v-flex xs9>
           <Map/>
         </v-flex>
@@ -41,6 +45,12 @@ export default class Game extends Vue {
   get gameID() {
     return this.$store.state.game.gameId;
   }
+  get currentPlayer() {
+    return this.$store.getters['game/getCurrentPlayer'];
+  }
+  get currentDie() {
+    return this.$store.getters['game/getCurrentDie'];
+  }
 }
 </script>
 
@@ -56,5 +66,8 @@ export default class Game extends Vue {
   width: 100%;
   padding-left: 6px;
   font-size: 12px;
+}
+.pad {
+  padding: 0px 10px;
 }
 </style>

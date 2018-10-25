@@ -12,6 +12,7 @@ import {
   Result,
   Tile,
   Action,
+  DiceRollType,
 } from '../../../../pilgrims-shared/dist/Shared';
 import { Socket, State as RootState } from '../store';
 
@@ -49,6 +50,18 @@ const getters: GetterTree<State, any> = {
       return false;
     }
     return state.world.started;
+  },
+  getCurrentPlayer(state: State): Player {
+    if (!state.world) {
+      return undefined;
+    }
+    return state.world.players[state.world.currentPlayer];
+  },
+  getCurrentDie(state: State): DiceRollType {
+    if (!state.world) {
+      return undefined;
+    }
+    return state.world.currentDie;
   },
 };
 

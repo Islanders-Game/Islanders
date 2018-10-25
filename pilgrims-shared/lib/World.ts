@@ -1,10 +1,11 @@
 import { Player } from './Player';
 import { Thief } from './Thief';
-import { Tile } from './Tile';
+import { Tile, DiceRollType } from './Tile';
 import { GameRules } from './GameRules';
 
 export interface World {
   currentPlayer: number;
+  currentDie: DiceRollType;
   players: Player[];
   thief?: Thief;
   map: Tile[];
@@ -14,6 +15,7 @@ export interface World {
 
 export class World implements World {
   constructor() {
+    this.currentDie = 'None';
     this.currentPlayer = 0;
     this.gameRules = new GameRules();
     this.players = [];

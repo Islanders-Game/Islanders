@@ -31,7 +31,6 @@ import { ChatMessage } from './ChatMessage';
 import { SocketActions } from './SocketAction';
 import { Result, Failure, Success, success, fail } from './Result';
 import { WorldGenerator } from './WorldGenerator';
-import { NewTurn } from './NewTurn';
 
 export {
   Action,
@@ -71,5 +70,4 @@ export {
   resourcesAreNonNegative,
   SocketActions,
   WorldGenerator,
-  NewTurn,
 };
