@@ -34,12 +34,11 @@ app.use(function(req, res, next) {
 });
 
 app.get('/newgame', async (_, res) => {
-  console.log(`Recieved a http /newgame call`);
   const world: World = new World();
   const db = monk(mongoURL);
   const result = await db.get('games').insert(world);
   const id = result._id;
-  console.info('Created game with id: ' + id);
+  console.info(`[${id}] Created game.`);
 
   gameSocket.setupSocketOnNamespace(id);
   res.send(id);
@@ -73,6 +72,6 @@ app.get('/', function(req, res) {
 });
 
 server.listen(process.env.PORT, () =>
-  console.log(`pilgrims-server listening on port ${process.env.PORT}`),
+  console.info(`[INFO] pilgrims-server listening on port ${process.env.PORT}`),
 );
 //

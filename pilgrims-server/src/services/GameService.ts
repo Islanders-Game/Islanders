@@ -25,9 +25,9 @@ export class GameService {
     gameID: string,
     namespace: SocketIO.Namespace,
   ) {
-    if (!init) console.info(`'init_world' with empty message.`);
+    if (!init) console.info(`[${gameID}] 'init_world' with empty message.`);
     if (!init || !gameID) return;
-    console.info(`'init_world' on game ${gameID} with world:`);
+    console.info(`[${gameID}] 'init_world' with World:`);
     console.info(init);
     const r = await this.gameRepository.getWorld(gameID);
     if (r.tag === 'Success' && !r.value.started) {
@@ -39,7 +39,7 @@ export class GameService {
   public async startGame(gameID: string, namespace: SocketIO.Namespace) {
     const result = await this.gameRepository.getWorld(gameID);
     if (result.tag === 'Failure') {
-      console.log(result.reason);
+      console.info(`[${gameID}] 'Failure' with reason: ${result.reason}`);
       return;
     }
     result.value.started = true;
@@ -54,14 +54,14 @@ export class GameService {
   ) {
     const result = await this.gameRepository.getWorld(gameID);
     if (result.tag === 'Failure') {
-      console.log(result.reason);
+      console.info(`[${gameID}] 'Failure' with reason: ${result.reason}`);
       return;
     }
 
     if (result.value.started) {
       namespace.emit(
         SocketActions.newWorld,
-        fail('You cannot update the map once the game has started'),
+        fail('You cannot update the map once the game has started!'),
       );
       return;
     }

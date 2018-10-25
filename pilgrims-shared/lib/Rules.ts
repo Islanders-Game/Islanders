@@ -134,7 +134,10 @@ export const rules: Rules = {
   },
 };
 
-export const numberOfResourcesForPlayer = (houses: House[], tile: Tile): number => {
+export const numberOfResourcesForPlayer = (
+  houses: House[],
+  tile: Tile,
+): number => {
   return houses.reduce((state: number, curr: House) => {
     const hexes = neighbouringHexCoords(curr.position);
     for (let i = 0; i < 3; i++) {
@@ -157,7 +160,7 @@ export const purchase = (cost: Resources) => (playerName: string) => (
     cost,
   );
   if (!resourcesAreNonNegative(resources)) {
-    return fail(`Player ${playerName} cannot afford this.`);
+    return fail(`You cannot afford this!`);
   }
   const players = r.value.players.map(
     (pl) => (pl.name === playerName ? { ...pl, resources } : pl),
@@ -195,7 +198,7 @@ const placeHouse = (coord: MatrixCoordinate) => (playerName: string) => (
       ),
   );
   if (!canPlace) {
-    return fail('Cannot place a house here!');
+    return fail(`Can't place a house here!`);
   }
   const players = world.value.players.map(
     (pl) =>
@@ -218,15 +221,14 @@ const placeCity = (coord: MatrixCoordinate) => (playerName: string) => (
   );
 
   if (!canPlace) {
-    return fail('Cannot place a house here!');
+    return fail(`Can't place a city here!`);
   }
   const houses = player.houses.filter(
     (h) => !(h.position.x === coord.x && h.position.y === coord.y),
   );
   const cities = player.cities.concat([new City(coord)]);
   const players = r.value.players.map(
-    (pl) =>
-      pl.name === playerName ? { ...pl, houses, cities } : pl,
+    (pl) => (pl.name === playerName ? { ...pl, houses, cities } : pl),
   );
   return success({ ...r.value, players });
 };
@@ -243,7 +245,7 @@ const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
     (ro) => ro.start !== start && ro.end !== end,
   );
   if (!canPlace) {
-    return fail('Cannot place a road here!');
+    return fail(`Can't place a road here!`);
   }
   const roads = player.roads.concat([new Road(start, end)]);
   const players = r.value.players.map(

@@ -41,7 +41,7 @@ const actionTree: ActionTree<any, any> = {
     const query = `?playerName=${gameStartInfo.playerName}&gameId=${
       gameStartInfo.gameId
     }`;
-    const { data }: { data: Result<string> } = await await Axios.get(
+    const { data }: { data: Result<string> } = await Axios.get(
       `${host}joingame${query}`,
     );
 
