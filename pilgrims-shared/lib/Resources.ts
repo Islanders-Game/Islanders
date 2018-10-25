@@ -35,33 +35,20 @@ export const subtractResources = (
   };
 };
 
+const addResource = (resource: undefined | number, toAdd: undefined | number): undefined | number => {
+  return resource
+      ? toAdd
+        ? resource + toAdd
+        : resource
+      : toAdd;
+};
 export const addResources = (resources: Resources, toAdd: Resources) => {
   return {
-    clay: resources.clay
-      ? toAdd.clay
-        ? resources.clay + toAdd.clay
-        : resources.clay
-      : toAdd.clay,
-    grain: resources.grain
-      ? toAdd.grain
-        ? resources.grain + toAdd.grain
-        : resources.grain
-      : toAdd.grain,
-    stone: resources.stone
-      ? toAdd.stone
-        ? resources.stone + toAdd.stone
-        : resources.stone
-      : toAdd.stone,
-    wood: resources.wood
-      ? toAdd.wood
-        ? resources.wood + toAdd.wood
-        : resources.wood
-      : toAdd.wood,
-    wool: resources.wool
-      ? toAdd.wool
-        ? resources.wool + toAdd.wool
-        : resources.wool
-      : toAdd.wool,
+    clay: addResource(resources.clay, toAdd.clay),
+    grain: addResource(resources.grain, toAdd.grain),
+    stone: addResource(resources.stone, toAdd.stone),
+    wood: addResource(resources.wood, toAdd.wood),
+    wool: addResource(resources.wool, toAdd.wool),
   };
 };
 
