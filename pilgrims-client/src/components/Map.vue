@@ -380,14 +380,17 @@ export default class Map extends Vue {
         const [firstCorner, ...otherCorners] = corners;
         // Tiles
         const tileSprite = this.generateTile(tile, firstCorner, lineWidth);
-        const tileNumber = this.generateTileNumber(
-          hex.center(),
-          hex.toPoint(),
-          tile,
-        );
         tileContainer.addChild(tileSprite);
-        if (tileNumber) {
-          tileContainer.addChild(tileNumber);
+
+        if (newWorld.started) {
+          const tileNumber = this.generateTileNumber(
+            hex.center(),
+            hex.toPoint(),
+            tile,
+          );
+          if (tileNumber) {
+            tileContainer.addChild(tileNumber);
+          }
         }
         // Hex lines
         this.lineGraphics.lineStyle(lineWidth, 0xffffff);
