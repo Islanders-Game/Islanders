@@ -49,9 +49,7 @@ app.get('/newgame', async (_, res) => {
 app.get('/joingame', async (req, res) => {
   const playerName = req.query.playerName;
   const gameID = req.query.gameId;
-  console.info(
-    `Received a http /joingame call with: player ${playerName}, game ${gameID}`,
-  );
+  console.info(`[${gameID}] Received /joingame GET with player: ${playerName}`);
   const db = monk(mongoURL);
   let game: World | undefined;
   try {
@@ -60,11 +58,11 @@ app.get('/joingame', async (req, res) => {
     // to ensure the await is handled properly.
   } finally {
     if (!game) {
-      res.send(fail('Game did not exist'));
+      res.send(fail('Game does not exist!'));
     } else if (game.players.some((x) => x.name === playerName)) {
-      res.send(fail('A player with that name already exists on this game'));
+      res.send(fail('A player with that name already exists on this game!'));
     }
-    res.send(success('Game exists and playername not taken'));
+    res.send(success('Game exists and player name is not taken'));
     db.close();
   }
 });
@@ -75,6 +73,6 @@ app.get('/', function(req, res) {
 });
 
 server.listen(process.env.PORT, () =>
-  console.log(`pilgrims-server listening on port ${process.env.PORT}!`),
+  console.log(`pilgrims-server listening on port ${process.env.PORT}`),
 );
 //
