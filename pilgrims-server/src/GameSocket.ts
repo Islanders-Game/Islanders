@@ -11,6 +11,7 @@ import { Turn } from '../../pilgrims-shared/dist/Turn';
 import { Tile } from '../../pilgrims-shared/dist/Tile';
 import { ChatService } from './services/ChatService';
 import { GameRepository } from './repositories/GameRepository';
+import { StartGameAction } from '../../pilgrims-shared/dist/Action';
 
 export class GameSocket {
   private io: SocketIO.Server;
@@ -48,9 +49,13 @@ export class GameSocket {
           this.logSocketEvent(gameID, SocketActions.initWorld);
           this.gameService.initWorld(init, gameID, nsp);
         });
-        socket.on(SocketActions.startGame, () => {
+        socket.on(SocketActions.startGame, async () => {
           this.logSocketEvent(gameID, SocketActions.startGame);
-          this.gameService.startGame(gameID, nsp);
+          const start: StartGameAction = { type: 'startGame' };
+          nsp.emit(
+            SocketActions.newWorld,
+            await this.gameService.applyAction(gameID, start),
+          );
         });
         socket.on(SocketActions.newMap, (map: Tile[]) => {
           this.logSocketEvent(gameID, SocketActions.newMap);

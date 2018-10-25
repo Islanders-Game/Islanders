@@ -37,22 +37,6 @@ export class GameService {
     }
   }
 
-  public async startGame(gameID: string, namespace: SocketIO.Namespace) {
-    const result = await this.gameRepository.getWorld(gameID);
-    if (result.tag === 'Failure') {
-      console.info(`[${gameID}] 'Failure' with reason: ${result.reason}`);
-      return;
-    }
-
-    const start: StartGameAction = { type: 'startGame' };
-    const applied: Result<World> = await this.applyAction(gameID, start);
-    if (applied.tag === 'Success') {
-      applied.value.started = true;
-    }
-    await this.gameRepository.updateGame(gameID, result.value);
-    namespace.emit(SocketActions.newWorld, result);
-  }
-
   public async updateMap(
     map: Tile[],
     gameID: string,

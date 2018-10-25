@@ -92,7 +92,7 @@ export const rules: Rules = {
   BuyCard: ({ parameters }) => (w) => w,
   PlayCard: ({ parameters }) => (w) => w,
   Trade: ({ parameters }) => (w) => w,
-  StartGame: ({ parameters }) => (w) => {
+  StartGame: () => (w) => {
     if (w.tag === 'Failure') {
       return w;
     }
@@ -100,6 +100,7 @@ export const rules: Rules = {
     return success({
       ...w.value,
       players,
+      started: true,
     });
   },
   EndTurn: ({ parameters }) => (w) => {
