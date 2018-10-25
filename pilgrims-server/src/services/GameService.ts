@@ -103,7 +103,7 @@ export class GameService {
     if (toApply.tag === 'Failure') return toApply;
     const result = await this.gameRepository.getWorld(id);
     if (result.tag === 'Failure') return result;
-    if (!result.value.started)
+    if (!result.value.started && action.type !== 'startGame')
       return { tag: 'Failure', reason: 'Game is not started!' };
     const apply = toApply.value.reduce(ruleReducer, result);
     if (apply.tag === 'Failure') return apply;
@@ -130,6 +130,8 @@ export class GameService {
           return rules.MoveThief(a);
         case 'trade':
           return rules.Trade(a);
+        case 'startGame':
+          return rules.StartGame(a);
         case 'endTurn':
           return rules.EndTurn(a);
         default:
