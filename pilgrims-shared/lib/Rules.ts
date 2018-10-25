@@ -219,19 +219,17 @@ const placeHouse = (coord: MatrixCoordinate) => (playerName: string) => (
   const canPlace = !allHouses.some(
     (h) =>
       (h.position.x === coord.x && h.position.y === coord.y) ||
-      neighbouring.some(
-        (pos) => pos.x === h.position.x && pos.y === h.position.y,
-      ),
+      neighbouring.some((c) => c.x === h.position.x && c.y === h.position.y),
   );
   if (!canPlace) {
     return fail(`Can't place a house here!`);
   }
-  const players = world.value.players.map(
-    (pl) =>
-      pl.name === playerName
-        ? { ...pl, houses: pl.houses.concat([new House(coord)]) }
-        : pl,
-  );
+
+  const concatHousesIfMatch = (pl: Player) =>
+    pl.name === playerName
+      ? { ...pl, houses: pl.houses.concat([new House(coord)]) }
+      : pl;
+  const players = world.value.players.map((pl) => concatHousesIfMatch(pl));
   return success({ ...world.value, players });
 };
 
