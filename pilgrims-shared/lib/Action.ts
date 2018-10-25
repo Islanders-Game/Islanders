@@ -30,6 +30,7 @@ interface BuyCardParameters extends HasPlayerName {
   card: DevelopmentCard;
 }
 interface EndTurnParameters extends HasPlayerName {}
+interface StartGameParameters extends HasPlayerName {}
 
 export class BuildHouseAction {
   public type: 'buildHouse' = 'buildHouse';
@@ -88,6 +89,14 @@ export class PlayCardAction {
   public parameters: PlayCardParameters;
   constructor(playerName: string, card: DevelopmentCard) {
     this.parameters = { playerName, card };
+  }
+}
+
+export class StartGameAction {
+  public type: 'startGame' = 'startGame';
+  public parameters: StartGameParameters;
+  constructor(playerName: string) {
+    this.parameters = { playerName };
   }
 }
 

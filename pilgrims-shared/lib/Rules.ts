@@ -18,6 +18,7 @@ import {
   BuyCardAction,
   PlayCardAction,
   TradeAction,
+  StartGameAction,
   EndTurnAction,
 } from './Action';
 import {
@@ -25,8 +26,10 @@ import {
   neighbouringHexCoords,
   Tile,
   Player,
+  Success,
 } from './Shared';
 import { randomDiceRoll } from './WorldGenerator';
+import { DiceRollType } from './Tile';
 
 export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
@@ -37,6 +40,7 @@ export interface Rules {
   BuyCard: (data: BuyCardAction) => (w: Result<World>) => Result<World>;
   PlayCard: (data: PlayCardAction) => (w: Result<World>) => Result<World>;
   Trade: (data: TradeAction) => (w: Result<World>) => Result<World>;
+  StartGame: (data: StartGameAction) => (w: Result<World>) => Result<World>;
   EndTurn: (data: EndTurnAction) => (w: Result<World>) => Result<World>;
 }
 
@@ -88,6 +92,24 @@ export const rules: Rules = {
   BuyCard: ({ parameters }) => (w) => w,
   PlayCard: ({ parameters }) => (w) => w,
   Trade: ({ parameters }) => (w) => w,
+  StartGame: ({ parameters }) => (w) => {
+    if (w.tag === 'Failure') {
+      return w;
+    }
+    const player = findPlayer(parameters.playerName)(w);
+    if (player.tag === 'Failure') {
+      return player;
+    }
+
+    const diceRoll = randomDiceRoll();
+    const players = assignRessourcesToPlayers(w, 'None', false);
+    return success({
+      ...w.value,
+      players,
+      currentPlayer: w.value.currentPlayer,
+      currentDie: diceRoll,
+    });
+  },
   EndTurn: ({ parameters }) => (w) => {
     if (w.tag === 'Failure') {
       return w;
@@ -98,32 +120,7 @@ export const rules: Rules = {
     }
 
     const diceRoll = randomDiceRoll();
-    const players: Player[] = w.value.players.map((pl) => {
-      const allTiles: Array<{ tile: Tile; amt: number }> = w.value.map
-        .filter((tile) => {
-          return (
-            tile.diceRoll === diceRoll &&
-            !(
-              w.value.thief &&
-              (w.value.thief.hexCoordinate.x === tile.coord.x &&
-                w.value.thief.hexCoordinate.y === tile.coord.y)
-            )
-          );
-        })
-        .map((tile) => {
-          const houseAmt = numberOfResourcesForPlayer(pl.houses, tile);
-          const cityAmt = numberOfResourcesForPlayer(pl.cities, tile);
-          return { tile, amt: houseAmt + cityAmt };
-        });
-      const resources: Resources = allTiles
-        .filter((pair) => pair.amt !== 0)
-        .reduce((state, pair) => {
-          return addResources(state, {
-            [pair.tile.type.toLowerCase()]: pair.amt,
-          });
-        }, pl.resources);
-      return { ...pl, resources };
-    });
+    const players = assignRessourcesToPlayers(w, diceRoll);
     const nextPlayer = (w.value.currentPlayer + 1) % w.value.players.length;
     return success({
       ...w.value,
@@ -147,6 +144,42 @@ export const numberOfResourcesForPlayer = (
     }
     return state;
   }, 0);
+};
+
+type TileRessource = { tile: Tile; amount: number };
+const assignRessourcesToPlayers = (
+  w: Success<World>,
+  diceRoll: DiceRollType,
+  useDiceRoll = true,
+) => {
+  const players: Player[] = w.value.players.map((pl) => {
+    const allTiles: TileRessource[] = w.value.map
+      .filter((tile) => {
+        return (
+          !useDiceRoll ||
+          (tile.diceRoll === diceRoll &&
+            !(
+              w.value.thief &&
+              (w.value.thief.hexCoordinate.x === tile.coord.x &&
+                w.value.thief.hexCoordinate.y === tile.coord.y)
+            ))
+        );
+      })
+      .map((tile) => {
+        const houseAmt = numberOfResourcesForPlayer(pl.houses, tile);
+        const cityAmt = numberOfResourcesForPlayer(pl.cities, tile);
+        return { tile, amount: houseAmt + cityAmt };
+      });
+    const resources: Resources = allTiles
+      .filter((pair) => pair.amount !== 0)
+      .reduce((state, pair) => {
+        return addResources(state, {
+          [pair.tile.type.toLowerCase()]: pair.amount,
+        });
+      }, pl.resources);
+    return { ...pl, resources };
+  });
+  return players;
 };
 
 export const purchase = (cost: Resources) => (playerName: string) => (

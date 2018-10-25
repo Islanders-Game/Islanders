@@ -26,11 +26,14 @@ export class GameRepository {
     }
   }
 
-  public async updateGame(gameId: string, world: World): Promise<Result<any>> {
+  public async updateGame(
+    gameId: string,
+    world: World,
+  ): Promise<Result<World>> {
     const db = monk(this.mongoURL);
     try {
       await db.get(this.tableName).update(new ObjectId(gameId), world);
-      return success(undefined);
+      return success(world);
     } catch (ex) {
       return fail(ex);
     } finally {
