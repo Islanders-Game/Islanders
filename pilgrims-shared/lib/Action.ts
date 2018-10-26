@@ -26,9 +26,7 @@ interface TradeParameters extends HasPlayerName {
 interface PlayCardParameters extends HasPlayerName {
   card: DevelopmentCard;
 }
-interface BuyCardParameters extends HasPlayerName {
-  card: DevelopmentCard;
-}
+interface BuyCardParameters extends HasPlayerName {}
 interface EndTurnParameters extends HasPlayerName {}
 
 export class BuildHouseAction {
@@ -78,8 +76,8 @@ export class TradeAction {
 export class BuyCardAction {
   public type: 'buyCard' = 'buyCard';
   public parameters: BuyCardParameters;
-  constructor(playerName: string, card: DevelopmentCard) {
-    this.parameters = { playerName, card };
+  constructor(playerName: string) {
+    this.parameters = { playerName };
   }
 }
 
