@@ -62,7 +62,7 @@
                 </v-list>
               </v-menu>
               <Trade></Trade>
-              <v-btn dark>Dev Cards</v-btn>
+              <v-btn dark @click="devCard" >Buy Dev Card</v-btn>
               <v-btn @click="endTurn">End Turn</v-btn>
             </v-layout>
           </v-flex>
@@ -74,7 +74,10 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 import Trade from './Trade.vue';
-import { EndTurnAction } from '../../../pilgrims-shared/dist/Action';
+import {
+  EndTurnAction,
+  BuyCardAction,
+} from '../../../pilgrims-shared/dist/Action';
 
 @Component({
   components: {
@@ -99,6 +102,10 @@ export default class Player extends Vue {
 
   public setIsBuildingRoad(flag: boolean) {
     this.$store.commit('ui/setIsBuildingRoad', flag);
+  }
+
+  public devCard() {
+    this.$store.dispatch('game/sendAction', new BuyCardAction(this.playerName));
   }
 
   public endTurn() {
