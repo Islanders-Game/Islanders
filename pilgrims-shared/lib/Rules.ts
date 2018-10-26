@@ -30,6 +30,10 @@ import {
 } from './Shared';
 import { randomDiceRoll } from './WorldGenerator';
 import { DiceRollType } from './Tile';
+import {
+  DevelopmentCard,
+  DevelopmentCardType,
+} from './Entities/DevelopmentCard';
 
 export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
@@ -89,7 +93,19 @@ export const rules: Rules = {
     );
   },
   MoveThief: ({ parameters }) => (w) => w,
-  BuyCard: ({ parameters }) => (w) => w,
+  BuyCard: ({ parameters }) => (w) => {
+    if (w.tag === 'Failure') {
+      return w;
+    }
+    const playerExists = findPlayer(parameters.playerName)(w);
+    const purchased = purchase(new DevelopmentCard().cost)(
+      parameters.playerName,
+    )(playerExists);
+    const assigned = assignRandomDevelopmentCard(parameters.playerName)(
+      purchased,
+    );
+    return assigned;
+  },
   PlayCard: ({ parameters }) => (w) => w,
   Trade: ({ parameters }) => (w) => w,
   StartGame: () => (w) => {
@@ -273,6 +289,32 @@ const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
   const roads = player.roads.concat([new Road(start, end)]);
   const players = r.value.players.map(
     (pl) => (pl.name === playerName ? { ...pl, roads } : pl),
+  );
+  return success({ ...r.value, players });
+};
+
+const assignRandomDevelopmentCard = (playerName: string) => (
+  r: Result<World>,
+) => {
+  if (r.tag === 'Failure') {
+    return r;
+  }
+
+  const cardTypes: DevelopmentCardType[] = [
+    'Knight',
+    'Victory Point',
+    'Road Building',
+    'Monopoly',
+    'Year of Plenty',
+  ];
+
+  //TODO: I'm unsure of what the probabilities of getting each card type are. For now, even chance.
+  const randomType = cardTypes[Math.floor(Math.random() * cardTypes.length)];
+  const randomCard = new DevelopmentCard(randomType);
+  const player = r.value.players.find((pl) => pl.name === playerName)!;
+  const newCards = player.devCards.concat(randomCard);
+  const players = r.value.players.map(
+    (pl) => (pl.name === playerName ? { ...pl, devCards: newCards } : pl),
   );
   return success({ ...r.value, players });
 };
