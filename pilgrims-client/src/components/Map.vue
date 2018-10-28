@@ -31,6 +31,7 @@ import {
   BuildRoadAction,
 } from '../../../pilgrims-shared/dist/Action';
 import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
+import { buildingType } from '../store/modules/ui';
 
 @Component
 export default class Map extends Vue {
@@ -62,22 +63,14 @@ export default class Map extends Vue {
     that.viewport.on('pointerup', this.handleBuildClick);
   }
 
-  get isBuildingHouse() {
-    return this.$store.state.ui.isBuildingHouse;
-  }
-
   get player(): PlayerState {
     return this.$store.getters['game/getPlayer'](
       this.$store.state.game.playerName,
     );
   }
 
-  get isBuildingCity() {
-    return this.$store.state.ui.isBuildingCity;
-  }
-
-  get isBuildingRoad() {
-    return this.$store.state.ui.isBuildingRoad;
+  get isBuilding(): buildingType {
+    return this.$store.state.ui.isBuilding;
   }
 
   get world() {
@@ -173,27 +166,27 @@ export default class Map extends Vue {
 
     const hexToFind = this.grid.pointToHex(inWorld);
     const coord = getMatrixCoordCorner(hexToFind, closestPoints[0].index);
-    if (this.isBuildingHouse) {
+    if (this.isBuilding === 'House') {
       this.dispatchBuildAction(
         event,
         new BuildHouseAction(this.$store.state.game.playerName, coord),
       );
-      this.$store.commit('ui/setIsBuildingHouse', false);
+      this.$store.commit('ui/setIsBuilding', 'None');
     }
-    if (this.isBuildingCity) {
+    if (this.isBuilding === 'City') {
       this.dispatchBuildAction(
         event,
         new BuildCityAction(this.$store.state.game.playerName, coord),
       );
-      this.$store.commit('ui/setIsBuildingCity', false);
+      this.$store.commit('ui/setIsBuilding', 'None');
     }
-    if (this.isBuildingRoad && closestPoints[1].index !== -1) {
+    if (this.isBuilding === 'Road' && closestPoints[1].index !== -1) {
       const coord2 = getMatrixCoordCorner(hexToFind, closestPoints[1].index);
       this.dispatchBuildAction(
         event,
         new BuildRoadAction(this.$store.state.game.playerName, coord, coord2),
       );
-      this.$store.commit('ui/setIsBuildingRoad', false);
+      this.$store.commit('ui/setIsBuilding', 'None');
     }
   }
 
@@ -234,15 +227,15 @@ export default class Map extends Vue {
   }
 
   private handleMove(event) {
-    if (this.isBuildingHouse) {
+    if (this.isBuilding === 'House') {
       this.cursorForSprite(event, 'House');
       return;
     }
-    if (this.isBuildingCity) {
+    if (this.isBuilding === 'City') {
       this.cursorForSprite(event, 'City');
       return;
     }
-    if (this.isBuildingRoad) {
+    if (this.isBuilding === 'Road') {
       this.cursorForRoad(event);
       return;
     }

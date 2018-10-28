@@ -50,13 +50,13 @@
               <v-menu bottom offset-y>
                 <v-btn dark slot="activator">Build</v-btn>
                 <v-list dark>
-                  <v-list-tile @click="setIsBuildingHouse(true)">
+                  <v-list-tile @click="setIsBuildingHouse">
                     <v-list-tile-title>House</v-list-tile-title>
                   </v-list-tile>
-                  <v-list-tile @click="setIsBuildingCity(true)">
+                  <v-list-tile @click="setIsBuildingCity">
                     <v-list-tile-title>City</v-list-tile-title>
                   </v-list-tile>
-                  <v-list-tile @click="setIsBuildingRoad(true)">
+                  <v-list-tile @click="setIsBuildingRoad">
                     <v-list-tile-title dark>Road</v-list-tile-title>
                   </v-list-tile>
                 </v-list>
@@ -92,16 +92,16 @@ export default class Player extends Vue {
     this.playerName = this.$store.state.game.playerName;
   }
 
-  public setIsBuildingHouse(flag: boolean) {
-    this.$store.commit('ui/setIsBuildingHouse', flag);
+  public setIsBuildingHouse() {
+    this.$store.commit('ui/setIsBuilding', 'House');
   }
 
-  public setIsBuildingCity(flag: boolean) {
-    this.$store.commit('ui/setIsBuildingCity', flag);
+  public setIsBuildingCity() {
+    this.$store.commit('ui/setIsBuilding', 'City');
   }
 
-  public setIsBuildingRoad(flag: boolean) {
-    this.$store.commit('ui/setIsBuildingRoad', flag);
+  public setIsBuildingRoad() {
+    this.$store.commit('ui/setIsBuilding', 'Road');
   }
 
   public devCard() {
@@ -147,10 +147,6 @@ export default class Player extends Vue {
       return 0;
     }
     return player.roads.length; // todo calculate longest path ;D
-  }
-
-  get isBuildingHouse() {
-    return this.$store.state.ui.isBuildingHouse;
   }
 }
 </script>
