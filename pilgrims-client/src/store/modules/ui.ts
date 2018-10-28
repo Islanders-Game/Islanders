@@ -1,10 +1,9 @@
 import { GetterTree, MutationTree, ActionTree, ActionContext } from 'vuex';
 import { State as RootState } from '../store';
 // The state
+export type buildingType = 'None' | 'House' | 'City' | 'Road';
 export class State {
-  public isBuildingHouse: boolean = false;
-  public isBuildingCity: boolean = false;
-  public isBuildingRoad: boolean = false;
+  public isBuilding: buildingType = 'None';
 }
 
 // Synchrounous getters: GetterTree<local state, root state>
@@ -13,14 +12,8 @@ const getterTree: GetterTree<State, RootState> = {};
 
 // Synchrounous setters MutationTree<local state, root state>
 const mutationTree: MutationTree<State> = {
-  setIsBuildingHouse(state: State, flag: boolean) {
-    state.isBuildingHouse = flag;
-  },
-  setIsBuildingCity(state: State, flag: boolean) {
-    state.isBuildingCity = flag;
-  },
-  setIsBuildingRoad(state: State, flag: boolean) {
-    state.isBuildingRoad = flag;
+  setIsBuilding(state: State, flag: buildingType) {
+    state.isBuilding = flag;
   },
 };
 

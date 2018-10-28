@@ -280,8 +280,16 @@ const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
   }
   const player = r.value.players.find((pl) => pl.name === playerName)!;
 
-  const canPlace = player.roads.some(
-    (ro) => ro.start !== start && ro.end !== end,
+  const canPlace = !player.roads.some(
+    (ro) =>
+      (ro.start.x === start.x &&
+        ro.start.y === start.y &&
+        ro.end.x === end.x &&
+        ro.end.y === end.y) ||
+      (ro.start.x === end.x &&
+        ro.start.y === end.y &&
+        ro.end.x === start.x &&
+        ro.end.y === start.y),
   );
   if (!canPlace) {
     return fail(`Can't place a road here!`);
