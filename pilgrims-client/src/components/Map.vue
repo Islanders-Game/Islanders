@@ -28,6 +28,7 @@ import {
   BuildHouseAction,
   Action,
   BuildCityAction,
+  BuildRoadAction,
 } from '../../../pilgrims-shared/dist/Action';
 import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 
@@ -88,7 +89,9 @@ export default class Map extends Vue {
     return map.find((tile) => tile.coord.x === hex.x && tile.coord.y === hex.y);
   }
 
-  private getClosestPoint(point: Point) {
+  private getClosestPoint(
+    point: Point,
+  ): { point: { x: number; y: number }; index: number; dist: number } {
     const distanceFunc = (from, to) => {
       return Math.sqrt(
         Math.pow(Math.abs(from.x - to.x), 2) +
@@ -117,6 +120,42 @@ export default class Map extends Vue {
     return closestPoint;
   }
 
+  private getTwoClosestPoints(
+    point: Point,
+  ): Array<{ point: { x: number; y: number }; index: number; dist: number }> {
+    const distanceFunc = (from, to) => {
+      return Math.sqrt(
+        Math.pow(Math.abs(from.x - to.x), 2) +
+          Math.pow(Math.abs(from.y - to.y), 2),
+      );
+    };
+    const hexToFind = this.grid.pointToHex(point);
+    const hexOrigin = hexToFind.toPoint();
+    const centerOfHex = {
+      x: hexOrigin.x + hexToFind.width() / 2,
+      y: hexOrigin.y + hexToFind.height() / 2,
+    };
+
+    let closestPoint = {
+      point: centerOfHex,
+      index: -1,
+      dist: distanceFunc(point, centerOfHex) * distanceFunc(point, centerOfHex),
+    };
+    let secondClosestPoint;
+    const corners = hexToFind.corners();
+    for (let i = 0; i < corners.length; i++) {
+      const corner = corners[i];
+      corner.x += hexOrigin.x;
+      corner.y += hexOrigin.y;
+      const cornerDist = distanceFunc(point, corner);
+      if (closestPoint.dist >= cornerDist) {
+        secondClosestPoint = closestPoint;
+        closestPoint = { point: corners[i], index: i, dist: cornerDist };
+      }
+    }
+    return [closestPoint, secondClosestPoint];
+  }
+
   private dispatchBuildAction(event, action: Action) {
     this.cursorGraphics.clear();
     this.cursorGraphics.removeChildren();
@@ -125,13 +164,13 @@ export default class Map extends Vue {
 
   private handleBuildClick(event) {
     const inWorld = this.viewport.toWorld(event.data.global);
-    const closest = this.getClosestPoint(inWorld);
-    if (closest.index === -1) {
+    const closestPoints = this.getTwoClosestPoints(inWorld);
+    if (closestPoints[0].index === -1) {
       return;
     }
 
     const hexToFind = this.grid.pointToHex(inWorld);
-    const coord = getMatrixCoordCorner(hexToFind, closest.index);
+    const coord = getMatrixCoordCorner(hexToFind, closestPoints[0].index);
     if (this.isBuildingHouse) {
       this.dispatchBuildAction(
         event,
@@ -146,10 +185,11 @@ export default class Map extends Vue {
       );
       this.$store.commit('ui/setIsBuildingCity', false);
     }
-    if (this.isBuildingRoad) {
+    if (this.isBuildingRoad && closestPoints[1].index !== -1) {
+      const coord2 = getMatrixCoordCorner(hexToFind, closestPoints[1].index);
       this.dispatchBuildAction(
         event,
-        new BuildHouseAction(this.$store.state.game.playerName, coord),
+        new BuildRoadAction(this.$store.state.game.playerName, coord, coord2),
       );
       this.$store.commit('ui/setIsBuildingRoad', false);
     }
@@ -172,6 +212,25 @@ export default class Map extends Vue {
     }
   }
 
+  private cursorForRoad(event) {
+    const inWorld = this.viewport.toWorld(event.data.global);
+    const closestPoints = this.getTwoClosestPoints(inWorld);
+
+    this.cursorGraphics.clear();
+    this.cursorGraphics.removeChildren();
+    if (closestPoints[0].index !== -1 && closestPoints[1].index !== -1) {
+      this.cursorGraphics.lineStyle(30, 0xffff00);
+      this.cursorGraphics.moveTo(
+        closestPoints[0].point.x,
+        closestPoints[0].point.y,
+      );
+      this.cursorGraphics.lineTo(
+        closestPoints[1].point.x,
+        closestPoints[1].point.y,
+      );
+    }
+  }
+
   private handleMove(event) {
     if (this.isBuildingHouse) {
       this.cursorForSprite(event, 'House');
@@ -182,6 +241,7 @@ export default class Map extends Vue {
       return;
     }
     if (this.isBuildingRoad) {
+      this.cursorForRoad(event);
       return;
     }
   }
@@ -287,20 +347,28 @@ export default class Map extends Vue {
 
   private addPiecesToContainer(p: Player, container: Container) {
     const color = p.color;
+    const roadGraphics = new Graphics();
     p.roads.forEach((r) => {
-      this.pieceGraphics.lineStyle(24, color);
-      const startScreenX = r.start.x;
-      const startScreenY = r.start.y;
-      const endScreenX = r.end.x;
-      const endScreenY = r.end.y;
-      this.pieceGraphics.moveTo(startScreenX, startScreenY);
-      this.pieceGraphics.lineTo(endScreenX, endScreenY);
+      roadGraphics.lineStyle(24, color);
+      const start = matrixCoordToWorldCoord(
+        r.start,
+        this.grid.Hex().width(),
+        this.grid.Hex().height(),
+      );
+      const end = matrixCoordToWorldCoord(
+        r.end,
+        this.grid.Hex().width(),
+        this.grid.Hex().height(),
+      );
+      roadGraphics.moveTo(start.x, start.y);
+      roadGraphics.lineTo(end.x, end.y);
     });
+    container.addChild(roadGraphics);
     p.houses.forEach((h) => {
       const piece = this.createPiece(
         'House',
         { x: 100, y: 100 },
-        p.color,
+        color,
         matrixCoordToWorldCoord(
           h.position,
           this.grid.Hex().width(),
@@ -313,7 +381,7 @@ export default class Map extends Vue {
       const piece = this.createPiece(
         'City',
         { x: 124, y: 124 },
-        p.color,
+        color,
         matrixCoordToWorldCoord(
           c.position,
           this.grid.Hex().width(),
@@ -335,7 +403,9 @@ export default class Map extends Vue {
   }
 
   private generateTileNumber(center, origin, tile: Tile) {
-    if (tile.diceRoll === 'None') return undefined;
+    if (tile.diceRoll === 'None') {
+      return undefined;
+    }
     const generator = this.sprites[tile.diceRoll.toString()];
     const s = generator();
     s.width = this.tileWidth / 4;
