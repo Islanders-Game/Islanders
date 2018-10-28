@@ -23,7 +23,4 @@ node('docker&&linux') {
             docker run --rm pilgrims/pilgrims-shared
         """
     }
-    stage('Deploy') {
-        sh 'docker-compose up -d'
-    }
 }
