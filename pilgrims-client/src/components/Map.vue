@@ -141,7 +141,7 @@ export default class Map extends Vue {
       index: -1,
       dist: distanceFunc(point, centerOfHex) * distanceFunc(point, centerOfHex),
     };
-    let secondClosestPoint;
+    let secondClosestPoint = closestPoint;
     const corners = hexToFind.corners();
     for (let i = 0; i < corners.length; i++) {
       const corner = corners[i];
@@ -151,6 +151,8 @@ export default class Map extends Vue {
       if (closestPoint.dist >= cornerDist) {
         secondClosestPoint = closestPoint;
         closestPoint = { point: corners[i], index: i, dist: cornerDist };
+      } else if (secondClosestPoint.dist >= cornerDist) {
+        secondClosestPoint = { point: corners[i], index: i, dist: cornerDist };
       }
     }
     return [closestPoint, secondClosestPoint];
