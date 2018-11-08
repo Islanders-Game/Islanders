@@ -13,6 +13,7 @@ import { ChatService } from './services/ChatService';
 import { GameRepository } from './repositories/GameRepository';
 import { StartGameAction } from '../../pilgrims-shared/dist/Action';
 
+type PlayerSockets = { [playerName: string]: string };
 export class GameSocket {
   private io: SocketIO.Server;
   private gameService: GameService;
@@ -31,12 +32,13 @@ export class GameSocket {
     this.gameRepository = gameRepository;
   }
 
-  public setupSocketOnNamespace(gameID: string) {
+  public setupSocketOnNamespace(gameID: string, playerSockets: PlayerSockets) {
     const nsp = this.io.of(`/${gameID}`);
     nsp.on('connection', (socket) => {
       this.logConnectEvent(gameID, socket.id);
       socket.on(SocketActions.join, (name: string) => {
         const playerName = name ? name : socket.id;
+        playerSockets[playerName] = socket.id;
         this.logJoinEvent(gameID, playerName);
         socket.on(SocketActions.getWorld, async () => {
           this.logSocketEvent(gameID, SocketActions.getWorld);

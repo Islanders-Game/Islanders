@@ -23,6 +23,7 @@ const gameSocket = new GameSocket(
   chatService,
   gameRepository,
 );
+const playerSockets: { [playerName: string]: string } = {};
 
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
@@ -40,7 +41,7 @@ app.get('/newgame', async (_, res) => {
   const id = result._id;
   console.info(`[${id}] Created game.`);
 
-  gameSocket.setupSocketOnNamespace(id);
+  gameSocket.setupSocketOnNamespace(id, playerSockets);
   res.send(id);
   db.close();
 });
