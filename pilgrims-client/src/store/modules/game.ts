@@ -13,6 +13,7 @@ import {
   Tile,
   Action,
   DiceRollType,
+  GameState,
 } from '../../../../pilgrims-shared/dist/Shared';
 import { Socket, State as RootState } from '../store';
 
@@ -49,7 +50,7 @@ const getters: GetterTree<State, any> = {
     if (!state.world) {
       return false;
     }
-    return state.world.started;
+    return state.world.gameState === 'Started';
   },
   getCurrentPlayer(state: State): Player {
     if (!state.world) {
@@ -79,8 +80,8 @@ const mutations: MutationTree<State> = {
   setFailure(state: State, reason: string) {
     state.error = reason;
   },
-  setStarted(state: State, started: boolean) {
-    state.world.started = started;
+  setStarted(state: State, gameState: GameState) {
+    state.world.gameState = gameState;
   },
   setError(state: State, errorMessage: string) {
     state.error = errorMessage;
