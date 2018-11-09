@@ -396,9 +396,6 @@ export default class Map extends Vue {
           firstCorner,
           lineWidth,
         );
-        if ((tileSprite as PIXI.extras.AnimatedSprite).play) {
-          (tileSprite as PIXI.extras.AnimatedSprite).play();
-        }
 
         tileContainer.addChild(tileSprite);
 

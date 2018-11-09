@@ -11,7 +11,7 @@ export function generateSprites(): { [s: string]: () => Sprite } {
     Desert: () => Sprite.fromImage(`${tilePath}${tileStyle}/desert.png`),
     Grain: () => Sprite.fromImage(`${tilePath}${tileStyle}/grain.png`),
     Wood: () => Sprite.fromImage(`${tilePath}${tileStyle}/wood.png`),
-    Stone: () => Sprite.fromImage(`${tilePath}${tileStyle}/stone.png`),
+    Stone: () => getAnimatedStoneSprite(tilePath),
     Wool: () => getAnimatedWoolSprite(tilePath),
     Ocean: () => Sprite.fromImage(`${tilePath}${tileStyle}/ocean.png`),
     House: () => Sprite.fromImage(`./img/pieces/house.png`),
@@ -62,13 +62,30 @@ function getAnimatedWoolSprite(tilePath: string) {
     PIXI.Texture.fromImage(`${tilePath}/watercolor/wool_animated/wool13f.png`),
     PIXI.Texture.fromImage(`${tilePath}/watercolor/wool_animated/wool14.png`),
   ];
-
-  return getAnimatedSpriteFrom(textures);
-}
-
-function getAnimatedSpriteFrom(textures) {
   const anim = new PIXI.extras.AnimatedSprite(textures);
   anim.animationSpeed = 0.2;
+  anim.play();
+  return anim;
+}
+
+function getAnimatedStoneSprite(tilePath: string) {
+  const textures = [
+    PIXI.Texture.fromImage(`${tilePath}/watercolor/stone_animated/stone.png`),
+    PIXI.Texture.fromImage(`${tilePath}/watercolor/stone_animated/stone1.png`),
+    PIXI.Texture.fromImage(`${tilePath}/watercolor/stone_animated/stone2.png`),
+    PIXI.Texture.fromImage(`${tilePath}/watercolor/stone_animated/stone3.png`),
+    PIXI.Texture.fromImage(`${tilePath}/watercolor/stone_animated/stone4.png`),
+    PIXI.Texture.fromImage(`${tilePath}/watercolor/stone_animated/stone5.png`),
+    PIXI.Texture.fromImage(`${tilePath}/watercolor/stone_animated/stone6.png`),
+    PIXI.Texture.fromImage(`${tilePath}/watercolor/stone_animated/stone7.png`),
+    PIXI.Texture.fromImage(`${tilePath}/watercolor/stone_animated/stone8.png`),
+    PIXI.Texture.fromImage(`${tilePath}/watercolor/stone_animated/stone9.png`),
+    PIXI.Texture.fromImage(`${tilePath}/watercolor/stone_animated/stone10.png`),
+    PIXI.Texture.fromImage(`${tilePath}/watercolor/stone_animated/stone11.png`),
+  ];
+  const anim = new PIXI.extras.AnimatedSprite(textures);
+  anim.animationSpeed = 0.1;
+  anim.play();
   return anim;
 }
 
