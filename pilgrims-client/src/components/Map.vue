@@ -389,7 +389,6 @@ export default class Map extends Vue {
         const [firstCorner, ...otherCorners] = corners;
         // Tiles
         const tileSprite = generateTile(tile, firstCorner, lineWidth);
-        debugger;
         if ((tileSprite as PIXI.extras.AnimatedSprite).play) {
           (tileSprite as PIXI.extras.AnimatedSprite).play();
         }
