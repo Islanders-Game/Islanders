@@ -72,23 +72,29 @@ function getAnimatedSpriteFrom(textures) {
   return anim;
 }
 
-export function generateTile(tile: Tile, corner, lineWidth) {
-  const generator = this.sprites[tile.type.toString()];
+export function generateTile(
+  tileWidth,
+  tileHeight,
+  tile: Tile,
+  corner,
+  lineWidth,
+) {
+  const generator = generateSprites()[tile.type.toString()];
   const s = generator();
-  s.width = this.tileWidth;
-  s.height = this.tileHeight;
-  s.position.x = corner.x - this.tileWidth - lineWidth / 2;
-  s.position.y = corner.y - this.tileHeight / 2;
+  s.width = tileWidth;
+  s.height = tileHeight;
+  s.position.x = corner.x - tileWidth - lineWidth / 2;
+  s.position.y = corner.y - tileHeight / 2;
   return s;
 }
 
-export function generateTileNumber(center, origin, tile: Tile) {
+export function generateTileNumber(tileWidth, center, origin, tile: Tile) {
   if (tile.diceRoll === 'None') {
     return undefined;
   }
-  const generator = this.sprites[tile.diceRoll.toString()];
+  const generator = generateSprites()[tile.diceRoll.toString()];
   const s = generator();
-  s.width = this.tileWidth / 4;
+  s.width = tileWidth / 4;
   s.height = s.width;
   s.anchor.x = 0.5;
   s.anchor.y = 0.5;

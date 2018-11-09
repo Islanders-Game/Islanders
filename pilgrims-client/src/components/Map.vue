@@ -51,7 +51,7 @@ export default class Map extends Vue {
   private pieceGraphics: Graphics = new Graphics();
   private lineGraphics: Graphics = new Graphics();
   private cursorGraphics: Graphics = new Graphics();
-  private sprites: { [s: string]: () => Sprite } = generateSprites();
+  private sprites = generateSprites();
   private grid;
 
   private async mounted() {
@@ -297,6 +297,7 @@ export default class Map extends Vue {
     tint: number,
     coord: MatrixCoordinate,
   ) {
+    debugger;
     const generator = this.sprites[spriteType];
     const piece = generator();
     piece.width = dimensions.x;
@@ -388,7 +389,13 @@ export default class Map extends Vue {
         const corners = hex.corners().map((corner) => corner.add(point));
         const [firstCorner, ...otherCorners] = corners;
         // Tiles
-        const tileSprite = generateTile(tile, firstCorner, lineWidth);
+        const tileSprite = generateTile(
+          this.tileWidth,
+          this.tileHeight,
+          tile,
+          firstCorner,
+          lineWidth,
+        );
         if ((tileSprite as PIXI.extras.AnimatedSprite).play) {
           (tileSprite as PIXI.extras.AnimatedSprite).play();
         }
@@ -397,6 +404,7 @@ export default class Map extends Vue {
 
         if (newWorld.started) {
           const tileNumber = generateTileNumber(
+            this.tileWidth,
             hex.center(),
             hex.toPoint(),
             tile,
