@@ -24,6 +24,11 @@ const gameSocket = new GameSocket(
   gameRepository,
 );
 
+export type GamePlayerSockets = { [gameID: string]: PlayerSockets };
+export type PlayerSockets = { [playerName: string]: string };
+export const Disconnected: 'Disconnect' = 'Disconnect';
+const gamePlayerSockets: GamePlayerSockets = {};
+
 app.use(function(req, res, next) {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
@@ -40,7 +45,8 @@ app.get('/newgame', async (_, res) => {
   const id = result._id;
   console.info(`[${id}] Created game.`);
 
-  gameSocket.setupSocketOnNamespace(id);
+  gamePlayerSockets[id.toString()] = {};
+  gameSocket.setupSocketOnNamespace(id.toString(), gamePlayerSockets);
   res.send(id);
   db.close();
 });
@@ -58,7 +64,10 @@ app.get('/joingame', async (req, res) => {
   } finally {
     if (!game) {
       res.send(fail('Game does not exist!'));
-    } else if (game.players.some((x) => x.name === playerName)) {
+    } else if (
+      gamePlayerSockets[gameID][playerName] &&
+      gamePlayerSockets[gameID][playerName] !== Disconnected
+    ) {
       res.send(fail('A player with that name already exists on this game!'));
     }
     res.send(success('Game exists and player name is not taken'));

@@ -113,11 +113,12 @@ export const rules: Rules = {
       return w;
     }
     const players = assignRessourcesToPlayers(w, 'None', false);
-    return success({
+    const world: World = {
       ...w.value,
       players,
-      started: true,
-    });
+      gameState: 'Started',
+    };
+    return success(world);
   },
   EndTurn: ({ parameters }) => (w) => {
     if (w.tag === 'Failure') {
@@ -204,8 +205,8 @@ export const purchase = (cost: Resources) => (playerName: string) => (
   if (!resourcesAreNonNegative(resources)) {
     return fail(`You cannot afford this!`);
   }
-  const players = r.value.players.map(
-    (pl) => (pl.name === playerName ? { ...pl, resources } : pl),
+  const players = r.value.players.map((pl) =>
+    pl.name === playerName ? { ...pl, resources } : pl,
   );
   return success({ ...r.value, players });
 };
@@ -266,8 +267,8 @@ const placeCity = (coord: MatrixCoordinate) => (playerName: string) => (
     (h) => !(h.position.x === coord.x && h.position.y === coord.y),
   );
   const cities = player.cities.concat([new City(coord)]);
-  const players = r.value.players.map(
-    (pl) => (pl.name === playerName ? { ...pl, houses, cities } : pl),
+  const players = r.value.players.map((pl) =>
+    pl.name === playerName ? { ...pl, houses, cities } : pl,
   );
   return success({ ...r.value, players });
 };
@@ -280,15 +281,23 @@ const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
   }
   const player = r.value.players.find((pl) => pl.name === playerName)!;
 
-  const canPlace = player.roads.some(
-    (ro) => ro.start !== start && ro.end !== end,
+  const canPlace = !player.roads.some(
+    (ro) =>
+      (ro.start.x === start.x &&
+        ro.start.y === start.y &&
+        ro.end.x === end.x &&
+        ro.end.y === end.y) ||
+      (ro.start.x === end.x &&
+        ro.start.y === end.y &&
+        ro.end.x === start.x &&
+        ro.end.y === start.y),
   );
   if (!canPlace) {
     return fail(`Can't place a road here!`);
   }
   const roads = player.roads.concat([new Road(start, end)]);
-  const players = r.value.players.map(
-    (pl) => (pl.name === playerName ? { ...pl, roads } : pl),
+  const players = r.value.players.map((pl) =>
+    pl.name === playerName ? { ...pl, roads } : pl,
   );
   return success({ ...r.value, players });
 };
@@ -313,8 +322,8 @@ const assignRandomDevelopmentCard = (playerName: string) => (
   const randomCard = new DevelopmentCard(randomType);
   const player = r.value.players.find((pl) => pl.name === playerName)!;
   const newCards = player.devCards.concat(randomCard);
-  const players = r.value.players.map(
-    (pl) => (pl.name === playerName ? { ...pl, devCards: newCards } : pl),
+  const players = r.value.players.map((pl) =>
+    pl.name === playerName ? { ...pl, devCards: newCards } : pl,
   );
   return success({ ...r.value, players });
 };

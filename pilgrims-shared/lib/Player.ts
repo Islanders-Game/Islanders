@@ -14,6 +14,7 @@ export class Player {
   public roads: Road[];
   public ships: Ship[];
   public devCards: DevelopmentCard[];
+  public points: number;
 
   constructor(name: string) {
     this.color = 0xffffff * Math.random();
@@ -24,5 +25,6 @@ export class Player {
     this.roads = [];
     this.ships = [];
     this.devCards = [];
+    this.points = 0;
   }
 }
