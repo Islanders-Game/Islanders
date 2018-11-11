@@ -36,7 +36,7 @@ import {
   generateSprites,
   generateTile,
   generateTileNumber,
-} from './SpriteGenerators';
+} from '../helpers/SpriteGenerators';
 
 @Component
 export default class Map extends Vue {
@@ -297,7 +297,6 @@ export default class Map extends Vue {
     tint: number,
     coord: MatrixCoordinate,
   ) {
-    debugger;
     const generator = this.sprites[spriteType];
     const piece = generator();
     piece.width = dimensions.x;
@@ -400,7 +399,8 @@ export default class Map extends Vue {
         tileContainer.addChild(tileSprite);
 
         if (newWorld.gameState === 'Started') {
-          const tileNumber = this.generateTileNumber(
+          const tileNumber = generateTileNumber(
+            this.tileWidth,
             hex.center(),
             hex.toPoint(),
             tile,
