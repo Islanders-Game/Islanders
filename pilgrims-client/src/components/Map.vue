@@ -64,8 +64,11 @@ export default class Map extends Vue {
       that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
       that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
     });
-    that.viewport.on('mousemove', this.handleMove);
-    that.viewport.on('pointerup', this.handleBuildClick);
+    this.viewport.on('mousemove', this.handleMove);
+    this.viewport.on('pointerup', this.handleBuildClick);
+    this.viewport.on('mouseover', () => {
+      window.getSelection().removeAllRanges();
+    });
   }
 
   get player(): PlayerState {
