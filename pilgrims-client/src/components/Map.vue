@@ -399,9 +399,8 @@ export default class Map extends Vue {
 
         tileContainer.addChild(tileSprite);
 
-        if (newWorld.started) {
-          const tileNumber = generateTileNumber(
-            this.tileWidth,
+        if (newWorld.gameState === 'Started') {
+          const tileNumber = this.generateTileNumber(
             hex.center(),
             hex.toPoint(),
             tile,

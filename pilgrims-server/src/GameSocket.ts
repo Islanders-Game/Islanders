@@ -1,4 +1,4 @@
-import socket from 'socket.io';
+import socket, { Namespace } from 'socket.io';
 import http from 'http';
 import {
   SocketActions,
@@ -12,6 +12,7 @@ import { Tile } from '../../pilgrims-shared/dist/Tile';
 import { ChatService } from './services/ChatService';
 import { GameRepository } from './repositories/GameRepository';
 import { StartGameAction } from '../../pilgrims-shared/dist/Action';
+import { GamePlayerSockets, Disconnected } from './App';
 
 export class GameSocket {
   private io: SocketIO.Server;
@@ -31,7 +32,10 @@ export class GameSocket {
     this.gameRepository = gameRepository;
   }
 
-  public setupSocketOnNamespace(gameID: string) {
+  public setupSocketOnNamespace(
+    gameID: string,
+    gamePlayerSockets: GamePlayerSockets,
+  ) {
     const nsp = this.io.of(`/${gameID}`);
     nsp.on('connection', (socket) => {
       this.logConnectEvent(gameID, socket.id);
@@ -70,13 +74,44 @@ export class GameSocket {
           const result = await this.gameService.applyAction(gameID, action);
           nsp.emit(SocketActions.newWorld, result);
         });
-        this.gameService
-          .addPlayer(gameID, playerName)
-          .then((r) => nsp.emit(SocketActions.newWorld, r));
+        socket.on('disconnect', () => {
+          const sockets = gamePlayerSockets[gameID];
+          const playerName = Object.keys(sockets).find(
+            (key) => sockets[key] === socket.id,
+          );
+          if (playerName) sockets[playerName] = Disconnected;
+        });
+
+        console.log(gamePlayerSockets);
+        this.checkForReconnect(
+          gameID,
+          playerName,
+          gamePlayerSockets,
+          socket.id,
+        ).then((r) => nsp.emit(SocketActions.newWorld, r));
       });
 
-      setInterval(() => this.clearNamespaceIfEmpty(nsp, this.io), 18000000); // Clear every half hour.
+      setInterval(
+        () => this.clearNamespaceIfEmpty(nsp, this.io, gamePlayerSockets),
+        18000000,
+      ); // Clear every half hour.
     });
+  }
+
+  private async checkForReconnect(
+    gameID: string,
+    playerName: string,
+    gamePlayerSockets: GamePlayerSockets,
+    socketID: string,
+  ) {
+    const sockets = gamePlayerSockets[gameID];
+    if (!sockets[playerName]) {
+      sockets[playerName] = socketID;
+      return this.gameService.addPlayer(gameID, playerName);
+    }
+    // Previous socket disconnected, but player exists. Re-add socket, but don't add player.
+    sockets[playerName] = socketID;
+    return this.gameRepository.getWorld(gameID);
   }
 
   private logSocketEvent(gameID: string, type: string) {
@@ -92,6 +127,7 @@ export class GameSocket {
   private clearNamespaceIfEmpty(
     namespace: SocketIO.Namespace,
     server: SocketIO.Server,
+    gamePlayerSockets: GamePlayerSockets,
   ) {
     const connectedSockets = Object.keys(namespace.connected);
     if (connectedSockets.length <= 0) return;
@@ -100,5 +136,6 @@ export class GameSocket {
     });
     namespace.removeAllListeners();
     delete server.nsps[namespace.name];
+    delete gamePlayerSockets[namespace.name.substring(1)];
   }
 }

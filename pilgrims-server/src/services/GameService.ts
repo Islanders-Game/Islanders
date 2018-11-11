@@ -31,7 +31,7 @@ export class GameService {
     console.info(`[${gameID}] 'init_world' with World:`);
     console.info(init);
     const r = await this.gameRepository.getWorld(gameID);
-    if (r.tag === 'Success' && !r.value.started) {
+    if (r.tag === 'Success' && r.value.gameState !== 'Started') {
       await this.gameRepository.createGame(init);
       namespace.emit(SocketActions.newWorld, success(init));
     }
@@ -48,7 +48,7 @@ export class GameService {
       return;
     }
 
-    if (result.value.started) {
+    if (result.value.gameState === 'Started') {
       namespace.emit(
         SocketActions.newWorld,
         fail('You cannot update the map once the game has started!'),
@@ -64,7 +64,7 @@ export class GameService {
     try {
       const result: Result<World> = await this.gameRepository.getWorld(gameID);
       if (result.tag === 'Failure') return result;
-      if (result.value.started) return success(result.value); // spectator mode
+      if (result.value.gameState === 'Started') return success(result.value); // spectator mode
 
       const player = new Player(name);
       const players = result.value.players.concat([player]);
@@ -89,7 +89,7 @@ export class GameService {
     if (toApply.tag === 'Failure') return toApply;
     const result = await this.gameRepository.getWorld(id);
     if (result.tag === 'Failure') return result;
-    if (!result.value.started)
+    if (result.value.gameState !== 'Started')
       return { tag: 'Failure', reason: 'Game is not started!' };
     const apply = toApply.value.reduce(ruleReducer, result);
     if (apply.tag === 'Failure') return apply;
@@ -103,7 +103,7 @@ export class GameService {
     if (toApply.tag === 'Failure') return toApply;
     const result = await this.gameRepository.getWorld(id);
     if (result.tag === 'Failure') return result;
-    if (!result.value.started && action.type !== 'startGame')
+    if (result.value.gameState !== 'Started' && action.type !== 'startGame')
       return { tag: 'Failure', reason: 'Game is not started!' };
     const apply = toApply.value.reduce(ruleReducer, result);
     if (apply.tag === 'Failure') return apply;
