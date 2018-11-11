@@ -32,6 +32,11 @@ import {
 } from '../../../pilgrims-shared/dist/Action';
 import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 import { buildingType } from '../store/modules/ui';
+import {
+  generateSprites,
+  generateTile,
+  generateTileNumber,
+} from './SpriteGenerators';
 
 @Component
 export default class Map extends Vue {
@@ -46,7 +51,7 @@ export default class Map extends Vue {
   private pieceGraphics: Graphics = new Graphics();
   private lineGraphics: Graphics = new Graphics();
   private cursorGraphics: Graphics = new Graphics();
-  private sprites: { [s: string]: () => Sprite } = this.generateSprites();
+  private sprites = generateSprites();
   private grid;
 
   private async mounted() {
@@ -241,42 +246,6 @@ export default class Map extends Vue {
     }
   }
 
-  private generateSprites(): { [s: string]: () => Sprite } {
-    const tilePath = './img/tilesets/';
-    const tileFiletype = '.gif';
-    const tileStyle = 'watercolor';
-
-    const sprites = {
-      Clay: () =>
-        Sprite.fromImage(`${tilePath}${tileStyle}/clay${tileFiletype}`),
-      Desert: () =>
-        Sprite.fromImage(`${tilePath}${tileStyle}/desert${tileFiletype}`),
-      Grain: () =>
-        Sprite.fromImage(`${tilePath}${tileStyle}/grain${tileFiletype}`),
-      Wood: () =>
-        Sprite.fromImage(`${tilePath}${tileStyle}/wood${tileFiletype}`),
-      Stone: () =>
-        Sprite.fromImage(`${tilePath}${tileStyle}/stone${tileFiletype}`),
-      Wool: () =>
-        Sprite.fromImage(`${tilePath}${tileStyle}/wool${tileFiletype}`),
-      Ocean: () =>
-        Sprite.fromImage(`${tilePath}${tileStyle}/ocean${tileFiletype}`),
-      House: () => Sprite.fromImage(`./img/pieces/house.png`),
-      City: () => Sprite.fromImage(`./img/pieces/city.png`),
-      2: () => Sprite.fromImage(`./img/numbers/2.png`),
-      3: () => Sprite.fromImage(`./img/numbers/3.png`),
-      4: () => Sprite.fromImage(`./img/numbers/4.png`),
-      5: () => Sprite.fromImage(`./img/numbers/5.png`),
-      6: () => Sprite.fromImage(`./img/numbers/6.png`),
-      8: () => Sprite.fromImage(`./img/numbers/8.png`),
-      9: () => Sprite.fromImage(`./img/numbers/9.png`),
-      10: () => Sprite.fromImage(`./img/numbers/10.png`),
-      11: () => Sprite.fromImage(`./img/numbers/11.png`),
-      12: () => Sprite.fromImage(`./img/numbers/12.png`),
-    };
-    return sprites;
-  }
-
   private SetupCanvas(): void {
     this.app = new Application({
       autoResize: true,
@@ -328,6 +297,7 @@ export default class Map extends Vue {
     tint: number,
     coord: MatrixCoordinate,
   ) {
+    debugger;
     const generator = this.sprites[spriteType];
     const piece = generator();
     piece.width = dimensions.x;
@@ -387,31 +357,6 @@ export default class Map extends Vue {
     });
   }
 
-  private generateTile(tile: Tile, corner, lineWidth) {
-    const generator = this.sprites[tile.type.toString()];
-    const s = generator();
-    s.width = this.tileWidth;
-    s.height = this.tileHeight;
-    s.position.x = corner.x - this.tileWidth - lineWidth / 2;
-    s.position.y = corner.y - this.tileHeight / 2;
-    return s;
-  }
-
-  private generateTileNumber(center, origin, tile: Tile) {
-    if (tile.diceRoll === 'None') {
-      return undefined;
-    }
-    const generator = this.sprites[tile.diceRoll.toString()];
-    const s = generator();
-    s.width = this.tileWidth / 4;
-    s.height = s.width;
-    s.anchor.x = 0.5;
-    s.anchor.y = 0.5;
-    s.position.x = center.x + origin.x;
-    s.position.y = center.y + origin.y;
-    return s;
-  }
-
   @Watch('world')
   private DrawMap(newWorld: World, oldWorld: World): void {
     if (!newWorld) {
@@ -444,7 +389,14 @@ export default class Map extends Vue {
         const corners = hex.corners().map((corner) => corner.add(point));
         const [firstCorner, ...otherCorners] = corners;
         // Tiles
-        const tileSprite = this.generateTile(tile, firstCorner, lineWidth);
+        const tileSprite = generateTile(
+          this.tileWidth,
+          this.tileHeight,
+          tile,
+          firstCorner,
+          lineWidth,
+        );
+
         tileContainer.addChild(tileSprite);
 
         if (newWorld.gameState === 'Started') {
