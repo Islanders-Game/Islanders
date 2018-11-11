@@ -53,7 +53,8 @@ describe('Checking for purchaseability', () => {
       currentPlayer: 0,
       map: [],
       players: [p],
-      started: false,
+      gameState: 'Uninitialized',
+      pointsToWin: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -81,7 +82,8 @@ describe('Checking for purchaseability', () => {
       currentPlayer: 0,
       map: [],
       players: [p],
-      started: false,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
       gameRules: {
         gameType: 'original',
         maxCities: 0,

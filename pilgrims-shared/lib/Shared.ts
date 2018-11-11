@@ -22,7 +22,7 @@ import { House } from './Entities/House';
 import { City } from './Entities/City';
 import { Purchaseable } from './Entities/Purchaseable';
 import { Tile, TileType, DiceRollType } from './Tile';
-import { World } from './World';
+import { World, GameState } from './World';
 import { GameRules } from './GameRules';
 import { Player } from './Player';
 import { Action } from './Action';
@@ -70,4 +70,5 @@ export {
   resourcesAreNonNegative,
   SocketActions,
   WorldGenerator,
+  GameState,
 };
