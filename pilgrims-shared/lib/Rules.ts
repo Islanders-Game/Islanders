@@ -28,7 +28,7 @@ import {
   Player,
   Success,
 } from './Shared';
-import { randomDiceRoll } from './WorldGenerator';
+import { randomGameDiceRoll } from './World';
 import { DiceRollType } from './Tile';
 import {
   DevelopmentCard,
@@ -129,7 +129,7 @@ export const rules: Rules = {
       return player;
     }
 
-    const diceRoll = randomDiceRoll();
+    const diceRoll = randomGameDiceRoll();
     const players = assignRessourcesToPlayers(w, diceRoll);
     const nextPlayer = (w.value.currentPlayer + 1) % w.value.players.length;
     return success({
@@ -281,7 +281,8 @@ const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
   }
   const player = r.value.players.find((pl) => pl.name === playerName)!;
 
-  const canPlace = !player.roads.some(
+  const allPlayerRoads = r.value.players.reduce((acc, p) => acc.concat(p.roads), [] as Road[]);
+  const noExistingRoad = !allPlayerRoads.some(
     (ro) =>
       (ro.start.x === start.x &&
         ro.start.y === start.y &&
@@ -290,10 +291,21 @@ const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
       (ro.start.x === end.x &&
         ro.start.y === end.y &&
         ro.end.x === start.x &&
-        ro.end.y === start.y),
+        ro.end.y === start.y)
   );
+  const houseAtOneEnd = player.houses.some(h => 
+    (h.position.x === start.x && h.position.y === start.y) 
+      || (h.position.x === end.x && h.position.y === end.y)
+  ); 
+  const roadAtOneEnd = player.roads.some(h => 
+    (h.start.x === end.x && h.start.y === end.y) 
+      || (h.end.x === start.x && h.end.y === start.y)
+      || (h.start.x === start.x && h.start.y === start.y) 
+      || (h.end.x === end.x && h.end.y === end.y)
+  ); 
+  const canPlace = noExistingRoad && (houseAtOneEnd || roadAtOneEnd);
   if (!canPlace) {
-    return fail(`Can't place a road here!`);
+    return fail(`You can't place a road here!`);
   }
   const roads = player.roads.concat([new Road(start, end)]);
   const players = r.value.players.map((pl) =>

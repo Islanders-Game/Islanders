@@ -1,35 +1,34 @@
 import { defineGrid, extendHex } from 'honeycomb-grid';
-import { Tile, TileType, DiceRollType } from './Tile';
+import { Tile, TileType, DiceRollType, GeneratorDiceRollType } from './Tile';
+import { DevelopmentCardType } from './Entities/DevelopmentCard';
 
 const randomTileType = (): TileType => {
-  const rand = Math.floor(Math.random() * 6);
-  switch (rand) {
-    case 0:
-      return 'Wood';
-    case 1:
-      return 'Stone';
-    case 2:
-      return 'Clay';
-    case 3:
-      return 'Grain';
-    case 4:
-      return 'Wool';
-    case 5: {
-      if (Math.random() < 0.75) {
-        return randomTileType();
-      }
-      return 'Desert';
-    }
-  }
-  return 'Ocean';
+  const tileProbabilities: TileType[] = [
+    "Wood", "Wood", "Wood", "Wood",
+    "Wool", "Wool", "Wool", "Wool",
+    "Grain", "Grain", "Grain", "Grain", 
+    "Stone", "Stone", "Stone", 
+    "Clay", "Clay", "Clay",
+    "Desert" 
+  ]
+  const rand = Math.floor(Math.random() * tileProbabilities.length)
+  return tileProbabilities[rand];
 };
 
-export const randomDiceRoll = (): DiceRollType => {
-  const dice1 = Math.floor(Math.random() * 6 + 1);
-  const dice2 = Math.floor(Math.random() * 6 + 1);
-  const roll = dice1 + dice2;
-  if (roll === 7) return randomDiceRoll();
-  return roll as DiceRollType;
+const generatorDiceRoll = (): GeneratorDiceRollType => {
+  // See https://www.catan.com/en/download/?SoC_rv_Rules_091907.pdf
+  const roll = Math.random();
+  if (roll <= 0.03) return 2;
+  if (roll > 0.03 && roll <= 0.06) return 12;
+  if (roll > 0.06 && roll <= 0.12) return 3;
+  if (roll > 0.12 && roll <= 0.18) return 11;
+  if (roll > 0.18 && roll <= 0.26) return 4;
+  if (roll > 0.26 && roll <= 0.34) return 10;
+  if (roll > 0.34 && roll <= 0.45) return 5;
+  if (roll > 0.45 && roll <= 0.56) return 9;
+  if (roll > 0.56 && roll <= 0.70) return 6;
+  if (roll > 0.70 && roll <= 0.84) return 8;
+  return generatorDiceRoll();
 };
 
 export class WorldGenerator {
@@ -43,7 +42,7 @@ export class WorldGenerator {
     const center = Hex({ x: 0, y: 0 });
     Grid.hexagon({ radius: r }).forEach((hex) => {
       let tileType = randomTileType();
-      let diceRoll = randomDiceRoll();
+      let diceRoll = generatorDiceRoll();
       if (hex.distance(center) >= r) {
         tileType = 'Ocean';
         diceRoll = 'None';

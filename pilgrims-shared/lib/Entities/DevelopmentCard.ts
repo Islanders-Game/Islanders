@@ -20,3 +20,17 @@ export class DevelopmentCard implements Purchaseable {
     this.type = type;
   }
 }
+
+const randomDevCard = (): DevelopmentCardType => {
+  const cardProbabilities: DevelopmentCardType[] = [
+    "Knight", "Knight", "Knight", "Knight", "Knight", "Knight", "Knight", 
+    "Knight", "Knight", "Knight", "Knight", "Knight", "Knight", "Knight", 
+    "Knight", "Knight", "Knight", "Knight", "Knight", 
+    "Monopoly", "Monopoly", 
+    "Road Building", "Road Building", 
+    "Year of Plenty", "Year of Plenty",  
+    "Victory Point", "Victory Point", "Victory Point", "Victory Point", "Victory Point", 
+  ];
+  const rand = Math.floor(Math.random() * cardProbabilities.length)
+  return cardProbabilities[rand];
+};
