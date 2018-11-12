@@ -15,17 +15,17 @@
           <v-tab href="#tab-3">
             Logs
           </v-tab>
-          <v-tab-item :id="'tab-1'" :key="1">
+          <v-tab-item :value="'tab-1'" :key="1">
             <div class="tab-item-fill-height">
               <Players></Players>
             </div>
           </v-tab-item>
-          <v-tab-item :id="'tab-2'" :key="2">
+          <v-tab-item :value="'tab-2'" :key="2">
             <div class="tab-item-fill-height">
               <Chat></Chat>
             </div>
           </v-tab-item>
-          <v-tab-item :id="'tab-3'" :key="3">
+          <v-tab-item :value="'tab-3'" :key="3">
             <div class="tab-item-fill-height">
               <Log></Log>
             </div>
