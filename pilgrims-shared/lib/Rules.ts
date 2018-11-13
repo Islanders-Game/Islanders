@@ -105,12 +105,15 @@ export const rules: Rules = {
     const purchased = purchase(new DevelopmentCard().cost)(
       parameters.playerName,
     )(playerExists);
-    const assigned = assignRandomDevelopmentCard(parameters.playerName)(
+    const assigned = assignDevelopmentCard(parameters.playerName)(
       purchased,
     );
     return assigned;
   },
-  PlayCard: ({ parameters }) => (w) => w,
+  PlayCard: ({ parameters }) => (w) => { 
+    const stateEnsured = ensureGameState('Started')(w);
+    return playCard(parameters.playerName, parameters.card, stateEnsured);
+  },
   Trade: ({ parameters }) => (w) => w,
   LockMap: () => (w) => {
     if (w.tag === 'Failure') {
@@ -421,7 +424,7 @@ const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
   return success({ ...r.value, players });
 };
 
-const assignRandomDevelopmentCard = (playerName: string) => (
+const assignDevelopmentCard = (playerName: string) => (
   r: Result<World>,
 ) => {
   if (r.tag === 'Failure') {
@@ -436,3 +439,18 @@ const assignRandomDevelopmentCard = (playerName: string) => (
   );
   return success({ ...r.value, players });
 };
+
+const playCard = (playerName: string, card: DevelopmentCard, r: Result<World>) => {
+  if (r.tag === 'Failure') {
+    return r;
+  }
+  
+  switch (card.type) {
+    case 'Victory Point':
+      const players = r.value.players.map((pl) =>
+        pl.name === playerName ? { ...pl, points: pl.points + 1 } : pl);
+      return success({players, ...r.value});
+    default:
+      return r;
+  }
+}
