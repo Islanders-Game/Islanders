@@ -29,9 +29,10 @@ import {
   Player,
   Success,
   GameState,
+  TileType,
 } from './Shared';
 import { DiceRollType } from './Tile';
-import { DevelopmentCard } from './Entities/DevelopmentCard';
+import { DevelopmentCard, DevelopmentCardType } from './Entities/DevelopmentCard';
 
 export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
@@ -112,7 +113,7 @@ export const rules: Rules = {
   },
   PlayCard: ({ parameters }) => (w) => { 
     const stateEnsured = ensureGameState('Started')(w);
-    return playCard(parameters.playerName, parameters.card, stateEnsured);
+    return playCard(parameters.playerName, parameters.card, parameters.chosenResources)(stateEnsured);
   },
   Trade: ({ parameters }) => (w) => w,
   LockMap: () => (w) => {
@@ -440,7 +441,7 @@ const assignDevelopmentCard = (playerName: string) => (
   return success({ ...r.value, players });
 };
 
-const playCard = (playerName: string, card: DevelopmentCard, r: Result<World>) => {
+const playCard = (playerName: string, card: DevelopmentCard, chosenResources: TileType[]) => (r: Result<World>) => {
   if (r.tag === 'Failure') {
     return r;
   }
@@ -461,5 +462,79 @@ const playCard = (playerName: string, card: DevelopmentCard, r: Result<World>) =
     return success({players, ...r.value});
   }
 
+  if (card.type === 'Year of Plenty') {
+    const resources = r.value.players.find((pl) => pl.name === playerName)!.resources;
+    const rr = addAmountToResourceOfType(1, resources, chosenResources[0]);
+    const rrr = addAmountToResourceOfType(1, rr, chosenResources[1]);
+    const players = r.value.players.map((pl) =>
+        pl.name === playerName ? { ...pl, resources: rrr } : pl);
+    return success({players, ...r.value});
+  }
+
+  if (card.type === 'Monopoly') {
+    const resources = r.value.players.find((pl) => pl.name === playerName)!.resources;
+    const allResources = r.value.players.reduce((acc, p) => acc.concat(p.resources), [] as Resources[]);
+    const chosen = chosenResources[0];
+    const toTake = allResources.reduce((acc, rr) => acc + getResourceAmountOfType(chosen, rr), 0);
+    const added = addAmountToResourceOfType(toTake, resources, chosenResources[0]);
+    const players = r.value.players.map((pl) =>
+        pl.name === playerName 
+          ? { ...pl, resources: added } 
+          : {...pl, resources: deleteAllResourcesOfType(chosen, pl.resources)}
+      );
+    return success({players, ...r.value});
+  }
+
   return r;
+}
+
+const getResourceAmountOfType = (type: TileType, rs: Resources) => {
+  switch (type) {
+    case 'Wood':
+      return rs.wood ? rs.wood : 0;
+    case 'Wool': 
+      return rs.wool ? rs.wool : 0;
+    case 'Clay': 
+      return rs.clay ? rs.clay : 0;
+    case 'Grain': 
+      return rs.grain ? rs.grain : 0;
+    case 'Stone': 
+      return rs.stone ? rs.stone : 0
+    default:
+      return 0;
+  }
+}
+
+const addAmountToResourceOfType = (amount: number, rs: Resources, type: TileType) => {
+  switch (type) {
+    case 'Wood':
+      return addResources({ wood: rs.wood ? rs.wood + amount : amount}, rs)
+    case 'Wool': 
+      return addResources({wool: rs.wool ? rs.wool + amount : amount}, rs)
+    case 'Clay': 
+      return addResources({clay: rs.clay ? rs.clay + amount : amount}, rs)
+    case 'Grain': 
+      return addResources({grain: rs.grain ? rs.grain + amount : amount}, rs)
+    case 'Stone': 
+      return addResources({stone: rs.stone ? rs.stone + amount : amount}, rs)
+    default:
+      return rs;
+  }
+}
+
+const deleteAllResourcesOfType = (type: TileType, rs: Resources) => {
+  switch (type) {
+    case 'Wood':
+      return { wood: 0, ...rs}
+    case 'Wool': 
+      return {wool: 0, ...rs}
+    case 'Clay': 
+      return {clay: 0, ...rs}
+    case 'Grain': 
+      return {grain: 0, ...rs}
+    case 'Stone': 
+      return {stone: 0, ...rs}
+    default:
+      return rs;
+  }
 }
