@@ -25,7 +25,6 @@ const randomDevCard = (): DevelopmentCardType => {
   const cardProbabilities: DevelopmentCardType[] = [
     "Knight", "Knight", "Knight", "Knight", "Knight", "Knight", "Knight", 
     "Knight", "Knight", "Knight", "Knight", "Knight", "Knight", "Knight", 
-    "Knight", "Knight", "Knight", "Knight", "Knight", 
     "Monopoly", "Monopoly", 
     "Road Building", "Road Building", 
     "Year of Plenty", "Year of Plenty",  
