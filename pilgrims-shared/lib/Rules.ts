@@ -37,6 +37,7 @@ import {
 export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
   BuildHouse: (data: BuildHouseAction) => (w: Result<World>) => Result<World>;
+  BuildHouseIntial: (data: BuildHouseAction) => (w: Result<World>) => Result<World>;
   BuildCity: (data: BuildCityAction) => (w: Result<World>) => Result<World>;
   BuildRoad: (data: BuildRoadAction) => (w: Result<World>) => Result<World>;
   MoveThief: (data: PlaceThiefAction) => (w: Result<World>) => Result<World>;
@@ -65,6 +66,19 @@ export const rules: Rules = {
       playerExists,
     );
     const placed = placeHouse(parameters.coordinates)(parameters.playerName)(
+      purchased,
+    );
+    return placed;
+  },
+  BuildHouseIntial: ({ parameters }) => (w) => {
+    if (w.tag === 'Failure') {
+      return w;
+    }
+    const playerExists = findPlayer(parameters.playerName)(w);
+    const purchased = purchase(new House().cost)(parameters.playerName)(
+      playerExists,
+    );
+    const placed = placeHouseInital(parameters.coordinates)(parameters.playerName)(
       purchased,
     );
     return placed;
@@ -237,7 +251,7 @@ const findPlayer = (name: string) => (r: Result<World>): Result<World> => {
   return success(r.value);
 };
 
-const placeHouse = (coord: MatrixCoordinate) => (playerName: string) => (
+const placeHouseInital = (coord: MatrixCoordinate) => (playerName: string) => (
   world: Result<World>,
 ) => {
   if (world.tag === 'Failure') {
@@ -253,6 +267,38 @@ const placeHouse = (coord: MatrixCoordinate) => (playerName: string) => (
     (h.position.x === coord.x && h.position.y === coord.y) ||
     neighbouring.some((c) => c.x === h.position.x && c.y === h.position.y);
   const canPlace = !allHouses.some((h) => illegalPlacement(h));
+  if (!canPlace) {
+    return fail(`Can't place a house here!`);
+  }
+
+  const concatHouseIfMatch = (pl: Player) =>
+    pl.name === playerName
+      ? { ...pl, houses: pl.houses.concat([new House(coord)]) }
+      : pl;
+  const players = world.value.players.map((pl) => concatHouseIfMatch(pl));
+  return success({ ...world.value, players });
+};
+
+const placeHouse = (coord: MatrixCoordinate) => (playerName: string) => (
+  world: Result<World>,
+) => {
+  if (world.tag === 'Failure') {
+    return world;
+  }
+  const allHouses = world.value.players.reduce(
+    (acc: House[], p) => acc.concat(p.houses),
+    [],
+  );
+  const neighbouring = neighbouringMatrixCoords(coord);
+
+  const illegalPlacement = (h: House) =>
+    (h.position.x === coord.x && h.position.y === coord.y) ||
+    neighbouring.some((c) => c.x === h.position.x && c.y === h.position.y);
+  
+  const player = world.value.players.find((pl) => pl.name === playerName)!;
+  const hasRoad = player.roads.some(r => (r.start.x === coord.x && r.start.y === coord.y) 
+    || r.end.x === coord.x && r.end.y === coord.y);
+  const canPlace = hasRoad && !allHouses.some((h) => illegalPlacement(h));
   if (!canPlace) {
     return fail(`Can't place a house here!`);
   }
