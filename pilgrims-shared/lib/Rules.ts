@@ -30,9 +30,7 @@ import {
   GameState,
 } from './Shared';
 import { DiceRollType } from './Tile';
-import {
-  DevelopmentCard,
-} from './Entities/DevelopmentCard';
+import { DevelopmentCard } from './Entities/DevelopmentCard';
 
 export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
@@ -60,9 +58,6 @@ export const ruleReducer = (
 //
 export const rules: Rules = {
   BuildHouse: ({ parameters }) => (w) => {
-    if (w.tag === 'Failure') {
-      return w;
-    }
     const stateEnsured = ensureGameState('Started')(w);
     const playerExists = findPlayer(parameters.playerName)(stateEnsured);
     const purchased = purchase(new House().cost)(parameters.playerName)(
@@ -74,9 +69,6 @@ export const rules: Rules = {
     return placed;
   },
   BuildHouseIntial: ({ parameters }) => (w) => {
-    if (w.tag === 'Failure') {
-      return w;
-    }
     const stateEnsured = ensureGameState('Pregame')(w);
     const playerExists = findPlayer(parameters.playerName)(stateEnsured);
     const purchased = purchase(new House().cost)(parameters.playerName)(
@@ -88,9 +80,6 @@ export const rules: Rules = {
     return placed;
   },
   BuildCity: ({ parameters }) => (w) => {
-    if (w.tag === 'Failure') {
-      return w;
-    }
     const stateEnsured = ensureGameState('Started')(w);
     const playerExists = findPlayer(parameters.playerName)(stateEnsured);
     const purchased = purchase(new City().cost)(parameters.playerName)(
@@ -99,9 +88,6 @@ export const rules: Rules = {
     return placeCity(parameters.coordinates)(parameters.playerName)(purchased);
   },
   BuildRoad: ({ parameters }) => (w) => {
-    if (w.tag === 'Failure') {
-      return w;
-    }
     const playerExists = findPlayer(parameters.playerName)(w);
     const purchased = purchase(new Road().cost)(parameters.playerName)(
       playerExists,
@@ -112,9 +98,6 @@ export const rules: Rules = {
   },
   MoveThief: ({ parameters }) => (w) => w,
   BuyCard: ({ parameters }) => (w) => {
-    if (w.tag === 'Failure') {
-      return w;
-    }
     const stateEnsured = ensureGameState('Started')(w);
     const playerExists = findPlayer(parameters.playerName)(stateEnsured);
     const purchased = purchase(new DevelopmentCard().cost)(
@@ -139,29 +122,10 @@ export const rules: Rules = {
     };
     return success(world);
   },
-  EndTurn: ({ parameters }) => (w) => {
-    if (w.tag === 'Failure') {
-      return w;
-    }
-    const player = findPlayer(parameters.playerName)(w);
-    if (player.tag === 'Failure') {
-      return player;
-    }
-
-    const diceRoll = randomGameDiceRoll();
-    const players = assignRessourcesToPlayers(w, diceRoll);
-    const nextPlayer = (w.value.currentPlayer + 1) % w.value.players.length;
-    const newStatistics = {
-      ...w.value.gameStatistics,
-      turns: w.value.gameStatistics.turns + 1,
-    };
-    return success({
-      ...w.value,
-      players,
-      currentPlayer: nextPlayer,
-      currentDie: diceRoll,
-      gameStatistics: newStatistics,
-    });
+  EndTurn: ({ parameters }) => (w: Result<World>): Result<World> => {
+    const playerEnsuredWorld = findPlayer(parameters.playerName)(w);
+    const playerAssigned = assignNextPlayerTurn(playerEnsuredWorld);
+    return playerAssigned;
   },
 };
 
@@ -194,6 +158,26 @@ const randomGameDiceRoll = (): DiceRollType => {
   if (roll > 0.56 && roll <= 0.7) return 6;
   if (roll > 0.7 && roll <= 0.84) return 8;
   /*(roll > 0.84 && roll <= 1.00)*/ return 7;
+};
+
+const assignNextPlayerTurn = (r: Result<World>): Result<World> => {
+  if (r.tag === 'Failure') {
+    return r;
+  }
+  const diceRoll = randomGameDiceRoll();
+  const players = assignRessourcesToPlayers(r, diceRoll);
+  const nextPlayer = (r.value.currentPlayer + 1) % r.value.players.length;
+  const newStatistics = {
+    ...r.value.gameStatistics,
+    turns: r.value.gameStatistics.turns + 1,
+  };
+  return success({
+    ...r.value,
+    players,
+    currentPlayer: nextPlayer,
+    currentDie: diceRoll,
+    gameStatistics: newStatistics,
+  });
 };
 
 type TileRessource = { tile: Tile; amount: number };
