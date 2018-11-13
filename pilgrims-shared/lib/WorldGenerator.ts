@@ -1,6 +1,5 @@
 import { defineGrid, extendHex } from 'honeycomb-grid';
 import { Tile, TileType, DiceRollType, GeneratorDiceRollType } from './Tile';
-import { DevelopmentCardType } from './Entities/DevelopmentCard';
 
 const randomTileType = (): TileType => {
   const tileProbabilities: TileType[] = [
