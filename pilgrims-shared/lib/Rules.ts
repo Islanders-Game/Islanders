@@ -452,6 +452,12 @@ const playCard = (playerName: string, card: DevelopmentCard, chosenResources: Ti
     return success({players, ...r.value});
   }
 
+  if (card.type === 'Knight') {
+    const players = r.value.players.map((pl) =>
+      pl.name === playerName ? { ...pl, knights: pl.knights + 1 } : pl);
+    return success({players, ...r.value});
+  }
+
   if (card.type === 'Road Building') {
     const resources = r.value.players.find((pl) => pl.name === playerName)!.resources;
     const roadCost = new Road().cost;

@@ -9,6 +9,7 @@ export class Player {
   public color: number;
   public name: string;
   public resources: Resources;
+  public knights: number;
   public houses: House[];
   public cities: City[];
   public roads: Road[];
@@ -26,5 +27,6 @@ export class Player {
     this.ships = [];
     this.devCards = [];
     this.points = 0;
+    this.knights = 0;
   }
 }
