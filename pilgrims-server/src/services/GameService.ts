@@ -13,7 +13,6 @@ import {
   rules,
 } from '../../../pilgrims-shared/dist/Shared';
 import { GameRepository } from '../repositories/GameRepository';
-import { StartGameAction } from '../../../pilgrims-shared/dist/Action';
 
 export class GameService {
   private gameRepository: GameRepository;
