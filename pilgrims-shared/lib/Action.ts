@@ -93,6 +93,10 @@ export class StartGameAction {
   public type: 'startGame' = 'startGame';
 }
 
+export class LockMapAction {
+  public type: 'lockMap' = 'lockMap';
+}
+
 export class EndTurnAction {
   public type: 'endTurn' = 'endTurn';
   public parameters: EndTurnParameters;
