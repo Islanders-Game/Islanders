@@ -24,6 +24,7 @@ import { Purchaseable } from './Entities/Purchaseable';
 import { Tile, TileType, DiceRollType } from './Tile';
 import { World, GameState } from './World';
 import { GameRules } from './GameRules';
+import { GameStatistics } from './GameStatistics';
 import { Player } from './Player';
 import { Action } from './Action';
 import { Rules, purchase, Rule, ruleReducer, rules } from './Rules';
@@ -71,4 +72,5 @@ export {
   SocketActions,
   WorldGenerator,
   GameState,
+  GameStatistics,
 };
