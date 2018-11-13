@@ -454,20 +454,10 @@ const playCard = (playerName: string, card: DevelopmentCard, r: Result<World>) =
   if (card.type === 'Road Building') {
     const resources = r.value.players.find((pl) => pl.name === playerName)!.resources;
     const roadCost = new Road().cost;
-    const withFiveExtraRoads = 
-      addResources(
-        addResources(     
-          addResources(
-            addResources(
-              addResources(
-  /* * * * */   resources,  //<-----    Look, it's Pac-man!
-                roadCost), 
-              roadCost), 
-            roadCost), 
-          roadCost), 
-        roadCost);
+    const withTwoExtraRoads = 
+      addResources(addResources(resources, roadCost), roadCost);
     const players = r.value.players.map((pl) =>
-        pl.name === playerName ? { ...pl, resources: withFiveExtraRoads } : pl);
+        pl.name === playerName ? { ...pl, resources: withTwoExtraRoads } : pl);
     return success({players, ...r.value});
   }
 
