@@ -20,6 +20,7 @@ import {
   TradeAction,
   StartGameAction,
   EndTurnAction,
+  LockMapAction,
 } from './Action';
 import {
   neighbouringMatrixCoords,
@@ -47,6 +48,7 @@ export interface Rules {
   PlayCard: (data: PlayCardAction) => (w: Result<World>) => Result<World>;
   Trade: (data: TradeAction) => (w: Result<World>) => Result<World>;
   StartGame: (data: StartGameAction) => (w: Result<World>) => Result<World>;
+  LockMap: (data: LockMapAction) => (w: Result<World>) => Result<World>;
   EndTurn: (data: EndTurnAction) => (w: Result<World>) => Result<World>;
 }
 
@@ -127,6 +129,18 @@ export const rules: Rules = {
   },
   PlayCard: ({ parameters }) => (w) => w,
   Trade: ({ parameters }) => (w) => w,
+  LockMap: () => (w) => {
+    if (w.tag === 'Failure') {
+      return w;
+    }
+    const players = assignRessourcesToPlayers(w, 'None', false);
+    const world: World = {
+      ...w.value,
+      players,
+      gameState: 'Pregame',
+    };
+    return success(world);
+  },
   StartGame: () => (w) => {
     if (w.tag === 'Failure') {
       return w;
