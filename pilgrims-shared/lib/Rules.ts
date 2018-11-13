@@ -444,13 +444,32 @@ const playCard = (playerName: string, card: DevelopmentCard, r: Result<World>) =
   if (r.tag === 'Failure') {
     return r;
   }
-  
-  switch (card.type) {
-    case 'Victory Point':
-      const players = r.value.players.map((pl) =>
-        pl.name === playerName ? { ...pl, points: pl.points + 1 } : pl);
-      return success({players, ...r.value});
-    default:
-      return r;
+
+  if (card.type === 'Victory Point') {
+    const players = r.value.players.map((pl) =>
+      pl.name === playerName ? { ...pl, points: pl.points + 1 } : pl);
+    return success({players, ...r.value});
   }
+
+  if (card.type === 'Road Building') {
+    const resources = r.value.players.find((pl) => pl.name === playerName)!.resources;
+    const roadCost = new Road().cost;
+    const withFiveExtraRoads = 
+      addResources(
+        addResources(     
+          addResources(
+            addResources(
+              addResources(
+  /* * * * */   resources,  //<-----    Look, it's Pac-man!
+                roadCost), 
+              roadCost), 
+            roadCost), 
+          roadCost), 
+        roadCost);
+    const players = r.value.players.map((pl) =>
+        pl.name === playerName ? { ...pl, resources: withFiveExtraRoads } : pl);
+    return success({players, ...r.value});
+  }
+
+  return r;
 }
