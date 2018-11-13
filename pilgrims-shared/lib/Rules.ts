@@ -131,11 +131,16 @@ export const rules: Rules = {
     const diceRoll = randomGameDiceRoll();
     const players = assignRessourcesToPlayers(w, diceRoll);
     const nextPlayer = (w.value.currentPlayer + 1) % w.value.players.length;
+    const newStatistics = {
+      ...w.value.gameStatistics,
+      turns: w.value.gameStatistics.turns + 1,
+    };
     return success({
       ...w.value,
       players,
       currentPlayer: nextPlayer,
       currentDie: diceRoll,
+      gameStatistics: newStatistics,
     });
   },
 };
@@ -166,8 +171,8 @@ const randomGameDiceRoll = (): DiceRollType => {
   if (roll > 0.26 && roll <= 0.34) return 10;
   if (roll > 0.34 && roll <= 0.45) return 5;
   if (roll > 0.45 && roll <= 0.56) return 9;
-  if (roll > 0.56 && roll <= 0.70) return 6;
-  if (roll > 0.70 && roll <= 0.84) return 8;
+  if (roll > 0.56 && roll <= 0.7) return 6;
+  if (roll > 0.7 && roll <= 0.84) return 8;
   /*(roll > 0.84 && roll <= 1.00)*/ return 7;
 };
 
@@ -297,7 +302,10 @@ const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
   }
   const player = r.value.players.find((pl) => pl.name === playerName)!;
 
-  const allPlayerRoads = r.value.players.reduce((acc, p) => acc.concat(p.roads), [] as Road[]);
+  const allPlayerRoads = r.value.players.reduce(
+    (acc, p) => acc.concat(p.roads),
+    [] as Road[],
+  );
   const noExistingRoad = !allPlayerRoads.some(
     (ro) =>
       (ro.start.x === start.x &&
@@ -307,18 +315,20 @@ const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
       (ro.start.x === end.x &&
         ro.start.y === end.y &&
         ro.end.x === start.x &&
-        ro.end.y === start.y)
+        ro.end.y === start.y),
   );
-  const houseAtOneEnd = player.houses.some(h => 
-    (h.position.x === start.x && h.position.y === start.y) 
-      || (h.position.x === end.x && h.position.y === end.y)
-  ); 
-  const roadAtOneEnd = player.roads.some(h => 
-    (h.start.x === end.x && h.start.y === end.y) 
-      || (h.end.x === start.x && h.end.y === start.y)
-      || (h.start.x === start.x && h.start.y === start.y) 
-      || (h.end.x === end.x && h.end.y === end.y)
-  ); 
+  const houseAtOneEnd = player.houses.some(
+    (h) =>
+      (h.position.x === start.x && h.position.y === start.y) ||
+      (h.position.x === end.x && h.position.y === end.y),
+  );
+  const roadAtOneEnd = player.roads.some(
+    (h) =>
+      (h.start.x === end.x && h.start.y === end.y) ||
+      (h.end.x === start.x && h.end.y === start.y) ||
+      (h.start.x === start.x && h.start.y === start.y) ||
+      (h.end.x === end.x && h.end.y === end.y),
+  );
   const canPlace = noExistingRoad && (houseAtOneEnd || roadAtOneEnd);
   if (!canPlace) {
     return fail(`You can't place a road here!`);
