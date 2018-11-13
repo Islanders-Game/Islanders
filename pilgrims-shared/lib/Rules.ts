@@ -27,6 +27,7 @@ import {
   Tile,
   Player,
   Success,
+  GameState,
 } from './Shared';
 import { DiceRollType } from './Tile';
 import {
@@ -243,6 +244,18 @@ export const purchase = (cost: Resources) => (playerName: string) => (
     pl.name === playerName ? { ...pl, resources } : pl,
   );
   return success({ ...r.value, players });
+};
+
+const ensureGameState = (state: GameState) => (
+  r: Result<World>,
+): Result<World> => {
+  if (r.tag === 'Failure') {
+    return r;
+  }
+  if (r.value.gameState !== state) {
+    return fail('You cannot do that action in state' + r.value.gameState);
+  }
+  return success(r.value);
 };
 
 const findPlayer = (name: string) => (r: Result<World>): Result<World> => {
