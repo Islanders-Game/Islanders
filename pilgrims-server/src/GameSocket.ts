@@ -7,7 +7,6 @@ import {
 } from '../../pilgrims-shared/dist/Shared';
 import { GameService } from './services/GameService';
 import { World } from '../../pilgrims-shared/dist/World';
-import { Turn } from '../../pilgrims-shared/dist/Turn';
 import { Tile } from '../../pilgrims-shared/dist/Tile';
 import { ChatService } from './services/ChatService';
 import { GameRepository } from './repositories/GameRepository';

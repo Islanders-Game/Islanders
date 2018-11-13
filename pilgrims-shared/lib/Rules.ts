@@ -79,7 +79,7 @@ export const rules: Rules = {
     if (w.tag === 'Failure') {
       return w;
     }
-    const stateEnsured = ensureGameState('Uninitialized')(w);
+    const stateEnsured = ensureGameState('Pregame')(w);
     const playerExists = findPlayer(parameters.playerName)(stateEnsured);
     const purchased = purchase(new House().cost)(parameters.playerName)(
       playerExists,
