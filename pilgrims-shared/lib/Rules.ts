@@ -32,7 +32,6 @@ import {
 import { DiceRollType } from './Tile';
 import {
   DevelopmentCard,
-  DevelopmentCardType,
 } from './Entities/DevelopmentCard';
 
 export type Rule = (w: Result<World>) => Result<World>;
@@ -406,17 +405,7 @@ const assignRandomDevelopmentCard = (playerName: string) => (
     return r;
   }
 
-  const cardTypes: DevelopmentCardType[] = [
-    'Knight',
-    'Victory Point',
-    'Road Building',
-    'Monopoly',
-    'Year of Plenty',
-  ];
-
-  //TODO: I'm unsure of what the probabilities of getting each card type are. For now, even chance.
-  const randomType = cardTypes[Math.floor(Math.random() * cardTypes.length)];
-  const randomCard = new DevelopmentCard(randomType);
+  const randomCard = new DevelopmentCard();
   const player = r.value.players.find((pl) => pl.name === playerName)!;
   const newCards = player.devCards.concat(randomCard);
   const players = r.value.players.map((pl) =>
