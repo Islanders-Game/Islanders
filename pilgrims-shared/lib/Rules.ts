@@ -133,7 +133,7 @@ export const rules: Rules = {
     if (w.tag === 'Failure') {
       return w;
     }
-    const players = assignRessourcesToPlayers(w, 'None', false);
+    const players = assignInitalRessourcesToPlayers(w);
     const world: World = {
       ...w.value,
       players,
@@ -242,6 +242,22 @@ const assignRessourcesToPlayers = (
         });
       }, pl.resources);
     return { ...pl, resources };
+  });
+  return players;
+};
+
+const assignInitalRessourcesToPlayers = (
+  w: Success<World>,
+) => {
+  const toAssignToAll = 
+    addResources(
+      addResources(
+        addResources(new House().cost, new House().cost), 
+        new Road().cost), 
+      new Road().cost);
+  const players: Player[] = w.value.players.map((pl) => {
+    pl = { resources: toAssignToAll, ...pl}
+    return pl;
   });
   return players;
 };
