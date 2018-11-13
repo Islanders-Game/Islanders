@@ -38,7 +38,9 @@ import {
 export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
   BuildHouse: (data: BuildHouseAction) => (w: Result<World>) => Result<World>;
-  BuildHouseIntial: (data: BuildHouseAction) => (w: Result<World>) => Result<World>;
+  BuildHouseIntial: (
+    data: BuildHouseAction,
+  ) => (w: Result<World>) => Result<World>;
   BuildCity: (data: BuildCityAction) => (w: Result<World>) => Result<World>;
   BuildRoad: (data: BuildRoadAction) => (w: Result<World>) => Result<World>;
   MoveThief: (data: PlaceThiefAction) => (w: Result<World>) => Result<World>;
@@ -62,7 +64,8 @@ export const rules: Rules = {
     if (w.tag === 'Failure') {
       return w;
     }
-    const playerExists = findPlayer(parameters.playerName)(w);
+    const stateEnsured = ensureGameState('Started')(w);
+    const playerExists = findPlayer(parameters.playerName)(stateEnsured);
     const purchased = purchase(new House().cost)(parameters.playerName)(
       playerExists,
     );
@@ -75,20 +78,22 @@ export const rules: Rules = {
     if (w.tag === 'Failure') {
       return w;
     }
-    const playerExists = findPlayer(parameters.playerName)(w);
+    const stateEnsured = ensureGameState('Uninitialized')(w);
+    const playerExists = findPlayer(parameters.playerName)(stateEnsured);
     const purchased = purchase(new House().cost)(parameters.playerName)(
       playerExists,
     );
-    const placed = placeHouseInital(parameters.coordinates)(parameters.playerName)(
-      purchased,
-    );
+    const placed = placeHouseInital(parameters.coordinates)(
+      parameters.playerName,
+    )(purchased);
     return placed;
   },
   BuildCity: ({ parameters }) => (w) => {
     if (w.tag === 'Failure') {
       return w;
     }
-    const playerExists = findPlayer(parameters.playerName)(w);
+    const stateEnsured = ensureGameState('Started')(w);
+    const playerExists = findPlayer(parameters.playerName)(stateEnsured);
     const purchased = purchase(new City().cost)(parameters.playerName)(
       playerExists,
     );
@@ -111,7 +116,8 @@ export const rules: Rules = {
     if (w.tag === 'Failure') {
       return w;
     }
-    const playerExists = findPlayer(parameters.playerName)(w);
+    const stateEnsured = ensureGameState('Started')(w);
+    const playerExists = findPlayer(parameters.playerName)(stateEnsured);
     const purchased = purchase(new DevelopmentCard().cost)(
       parameters.playerName,
     )(playerExists);
@@ -312,10 +318,13 @@ const placeHouse = (coord: MatrixCoordinate) => (playerName: string) => (
   const illegalPlacement = (h: House) =>
     (h.position.x === coord.x && h.position.y === coord.y) ||
     neighbouring.some((c) => c.x === h.position.x && c.y === h.position.y);
-  
+
   const player = world.value.players.find((pl) => pl.name === playerName)!;
-  const hasRoad = player.roads.some(r => (r.start.x === coord.x && r.start.y === coord.y) 
-    || r.end.x === coord.x && r.end.y === coord.y);
+  const hasRoad = player.roads.some(
+    (r) =>
+      (r.start.x === coord.x && r.start.y === coord.y) ||
+      (r.end.x === coord.x && r.end.y === coord.y),
+  );
   const canPlace = hasRoad && !allHouses.some((h) => illegalPlacement(h));
   if (!canPlace) {
     return fail(`Can't place a house here!`);
