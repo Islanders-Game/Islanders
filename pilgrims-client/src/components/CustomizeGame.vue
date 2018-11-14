@@ -12,13 +12,23 @@
               <v-btn @click="randomizeMap">Randomize Map</v-btn>
             </v-layout>
             <v-layout row align-center justify-start>
-              <v-flex xs3 style="margin: 6px 8px">
+              <v-flex xs3>
                 <v-slider dark 
                   v-model="radius"
                   thumb-label
                   label="Radius"
                   max="30"
-                  min="1"
+                  min="2"
+                ></v-slider>
+              </v-flex>
+              <v-flex xs1></v-flex>
+              <v-flex xs2>
+                  <v-slider dark 
+                  v-model="numberOfIslands"
+                  thumb-label
+                  label="Islands"
+                  max="5"
+                  min="0"
                 ></v-slider>
               </v-flex>
             </v-layout>
@@ -44,7 +54,8 @@ import {
 export default class CustomizeGame extends Vue {
   public playerName: string = undefined;
   public mask = '##';
-  public radius: number = 3;
+  public radius: number = 2;
+  public numberOfIslands: number = 0;
   private worldGenerator: WorldGenerator;
 
   public constructor() {
@@ -62,7 +73,10 @@ export default class CustomizeGame extends Vue {
   }
 
   private async randomizeMap() {
-    const map: Tile[] = this.worldGenerator.generateRandomMap(this.radius);
+    const map: Tile[] = this.worldGenerator.generateRandomMap(
+      this.radius,
+      this.numberOfIslands,
+    );
     await this.$store.dispatch('game/updateMap', map);
   }
 }

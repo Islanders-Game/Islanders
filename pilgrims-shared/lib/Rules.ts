@@ -346,6 +346,11 @@ const placeHouse = (coord: MatrixCoordinate) => (playerName: string) => (
       (r.start.x === coord.x && r.start.y === coord.y) ||
       (r.end.x === coord.x && r.end.y === coord.y),
   );
+
+  if (!hasRoad) {
+    return fail('You have to place a house on a road!');
+  }
+
   const canPlace = hasRoad && !allHouses.some((h) => illegalPlacement(h));
   if (!canPlace) {
     return fail(`Can't place a house here!`);

@@ -1,4 +1,4 @@
-import { defineGrid, extendHex } from 'honeycomb-grid';
+import { defineGrid, extendHex, HexFactory, GridFactory } from 'honeycomb-grid';
 import { Tile, TileType, DiceRollType, GeneratorDiceRollType } from './Tile';
 
 const randomTileType = (): TileType => {
@@ -44,26 +44,53 @@ const generatorDiceRoll = (): GeneratorDiceRollType => {
 };
 
 export class WorldGenerator {
-  public generateRandomMap(radius: number | undefined): Tile[] {
+  public generateRandomMap(
+    radius: number | undefined,
+    generateIslands: number | undefined,
+  ): Tile[] {
     const Hex = extendHex({
       orientation: 'flat',
-      tileType: randomTileType(),
     });
     const r: number = radius !== undefined ? Number(radius) : 3;
     const Grid = defineGrid(Hex);
     const map: Tile[] = [];
 
-    const testConcat = Grid(Hex(-9, -1), Hex(-8, -1), Hex(-8, 0));
-    let grid = Grid.hexagon({ radius: r }).concat(testConcat);
+    const mainlandCenter = Hex(0, 0);
+    let grid = Grid.hexagon({ radius: r, center: mainlandCenter });
+
+    if (generateIslands) {
+      for (let i = 0; i < generateIslands; i++) {
+        grid = grid.concat(
+          Grid.hexagon({
+            radius: Math.floor(r / 2),
+            center: generateIslandCenter(r, Hex),
+          }),
+        );
+      }
+    }
 
     grid.forEach((hex) => {
-      let tileType = randomTileType();
-      let diceRoll = generatorDiceRoll();
-      if (tileType == 'Desert') {
-        diceRoll = 'None';
-      }
-      map.push({ coord: { x: hex.x, y: hex.y }, diceRoll, type: tileType });
+      const tileType = randomTileType();
+      const diceRoll = tileType === 'Desert' ? 'None' : generatorDiceRoll();
+      map.push({
+        coord: { x: hex.x, y: hex.y },
+        diceRoll,
+        type: tileType,
+      });
     });
     return map;
   }
 }
+
+const generateIslandCenter = (
+  r: number,
+  hex: HexFactory<{
+    orientation: string;
+  }>,
+) => {
+  const angle = Math.random() * Math.PI * 2;
+  const x = Math.ceil(Math.cos(angle) * (r * 2) + 1);
+  const y = Math.ceil(Math.sin(angle) * (r * 2) + 1);
+  const islandCenter = hex(x, y);
+  return islandCenter;
+};
