@@ -1,4 +1,4 @@
-import { Result } from '../Result';
+import { Result } from './Result';
 import { World } from '../World';
 import { ensureGameState, findPlayer, purchase, placeHouse } from './Helpers';
 import { House } from '../Shared';

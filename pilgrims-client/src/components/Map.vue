@@ -29,6 +29,8 @@ import {
   Action,
   BuildCityAction,
   BuildRoadAction,
+  BuildHouseInitialAction,
+  BuildRoadInitialAction,
 } from '../../../pilgrims-shared/dist/Action';
 import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 import { buildingType } from '../store/modules/ui';
@@ -175,10 +177,15 @@ export default class Map extends Vue {
     const hexToFind = this.grid.pointToHex(inWorld);
     const coord = getMatrixCoordCorner(hexToFind, closestPoints[0].index);
     if (this.isBuilding === 'House') {
-      this.dispatchBuildAction(
-        event,
-        new BuildHouseAction(this.$store.state.game.playerName, coord),
-      );
+      const action =
+        this.world.gameState === 'Started'
+          ? new BuildHouseAction(this.$store.state.game.playerName, coord)
+          : new BuildHouseInitialAction(
+              this.$store.state.game.playerName,
+              coord,
+            );
+
+      this.dispatchBuildAction(event, action);
       this.$store.commit('ui/setIsBuilding', 'None');
     }
     if (this.isBuilding === 'City') {
@@ -190,10 +197,20 @@ export default class Map extends Vue {
     }
     if (this.isBuilding === 'Road' && closestPoints[1].index !== -1) {
       const coord2 = getMatrixCoordCorner(hexToFind, closestPoints[1].index);
-      this.dispatchBuildAction(
-        event,
-        new BuildRoadAction(this.$store.state.game.playerName, coord, coord2),
-      );
+      const action =
+        this.world.gameState === 'Started'
+          ? new BuildRoadAction(
+              this.$store.state.game.playerName,
+              coord,
+              coord2,
+            )
+          : new BuildRoadInitialAction(
+              this.$store.state.game.playerName,
+              coord,
+              coord2,
+            );
+
+      this.dispatchBuildAction(event, action);
       this.$store.commit('ui/setIsBuilding', 'None');
     }
   }
