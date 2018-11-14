@@ -1,9 +1,6 @@
 import { MatrixCoordinate } from './MatrixCoordinate';
 import { HexCoordinate } from './HexCoordinate';
-import {
-  DevelopmentCard,
-  DevelopmentCardType,
-} from './Entities/DevelopmentCard';
+import { DevelopmentCard } from './Entities/DevelopmentCard';
 import { Resources } from './Resources';
 import { TileType } from './Shared';
 
@@ -36,6 +33,14 @@ interface EndTurnParameters extends HasPlayerName {}
 
 export class BuildHouseAction {
   public type: 'buildHouse' = 'buildHouse';
+  public parameters: BuildHouseParameters;
+  constructor(playerName: string, coordinates: MatrixCoordinate) {
+    this.parameters = { playerName, coordinates };
+  }
+}
+
+export class BuildHouseInitialAction {
+  public type: 'buildHouseInitial' = 'buildHouseInitial';
   public parameters: BuildHouseParameters;
   constructor(playerName: string, coordinates: MatrixCoordinate) {
     this.parameters = { playerName, coordinates };
@@ -117,6 +122,7 @@ export class EndTurnAction {
 // An action is an closure which has the information necessary to perform one rule on a world.
 export type Action =
   | BuildHouseAction
+  | BuildHouseInitialAction
   | BuildCityAction
   | BuildRoadAction
   | PlaceThiefAction
@@ -124,4 +130,5 @@ export type Action =
   | PlayCardAction
   | BuyCardAction
   | StartGameAction
+  | LockMapAction
   | EndTurnAction;

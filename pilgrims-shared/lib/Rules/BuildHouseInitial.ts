@@ -1,8 +1,8 @@
-import { BuildHouseAction } from '../Action';
+import { BuildHouseInitialAction } from '../Action';
 import { World, Result, purchase, House } from '../Shared';
 import { ensureGameState, findPlayer, placeHouseInital } from './Helpers';
 
-export const BuildHouseInitial = ({ parameters }: BuildHouseAction) => (
+export const BuildHouseInitial = ({ parameters }: BuildHouseInitialAction) => (
   w: Result<World>,
 ) => {
   const stateEnsured = ensureGameState('Pregame')(w);

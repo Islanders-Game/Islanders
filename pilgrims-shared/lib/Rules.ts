@@ -11,6 +11,7 @@ import {
   StartGameAction,
   EndTurnAction,
   LockMapAction,
+  BuildHouseInitialAction,
 } from './Action';
 import { BuildHouse } from './Rules/BuildHouse';
 import { BuildHouseInitial } from './Rules/BuildHouseInitial';
@@ -28,7 +29,7 @@ export type Rule = (w: Result<World>) => Result<World>;
 export interface Rules {
   BuildHouse: (data: BuildHouseAction) => (w: Result<World>) => Result<World>;
   BuildHouseInitial: (
-    data: BuildHouseAction,
+    data: BuildHouseInitialAction,
   ) => (w: Result<World>) => Result<World>;
   BuildCity: (data: BuildCityAction) => (w: Result<World>) => Result<World>;
   BuildRoad: (data: BuildRoadAction) => (w: Result<World>) => Result<World>;
