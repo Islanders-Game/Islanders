@@ -5,21 +5,43 @@ export interface HexCoordinate {
   y: number;
 }
 
+export const getNeighbouringHexCoords = (
+  coord: HexCoordinate,
+): HexCoordinate[] => {
+  let result = [
+    { x: coord.x, y: coord.y - 1 },
+    { x: coord.x, y: coord.y + 1 },
+    { x: coord.x - 1, y: coord.y },
+    { x: coord.x + 1, y: coord.y },
+  ];
+  if (coord.x % 2 === 0) {
+    result = result.concat([
+      { x: coord.x - 1, y: coord.y - 1 },
+      { x: coord.x + 1, y: coord.y - 1 },
+    ]);
+  } else {
+    result = result.concat([
+      { x: coord.x - 1, y: coord.y + 1 },
+      { x: coord.x + 1, y: coord.y + 1 },
+    ]);
+  }
+  return result;
+};
+
 export const getNeighbouringMatrixCoords = (
   coord: HexCoordinate,
 ): MatrixCoordinate[] => {
   const matrixX = coord.x * 2;
   let matrixY = coord.y * 2 + 1;
   if (coord.x % 2 !== 0) matrixY++;
-
-  let result: MatrixCoordinate[] = [];
-  result.push({ x: matrixX + 3, y: matrixY });
-  result.push({ x: matrixX + 2, y: matrixY + 1 });
-  result.push({ x: matrixX + 1, y: matrixY + 1 });
-  result.push({ x: matrixX, y: matrixY });
-  result.push({ x: matrixX + 1, y: matrixY - 1 });
-  result.push({ x: matrixX + 2, y: matrixY - 1 });
-  return result;
+  return [
+    { x: matrixX + 3, y: matrixY },
+    { x: matrixX + 2, y: matrixY + 1 },
+    { x: matrixX + 1, y: matrixY + 1 },
+    { x: matrixX, y: matrixY },
+    { x: matrixX + 1, y: matrixY - 1 },
+    { x: matrixX + 2, y: matrixY - 1 },
+  ];
 };
 
 export const getMatrixCoordCorner = (

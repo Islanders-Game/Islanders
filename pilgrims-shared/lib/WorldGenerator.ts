@@ -1,5 +1,6 @@
 import { defineGrid, extendHex, HexFactory, PointLike } from 'honeycomb-grid';
 import { Tile, TileType, GeneratorDiceRollType, HarborType } from './Tile';
+import { getNeighbouringHexCoords } from './HexCoordinate';
 
 const randomTileType = (): TileType => {
   const tileProbabilities: TileType[] = [
@@ -83,18 +84,11 @@ export class WorldGenerator {
     const getHarbor = () =>
       harborProbabilites[Math.floor(Math.random() * harborProbabilites.length)];
 
-    const neighbourCoords = (coords: PointLike): PointLike[] => [
-      { x: coords.x + 1, y: coords.y },
-      { x: coords.x - 1, y: coords.y },
-      { x: coords.x, y: coords.y - 1 },
-      { x: coords.x, y: coords.y + 1 },
-    ];
-
     grid.forEach((hex) => {
       const tileType = randomTileType();
       const diceRoll = tileType === 'Desert' ? 'None' : generatorDiceRoll();
 
-      const neighbours = neighbourCoords(hex.coordinates());
+      const neighbours = getNeighbouringHexCoords(hex.coordinates());
       neighbours.forEach((c) => {
         if (!grid.get(c)) {
           map.push({
