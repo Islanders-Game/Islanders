@@ -26,8 +26,8 @@
                   <v-slider dark 
                   v-model="numberOfIslands"
                   thumb-label
-                  label="Islands"
-                  max="5"
+                  label="Landmasses"
+                  max="12"
                   min="0"
                 ></v-slider>
               </v-flex>
