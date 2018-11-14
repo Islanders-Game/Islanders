@@ -5,6 +5,7 @@ import {
   subtractResources,
   resourcesAreNonNegative,
   purchase,
+  GameStatistics,
 } from '../lib/Shared';
 
 describe('Resource subtraction', () => {
@@ -53,6 +54,7 @@ describe('Checking for purchaseability', () => {
       currentPlayer: 0,
       map: [],
       players: [p],
+      gameStatistics: new GameStatistics(),
       gameState: 'Uninitialized',
       pointsToWin: 0,
       gameRules: {
@@ -84,6 +86,7 @@ describe('Checking for purchaseability', () => {
       players: [p],
       pointsToWin: 0,
       gameState: 'Uninitialized',
+      gameStatistics: new GameStatistics(),
       gameRules: {
         gameType: 'original',
         maxCities: 0,
