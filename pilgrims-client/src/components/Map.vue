@@ -374,7 +374,7 @@ export default class Map extends Vue {
     if (redrawTiles) {
       tileContainer = new PIXI.Container();
       const map: Tile[] = !newWorld || !newWorld.map ? [] : newWorld.map;
-      const lineWidth = 24;
+      const lineWidth = 14;
       const Hex = extendHex({
         size: this.hexSize,
         orientation: 'flat',
