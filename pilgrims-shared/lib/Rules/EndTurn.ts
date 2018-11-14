@@ -1,5 +1,5 @@
 import { EndTurnAction } from '../Action';
-import { Result } from '../Result';
+import { Result } from './Result';
 import { World } from '../World';
 import { findPlayer, assignNextPlayerTurn } from './Helpers';
 

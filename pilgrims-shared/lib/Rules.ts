@@ -1,4 +1,4 @@
-import { Result } from './Result';
+import { Result } from './Rules/Result';
 import { World } from './World';
 import {
   BuildHouseAction,

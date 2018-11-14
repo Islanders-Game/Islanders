@@ -11,7 +11,7 @@ import {
 } from '../Shared';
 
 import { Tile, DiceRollType, TileType } from '../Tile';
-import { Result, fail, success, Success } from '../Result';
+import { Result, fail, success, Success } from './Result';
 import { World, GameState } from '../World';
 import { Player } from '../Player';
 import { addResources } from '../Resources';
