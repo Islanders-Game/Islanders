@@ -12,11 +12,13 @@ import {
   EndTurnAction,
   LockMapAction,
   BuildHouseInitialAction,
+  BuildRoadInitialAction,
 } from './Action';
 import { BuildHouse } from './Rules/BuildHouse';
 import { BuildHouseInitial } from './Rules/BuildHouseInitial';
 import { BuildCity } from './Rules/BuildCity';
 import { BuildRoad } from './Rules/BuildRoad';
+import { BuildRoadInitial } from './Rules/BuildRoadInitial';
 import { MoveThief } from './Rules/MoveTheif';
 import { BuyCard } from './Rules/BuyCard';
 import { PlayCard } from './Rules/PlayCard';
@@ -33,6 +35,9 @@ export interface Rules {
   ) => (w: Result<World>) => Result<World>;
   BuildCity: (data: BuildCityAction) => (w: Result<World>) => Result<World>;
   BuildRoad: (data: BuildRoadAction) => (w: Result<World>) => Result<World>;
+  BuildRoadInitial: (
+    data: BuildRoadInitialAction,
+  ) => (w: Result<World>) => Result<World>;
   MoveThief: (data: PlaceThiefAction) => (w: Result<World>) => Result<World>;
   BuyCard: (data: BuyCardAction) => (w: Result<World>) => Result<World>;
   PlayCard: (data: PlayCardAction) => (w: Result<World>) => Result<World>;
@@ -55,6 +60,7 @@ export const rules: Rules = {
   BuildHouseInitial,
   BuildCity,
   BuildRoad,
+  BuildRoadInitial,
   MoveThief,
   BuyCard,
   PlayCard,

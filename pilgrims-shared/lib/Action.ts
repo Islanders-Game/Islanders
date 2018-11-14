@@ -67,6 +67,18 @@ export class BuildRoadAction {
   }
 }
 
+export class BuildRoadInitialAction {
+  public type: 'buildRoadInitial' = 'buildRoadInitial';
+  public parameters: BuildRoadParameters;
+  constructor(
+    playerName: string,
+    start: MatrixCoordinate,
+    end: MatrixCoordinate,
+  ) {
+    this.parameters = { playerName, start, end };
+  }
+}
+
 export class PlaceThiefAction {
   public type: 'placeThief' = 'placeThief';
   public parameters: PlaceThiefParameters;
@@ -125,6 +137,7 @@ export type Action =
   | BuildHouseInitialAction
   | BuildCityAction
   | BuildRoadAction
+  | BuildRoadInitialAction
   | PlaceThiefAction
   | TradeAction
   | PlayCardAction
