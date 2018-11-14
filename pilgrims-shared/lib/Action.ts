@@ -1,6 +1,9 @@
 import { MatrixCoordinate } from './MatrixCoordinate';
 import { HexCoordinate } from './HexCoordinate';
-import { DevelopmentCard, DevelopmentCardType } from './Entities/DevelopmentCard';
+import {
+  DevelopmentCard,
+  DevelopmentCardType,
+} from './Entities/DevelopmentCard';
 import { Resources } from './Resources';
 import { TileType } from './Shared';
 
@@ -26,7 +29,7 @@ interface TradeParameters extends HasPlayerName {
 }
 interface PlayCardParameters extends HasPlayerName {
   card: DevelopmentCard;
-  chosenResources: TileType[]
+  chosenResources: TileType | [TileType, TileType];
 }
 interface BuyCardParameters extends HasPlayerName {}
 interface EndTurnParameters extends HasPlayerName {}
@@ -86,7 +89,11 @@ export class BuyCardAction {
 export class PlayCardAction {
   public type: 'playCard' = 'playCard';
   public parameters: PlayCardParameters;
-  constructor(playerName: string, card: DevelopmentCard, chosenResources: TileType[]) {
+  constructor(
+    playerName: string,
+    card: DevelopmentCard,
+    chosenResources: TileType | [TileType, TileType],
+  ) {
     this.parameters = { playerName, card, chosenResources };
   }
 }
