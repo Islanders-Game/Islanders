@@ -15,6 +15,7 @@ export function generateSprites(): { [s: string]: () => Sprite } {
     Wool: () => Sprite.fromImage(`${tilePath}${tileStyle}/wool.png`),
     Ocean: () => Sprite.fromImage(`${tilePath}${tileStyle}/ocean.png`),
     House: () => Sprite.fromImage(`./img/pieces/house.png`),
+    City: () => Sprite.fromImage(`./img/pieces/city.png`),
     WoodHarbor: () =>
       Sprite.fromImage(`${tilePath}${tileStyle}/woodharbor.png`),
     WoolHarbor: () =>
