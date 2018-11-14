@@ -15,7 +15,7 @@
         </v-flex>
       </v-layout>
       <CustomizeGame v-if="!started"/>
-      <Player v-if="started"/>
+      <Player v-else/>
     </v-layout>
     <Error></Error>
   </v-container>

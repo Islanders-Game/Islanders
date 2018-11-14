@@ -83,27 +83,11 @@ export class GameService {
     }
   }
 
-  public async applyTurn(id: string, turn: Turn) {
-    const toApply = this.mapRules(turn.actions);
-    if (toApply.tag === 'Failure') return toApply;
-    const result = await this.gameRepository.getWorld(id);
-    if (result.tag === 'Failure') return result;
-    if (result.value.gameState !== 'Started')
-      return { tag: 'Failure', reason: 'Game is not started!' };
-    const apply = toApply.value.reduce(ruleReducer, result);
-    if (apply.tag === 'Failure') return apply;
-
-    await this.gameRepository.updateGame(id, apply.value);
-    return apply;
-  }
-
   public async applyAction(id: string, action: Action): Promise<Result<World>> {
     const toApply = this.mapRules([action]);
     if (toApply.tag === 'Failure') return toApply;
     const result = await this.gameRepository.getWorld(id);
     if (result.tag === 'Failure') return result;
-    if (result.value.gameState !== 'Started' && action.type !== 'startGame')
-      return { tag: 'Failure', reason: 'Game is not started!' };
     const apply = toApply.value.reduce(ruleReducer, result);
     if (apply.tag === 'Failure') return apply;
 
@@ -119,8 +103,12 @@ export class GameService {
           return rules.BuildCity(a);
         case 'buildHouse':
           return rules.BuildHouse(a);
+        case 'buildHouseInitial':
+          return rules.BuildHouseInitial(a);
         case 'buildRoad':
           return rules.BuildRoad(a);
+        case 'buildRoadInitial':
+          return rules.BuildRoadInitial(a);
         case 'buyCard':
           return rules.BuyCard(a);
         case 'playCard':
@@ -131,6 +119,8 @@ export class GameService {
           return rules.Trade(a);
         case 'startGame':
           return rules.StartGame(a);
+        case 'lockMap':
+          return rules.LockMap(a);
         case 'endTurn':
           return rules.EndTurn(a);
         default:

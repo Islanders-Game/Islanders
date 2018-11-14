@@ -8,10 +8,8 @@ export const LockMap = (_: LockMapAction) => (
   if (w.tag === 'Failure') {
     return w;
   }
-  const players = assignInitalRessourcesToPlayers(w);
   const world: World = {
     ...w.value,
-    players,
     gameState: 'Pregame',
   };
   return success(world);
