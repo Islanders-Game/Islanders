@@ -27,11 +27,12 @@ import { GameRules } from './GameRules';
 import { GameStatistics } from './GameStatistics';
 import { Player } from './Player';
 import { Action } from './Action';
-import { Rules, purchase, Rule, ruleReducer, rules } from './Rules';
+import { Rules, Rule, ruleReducer, rules } from './Rules';
 import { ChatMessage } from './ChatMessage';
 import { SocketActions } from './SocketAction';
 import { Result, Failure, Success, success, fail } from './Result';
 import { WorldGenerator } from './WorldGenerator';
+import { purchase } from './Rules/Helpers';
 
 export {
   Action,
@@ -55,6 +56,7 @@ export {
   World,
   GameRules,
   Purchaseable,
+  purchase,
   Player,
   House,
   City,
@@ -63,7 +65,6 @@ export {
   success,
   fail,
   Rules,
-  purchase,
   Rule,
   ruleReducer,
   rules,
