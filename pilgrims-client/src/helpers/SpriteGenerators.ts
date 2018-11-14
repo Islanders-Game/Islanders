@@ -15,7 +15,18 @@ export function generateSprites(): { [s: string]: () => Sprite } {
     Wool: () => Sprite.fromImage(`${tilePath}${tileStyle}/wool.png`),
     Ocean: () => Sprite.fromImage(`${tilePath}${tileStyle}/ocean.png`),
     House: () => Sprite.fromImage(`./img/pieces/house.png`),
-    City: () => Sprite.fromImage(`./img/pieces/city.png`),
+    WoodHarbor: () =>
+      Sprite.fromImage(`${tilePath}${tileStyle}/woodharbor.png`),
+    WoolHarbor: () =>
+      Sprite.fromImage(`${tilePath}${tileStyle}/woolharbor.png`),
+    GrainHarbor: () =>
+      Sprite.fromImage(`${tilePath}${tileStyle}/grainharbor.png`),
+    ClayHarbor: () =>
+      Sprite.fromImage(`${tilePath}${tileStyle}/clayharbor.png`),
+    StoneHarbor: () =>
+      Sprite.fromImage(`${tilePath}${tileStyle}/stoneharbor.png`),
+    ThreeToOneHarbor: () =>
+      Sprite.fromImage(`${tilePath}${tileStyle}/threetooneharbor.png`),
     2: () => Sprite.fromImage(`./img/numbers/2.png`),
     3: () => Sprite.fromImage(`./img/numbers/3.png`),
     4: () => Sprite.fromImage(`./img/numbers/4.png`),

@@ -1,5 +1,5 @@
-import { defineGrid, extendHex, HexFactory, GridFactory } from 'honeycomb-grid';
-import { Tile, TileType, DiceRollType, GeneratorDiceRollType } from './Tile';
+import { defineGrid, extendHex, HexFactory, PointLike } from 'honeycomb-grid';
+import { Tile, TileType, GeneratorDiceRollType, HarborType } from './Tile';
 
 const randomTileType = (): TileType => {
   const tileProbabilities: TileType[] = [
@@ -69,15 +69,49 @@ export class WorldGenerator {
       }
     }
 
+    const harborProbabilites: HarborType[] = [
+      'WoodHarbor',
+      'WoolHarbor',
+      'GrainHarbor',
+      'ClayHarbor',
+      'StoneHarbor',
+      'ThreeToOneHarbor',
+      'ThreeToOneHarbor',
+      'ThreeToOneHarbor',
+      'ThreeToOneHarbor',
+    ];
+    const getHarbor = () =>
+      harborProbabilites[Math.floor(Math.random() * harborProbabilites.length)];
+
+    const neighbourCoords = (coords: PointLike): PointLike[] => [
+      { x: coords.x + 1, y: coords.y },
+      { x: coords.x - 1, y: coords.y },
+      { x: coords.x, y: coords.y - 1 },
+      { x: coords.x, y: coords.y + 1 },
+    ];
+
     grid.forEach((hex) => {
       const tileType = randomTileType();
       const diceRoll = tileType === 'Desert' ? 'None' : generatorDiceRoll();
+
+      const neighbours = neighbourCoords(hex.coordinates());
+      neighbours.forEach((c) => {
+        if (!grid.get(c)) {
+          map.push({
+            coord: c,
+            diceRoll: 'None',
+            type: Math.random() >= 0.5 ? 'Ocean' : getHarbor(),
+          });
+        }
+      });
+
       map.push({
         coord: { x: hex.x, y: hex.y },
         diceRoll,
         type: tileType,
       });
     });
+
     return map;
   }
 }
