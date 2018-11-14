@@ -81,7 +81,6 @@ export class GameSocket {
           if (playerName) sockets[playerName] = Disconnected;
         });
 
-        console.log(gamePlayerSockets);
         this.checkForReconnect(
           gameID,
           playerName,

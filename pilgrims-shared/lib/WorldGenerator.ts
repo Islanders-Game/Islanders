@@ -3,14 +3,27 @@ import { Tile, TileType, DiceRollType, GeneratorDiceRollType } from './Tile';
 
 const randomTileType = (): TileType => {
   const tileProbabilities: TileType[] = [
-    "Wood", "Wood", "Wood", "Wood",
-    "Wool", "Wool", "Wool", "Wool",
-    "Grain", "Grain", "Grain", "Grain", 
-    "Stone", "Stone", "Stone", 
-    "Clay", "Clay", "Clay",
-    "Desert" 
-  ]
-  const rand = Math.floor(Math.random() * tileProbabilities.length)
+    'Wood',
+    'Wood',
+    'Wood',
+    'Wood',
+    'Wool',
+    'Wool',
+    'Wool',
+    'Wool',
+    'Grain',
+    'Grain',
+    'Grain',
+    'Grain',
+    'Stone',
+    'Stone',
+    'Stone',
+    'Clay',
+    'Clay',
+    'Clay',
+    'Desert',
+  ];
+  const rand = Math.floor(Math.random() * tileProbabilities.length);
   return tileProbabilities[rand];
 };
 
@@ -25,8 +38,8 @@ const generatorDiceRoll = (): GeneratorDiceRollType => {
   if (roll > 0.26 && roll <= 0.34) return 10;
   if (roll > 0.34 && roll <= 0.45) return 5;
   if (roll > 0.45 && roll <= 0.56) return 9;
-  if (roll > 0.56 && roll <= 0.70) return 6;
-  if (roll > 0.70 && roll <= 0.84) return 8;
+  if (roll > 0.56 && roll <= 0.7) return 6;
+  if (roll > 0.7 && roll <= 0.84) return 8;
   return generatorDiceRoll();
 };
 
@@ -34,18 +47,18 @@ export class WorldGenerator {
   public generateRandomMap(radius: number | undefined): Tile[] {
     const Hex = extendHex({
       orientation: 'flat',
+      tileType: randomTileType(),
     });
     const r: number = radius !== undefined ? Number(radius) : 3;
     const Grid = defineGrid(Hex);
     const map: Tile[] = [];
-    const center = Hex({ x: 0, y: 0 });
-    Grid.hexagon({ radius: r }).forEach((hex) => {
+
+    const testConcat = Grid(Hex(-9, -1), Hex(-8, -1), Hex(-8, 0));
+    let grid = Grid.hexagon({ radius: r }).concat(testConcat);
+
+    grid.forEach((hex) => {
       let tileType = randomTileType();
       let diceRoll = generatorDiceRoll();
-      if (hex.distance(center) >= r) {
-        tileType = 'Ocean';
-        diceRoll = 'None';
-      }
       if (tileType == 'Desert') {
         diceRoll = 'None';
       }
