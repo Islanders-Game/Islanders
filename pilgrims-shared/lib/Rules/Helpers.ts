@@ -79,7 +79,8 @@ export const assignRessourcesToPlayers = (
       .filter((tile) => {
         return (
           !useDiceRoll ||
-          (tile.diceRoll === diceRoll &&
+          (w.value.gameState === 'Started' &&
+            tile.diceRoll === diceRoll &&
             !(
               w.value.thief &&
               (w.value.thief.hexCoordinate.x === tile.coord.x &&
@@ -104,17 +105,33 @@ export const assignRessourcesToPlayers = (
   return players;
 };
 
+// assign the resources that the players have houses up to
 export const assignInitalRessourcesToPlayers = (w: Success<World>) => {
-  const toAssignToAll = addResources(
-    addResources(
-      addResources(new House().cost, new House().cost),
-      new Road().cost,
-    ),
-    new Road().cost,
-  );
   const players: Player[] = w.value.players.map((pl) => {
-    pl = { resources: toAssignToAll, ...pl };
-    return pl;
+    const allTiles: TileRessource[] = w.value.map
+      .filter((tile) => {
+        return (
+          w.value.gameState === 'Pregame' &&
+          !(
+            w.value.thief &&
+            (w.value.thief.hexCoordinate.x === tile.coord.x &&
+              w.value.thief.hexCoordinate.y === tile.coord.y)
+          )
+        );
+      })
+      .map((tile) => {
+        const houseAmt = numberOfResourcesForPlayer(pl.houses, tile);
+        const cityAmt = numberOfResourcesForPlayer(pl.cities, tile);
+        return { tile, amount: houseAmt + cityAmt };
+      });
+    const resources: Resources = allTiles
+      .filter((pair) => pair.amount !== 0)
+      .reduce((state, pair) => {
+        return addResources(state, {
+          [pair.tile.type.toLowerCase()]: pair.amount,
+        });
+      }, pl.resources);
+    return { ...pl, resources };
   });
   return players;
 };

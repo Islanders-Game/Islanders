@@ -10,10 +10,7 @@ import { World } from '../../pilgrims-shared/dist/World';
 import { Tile } from '../../pilgrims-shared/dist/Tile';
 import { ChatService } from './services/ChatService';
 import { GameRepository } from './repositories/GameRepository';
-import {
-  StartGameAction,
-  LockMapAction,
-} from '../../pilgrims-shared/dist/Action';
+import { LockMapAction } from '../../pilgrims-shared/dist/Action';
 import { GamePlayerSockets, Disconnected } from './App';
 
 export class GameSocket {
@@ -54,14 +51,6 @@ export class GameSocket {
         socket.on(SocketActions.initWorld, (init: World) => {
           this.logSocketEvent(gameID, SocketActions.initWorld);
           this.gameService.initWorld(init, gameID, nsp);
-        });
-        socket.on(SocketActions.startGame, async () => {
-          this.logSocketEvent(gameID, SocketActions.startGame);
-          const start: StartGameAction = { type: 'startGame' };
-          nsp.emit(
-            SocketActions.newWorld,
-            await this.gameService.applyAction(gameID, start),
-          );
         });
         socket.on(SocketActions.lockMap, async () => {
           this.logSocketEvent(gameID, SocketActions.lockMap);

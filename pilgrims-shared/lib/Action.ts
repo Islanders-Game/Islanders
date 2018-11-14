@@ -115,10 +115,6 @@ export class PlayCardAction {
   }
 }
 
-export class StartGameAction {
-  public type: 'startGame' = 'startGame';
-}
-
 export class LockMapAction {
   public type: 'lockMap' = 'lockMap';
 }
@@ -142,6 +138,5 @@ export type Action =
   | TradeAction
   | PlayCardAction
   | BuyCardAction
-  | StartGameAction
   | LockMapAction
   | EndTurnAction;

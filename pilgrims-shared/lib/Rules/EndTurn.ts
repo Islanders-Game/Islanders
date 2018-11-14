@@ -1,7 +1,13 @@
 import { EndTurnAction } from '../Action';
 import { Result, success } from './Result';
 import { World } from '../World';
-import { findPlayer, assignNextPlayerTurn } from './Helpers';
+import {
+  findPlayer,
+  assignNextPlayerTurn,
+  assignInitalRessourcesToPlayers,
+  randomGameDiceRoll,
+} from './Helpers';
+import { GameState } from '../Shared';
 
 export const EndTurn = ({ parameters }: EndTurnAction) => (
   w: Result<World>,
@@ -19,9 +25,12 @@ const stateChanger = (r: Result<World>): Result<World> => {
   const round = Math.floor(
     r.value.gameStatistics.turns / r.value.players.length,
   );
-  let gameState = r.value.gameState;
-  if (round == 2 && gameState === 'Pregame') {
-    gameState = 'Started';
+  if (round == 2 && r.value.gameState === 'Pregame') {
+    const players = assignInitalRessourcesToPlayers(r);
+    // initial resources
+    const gameState: GameState = 'Started';
+    return success({ ...r.value, gameState, players });
+  } else {
+    return r;
   }
-  return success({ ...r.value, gameState: gameState });
 };

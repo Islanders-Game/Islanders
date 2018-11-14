@@ -117,8 +117,6 @@ export class GameService {
           return rules.MoveThief(a);
         case 'trade':
           return rules.Trade(a);
-        case 'startGame':
-          return rules.StartGame(a);
         case 'lockMap':
           return rules.LockMap(a);
         case 'endTurn':
