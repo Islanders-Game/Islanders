@@ -17,7 +17,7 @@
                   v-model="radius"
                   thumb-label
                   label="Radius"
-                  max="30"
+                  max="12"
                   min="2"
                 ></v-slider>
               </v-flex>

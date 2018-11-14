@@ -444,7 +444,7 @@ export default class Map extends Vue {
 
 <style lang="scss" scoped>
 #Map {
-  background-color: #e4e4e4;
+  background-color: #225276;
   padding: 0px;
 }
 </style>
