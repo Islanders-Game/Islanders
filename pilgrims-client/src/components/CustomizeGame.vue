@@ -22,7 +22,7 @@
                 ></v-slider>
               </v-flex>
               <v-flex xs1></v-flex>
-              <v-flex xs2>
+              <v-flex xs3>
                   <v-slider dark 
                   v-model="numberOfIslands"
                   thumb-label
