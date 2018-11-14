@@ -96,9 +96,7 @@ export const assignRessourcesToPlayers = (
     const resources: Resources = allTiles
       .filter((pair) => pair.amount !== 0)
       .reduce((state, pair) => {
-        return addResources(state, {
-          [pair.tile.type.toLowerCase()]: pair.amount,
-        });
+        return addAmountToResourceOfType(pair.amount, state, pair.tile.type);
       }, pl.resources);
     return { ...pl, resources };
   });
@@ -127,9 +125,7 @@ export const assignInitalRessourcesToPlayers = (w: Success<World>) => {
     const resources: Resources = allTiles
       .filter((pair) => pair.amount !== 0)
       .reduce((state, pair) => {
-        return addResources(state, {
-          [pair.tile.type.toLowerCase()]: pair.amount,
-        });
+        return addAmountToResourceOfType(pair.amount, state, pair.tile.type);
       }, pl.resources);
     return { ...pl, resources };
   });
@@ -433,20 +429,27 @@ export const addAmountToResourceOfType = (
   rs: Resources,
   type: TileType,
 ) => {
+  let toAdd: Resources = { wood: 0, grain: 0, stone: 0, wool: 0, clay: 0 };
   switch (type) {
     case 'Wood':
-      return addResources({ wood: rs.wood ? rs.wood + amount : amount }, rs);
+      toAdd.wood += amount;
+      break;
     case 'Wool':
-      return addResources({ wool: rs.wool ? rs.wool + amount : amount }, rs);
+      toAdd.wool += amount;
+      break;
     case 'Clay':
-      return addResources({ clay: rs.clay ? rs.clay + amount : amount }, rs);
+      toAdd.clay += amount;
+      break;
     case 'Grain':
-      return addResources({ grain: rs.grain ? rs.grain + amount : amount }, rs);
+      toAdd.grain += amount;
+      break;
     case 'Stone':
-      return addResources({ stone: rs.stone ? rs.stone + amount : amount }, rs);
+      toAdd.stone += amount;
+      break;
     default:
       return rs;
   }
+  return addResources(toAdd, rs);
 };
 
 export const deleteAllResourcesOfType = (type: TileType, rs: Resources) => {

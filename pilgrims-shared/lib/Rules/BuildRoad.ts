@@ -5,6 +5,7 @@ import { findPlayer, placeRoad } from './Helpers';
 export const BuildRoad = ({ parameters }: BuildRoadAction) => (
   w: Result<World>,
 ) => {
+  debugger;
   const playerExists = findPlayer(parameters.playerName)(w);
   const purchased = purchase(new Road().cost)(parameters.playerName)(
     playerExists,
