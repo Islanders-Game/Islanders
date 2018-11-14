@@ -1,6 +1,7 @@
 import { defineGrid, extendHex, HexFactory, PointLike } from 'honeycomb-grid';
 import { Tile, TileType, GeneratorDiceRollType, HarborType } from './Tile';
 import { getNeighbouringHexCoords } from './HexCoordinate';
+import { HexCoordinate } from './Shared';
 
 const randomTileType = (): TileType => {
   const tileProbabilities: TileType[] = [
@@ -91,11 +92,20 @@ export class WorldGenerator {
       const neighbours = getNeighbouringHexCoords(hex.coordinates());
       neighbours.forEach((c) => {
         if (!grid.get(c)) {
-          map.push({
-            coord: c,
-            diceRoll: 'None',
-            type: Math.random() >= 0.5 ? 'Ocean' : getHarbor(),
-          });
+          const neighboursNeighbour = getNeighbouringHexCoords(c);
+          if (neighboursNeighbour.some((hc) => coordinateIsHarbor(hc, map))) {
+            map.push({
+              coord: c,
+              diceRoll: 'None',
+              type: 'Ocean',
+            });
+          } else {
+            map.push({
+              coord: c,
+              diceRoll: 'None',
+              type: getHarbor(),
+            });
+          }
         }
       });
 
@@ -109,6 +119,19 @@ export class WorldGenerator {
     return map;
   }
 }
+
+const coordinateIsHarbor = (hc: HexCoordinate, map: Tile[]) => {
+  const tile = map.find((h) => h.coord.x == hc.x && h.coord.y == hc.y);
+  return (
+    tile !== undefined &&
+    (tile.type === 'ClayHarbor' ||
+      tile.type === 'GrainHarbor' ||
+      tile.type === 'StoneHarbor' ||
+      tile.type === 'ThreeToOneHarbor' ||
+      tile.type === 'WoodHarbor' ||
+      tile.type === 'WoolHarbor')
+  );
+};
 
 const generateIslandCenter = (
   r: number,
