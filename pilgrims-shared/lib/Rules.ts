@@ -22,7 +22,7 @@ import { BuildCity } from './Rules/BuildCity';
 import { BuildRoad } from './Rules/BuildRoad';
 import { BuildRoadInitial } from './Rules/BuildRoadInitial';
 import { MoveThief } from './Rules/MoveThief';
-import { MoveThiefDevelopmentCard } from './Rules/MoveThiefDevCard';
+import { MoveThiefDevelopmentCard } from './Rules/MoveThiefDevelopmentCard';
 import { BuyCard } from './Rules/BuyCard';
 import { PlayCard } from './Rules/PlayCard';
 import { PlayerTrade } from './Rules/PlayerTrade';
