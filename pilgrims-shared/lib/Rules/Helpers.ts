@@ -8,6 +8,7 @@ import {
   MatrixCoordinate,
   neighbouringMatrixCoords,
   City,
+  HexCoordinate,
 } from '../Shared';
 
 import { Tile, DiceRollType, TileType, HarborType } from '../Tile';
@@ -609,4 +610,31 @@ export const bankTrade = (start: MatrixCoordinate, end: MatrixCoordinate) => (
     pl.name === playerName ? { ...pl, roads } : pl,
   );
   return success({ ...r.value, players });
+};
+
+export const diceRollWasSeven = (r: Result<World>) => {
+  if (r.tag == 'Failure') {
+    return r;
+  }
+  if (r.value.currentDie == 7) {
+    return r;
+  }
+  return fail('You cannot move the Thief if you have not rolled a 7!');
+};
+
+export const moveThief = (coords: HexCoordinate) => (r: Result<World>) => {
+  if (r.tag == 'Failure') {
+    return r;
+  }
+  return success({ thief: { hexCoordinate: coords }, ...r.value });
+};
+
+export const developmentCardHasNotBeenPlayed = (
+  developmentCard: DevelopmentCard,
+) => (r: Result<World>) => {
+  if (developmentCard.played) {
+    return fail('This card has already been played!');
+  }
+
+  return r;
 };

@@ -10,6 +10,7 @@ export type DevelopmentCardType =
 
 export class DevelopmentCard implements Purchaseable {
   public type: DevelopmentCardType = 'None';
+  public played: boolean = false;
   public cost = {
     grain: 1,
     stone: 1,
@@ -54,3 +55,7 @@ export class DevelopmentCard implements Purchaseable {
     return cardProbabilities[rand];
   };
 }
+
+export const played = (devCard: DevelopmentCard) => {
+  return { ...devCard, played: false };
+};
