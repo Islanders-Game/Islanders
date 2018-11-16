@@ -26,11 +26,13 @@ interface PlayerTradeParameters extends HasPlayerName {
   resources: Resources;
 }
 interface BankTradeParameters extends HasPlayerName {
-  resources: Resources;
+  transfer: Resources;
+  receive: Resources;
 }
 interface HarborTradeParameters extends HasPlayerName {
   harborType: HarborType;
-  resources: Resources;
+  transfer: Resources;
+  receive: Resources;
 }
 interface PlayCardParameters extends HasPlayerName {
   card: DevelopmentCard;
@@ -106,8 +108,8 @@ export class PlayerTradeAction {
 export class BankTradeAction {
   public type: 'bankTrade' = 'bankTrade';
   public parameters: BankTradeParameters;
-  constructor(playerName: string, resources: Resources) {
-    this.parameters = { playerName, resources };
+  constructor(playerName: string, transfer: Resources, receive: Resources) {
+    this.parameters = { playerName, transfer, receive };
   }
 }
 
@@ -117,9 +119,10 @@ export class HarborTradeAction {
   constructor(
     playerName: string,
     harborType: HarborType,
-    resources: Resources,
+    transfer: Resources,
+    receive: Resources,
   ) {
-    this.parameters = { playerName, harborType, resources };
+    this.parameters = { playerName, harborType, transfer, receive };
   }
 }
 
