@@ -436,16 +436,27 @@ export const playCard = (
     return r;
   }
 
+  //Nasty... Couldn't see any other way.
+  //Clone existing card array, modify card played state.
+  const newCards = (r.value.players
+    .find((p) => p.name === playerName)!
+    .devCards.slice(0)
+    .find((c) => c.type == card.type && !c.played)!.played = true);
+
   if (card.type === 'Victory Point') {
     const players = r.value.players.map((pl) =>
-      pl.name === playerName ? { ...pl, points: pl.points + 1 } : pl,
+      pl.name === playerName
+        ? { ...pl, points: pl.points + 1, devCards: newCards }
+        : pl,
     );
     return success({ players, ...r.value });
   }
 
   if (card.type === 'Knight') {
     const players = r.value.players.map((pl) =>
-      pl.name === playerName ? { ...pl, knights: pl.knights + 1 } : pl,
+      pl.name === playerName
+        ? { ...pl, knights: pl.knights + 1, devCards: newCards }
+        : pl,
     );
     return success({ players, ...r.value });
   }
@@ -459,7 +470,9 @@ export const playCard = (
       roadCost,
     );
     const players = r.value.players.map((pl) =>
-      pl.name === playerName ? { ...pl, resources: withTwoExtraRoads } : pl,
+      pl.name === playerName
+        ? { ...pl, resources: withTwoExtraRoads, devCards: newCards }
+        : pl,
     );
     return success({ players, ...r.value });
   }
@@ -471,8 +484,11 @@ export const playCard = (
     const rr = addAmountToResourceOfType(1, resources, chosen[0]);
     const rrr = addAmountToResourceOfType(1, rr, chosen[1]);
     const players = r.value.players.map((pl) =>
-      pl.name === playerName ? { ...pl, resources: rrr } : pl,
+      pl.name === playerName
+        ? { ...pl, resources: rrr, devCards: newCards }
+        : pl,
     );
+
     return success({ players, ...r.value });
   }
 
