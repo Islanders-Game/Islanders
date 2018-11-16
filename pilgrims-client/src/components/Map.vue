@@ -47,6 +47,7 @@ export default class Map extends Vue {
   private hexSize: number = 200;
   private tileHeight: number = 348;
   private tileWidth: number = 400;
+  private lineWidth: number = 14;
   private app: Application;
   private viewport: Viewport;
   private tileGraphics: Graphics = new Graphics();
@@ -239,7 +240,7 @@ export default class Map extends Vue {
     this.cursorGraphics.clear();
     this.cursorGraphics.removeChildren();
     if (closestPoints[0].index !== -1 && closestPoints[1].index !== -1) {
-      this.cursorGraphics.lineStyle(30, 0xffff00);
+      this.cursorGraphics.lineStyle(this.lineWidth, this.player.color);
       this.cursorGraphics.moveTo(
         closestPoints[0].point.x,
         closestPoints[0].point.y,
@@ -333,7 +334,7 @@ export default class Map extends Vue {
     const color = p.color;
     const roadGraphics = new Graphics();
     p.roads.forEach((r) => {
-      roadGraphics.lineStyle(24, color);
+      roadGraphics.lineStyle(this.lineWidth, color);
       const start = matrixCoordToWorldCoord(
         r.start,
         this.grid.Hex().width(),
@@ -391,7 +392,6 @@ export default class Map extends Vue {
     if (redrawTiles) {
       tileContainer = new PIXI.Container();
       const map: Tile[] = !newWorld || !newWorld.map ? [] : newWorld.map;
-      const lineWidth = 14;
       const Hex = extendHex({
         size: this.hexSize,
         orientation: 'flat',
@@ -413,7 +413,7 @@ export default class Map extends Vue {
           this.tileHeight,
           tile,
           firstCorner,
-          lineWidth,
+          this.lineWidth,
         );
 
         tileContainer.addChild(tileSprite);
@@ -430,7 +430,7 @@ export default class Map extends Vue {
           }
         }
         // Hex lines
-        this.lineGraphics.lineStyle(lineWidth, 0xffffff);
+        this.lineGraphics.lineStyle(this.lineWidth, 0xffffff);
         this.lineGraphics.moveTo(firstCorner.x, firstCorner.y);
         otherCorners.forEach(({ x, y }) => this.lineGraphics.lineTo(x, y));
         this.lineGraphics.lineTo(firstCorner.x, firstCorner.y);
