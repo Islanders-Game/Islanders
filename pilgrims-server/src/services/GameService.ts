@@ -113,8 +113,10 @@ export class GameService {
           return rules.BuyCard(a);
         case 'playCard':
           return rules.PlayCard(a);
-        case 'placeThief':
+        case 'moveThief':
           return rules.MoveThief(a);
+        case 'moveThiefDevelopmentCard':
+          return rules.MoveThiefDevelopmentCard(a);
         case 'playerTrade':
           return rules.PlayerTrade(a);
         case 'bankTrade':
