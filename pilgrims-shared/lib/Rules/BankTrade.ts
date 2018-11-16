@@ -1,7 +1,7 @@
-import { TradeAction } from '../Action';
+import { BankTradeAction } from '../Action';
 import { Result, World } from '../Shared';
 
-export const Trade = ({ parameters }: TradeAction) => (
+export const BankTrade = ({ parameters }: BankTradeAction) => (
   w: Result<World>,
 ): Result<World> => {
   // todo

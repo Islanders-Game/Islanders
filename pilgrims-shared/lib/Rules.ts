@@ -7,7 +7,9 @@ import {
   PlaceThiefAction,
   BuyCardAction,
   PlayCardAction,
-  TradeAction,
+  PlayerTradeAction,
+  BankTradeAction,
+  HarborTradeAction,
   EndTurnAction,
   LockMapAction,
   BuildHouseInitialAction,
@@ -21,7 +23,9 @@ import { BuildRoadInitial } from './Rules/BuildRoadInitial';
 import { MoveThief } from './Rules/MoveTheif';
 import { BuyCard } from './Rules/BuyCard';
 import { PlayCard } from './Rules/PlayCard';
-import { Trade } from './Rules/Trade';
+import { PlayerTrade } from './Rules/PlayerTrade';
+import { BankTrade } from './Rules/BankTrade';
+import { HarborTrade } from './Rules/HarborTrade';
 import { LockMap } from './Rules/LockMap';
 import { EndTurn } from './Rules/EndTurn';
 
@@ -39,7 +43,9 @@ export interface Rules {
   MoveThief: (data: PlaceThiefAction) => (w: Result<World>) => Result<World>;
   BuyCard: (data: BuyCardAction) => (w: Result<World>) => Result<World>;
   PlayCard: (data: PlayCardAction) => (w: Result<World>) => Result<World>;
-  Trade: (data: TradeAction) => (w: Result<World>) => Result<World>;
+  PlayerTrade: (data: PlayerTradeAction) => (w: Result<World>) => Result<World>;
+  BankTrade: (data: BankTradeAction) => (w: Result<World>) => Result<World>;
+  HarborTrade: (data: HarborTradeAction) => (w: Result<World>) => Result<World>;
   LockMap: (data: LockMapAction) => (w: Result<World>) => Result<World>;
   EndTurn: (data: EndTurnAction) => (w: Result<World>) => Result<World>;
 }
@@ -61,7 +67,9 @@ export const rules: Rules = {
   MoveThief,
   BuyCard,
   PlayCard,
-  Trade,
+  PlayerTrade,
+  BankTrade,
+  HarborTrade,
   LockMap,
   EndTurn,
 };

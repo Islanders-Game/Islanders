@@ -3,6 +3,7 @@ import { HexCoordinate } from './HexCoordinate';
 import { DevelopmentCard } from './Entities/DevelopmentCard';
 import { Resources } from './Resources';
 import { TileType } from './Shared';
+import { HarborType } from './Tile';
 
 interface HasPlayerName {
   playerName: string;
@@ -20,8 +21,15 @@ interface BuildRoadParameters extends HasPlayerName {
 interface PlaceThiefParameters extends HasPlayerName {
   coordinates: HexCoordinate;
 }
-interface TradeParameters extends HasPlayerName {
+interface PlayerTradeParameters extends HasPlayerName {
   otherPlayerID: string;
+  resources: Resources;
+}
+interface BankTradeParameters extends HasPlayerName {
+  resources: Resources;
+}
+interface HarborTradeParameters extends HasPlayerName {
+  harborType: HarborType;
   resources: Resources;
 }
 interface PlayCardParameters extends HasPlayerName {
@@ -87,11 +95,31 @@ export class PlaceThiefAction {
   }
 }
 
-export class TradeAction {
-  public type: 'trade' = 'trade';
-  public parameters: TradeParameters;
+export class PlayerTradeAction {
+  public type: 'playerTrade' = 'playerTrade';
+  public parameters: PlayerTradeParameters;
   constructor(playerName: string, otherPlayerID: string, resources: Resources) {
     this.parameters = { playerName, otherPlayerID, resources };
+  }
+}
+
+export class BankTradeAction {
+  public type: 'bankTrade' = 'bankTrade';
+  public parameters: BankTradeParameters;
+  constructor(playerName: string, resources: Resources) {
+    this.parameters = { playerName, resources };
+  }
+}
+
+export class HarborTradeAction {
+  public type: 'harborTrade' = 'harborTrade';
+  public parameters: HarborTradeParameters;
+  constructor(
+    playerName: string,
+    harborType: HarborType,
+    resources: Resources,
+  ) {
+    this.parameters = { playerName, harborType, resources };
   }
 }
 
@@ -135,7 +163,9 @@ export type Action =
   | BuildRoadAction
   | BuildRoadInitialAction
   | PlaceThiefAction
-  | TradeAction
+  | PlayerTradeAction
+  | BankTradeAction
+  | HarborTradeAction
   | PlayCardAction
   | BuyCardAction
   | LockMapAction
