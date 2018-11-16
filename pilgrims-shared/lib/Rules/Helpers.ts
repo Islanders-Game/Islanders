@@ -10,7 +10,7 @@ import {
   City,
 } from '../Shared';
 
-import { Tile, DiceRollType, TileType } from '../Tile';
+import { Tile, DiceRollType, TileType, HarborType } from '../Tile';
 import { Result, fail, success, Success } from './Result';
 import { World, GameState } from '../World';
 import { Player } from '../Player';
@@ -174,6 +174,102 @@ export const findPlayer = (name: string) => (
     return fail('It is not your turn!');
   }
   return success(r.value);
+};
+
+export const hasResources = (check: Resources) => (
+  r: Result<World>,
+): Result<World> => {
+  if (r.tag === 'Failure') {
+    return r;
+  }
+  const player = r.value.players[r.value.currentPlayer];
+  if (player.name !== name) {
+    return fail('It is not your turn!');
+  }
+
+  const has = resourcesAreNonNegative(
+    subtractResources(player.resources, check),
+  );
+
+  if (!has) return fail('You do not have the resources for this!');
+  return success(r.value);
+};
+
+export const resourcesMatchHarbor = (
+  check: Resources,
+  harborType: HarborType,
+) => (r: Result<World>): Result<World> => {
+  if (r.tag === 'Failure') {
+    return r;
+  }
+
+  const error = fail('The given resources do not match the harbor!');
+  switch (harborType) {
+    case 'ClayHarbor':
+      return check.clay >= 2 ? r : error;
+    case 'GrainHarbor':
+      return check.grain >= 2 ? r : error;
+    case 'StoneHarbor':
+      return check.grain >= 2 ? r : error;
+    case 'WoodHarbor':
+      return check.grain >= 2 ? r : error;
+    case 'WoolHarbor':
+      return check.grain >= 2 ? r : error;
+    case 'ThreeToOneHarbor':
+      return check.clay >= 3 ||
+        check.grain >= 3 ||
+        check.stone >= 3 ||
+        check.wood >= 3 ||
+        check.wool >= 3
+        ? r
+        : error;
+  }
+};
+
+export const playerHasHarbor = (playerName: string, harborType: HarborType) => (
+  r: Result<World>,
+): Result<World> => {
+  if (r.tag === 'Failure') {
+    return r;
+  }
+  const player = r.value.players[r.value.currentPlayer];
+  const tiles = r.value.map;
+
+  const hasHarbor = player.houses.some((h) => {
+    const hexes = neighbouringHexCoords(h.position);
+    return hexes.some(
+      (h) =>
+        tiles.find((t) => t.coord.x == h.x && t.coord.y == h.y)!.type ==
+        harborType,
+    );
+  });
+
+  if (!hasHarbor)
+    return fail('You do not have a house on a harbor for this trade!');
+  return r;
+};
+
+export const transferResources = (
+  playerName: string,
+  remove: Resources,
+  assign: Resources,
+) => (r: Result<World>): Result<World> => {
+  if (r.tag === 'Failure') {
+    return r;
+  }
+  const player = r.value.players[r.value.currentPlayer];
+  if (player.name !== name) {
+    return fail('It is not your turn!');
+  }
+
+  const subtracted = subtractResources(player.resources, remove);
+  const transferred = addResources(subtracted, assign);
+
+  const players = r.value.players.map((pl) =>
+    pl.name === playerName ? { ...pl, resources: transferred } : pl,
+  );
+
+  return success({ ...r.value, players });
 };
 
 export const placeHouseInital = (coord: MatrixCoordinate) => (
@@ -467,4 +563,50 @@ export const deleteAllResourcesOfType = (type: TileType, rs: Resources) => {
     default:
       return rs;
   }
+};
+
+export const bankTrade = (start: MatrixCoordinate, end: MatrixCoordinate) => (
+  playerName: string,
+) => (r: Result<World>) => {
+  if (r.tag === 'Failure') {
+    return r;
+  }
+  const player = r.value.players.find((pl) => pl.name === playerName)!;
+
+  const allPlayerRoads = r.value.players.reduce(
+    (acc, p) => acc.concat(p.roads),
+    [] as Road[],
+  );
+  const noExistingRoad = !allPlayerRoads.some(
+    (ro) =>
+      (ro.start.x === start.x &&
+        ro.start.y === start.y &&
+        ro.end.x === end.x &&
+        ro.end.y === end.y) ||
+      (ro.start.x === end.x &&
+        ro.start.y === end.y &&
+        ro.end.x === start.x &&
+        ro.end.y === start.y),
+  );
+  const houseAtOneEnd = player.houses.some(
+    (h) =>
+      (h.position.x === start.x && h.position.y === start.y) ||
+      (h.position.x === end.x && h.position.y === end.y),
+  );
+  const roadAtOneEnd = player.roads.some(
+    (h) =>
+      (h.start.x === end.x && h.start.y === end.y) ||
+      (h.end.x === start.x && h.end.y === start.y) ||
+      (h.start.x === start.x && h.start.y === start.y) ||
+      (h.end.x === end.x && h.end.y === end.y),
+  );
+  const canPlace = noExistingRoad && (houseAtOneEnd || roadAtOneEnd);
+  if (!canPlace) {
+    return fail(`You can't place a road here!`);
+  }
+  const roads = player.roads.concat([new Road(start, end)]);
+  const players = r.value.players.map((pl) =>
+    pl.name === playerName ? { ...pl, roads } : pl,
+  );
+  return success({ ...r.value, players });
 };

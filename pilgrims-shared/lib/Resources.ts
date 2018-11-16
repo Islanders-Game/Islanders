@@ -10,7 +10,7 @@ export interface Resources {
 export const subtractResources = (
   resources: Resources,
   toSubtract: Resources,
-) => {
+): Resources => {
   return {
     clay: resources.clay - toSubtract.clay,
     grain: resources.grain - toSubtract.grain,
@@ -20,7 +20,10 @@ export const subtractResources = (
   };
 };
 
-export const addResources = (resources: Resources, toAdd: Resources) => {
+export const addResources = (
+  resources: Resources,
+  toAdd: Resources,
+): Resources => {
   return {
     clay: resources.clay + toAdd.clay,
     grain: resources.grain + toAdd.grain,
