@@ -26,7 +26,7 @@ interface MoveThiefDevCardParameters extends HasPlayerName {
   playedCard: DevelopmentCard;
 }
 interface PlayerTradeParameters extends HasPlayerName {
-  otherPlayerID: string;
+  otherPlayerName: string;
   resources: Resources;
 }
 interface BankTradeParameters extends HasPlayerName {

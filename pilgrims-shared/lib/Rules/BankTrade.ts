@@ -6,7 +6,9 @@ export const BankTrade = ({ parameters }: BankTradeAction) => (
   w: Result<World>,
 ): Result<World> => {
   const playerExists = findPlayer(parameters.playerName)(w);
-  const has = hasResources(parameters.transfer)(playerExists);
+  const has = hasResources(parameters.playerName, parameters.transfer)(
+    playerExists,
+  );
   return transferResources(
     parameters.playerName,
     parameters.transfer,

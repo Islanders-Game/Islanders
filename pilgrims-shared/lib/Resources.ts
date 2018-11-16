@@ -42,3 +42,5 @@ export const resourcesAreNonNegative = (resources: Resources) => {
     resources.stone >= 0
   );
 };
+
+export const empty = { clay: 0, grain: 0, stone: 0, wood: 0, wool: 0 };
