@@ -115,8 +115,12 @@ export class GameService {
           return rules.PlayCard(a);
         case 'placeThief':
           return rules.MoveThief(a);
-        case 'trade':
-          return rules.Trade(a);
+        case 'playerTrade':
+          return rules.PlayerTrade(a);
+        case 'bankTrade':
+          return rules.BankTrade(a);
+        case 'harborTrade':
+          return rules.HarborTrade(a);
         case 'lockMap':
           return rules.LockMap(a);
         case 'endTurn':
