@@ -27,8 +27,4 @@ export default class Error extends Vue {
 }
 </script>
 <style lang="scss" scoped>
-#error {
-  position: absolute;
-  top: 2%;
-}
 </style>

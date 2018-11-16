@@ -2,12 +2,15 @@
   <v-container fluid id="Game">
     <v-layout column fill-height>
       <v-layout row class="main-area">
-        <p id=gameID>
-          <span v-if="gameID">Tell your friends to join this game at: <b>{{gameID}}</b></span>
-          <span v-if="currentPlayer" class="pad">Current player: <b>{{currentPlayer.name}}</b></span>
-          <span v-if="currentDie" class="pad">Current die: <b>{{currentDie.toString()}}</b></span>
-        </p>
-        <v-flex xs9>
+        <v-flex xs9 @mousemove="mouseOver">
+          <v-snackbar style="text-align: left"
+            v-model="showGameInfo"
+            :timeout="5000"
+            :top="'top'">
+          <small v-if="gameID">Tell your friends to join this game at: <b>{{gameID}}</b></small>
+          <small v-if="currentPlayer" class="pad">Current player:<b>{{currentPlayer.name}}</b></small>
+          <small v-if="currentDie" class="pad">Current die: <b>{{currentDie.toString()}}</b></small>
+          </v-snackbar>
           <Map/>
         </v-flex>
         <v-flex xs3>
@@ -39,6 +42,8 @@ import Error from './Error.vue';
   },
 })
 export default class Game extends Vue {
+  public showGameInfo = false;
+
   get started() {
     return this.$store.getters['game/getIsGameStarted'];
   }
@@ -50,6 +55,14 @@ export default class Game extends Vue {
   }
   get currentDie() {
     return this.$store.getters['game/getCurrentDie'];
+  }
+
+  public mouseOver(e: MouseEvent) {
+    if (e.offsetY <= 70) {
+      if (e) this.showGameInfo = true;
+    } else {
+      this.showGameInfo = false;
+    }
   }
 }
 </script>
@@ -67,6 +80,7 @@ export default class Game extends Vue {
   padding-left: 6px;
   font-size: 12px;
 }
+
 .pad {
   padding: 0px 10px;
 }

@@ -88,6 +88,9 @@ const mutations: MutationTree<State> = {
   setError(state: State, errorMessage: string) {
     state.error = errorMessage;
   },
+  setPointsToWin(state: State, points: number) {
+    state.world.pointsToWin = points;
+  },
 };
 
 // Async methods

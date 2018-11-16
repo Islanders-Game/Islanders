@@ -22,6 +22,11 @@ const stateChanger = (r: Result<World>): Result<World> => {
   if (r.tag === 'Failure') {
     return r;
   }
+
+  if (r.value.players.some((p) => p.points >= r.value.pointsToWin)) {
+    return success({ gameState: 'Finished', ...r.value });
+  }
+
   const round = Math.floor(
     r.value.gameStatistics.turns / r.value.players.length,
   );
