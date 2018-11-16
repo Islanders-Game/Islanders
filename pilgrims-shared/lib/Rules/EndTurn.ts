@@ -15,8 +15,8 @@ export const EndTurn = ({ parameters }: EndTurnAction) => (
   const playerEnsuredWorld = findPlayer(parameters.playerName)(w);
   const playerAssigned = assignNextPlayerTurn(playerEnsuredWorld);
   const stateChanged = stateChanger(playerAssigned);
-
-  return stateChanged;
+  const victory = checkVictory(parameters.playerName)(stateChanged);
+  return victory;
 };
 
 const checkVictory = (playerName: string) => (r: Result<World>) => {
