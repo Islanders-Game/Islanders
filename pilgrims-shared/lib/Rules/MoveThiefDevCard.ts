@@ -7,9 +7,9 @@ import {
   moveThief,
 } from './Helpers';
 
-export const MoveThiefDevCard = ({ parameters }: MoveThiefDevCardAction) => (
-  w: Result<World>,
-): Result<World> => {
+export const MoveThiefDevelopmentCard = ({
+  parameters,
+}: MoveThiefDevCardAction) => (w: Result<World>): Result<World> => {
   if ((w.tag = 'Failure')) {
     return w;
   }

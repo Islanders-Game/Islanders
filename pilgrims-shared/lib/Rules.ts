@@ -22,7 +22,7 @@ import { BuildCity } from './Rules/BuildCity';
 import { BuildRoad } from './Rules/BuildRoad';
 import { BuildRoadInitial } from './Rules/BuildRoadInitial';
 import { MoveThief } from './Rules/MoveThief';
-import { MoveThiefDevCard } from './Rules/MoveThiefDevCard';
+import { MoveThiefDevelopmentCard } from './Rules/MoveThiefDevCard';
 import { BuyCard } from './Rules/BuyCard';
 import { PlayCard } from './Rules/PlayCard';
 import { PlayerTrade } from './Rules/PlayerTrade';
@@ -43,7 +43,7 @@ export interface Rules {
     data: BuildRoadInitialAction,
   ) => (w: Result<World>) => Result<World>;
   MoveThief: (data: MoveThiefAction) => (w: Result<World>) => Result<World>;
-  MoveThiefDevCard: (
+  MoveThiefDevelopmentCard: (
     data: MoveThiefDevCardAction,
   ) => (w: Result<World>) => Result<World>;
   BuyCard: (data: BuyCardAction) => (w: Result<World>) => Result<World>;
@@ -70,7 +70,7 @@ export const rules: Rules = {
   BuildRoad,
   BuildRoadInitial,
   MoveThief,
-  MoveThiefDevCard,
+  MoveThiefDevelopmentCard,
   BuyCard,
   PlayCard,
   PlayerTrade,

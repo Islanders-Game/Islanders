@@ -94,7 +94,7 @@ export class BuildRoadInitialAction {
 }
 
 export class MoveThiefDevCardAction {
-  public type: 'moveThiefDevCard' = 'moveThiefDevCard';
+  public type: 'moveThiefDevelopmentCard' = 'moveThiefDevelopmentCard';
   public parameters: MoveThiefDevCardParameters;
   constructor(
     playerName: string,
