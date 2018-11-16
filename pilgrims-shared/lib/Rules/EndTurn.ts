@@ -15,16 +15,28 @@ export const EndTurn = ({ parameters }: EndTurnAction) => (
   const playerEnsuredWorld = findPlayer(parameters.playerName)(w);
   const playerAssigned = assignNextPlayerTurn(playerEnsuredWorld);
   const stateChanged = stateChanger(playerAssigned);
+
   return stateChanged;
+};
+
+const checkVictory = (playerName: string) => (r: Result<World>) => {
+  if (r.tag === 'Failure') {
+    return r;
+  }
+
+  const winner = r.value.players.find(
+    (p) => p.points >= r.value.pointsToWin && p.name === playerName,
+  )!;
+  if (winner) {
+    return success({ winner, gameState: 'Finished', ...r.value });
+  }
+
+  return r;
 };
 
 const stateChanger = (r: Result<World>): Result<World> => {
   if (r.tag === 'Failure') {
     return r;
-  }
-
-  if (r.value.players.some((p) => p.points >= r.value.pointsToWin)) {
-    return success({ gameState: 'Finished', ...r.value });
   }
 
   const round = Math.floor(

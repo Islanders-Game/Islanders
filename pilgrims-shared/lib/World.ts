@@ -15,6 +15,7 @@ export interface World {
   gameState: GameState;
   gameRules: GameRules;
   pointsToWin: number;
+  winner: Player | undefined;
   gameStatistics: GameStatistics;
 }
 
