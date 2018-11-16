@@ -18,8 +18,12 @@ interface BuildRoadParameters extends HasPlayerName {
   start: MatrixCoordinate;
   end: MatrixCoordinate;
 }
-interface PlaceThiefParameters extends HasPlayerName {
+interface MoveThiefParameters extends HasPlayerName {
   coordinates: HexCoordinate;
+}
+interface MoveThiefDevCardParameters extends HasPlayerName {
+  coordinates: HexCoordinate;
+  playedCard: DevelopmentCard;
 }
 interface PlayerTradeParameters extends HasPlayerName {
   otherPlayerID: string;
@@ -89,9 +93,21 @@ export class BuildRoadInitialAction {
   }
 }
 
-export class PlaceThiefAction {
-  public type: 'placeThief' = 'placeThief';
-  public parameters: PlaceThiefParameters;
+export class MoveThiefDevCardAction {
+  public type: 'moveThiefDevCard' = 'moveThiefDevCard';
+  public parameters: MoveThiefDevCardParameters;
+  constructor(
+    playerName: string,
+    coordinates: HexCoordinate,
+    playedCard: DevelopmentCard,
+  ) {
+    this.parameters = { playerName, coordinates, playedCard };
+  }
+}
+
+export class MoveThiefAction {
+  public type: 'moveThief' = 'moveThief';
+  public parameters: MoveThiefParameters;
   constructor(playerName: string, coordinates: HexCoordinate) {
     this.parameters = { playerName, coordinates };
   }
@@ -165,7 +181,8 @@ export type Action =
   | BuildCityAction
   | BuildRoadAction
   | BuildRoadInitialAction
-  | PlaceThiefAction
+  | MoveThiefAction
+  | MoveThiefDevCardAction
   | PlayerTradeAction
   | BankTradeAction
   | HarborTradeAction

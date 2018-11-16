@@ -4,7 +4,8 @@ import {
   BuildHouseAction,
   BuildCityAction,
   BuildRoadAction,
-  PlaceThiefAction,
+  MoveThiefAction,
+  MoveThiefDevCardAction,
   BuyCardAction,
   PlayCardAction,
   PlayerTradeAction,
@@ -20,7 +21,8 @@ import { BuildHouseInitial } from './Rules/BuildHouseInitial';
 import { BuildCity } from './Rules/BuildCity';
 import { BuildRoad } from './Rules/BuildRoad';
 import { BuildRoadInitial } from './Rules/BuildRoadInitial';
-import { MoveThief } from './Rules/MoveTheif';
+import { MoveThief } from './Rules/MoveThief';
+import { MoveThiefDevCard } from './Rules/MoveThiefDevCard';
 import { BuyCard } from './Rules/BuyCard';
 import { PlayCard } from './Rules/PlayCard';
 import { PlayerTrade } from './Rules/PlayerTrade';
@@ -40,7 +42,10 @@ export interface Rules {
   BuildRoadInitial: (
     data: BuildRoadInitialAction,
   ) => (w: Result<World>) => Result<World>;
-  MoveThief: (data: PlaceThiefAction) => (w: Result<World>) => Result<World>;
+  MoveThief: (data: MoveThiefAction) => (w: Result<World>) => Result<World>;
+  MoveThiefDevCard: (
+    data: MoveThiefDevCardAction,
+  ) => (w: Result<World>) => Result<World>;
   BuyCard: (data: BuyCardAction) => (w: Result<World>) => Result<World>;
   PlayCard: (data: PlayCardAction) => (w: Result<World>) => Result<World>;
   PlayerTrade: (data: PlayerTradeAction) => (w: Result<World>) => Result<World>;
@@ -65,6 +70,7 @@ export const rules: Rules = {
   BuildRoad,
   BuildRoadInitial,
   MoveThief,
+  MoveThiefDevCard,
   BuyCard,
   PlayCard,
   PlayerTrade,
