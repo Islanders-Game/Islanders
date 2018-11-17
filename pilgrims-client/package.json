@@ -10,7 +10,6 @@
   },
   "dependencies": {
     "@babel/polyfill": "^7.0.0-rc.1",
-    "@types/pixi.js": "^4.8.3",
     "@types/socket.io-client": "^1.4.32",
     "axios": "^0.18.0",
     "honeycomb-grid": "^1.4.0",
@@ -31,6 +30,7 @@
   },
   "devDependencies": {
     "@types/jest": "^23.3.9",
+    "@types/pixi.js": "^4.8.3",
     "@vue/cli-plugin-babel": "^3.1.1",
     "@vue/cli-plugin-pwa": "^3.1.1",
     "@vue/cli-plugin-typescript": "^3.1.1",
