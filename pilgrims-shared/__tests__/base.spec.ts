@@ -7,6 +7,7 @@ import {
   purchase,
   GameStatistics,
 } from '../lib/Shared';
+import { empty } from '../lib/Resources';
 
 const clayOnlyResource = (amount: number) => {
   return { clay: amount, grain: 0, stone: 0, wood: 0, wool: 0 };
@@ -23,7 +24,6 @@ const woodOnlyResource = (amount: number) => {
 const woolOnlyResource = (amount: number) => {
   return { clay: 0, grain: 0, stone: 0, wood: 0, wool: amount };
 };
-const empty = { clay: 0, grain: 0, stone: 0, wood: 0, wool: 0 };
 
 describe('Resource subtraction', () => {
   test('Check that subtract resources can subtract wood', () => {

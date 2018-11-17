@@ -26,7 +26,7 @@ interface MoveThiefDevCardParameters extends HasPlayerName {
   playedCard: DevelopmentCard;
 }
 interface PlayerTradeParameters extends HasPlayerName {
-  otherPlayerID: string;
+  otherPlayerName: string;
   resources: Resources;
 }
 interface BankTradeParameters extends HasPlayerName {
@@ -116,8 +116,12 @@ export class MoveThiefAction {
 export class PlayerTradeAction {
   public type: 'playerTrade' = 'playerTrade';
   public parameters: PlayerTradeParameters;
-  constructor(playerName: string, otherPlayerID: string, resources: Resources) {
-    this.parameters = { playerName, otherPlayerID, resources };
+  constructor(
+    playerName: string,
+    otherPlayerName: string,
+    resources: Resources,
+  ) {
+    this.parameters = { playerName, otherPlayerName, resources };
   }
 }
 

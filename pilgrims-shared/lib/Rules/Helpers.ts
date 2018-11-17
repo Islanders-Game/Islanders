@@ -177,17 +177,13 @@ export const findPlayer = (name: string) => (
   return success(r.value);
 };
 
-export const hasResources = (check: Resources) => (
+export const hasResources = (playerName: string, check: Resources) => (
   r: Result<World>,
 ): Result<World> => {
   if (r.tag === 'Failure') {
     return r;
   }
-  const player = r.value.players[r.value.currentPlayer];
-  if (player.name !== name) {
-    return fail('It is not your turn!');
-  }
-
+  const player = r.value.players.find((p) => p.name === playerName)!;
   const has = resourcesAreNonNegative(
     subtractResources(player.resources, check),
   );

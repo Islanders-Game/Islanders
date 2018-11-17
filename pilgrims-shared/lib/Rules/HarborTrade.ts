@@ -20,7 +20,7 @@ export const HarborTrade = ({ parameters }: HarborTradeAction) => (
     parameters.transfer,
     parameters.harborType,
   )(ownsHarbor);
-  const has = hasResources(parameters.transfer)(matches);
+  const has = hasResources(parameters.playerName, parameters.transfer)(matches);
   return transferResources(
     parameters.playerName,
     parameters.transfer,
