@@ -4,6 +4,7 @@ import { State as RootState } from '../store';
 export type buildingType = 'None' | 'House' | 'City' | 'Road';
 export class State {
   public isBuilding: buildingType = 'None';
+  public isMovingThief: boolean = false;
 }
 
 // Synchrounous getters: GetterTree<local state, root state>
@@ -14,6 +15,9 @@ const getterTree: GetterTree<State, RootState> = {};
 const mutationTree: MutationTree<State> = {
   setIsBuilding(state: State, flag: buildingType) {
     state.isBuilding = flag;
+  },
+  setIsMovingThief(state: State, flag: boolean) {
+    state.isMovingThief = flag;
   },
 };
 

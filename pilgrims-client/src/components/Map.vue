@@ -1,6 +1,5 @@
 <template>
-<v-container fluid fill-height id="Map">
-</v-container>
+  <v-container fluid fill-height id="Map"></v-container>
 </template>
 
 <script lang="ts">
@@ -36,9 +35,11 @@ import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 import { buildingType } from '../store/modules/ui';
 import {
   generateSprites,
+  generateSprite,
   generateTile,
   generateTileNumber,
 } from '../helpers/SpriteGenerators';
+import { MoveThiefAction } from '../../../pilgrims-shared/lib/Action';
 
 @Component
 export default class Map extends Vue {
@@ -68,7 +69,7 @@ export default class Map extends Vue {
       that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
     });
     this.viewport.on('mousemove', this.handleMove);
-    this.viewport.on('pointerup', this.handleBuildClick);
+    this.viewport.on('pointerup', this.handleClick);
     this.viewport.on('mouseover', () => {
       window.getSelection().removeAllRanges();
     });
@@ -78,6 +79,10 @@ export default class Map extends Vue {
     return this.$store.getters['game/getPlayer'](
       this.$store.state.game.playerName,
     );
+  }
+
+  get isMovingThief(): boolean {
+    return this.$store.state.ui.isMovingThief;
   }
 
   get isBuilding(): buildingType {
@@ -162,10 +167,29 @@ export default class Map extends Vue {
     return [closestPoint, secondClosestPoint];
   }
 
-  private dispatchBuildAction(event, action: Action) {
+  private async dispatchActionClearCursor(event, action: Action) {
     this.cursorGraphics.clear();
     this.cursorGraphics.removeChildren();
-    this.$store.dispatch('game/sendAction', action);
+    await this.$store.dispatch('game/sendAction', action);
+  }
+
+  private handleClick(event) {
+    if (this.isBuilding !== 'None') {
+      this.handleBuildClick(event);
+    } else if (this.isMovingThief) {
+      this.handleThiefClick(event);
+    }
+  }
+
+  private handleThiefClick(event) {
+    const inWorld = this.viewport.toWorld(event.data.global);
+    const hexToFind = this.grid.pointToHex(inWorld);
+    const moveThiefAction = new MoveThiefAction(
+      this.$store.state.game.playerName,
+      hexToFind,
+    );
+    this.dispatchActionClearCursor(event, moveThiefAction);
+    this.$store.commit('ui/setIsMovingThief', false);
   }
 
   private handleBuildClick(event) {
@@ -186,11 +210,11 @@ export default class Map extends Vue {
               coord,
             );
 
-      this.dispatchBuildAction(event, action);
+      this.dispatchActionClearCursor(event, action);
       this.$store.commit('ui/setIsBuilding', 'None');
     }
     if (this.isBuilding === 'City') {
-      this.dispatchBuildAction(
+      this.dispatchActionClearCursor(
         event,
         new BuildCityAction(this.$store.state.game.playerName, coord),
       );
@@ -211,7 +235,7 @@ export default class Map extends Vue {
               coord2,
             );
 
-      this.dispatchBuildAction(event, action);
+      this.dispatchActionClearCursor(event, action);
       this.$store.commit('ui/setIsBuilding', 'None');
     }
   }
@@ -252,6 +276,30 @@ export default class Map extends Vue {
     }
   }
 
+  private cursorForHex(event) {
+    const inWorld = this.viewport.toWorld(event.data.global);
+    const hexToFind = this.grid.pointToHex(inWorld);
+    const hexOrigin = hexToFind.toPoint();
+    const centerOfHex = {
+      x: hexOrigin.x + hexToFind.width() / 2,
+      y: hexOrigin.y + hexToFind.height() / 2,
+    };
+    this.cursorGraphics.clear();
+    this.cursorGraphics.removeChildren();
+    if (hexToFind) {
+      this.cursorGraphics.clear();
+      this.cursorGraphics.removeChildren();
+      const piece = this.createPiece(
+        'Thief',
+        { x: 100, y: 100 },
+        this.player.color,
+        centerOfHex,
+      );
+      piece.alpha = 0.6;
+      this.cursorGraphics.addChild(piece);
+    }
+  }
+
   private handleMove(event) {
     if (this.isBuilding === 'House') {
       this.cursorForSprite(event, 'House');
@@ -263,6 +311,10 @@ export default class Map extends Vue {
     }
     if (this.isBuilding === 'Road') {
       this.cursorForRoad(event);
+      return;
+    }
+    if (this.isMovingThief) {
+      this.cursorForHex(event);
       return;
     }
   }
@@ -388,6 +440,7 @@ export default class Map extends Vue {
     const redrawPieces = compare[1];
     let tileContainer: Container;
     let pieceContainer: Container;
+    const thief = this.world.thief ? this.world.thief.hexCoordinate : undefined;
 
     if (redrawTiles) {
       tileContainer = new PIXI.Container();
@@ -417,7 +470,6 @@ export default class Map extends Vue {
         );
 
         tileContainer.addChild(tileSprite);
-
         if (newWorld.gameState === 'Started') {
           const tileNumber = generateTileNumber(
             this.tileWidth,
@@ -429,6 +481,19 @@ export default class Map extends Vue {
             tileContainer.addChild(tileNumber);
           }
         }
+
+        if (thief && thief.x === hex.x && thief.y === hex.y) {
+          const thiefSprite = generateSprite(
+            'Thief',
+            this.tileWidth + 200,
+            hex.center(),
+            hex.toPoint(),
+          );
+          if (thiefSprite) {
+            tileContainer.addChild(thiefSprite);
+          }
+        }
+
         // Hex lines
         this.lineGraphics.lineStyle(this.lineWidth, 0xffffff);
         this.lineGraphics.moveTo(firstCorner.x, firstCorner.y);

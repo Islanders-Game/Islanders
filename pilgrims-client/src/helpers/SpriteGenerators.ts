@@ -16,6 +16,7 @@ export function generateSprites(): { [s: string]: () => Sprite } {
     Ocean: () => Sprite.fromImage(`${tilePath}${tileStyle}/ocean.png`),
     House: () => Sprite.fromImage(`./img/pieces/house.png`),
     City: () => Sprite.fromImage(`./img/pieces/city.png`),
+    Thief: () => Sprite.fromImage(`./img/pieces/thief.png`),
     WoodHarbor: () =>
       Sprite.fromImage(`${tilePath}${tileStyle}/woodharbor.png`),
     WoolHarbor: () =>
@@ -55,6 +56,23 @@ export function generateTile(
   s.height = tileHeight;
   s.position.x = corner.x - tileWidth - lineWidth / 2;
   s.position.y = corner.y - tileHeight / 2;
+  return s;
+}
+
+export function generateSprite(
+  type: string,
+  tileWidth: number,
+  center,
+  origin,
+) {
+  const generator = generateSprites()[type];
+  const s = generator();
+  s.width = tileWidth / 4;
+  s.height = s.width;
+  s.anchor.x = 0.5;
+  s.anchor.y = 0.5;
+  s.position.x = center.x + origin.x;
+  s.position.y = center.y + origin.y;
   return s;
 }
 
