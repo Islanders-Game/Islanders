@@ -45,7 +45,6 @@ export default class Game extends Vue {
 
   public mouseOver(e: MouseEvent) {
     if (e.offsetY <= 70) {
-      debugger;
       this.showGameInfo = true;
     } else {
       this.showGameInfo = false;
