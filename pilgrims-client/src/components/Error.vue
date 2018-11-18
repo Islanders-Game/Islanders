@@ -1,5 +1,5 @@
 <template>
-    <v-alert id="error" dismissible :value="error" type="error" transition="scale-transition" v-model="visibility">{{error}}</v-alert> 
+    <v-snackbar id="error" left top :value="error" color="error" v-model="visibility">{{error}}</v-snackbar> 
 </template>
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';

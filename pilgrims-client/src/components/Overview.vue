@@ -59,7 +59,7 @@ import Players from './Players.vue';
 export default class Overview extends Vue {
   get currentDie() {
     const roll = this.$store.getters['game/getCurrentDie'];
-    return roll == 'None' ? undefined : roll;
+    return roll === 'None' ? undefined : roll;
   }
 }
 </script>

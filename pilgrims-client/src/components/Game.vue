@@ -1,5 +1,6 @@
 <template>
   <v-container fluid id="Game">
+    <Error></Error>
     <v-layout column fill-height>
       <v-layout row class="main-area">
         <v-flex xs9 @mousemove="mouseOver">
@@ -13,7 +14,6 @@
       <CustomizeGame v-if="!started"/>
       <Player v-else/>
     </v-layout>
-    <Error></Error>
   </v-container>
 </template>
 
