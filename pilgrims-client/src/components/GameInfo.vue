@@ -5,20 +5,18 @@
       :top="'top'">
     <small v-if="gameID">Tell your friends to join this game at: <b>{{gameID}}</b></small>
     <small v-if="currentPlayer" class="pad">Current player:<b>{{currentPlayer.name}}</b></small>
-    <small v-if="currentDie" class="pad">Current die: <b>{{currentDie.toString()}}</b></small>
+    <small v-if="currentDie" class="pad">Current die: <b>{{currentDie}}</b></small>
     </v-snackbar>
 </template>
 <script lang="ts">
 import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
-@Component
+@Component({
+  props: {
+    showGameInfo: Boolean,
+  },
+})
 export default class GameInfo extends Vue {
-  @Prop({ default: false })
-  public showGameInfo: boolean;
-
-  get started() {
-    return this.$store.getters['game/getIsGameStarted'];
-  }
   get gameID() {
     return this.$store.state.game.gameId;
   }
