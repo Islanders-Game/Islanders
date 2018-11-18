@@ -21,7 +21,7 @@
     "roboto-fontface": "*",
     "socket.io-client": "^2.1.1",
     "svg-pan-zoom": "github:ariutta/svg-pan-zoom",
-    "svg.js": "^2.6.6",
+    "svg.js": "^2.7.0",
     "vue": "^2.5.17",
     "vue-class-component": "^6.3.2",
     "vue-property-decorator": "^7.0.0",
