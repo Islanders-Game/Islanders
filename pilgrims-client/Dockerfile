@@ -16,7 +16,7 @@ WORKDIR /app/client
 
 # Install Dependencies
 COPY ./package*.json ./
-RUN npm install
+RUN yarn install
 
 # Build app
 COPY . .

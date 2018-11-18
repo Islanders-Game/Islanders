@@ -3,7 +3,7 @@ WORKDIR /app
 
 # App dependencies
 COPY package.json /app
-RUN ["npm", "install"]
+RUN ["yarn", "install"]
 
 COPY . /app
 

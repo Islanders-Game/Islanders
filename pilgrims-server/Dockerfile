@@ -8,7 +8,7 @@ COPY --from=library /app /app/pilgrims-shared
 # App dependencies
 WORKDIR /app/server
 COPY package.json ./
-RUN npm install
+RUN yarn install
 
 # Build app
 COPY . .
