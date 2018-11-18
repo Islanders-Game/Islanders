@@ -13,7 +13,7 @@ import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 
 @Component
 export default class GameInfo extends Vue {
-  @Prop
+  @Prop({ default: false })
   public showGameInfo: boolean;
 
   get started() {
