@@ -37,7 +37,7 @@ import GameInfo from './GameInfo.vue';
   },
 })
 export default class Game extends Vue {
-  public showGameInfo: Boolean;
+  public showGameInfo: boolean = true;
 
   get started() {
     return this.$store.getters['game/getIsGameStarted'];
