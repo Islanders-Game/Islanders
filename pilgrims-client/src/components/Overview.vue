@@ -32,6 +32,14 @@
           </v-tab-item>
         </v-tabs>
       </v-layout>
+      <v-layout>
+        <v-flex xs4 v-if="currentDie">
+          <h1>Last roll:</h1>
+        </v-flex>
+        <v-flex xs8>
+          <h1>{{currentDie}}</h1>
+        </v-flex>
+      </v-layout>
     </v-container>
 </template>
 
@@ -48,7 +56,12 @@ import Players from './Players.vue';
     Log,
   },
 })
-export default class Overview extends Vue {}
+export default class Overview extends Vue {
+  get currentDie() {
+    const roll = this.$store.getters['game/getCurrentDie'];
+    return roll == 'None' ? undefined : roll;
+  }
+}
 </script>
 
 <style scoped lang="scss">
@@ -59,7 +72,8 @@ export default class Overview extends Vue {}
   width: 100%;
 }
 // for some reason vuetify tabs must have their child element expanded
+// TODO: Fix this.
 .tab-item-fill-height {
-  height: 79vh;
+  height: 74vh;
 }
 </style>
