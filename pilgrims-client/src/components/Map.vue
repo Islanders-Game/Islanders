@@ -38,6 +38,7 @@ import {
   generateSprite,
   generateTile,
   generateTileNumber,
+  generateThiefTile,
 } from '../helpers/SpriteGenerators';
 import { MoveThiefAction } from '../../../pilgrims-shared/lib/Action';
 
@@ -466,7 +467,6 @@ export default class Map extends Vue {
           this.tileHeight,
           tile,
           firstCorner,
-          this.lineWidth,
         );
 
         tileContainer.addChild(tileSprite);
@@ -483,15 +483,13 @@ export default class Map extends Vue {
         }
 
         if (thief && thief.x === hex.x && thief.y === hex.y) {
-          const thiefSprite = generateSprite(
-            'Thief',
-            this.tileWidth + 200,
-            hex.center(),
-            hex.toPoint(),
+          const thiefSprite = generateThiefTile(
+            'Scorch',
+            this.tileWidth,
+            this.tileHeight,
+            firstCorner,
           );
-          if (thiefSprite) {
-            tileContainer.addChild(thiefSprite);
-          }
+          tileContainer.addChild(thiefSprite);
         }
 
         // Hex lines

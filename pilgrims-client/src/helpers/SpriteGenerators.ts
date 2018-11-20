@@ -17,6 +17,7 @@ export function generateSprites(): { [s: string]: () => Sprite } {
     House: () => Sprite.fromImage(`./img/pieces/house.png`),
     City: () => Sprite.fromImage(`./img/pieces/city.png`),
     Thief: () => Sprite.fromImage(`./img/pieces/thief.png`),
+    Scorch: () => Sprite.fromImage(`${tilePath}/shared/scorch-with-thief.png`),
     WoodHarbor: () =>
       Sprite.fromImage(`${tilePath}${tileStyle}/woodharbor.png`),
     WoolHarbor: () =>
@@ -43,18 +44,12 @@ export function generateSprites(): { [s: string]: () => Sprite } {
   return sprites;
 }
 
-export function generateTile(
-  tileWidth,
-  tileHeight,
-  tile: Tile,
-  corner,
-  lineWidth,
-) {
+export function generateTile(tileWidth, tileHeight, tile: Tile, corner) {
   const generator = generateSprites()[tile.type.toString()];
   const s = generator();
   s.width = tileWidth;
   s.height = tileHeight;
-  s.position.x = corner.x - tileWidth - lineWidth / 2;
+  s.position.x = corner.x - tileWidth;
   s.position.y = corner.y - tileHeight / 2;
   return s;
 }
@@ -73,6 +68,21 @@ export function generateSprite(
   s.anchor.y = 0.5;
   s.position.x = center.x + origin.x;
   s.position.y = center.y + origin.y;
+  return s;
+}
+
+export function generateThiefTile(
+  type: 'Scorch' | 'Thief',
+  tileWidth: number,
+  tileHeight: number,
+  corner: { x: number; y: number },
+) {
+  const generator = generateSprites()[type];
+  const s = generator();
+  s.width = tileWidth;
+  s.height = tileHeight;
+  s.position.x = corner.x - tileWidth;
+  s.position.y = corner.y - tileHeight / 2;
   return s;
 }
 
