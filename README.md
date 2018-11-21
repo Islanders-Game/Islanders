@@ -31,3 +31,5 @@ All modification on the game world are expressed in a monadic form, and will ret
 This gives us free "versioning" of the game world, gives us easy undo functionality and makes the real-time aspects of the game easier to work with and implement. 
 
 Feel free to take a look at the code and throw a PR if you are missing any features/rules (there's plenty of expansions to the game that we haven't implemented - yet)!
+
+![screenshot](doc/screenshot.png "Pilgrims")
