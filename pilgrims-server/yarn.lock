@@ -24,10 +24,10 @@
   dependencies:
     "@types/node" "*"
 
-"@types/dotenv@^4.0.3":
-  version "4.0.3"
-  resolved "https://registry.yarnpkg.com/@types/dotenv/-/dotenv-4.0.3.tgz#ebcfc40da7bc0728b705945b7db48485ec5b4b67"
-  integrity sha512-mmhpINC/HcLGQK5ikFJlLXINVvcxhlrV+ZOUJSN7/ottYl+8X4oSXzS9lBtDkmWAl96EGyGyLrNvk9zqdSH8Fw==
+"@types/dotenv@^6.1.0":
+  version "6.1.0"
+  resolved "https://registry.yarnpkg.com/@types/dotenv/-/dotenv-6.1.0.tgz#fba2bfd1f28a46eadaa049f3313ebb89bdedfc53"
+  integrity sha512-gmbNb7V1LbJQA4MmH0hVFgqY1cyKsa6RvKC1Xrq0WBnZ0JuuvXKciXx/s8dN0LVXCJd8xO6wIaSFSyUIoGph9g==
   dependencies:
     "@types/node" "*"
 
@@ -85,10 +85,10 @@
     "@types/express-serve-static-core" "*"
     "@types/mime" "*"
 
-"@types/socket.io@^1.4.39":
-  version "1.4.39"
-  resolved "https://registry.yarnpkg.com/@types/socket.io/-/socket.io-1.4.39.tgz#ae1e79f7b7692bee2a370f2aafd9d510452806d6"
-  integrity sha512-uMOtC3QsoApFQxu5ow1zVu40Y0SIb0E6NuybqhIjsAbfhV05EANXZfklM3yp+DmFAeUtRdaEz3x6vWqLhjsy/A==
+"@types/socket.io@^2.1.0":
+  version "2.1.0"
+  resolved "https://registry.yarnpkg.com/@types/socket.io/-/socket.io-2.1.0.tgz#9f374ce81e9ffc03de3596e5fd5ea34c80f6c35a"
+  integrity sha512-G91c236+S/+Xg2vR53/7ypFvbJ7l8m4GcKZ/at0zp9HpOIwiStpgwq3xSW4aRsSrejPjot0EOavispbSnIaUmg==
   dependencies:
     "@types/node" "*"
 

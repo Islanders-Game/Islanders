@@ -5848,10 +5848,10 @@ map-visit@^1.0.0:
   dependencies:
     object-visit "^1.0.0"
 
-material-design-icons-iconfont@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/material-design-icons-iconfont/-/material-design-icons-iconfont-3.0.3.tgz#154a1084047d4e27237fa7f5a37e1075ceea6df2"
-  integrity sha1-FUoQhAR9Ticjf6f1o34Qdc7qbfI=
+material-design-icons-iconfont@^4.0.2:
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/material-design-icons-iconfont/-/material-design-icons-iconfont-4.0.2.tgz#1671f6b7e9f4a58911997c4e0b964a520c059ec2"
+  integrity sha512-BYAtSuiD8EHlLD1TEzNc++KpRmfI5Wn6peBK+fsQfDBzxSbJg3SZ+ALXM+DAJ9ogSLjdmf4DG+6WGFkZABiIqA==
 
 math-random@^1.0.1:
   version "1.0.1"
@@ -9244,10 +9244,10 @@ vue-class-component@^6.2.0, vue-class-component@^6.3.2:
   resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-6.3.2.tgz#e6037e84d1df2af3bde4f455e50ca1b9eec02be6"
   integrity sha512-cH208IoM+jgZyEf/g7mnFyofwPDJTM/QvBNhYMjqGB8fCsRyTf68rH2ISw/G20tJv+5mIThQ3upKwoL4jLTr1A==
 
-vue-cli-plugin-vuetify@^0.2.1:
-  version "0.2.1"
-  resolved "https://registry.yarnpkg.com/vue-cli-plugin-vuetify/-/vue-cli-plugin-vuetify-0.2.1.tgz#fea624e5e4cf3cc2e655d469d441ec151fbb2c23"
-  integrity sha512-kYnDF8a8TmjF89mxHhBIqZPOizGLEXU3MLetw5kfLeG1NBeyejbdEGaUFy59LETvJFnBKYjN4OYFChlZhlLNLg==
+vue-cli-plugin-vuetify@^0.4.6:
+  version "0.4.6"
+  resolved "https://registry.yarnpkg.com/vue-cli-plugin-vuetify/-/vue-cli-plugin-vuetify-0.4.6.tgz#91c4534d17bc04bbd6f41eacdb6ff49be0f59f2b"
+  integrity sha512-vkai2B3XqanmscUYSioIjJkU7bzBZGl9mCuIISEZtaDy3qWEkF143UGdJ72u/rGuOytLxpV+9B+FNoV93qlnag==
 
 vue-hot-reload-api@^2.3.0:
   version "2.3.1"
@@ -9314,10 +9314,10 @@ vue@^2.5.17:
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.5.17.tgz#0f8789ad718be68ca1872629832ed533589c6ada"
   integrity sha512-mFbcWoDIJi0w0Za4emyLiW72Jae0yjANHbCVquMKijcavBGypqlF7zHRgMa5k4sesdv7hv2rB4JPdZfR+TPfhQ==
 
-vuetify@^1.3.7:
-  version "1.3.8"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-1.3.8.tgz#e56832f40e5043470e2100a1501463d5a1ca6d8e"
-  integrity sha512-MWqHEAwVQaKujNoRZBPmEcNE4cbx1nLJp+VHXp8s+umS/DSpW5kYTkvGr8SLm4w7xPlUBmTzawLE3qieYXiJAg==
+vuetify@^1.3.9:
+  version "1.3.9"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-1.3.9.tgz#19af65f7ef0c26efb1076464815d9ad9a5e4fa4f"
+  integrity sha512-6cgWRVEBkuUowrfAR9i4lVcTQtwpz9WLM5IcmsMmsmto2GLgf+bi3EfbVFi5xBF3UaV+TC1oHkZq+H/bqgyfhw==
 
 vuex@^3.0.1:
   version "3.0.1"
