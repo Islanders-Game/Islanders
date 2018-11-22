@@ -49,3 +49,17 @@
       </v-dialog>
     </div>
 </template>
+
+<script lang="ts">
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { DevelopmentCard } from '../../../pilgrims-shared/dist/Entities/DevelopmentCard';
+
+@Component
+export default class DevelopmentCardSelect extends Vue {
+  public cards = [
+    new DevelopmentCard(),
+    new DevelopmentCard(),
+    new DevelopmentCard(),
+  ];
+}
+</script>
