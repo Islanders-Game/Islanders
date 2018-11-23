@@ -121,7 +121,7 @@ export class WorldGenerator {
 }
 
 const coordinateIsHarbor = (hc: HexCoordinate, map: Tile[]) => {
-  const tile = map.find((h) => h.coord.x == hc.x && h.coord.y == hc.y);
+  const tile = map.find((h) => h.coord.x === hc.x && h.coord.y === hc.y);
   return (
     tile !== undefined &&
     (tile.type === 'ClayHarbor' ||

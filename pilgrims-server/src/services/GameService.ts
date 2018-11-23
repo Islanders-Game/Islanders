@@ -84,6 +84,7 @@ export class GameService {
   }
 
   public async applyAction(id: string, action: Action): Promise<Result<World>> {
+    console.log(`Applying action ${action.type}`);
     const toApply = this.mapRules([action]);
     if (toApply.tag === 'Failure') return toApply;
     const result = await this.gameRepository.getWorld(id);
