@@ -25,7 +25,7 @@
                         >
                           <v-layout fill-height>
                             <v-flex xs12 align-end flexbox>
-                              <span class="headline">{{card}}</span>
+                              <span class="headline">{{card.type}}</span>
                             </v-flex>
                           </v-layout>
                         </v-container>
