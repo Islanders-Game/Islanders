@@ -79,11 +79,6 @@ export default class DevelopmentCardSelect extends Vue {
 
   get cards() {
     return this.player.devCards;
-    // return [
-    //   new DevelopmentCard(),
-    //   new DevelopmentCard(),
-    //   new DevelopmentCard(),
-    // ].map((c) => (c.type = 'Monopoly'));
   }
 }
 </script>
