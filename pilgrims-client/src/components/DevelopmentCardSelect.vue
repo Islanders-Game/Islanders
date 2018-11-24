@@ -15,7 +15,6 @@
                   <v-flex v-if="cards.length === 0">You have no development cards!</v-flex>
                   <v-flex xs6
                     v-for="card in cards"
-                    :key="card.type"
                   >
                     <v-card>
                         <v-container
@@ -79,6 +78,13 @@ export default class DevelopmentCardSelect extends Vue {
 
   get cards() {
     return this.player.devCards;
+  }
+
+  public selectCard(card: DevelopmentCard) {
+    //TODO
+    // Switch over card type. If the type can be applied right away, send Action to server.
+    //If the card requires user action (e.g. selecting which resources to get from the bank),
+    // prompt user for this in UI and then send Action to server with resource parameters.
   }
 }
 </script>
