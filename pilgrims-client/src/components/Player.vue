@@ -1,5 +1,6 @@
 <template>
     <v-footer color="#393939" id="Player" height="auto">
+        <DevelopmentCardSelect></DevelopmentCardSelect>
         <v-layout row justify-space-around>
           <v-flex xs3>
             <v-layout align-center justify-start row fill-height>
@@ -63,6 +64,7 @@
               </v-menu>
               <Trade></Trade>
               <v-btn dark @click="devCard" >Buy Dev Card</v-btn>
+              <v-btn dark @click="setIsPlayingDevelopmentCard" >Play Dev Card</v-btn>
               <v-btn @click="endTurn">End Turn</v-btn>
             </v-layout>
           </v-flex>
@@ -74,6 +76,7 @@
 import { Component, Prop, Vue } from 'vue-property-decorator';
 import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 import Trade from './Trade.vue';
+import DevelopmentCardSelect from './DevelopmentCardSelect.vue';
 import {
   EndTurnAction,
   BuyCardAction,
@@ -82,6 +85,7 @@ import {
 @Component({
   components: {
     Trade,
+    DevelopmentCardSelect,
   },
 })
 export default class Player extends Vue {
@@ -102,6 +106,10 @@ export default class Player extends Vue {
 
   public setIsBuildingRoad() {
     this.$store.commit('ui/setIsBuilding', 'Road');
+  }
+
+  public setIsPlayingDevelopmentCard(value: boolean) {
+    this.$store.commit('ui/setIsPlayingDevelopmentCard', value);
   }
 
   public devCard() {
