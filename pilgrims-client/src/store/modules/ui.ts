@@ -5,6 +5,8 @@ export type buildingType = 'None' | 'House' | 'City' | 'Road';
 export class State {
   public isBuilding: buildingType = 'None';
   public isPlayingDevelopmentCard: boolean = false;
+  public isPlayingKnightCard: boolean = false;
+  public choosingResources: number = 0;
 }
 
 // Synchrounous getters: GetterTree<local state, root state>
@@ -12,6 +14,12 @@ export class State {
 const getterTree: GetterTree<State, RootState> = {
   getIsPlayingDevelopmentCard(state: State) {
     return state.isPlayingDevelopmentCard;
+  },
+  getIsPlayingKnightCard(state: State) {
+    return state.isPlayingDevelopmentCard;
+  },
+  getChoosingResources(state: State) {
+    return state.choosingResources;
   },
 };
 
@@ -22,6 +30,12 @@ const mutationTree: MutationTree<State> = {
   },
   setIsPlayingDevelopmentCard(state: State, flag: boolean) {
     state.isPlayingDevelopmentCard = flag;
+  },
+  setIsPlayingKnightCard(state: State, flag: boolean) {
+    state.isPlayingKnightCard = flag;
+  },
+  setChoosingResources(state: State, toChoose: 1 | 2) {
+    return (state.choosingResources = toChoose);
   },
 };
 

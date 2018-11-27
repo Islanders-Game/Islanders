@@ -14,6 +14,7 @@ import {
   Action,
   DiceRollType,
   GameState,
+  Resources,
 } from '../../../../pilgrims-shared/dist/Shared';
 import { Socket, State as RootState } from '../store';
 
