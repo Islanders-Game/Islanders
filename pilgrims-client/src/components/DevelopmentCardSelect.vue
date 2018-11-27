@@ -7,7 +7,7 @@
             <v-container fluid grid-list-md>
               <v-layout row wrap>
                 <v-flex v-if="cards.length === 0">You have no development cards!</v-flex>
-                <v-flex xs6 v-for="card in cards" :key="card">
+                <v-flex xs6 v-for="card in cards" :key="card.type">
                   <v-card>
                     <v-container fill-height fluid pa-2>
                       <v-layout fill-height>
@@ -36,7 +36,7 @@
           <v-card>
             <v-container fluid grid-list-md>
               <v-layout row wrap>
-                <v-flex xs6 v-for="resource in availableResources" :key="resource">
+                <v-flex xs6 v-for="resource in availableResources" :key="resource.id">
                   <v-card @click="chooseResource(resource)">
                     <v-container fill-height fluid pa-2>
                       <v-layout fill-height>
@@ -77,19 +77,22 @@ import {
   MoveThiefDevCardAction
 } from "../../../pilgrims-shared/dist/Action";
 
-type AvailableResources = "Wood" | "Stone" | "Clay" | "Grain" | "Wool";
+type AvailableResource = {
+  type: TileType;
+  id: string;
+};
 @Component
 export default class DevelopmentCardSelect extends Vue {
   private playerName: string;
   public chosingResources: 1 | 2 | 0 = 0;
-  public availableResources: AvailableResources[] = [
-    "Wood",
-    "Stone",
-    "Clay",
-    "Grain",
-    "Wool"
+  public availableResources: AvailableResource[] = [
+    { id: this.getKey(), type: "Wood" },
+    { id: this.getKey(), type: "Stone" },
+    { id: this.getKey(), type: "Clay" },
+    { id: this.getKey(), type: "Grain" },
+    { id: this.getKey(), type: "Wool" }
   ];
-  public chosenResources: AvailableResources[] = [];
+  public chosenResources: AvailableResource[] = [];
 
   constructor() {
     super();
@@ -125,23 +128,23 @@ export default class DevelopmentCardSelect extends Vue {
       case "Year of Plenty":
         this.chosingResources = 2;
         this.availableResources = [
-          "Wood",
-          "Stone",
-          "Clay",
-          "Grain",
-          "Wool",
-          "Wood",
-          "Stone",
-          "Clay",
-          "Grain",
-          "Wool"
+          { type: "Wood", id: this.getKey() },
+          { type: "Stone", id: this.getKey() },
+          { type: "Clay", id: this.getKey() },
+          { type: "Grain", id: this.getKey() },
+          { type: "Wool", id: this.getKey() },
+          { type: "Wood", id: this.getKey() },
+          { type: "Stone", id: this.getKey() },
+          { type: "Clay", id: this.getKey() },
+          { type: "Grain", id: this.getKey() },
+          { type: "Wool", id: this.getKey() }
         ];
-      case "Knight":
+      case "Knight": //TODO: Implement.
         this.$store.commit("game/isPlayingKnightCard", true);
     }
   }
 
-  public chooseResource(resource: AvailableResources) {
+  public chooseResource(resource: AvailableResource) {
     if (this.chosingResources === 1 && this.chosenResources.length <= 1) {
       this.chosenResources.pop();
       this.chosenResources.push(resource);
@@ -158,17 +161,29 @@ export default class DevelopmentCardSelect extends Vue {
     )!;
 
     if (this.chosingResources === 1) {
-      const action = new PlayCardAction(this.playerName, card, this
-        .chosenResources[0] as TileType);
+      const action = new PlayCardAction(
+        this.playerName,
+        card,
+        this.chosenResources[0].type
+      );
       this.$store.dispatch("game/sendAction", action);
     } else if (this.chosingResources === 2) {
       const mapped: [TileType, TileType] = [
-        this.chosenResources[0] as TileType,
-        this.chosenResources[1] as TileType
+        this.chosenResources[0].type,
+        this.chosenResources[1].type
       ];
       const action = new PlayCardAction(this.playerName, card, mapped);
       this.$store.dispatch("game/sendAction", action);
     }
+  }
+
+  private getKey() {
+    return (
+      "id-" +
+      Math.random()
+        .toString(36)
+        .substr(2, 16)
+    );
   }
 }
 </script>
