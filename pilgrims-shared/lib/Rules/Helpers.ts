@@ -432,27 +432,24 @@ export const playCard = (
     return r;
   }
 
-  //Nasty... Couldn't see any other way.
-  //Clone existing card array, modify card played state.
-  const newCards = (r.value.players
-    .find((p) => p.name === playerName)!
-    .devCards.slice(0)
-    .find((c) => c.type == card.type && !c.played)!.played = true);
+  //This has side effects, which is nasty... Couldn't see any other way.
+  const cards = r.value.players.find((p) => p.name === playerName)!.devCards;
+  for (let c of cards) {
+    if (c.type !== card.type || c.played) continue;
+    c.played = true;
+    break;
+  }
 
   if (card.type === 'Victory Point') {
     const players = r.value.players.map((pl) =>
-      pl.name === playerName
-        ? { ...pl, points: pl.points + 1, devCards: newCards }
-        : pl,
+      pl.name === playerName ? { points: pl.points + 1, ...pl } : pl,
     );
     return success({ players, ...r.value });
   }
 
   if (card.type === 'Knight') {
     const players = r.value.players.map((pl) =>
-      pl.name === playerName
-        ? { ...pl, knights: pl.knights + 1, devCards: newCards }
-        : pl,
+      pl.name === playerName ? { knights: pl.knights + 1, ...pl } : pl,
     );
     return success({ players, ...r.value });
   }
@@ -466,9 +463,7 @@ export const playCard = (
       roadCost,
     );
     const players = r.value.players.map((pl) =>
-      pl.name === playerName
-        ? { ...pl, resources: withTwoExtraRoads, devCards: newCards }
-        : pl,
+      pl.name === playerName ? { resources: withTwoExtraRoads, ...pl } : pl,
     );
     return success({ players, ...r.value });
   }
@@ -480,9 +475,7 @@ export const playCard = (
     const rr = addAmountToResourceOfType(1, resources, chosen[0]);
     const rrr = addAmountToResourceOfType(1, rr, chosen[1]);
     const players = r.value.players.map((pl) =>
-      pl.name === playerName
-        ? { ...pl, resources: rrr, devCards: newCards }
-        : pl,
+      pl.name === playerName ? { resources: rrr, ...pl } : pl,
     );
 
     return success({ players, ...r.value });
@@ -507,8 +500,8 @@ export const playCard = (
     );
     const players = r.value.players.map((pl) =>
       pl.name === playerName
-        ? { ...pl, resources: added }
-        : { ...pl, resources: deleteAllResourcesOfType(chosen, pl.resources) },
+        ? { resources: added, ...pl }
+        : { resources: deleteAllResourcesOfType(chosen, pl.resources), ...pl },
     );
     return success({ players, ...r.value });
   }
@@ -519,15 +512,15 @@ export const playCard = (
 export const getResourceAmountOfType = (type: TileType, rs: Resources) => {
   switch (type) {
     case 'Wood':
-      return rs.wood ? rs.wood : 0;
+      return rs.wood;
     case 'Wool':
-      return rs.wool ? rs.wool : 0;
+      return rs.wool;
     case 'Clay':
-      return rs.clay ? rs.clay : 0;
+      return rs.clay;
     case 'Grain':
-      return rs.grain ? rs.grain : 0;
+      return rs.grain;
     case 'Stone':
-      return rs.stone ? rs.stone : 0;
+      return rs.stone;
     default:
       return 0;
   }

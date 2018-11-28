@@ -121,7 +121,7 @@ export default class DevelopmentCardSelect extends Vue {
   }
 
   get cards() {
-    return this.player.devCards;
+    return this.player.devCards.filter(c => !c.played);
   }
 
   public selectCard(card: DevelopmentCard) {
