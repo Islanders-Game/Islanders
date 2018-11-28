@@ -7,7 +7,7 @@
             <v-container fluid grid-list-md>
               <v-layout row wrap>
                 <v-flex v-if="cards.length === 0">You have no development cards!</v-flex>
-                <v-flex xs6 v-for="card in cards" :key="card.type">
+                <v-flex xs6 v-for="(card, key) in cards" :key="key">
                   <v-card>
                     <v-container fill-height fluid pa-2>
                       <v-layout fill-height>
@@ -36,7 +36,7 @@
           <v-card>
             <v-container fluid grid-list-md>
               <v-layout row wrap>
-                <v-flex xs6 v-for="resource in availableResources" :key="resource.id">
+                <v-flex xs6 v-for="(resource, key) in availableResources" :key="key">
                   <v-card @click="chooseResource(resource)">
                     <v-container fill-height fluid pa-2>
                       <v-layout fill-height>
@@ -77,20 +77,17 @@ import {
   MoveThiefDevCardAction
 } from "../../../pilgrims-shared/dist/Action";
 
-type AvailableResource = {
-  type: TileType;
-  id: string;
-};
+type AvailableResource = "Wood" | "Stone" | "Clay" | "Grain" | "Wool";
 @Component
 export default class DevelopmentCardSelect extends Vue {
   private playerName: string;
   public chosingResources: 1 | 2 | 0 = 0;
   public availableResources: AvailableResource[] = [
-    { id: this.getKey(), type: "Wood" },
-    { id: this.getKey(), type: "Stone" },
-    { id: this.getKey(), type: "Clay" },
-    { id: this.getKey(), type: "Grain" },
-    { id: this.getKey(), type: "Wool" }
+    "Wood",
+    "Stone",
+    "Clay",
+    "Grain",
+    "Wool"
   ];
   public chosenResources: AvailableResource[] = [];
 
@@ -128,16 +125,16 @@ export default class DevelopmentCardSelect extends Vue {
       case "Year of Plenty":
         this.chosingResources = 2;
         this.availableResources = [
-          { type: "Wood", id: this.getKey() },
-          { type: "Stone", id: this.getKey() },
-          { type: "Clay", id: this.getKey() },
-          { type: "Grain", id: this.getKey() },
-          { type: "Wool", id: this.getKey() },
-          { type: "Wood", id: this.getKey() },
-          { type: "Stone", id: this.getKey() },
-          { type: "Clay", id: this.getKey() },
-          { type: "Grain", id: this.getKey() },
-          { type: "Wool", id: this.getKey() }
+          "Wood",
+          "Stone",
+          "Clay",
+          "Grain",
+          "Wool",
+          "Wood",
+          "Stone",
+          "Clay",
+          "Grain",
+          "Wool"
         ];
       case "Knight": //TODO: Implement.
         this.$store.commit("game/isPlayingKnightCard", true);
@@ -175,15 +172,6 @@ export default class DevelopmentCardSelect extends Vue {
       const action = new PlayCardAction(this.playerName, card, mapped);
       this.$store.dispatch("game/sendAction", action);
     }
-  }
-
-  private getKey() {
-    return (
-      "id-" +
-      Math.random()
-        .toString(36)
-        .substr(2, 16)
-    );
   }
 }
 </script>
