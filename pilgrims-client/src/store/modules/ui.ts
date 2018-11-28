@@ -11,17 +11,7 @@ export class State {
 
 // Synchrounous getters: GetterTree<local state, root state>
 // Getters should only be used if caching the result gives performance ie. dont just return state objects.
-const getterTree: GetterTree<State, RootState> = {
-  getIsPlayingDevelopmentCard(state: State) {
-    return state.isPlayingDevelopmentCard;
-  },
-  getIsPlayingKnightCard(state: State) {
-    return state.isPlayingDevelopmentCard;
-  },
-  getChoosingResources(state: State) {
-    return state.choosingResources;
-  },
-};
+const getterTree: GetterTree<State, RootState> = {};
 
 // Synchrounous setters MutationTree<local state, root state>
 const mutationTree: MutationTree<State> = {
