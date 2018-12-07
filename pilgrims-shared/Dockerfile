@@ -1,3 +1,4 @@
+ARG BRANCH_TAG=latest
 FROM node:latest
 WORKDIR /app
 
