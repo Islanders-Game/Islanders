@@ -1755,10 +1755,10 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
-honeycomb-grid@^1.4.0:
-  version "1.4.1"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.1.tgz#b8303591c8433b65f41c6c90cd6d70879acf10fb"
-  integrity sha512-NZePHRPP6y9iJKIhEHLacei62CWrbPSdDl13he62BL5PgjCAOF1R9hEI/Ysbkbz0xWxHASGP8d9rL6rZx94n2Q==
+honeycomb-grid@^1.4.2:
+  version "1.4.2"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.2.tgz#485d2df7fb7b0c73ad49e17de26169eb4c544543"
+  integrity sha512-bxevQ78zVoY0TeHEG65lG0QUqtqXKQDErpZmtPKrAUpHOzzNs6oSfeSrNC/irJF6BQE57A+3O1NTHpq84rEdNw==
   dependencies:
     axis.js "1.2.1"
 
@@ -3978,10 +3978,10 @@ typedarray@^0.0.6:
   resolved "https://registry.yarnpkg.com/typedarray/-/typedarray-0.0.6.tgz#867ac74e3864187b1d3d47d996a78ec5c8830777"
   integrity sha1-hnrHTjhkGHsdPUfZlqeOxciDB3c=
 
-typescript@^3.1.6:
-  version "3.1.6"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.1.6.tgz#b6543a83cfc8c2befb3f4c8fba6896f5b0c9be68"
-  integrity sha512-tDMYfVtvpb96msS1lDX9MEdHrW4yOuZ4Kdc4Him9oU796XldPYF/t2+uKoX0BBa0hXXwDlqYQbXY5Rzjzc5hBA==
+typescript@^3.2.2:
+  version "3.2.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.2.2.tgz#fe8101c46aa123f8353523ebdcf5730c2ae493e5"
+  integrity sha512-VCj5UiSyHBjwfYacmDuc/NOk4QQixbE+Wn7MFJuS0nRuPQbof132Pw4u53dm264O8LPc2MVsc7RJNml5szurkg==
 
 uglify-js@^3.1.4:
   version "3.4.9"
