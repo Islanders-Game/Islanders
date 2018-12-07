@@ -29,7 +29,7 @@
     "mongodb": "^3.1.9",
     "monk": "^6.0.6",
     "pilgrims-shared": "file:../pilgrims-shared",
-    "socket.io": "^2.1.1",
+    "socket.io": "^2.2.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
