@@ -20,7 +20,7 @@ node('docker&&linux') {
     }
     stage('Tests') {
         sh """
-            docker run --rm pilgrims/pilgrims-shared-${env.BRANCH_NAME}
+            docker run --rm pilgrims/pilgrims-shared:${env.BRANCH_NAME}
         """
     }
 }
