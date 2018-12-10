@@ -10,7 +10,7 @@ import {
 export const MoveThiefDevelopmentCard = ({
   parameters,
 }: MoveThiefDevCardAction) => (w: Result<World>): Result<World> => {
-  if ((w.tag = 'Failure')) {
+  if (w.tag === 'Failure') {
     return w;
   }
 

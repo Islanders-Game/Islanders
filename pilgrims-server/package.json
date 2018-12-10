@@ -21,21 +21,21 @@
   "homepage": "https://github.com/Awia00/Pilgrims#readme",
   "dependencies": {
     "@types/body-parser": "^1.17.0",
-    "@types/mongodb": "^3.1.14",
-    "@types/socket.io": "^1.4.39",
+    "@types/mongodb": "^3.1.17",
+    "@types/socket.io": "^2.1.2",
     "body-parser": "^1.18.3",
-    "dotenv": "^6.1.0",
+    "dotenv": "^6.2.0",
     "express": "^4.16.4",
     "mongodb": "^3.1.9",
     "monk": "^6.0.6",
     "pilgrims-shared": "file:../pilgrims-shared",
-    "socket.io": "^2.1.1",
+    "socket.io": "^2.2.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
-    "@types/dotenv": "^4.0.3",
+    "@types/dotenv": "^6.1.0",
     "@types/express": "^4.16.0",
     "@types/uuid": "^3.4.4",
-    "typescript": "^3.1.6"
+    "typescript": "^3.2.2"
   }
 }

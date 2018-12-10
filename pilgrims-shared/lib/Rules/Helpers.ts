@@ -631,7 +631,7 @@ export const moveThief = (coords: HexCoordinate) => (r: Result<World>) => {
   if (r.tag == 'Failure') {
     return r;
   }
-  return success({ thief: { hexCoordinate: coords }, ...r.value });
+  return success({ ...r.value, thief: { hexCoordinate: coords } });
 };
 
 export const developmentCardHasNotBeenPlayed = (

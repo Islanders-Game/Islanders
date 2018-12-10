@@ -1,4 +1,5 @@
-FROM pilgrims/pilgrims-shared as library
+ARG BRANCH_TAG=latest
+FROM pilgrims/pilgrims-shared:${BRANCH_TAG} as library
 
 FROM node:alpine
 WORKDIR /app

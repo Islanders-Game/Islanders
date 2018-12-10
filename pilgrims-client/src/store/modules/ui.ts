@@ -7,6 +7,7 @@ export class State {
   public isPlayingDevelopmentCard: boolean = false;
   public isPlayingKnightCard: boolean = false;
   public choosingResources: number = 0;
+  public isMovingThief: boolean = false;
 }
 
 // Synchrounous getters: GetterTree<local state, root state>
@@ -26,6 +27,9 @@ const mutationTree: MutationTree<State> = {
   },
   setChoosingResources(state: State, toChoose: 1 | 2) {
     return (state.choosingResources = toChoose);
+  },
+  setIsMovingThief(state: State, flag: boolean) {
+    state.isMovingThief = flag;
   },
 };
 
