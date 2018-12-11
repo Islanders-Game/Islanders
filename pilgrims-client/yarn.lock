@@ -8652,10 +8652,10 @@ supports-color@^5.1.0, supports-color@^5.3.0, supports-color@^5.4.0, supports-co
   version "3.6.0"
   resolved "https://codeload.github.com/ariutta/svg-pan-zoom/tar.gz/51cabbf6006729d40a214f79000166371e934e40"
 
-svg.js@^2.6.6:
-  version "2.7.0"
-  resolved "https://registry.yarnpkg.com/svg.js/-/svg.js-2.7.0.tgz#0821d789e85739820f0e9ef798ec971890d35d93"
-  integrity sha512-cgzGacB+bMe4HqVlev8vE+INu8WZz0EyzwsbtiN2tsZIw7W3isA3cuJQvB2/PRPCXLkHJJ3Zp4sXT5+cajfxyA==
+svg.js@^2.7.1:
+  version "2.7.1"
+  resolved "https://registry.yarnpkg.com/svg.js/-/svg.js-2.7.1.tgz#eb977ed4737001eab859949b4a398ee1bb79948d"
+  integrity sha512-ycbxpizEQktk3FYvn/8BH+6/EuWXg7ZpQREJvgacqn46gIddG24tNNe4Son6omdXCnSOaApnpZw6MPCBA1dODA==
 
 svgo@^1.0.0:
   version "1.1.1"
