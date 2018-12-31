@@ -698,10 +698,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.9.tgz#a07bfa74331471e1dc22a47eb72026843f7b95c8"
   integrity sha512-eajkMXG812/w3w4a1OcBlaTwsFPO5F7fJ/amy+tieQxEMWBlbV1JGSjkFM+zkHNf81Cad+dfIRA+IBkvmvdAeA==
 
-"@types/pixi.js@^4.8.5":
-  version "4.8.5"
-  resolved "https://registry.yarnpkg.com/@types/pixi.js/-/pixi.js-4.8.5.tgz#7da559847cd230ad0e032a183587e8ad36a128d0"
-  integrity sha512-kOaixd3W1rvD/oCjmCoNs8jhRf8Ll4wEAu8gwB/pC2joHCr5vvvegC4luIQZMmOnUP5hU7mw1AvnMZXyJl650A==
+"@types/pixi.js@^4.8.6":
+  version "4.8.6"
+  resolved "https://registry.yarnpkg.com/@types/pixi.js/-/pixi.js-4.8.6.tgz#c9bb6844cf581024f6bee07feb1538b37c0429ba"
+  integrity sha512-70PcmzoHG723nMLx7OzMM7xoH8EnJfVVQmh1WQgXGaXdU9ygq3VlsXLRt/g6Z124abKDvmzg3hfRpA8CvBp2eA==
 
 "@types/semver@^5.5.0":
   version "5.5.0"
