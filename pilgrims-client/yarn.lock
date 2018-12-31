@@ -6950,10 +6950,10 @@ pixi-gl-core@^1.1.4:
   resolved "https://registry.yarnpkg.com/pixi-gl-core/-/pixi-gl-core-1.1.4.tgz#8b4b5c433b31e419bc379dc565ce1b835a91b372"
   integrity sha1-i0tcQzsx5Bm8N53FZc4bg1qRs3I=
 
-pixi-viewport@^3.14.2:
-  version "3.14.2"
-  resolved "https://registry.yarnpkg.com/pixi-viewport/-/pixi-viewport-3.14.2.tgz#46ae40635d062b057cc58f6695b270d21e70fd34"
-  integrity sha512-ZkmZi5LttVChQj6NjQxd4EBZ6j2mbLygbP1G02xOhcgAXabrMdxt0sODNUY+v4E0DKbYEP1zO4c9wTZexPXYDw==
+pixi-viewport@^3.15.0:
+  version "3.15.0"
+  resolved "https://registry.yarnpkg.com/pixi-viewport/-/pixi-viewport-3.15.0.tgz#9a3afee68075168db040a7fe56c149f5aa5a2141"
+  integrity sha512-NfnTNInkUku6/n/jflw/ySOi9HC+5MsI/KVvR6enihQkgKo3k82T4qWgPqRHh1Tk0alKF4lz4/nUnTn2jNnJ9g==
   dependencies:
     eventemitter3 "^3.1.0"
     penner "^0.1.3"
