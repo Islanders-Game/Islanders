@@ -793,10 +793,10 @@
     jest-transform-stub "^1.0.0"
     vue-jest "^3.0.2"
 
-"@vue/cli-service@^3.2.2":
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/@vue/cli-service/-/cli-service-3.2.2.tgz#ce2d9df019eb4e0b871ee0dda21d3fd121683bbb"
-  integrity sha512-fk5DE/9HFWPfuOT0nLiidaIpJsf3GRwQtv+aNTnYiA7TIOEvbrDeQZyBlgzAFqruyaTobfy6EKl0pQM6BSlaMQ==
+"@vue/cli-service@^3.2.3":
+  version "3.2.3"
+  resolved "https://registry.yarnpkg.com/@vue/cli-service/-/cli-service-3.2.3.tgz#cdc18d8d181c1202dc4825be51be64f043a31be3"
+  integrity sha512-lRCwf8R/YCo67SAqt1MiYhJnvybedQJz1O3uWSJzv7mDPwRUp2980gzQ3wfsTt0tkUtxRcAOmD+V1co4tWOgrw==
   dependencies:
     "@intervolga/optimize-cssnano-plugin" "^1.0.5"
     "@vue/cli-overlay" "^3.2.0"
