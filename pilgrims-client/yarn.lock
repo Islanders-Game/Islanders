@@ -760,12 +760,12 @@
     "@vue/babel-preset-app" "^3.2.2"
     babel-loader "^8.0.4"
 
-"@vue/cli-plugin-pwa@^3.2.2":
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/@vue/cli-plugin-pwa/-/cli-plugin-pwa-3.2.2.tgz#ec8292d6a8d597e9ae3a4e9cf67043c92200d052"
-  integrity sha512-ockxbaeWB+nfvg0gIjWKDIo6dxyYiycBpTBHbEtST2Dxpjk1YpSte9VL3UV7e2Wxz+PMPO33iYAxTLBYDMoF8A==
+"@vue/cli-plugin-pwa@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@vue/cli-plugin-pwa/-/cli-plugin-pwa-3.3.0.tgz#7818db99d96fb711014d7f5e35f24d3f909527b7"
+  integrity sha512-UnhKeWmPe0IeNFei0eIeRvXnsTRFNRGDuqHK0M1eEX9GgCQQ4iPFK+0/wneEbsqorgx+c0rqHUL1S/Q8S7DnJg==
   dependencies:
-    "@vue/cli-shared-utils" "^3.2.2"
+    "@vue/cli-shared-utils" "^3.3.0"
     workbox-webpack-plugin "^3.6.3"
 
 "@vue/cli-plugin-typescript@^3.2.2":
@@ -849,10 +849,10 @@
     webpack-merge "^4.1.5"
     yorkie "^2.0.0"
 
-"@vue/cli-shared-utils@^3.2.2":
-  version "3.2.2"
-  resolved "https://registry.yarnpkg.com/@vue/cli-shared-utils/-/cli-shared-utils-3.2.2.tgz#ac53d391eedcf873f41a9c8398cf0da033b8c5ff"
-  integrity sha512-pkJDucxDxSnmhN3/zgyvKXDFJDx42sfAdNo02mRYPhv3u2tqJW4/GR0X1/O8p4+LUNwBgtGNmDAACYoLzv101Q==
+"@vue/cli-shared-utils@^3.2.2", "@vue/cli-shared-utils@^3.3.0":
+  version "3.3.0"
+  resolved "https://registry.yarnpkg.com/@vue/cli-shared-utils/-/cli-shared-utils-3.3.0.tgz#aba6c435bf9affb8180c43195ee85eb8d736d70f"
+  integrity sha512-V/sU1jc7/jMCAbU8uA5f4j9Yd8lTqdi3I6FEHfLG1nstwhaNi4BU3WKWOAl72NYVWFYG8VuCrYWDn75kMimtuw==
   dependencies:
     chalk "^2.4.1"
     execa "^1.0.0"
