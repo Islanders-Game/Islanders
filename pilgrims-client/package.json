@@ -26,7 +26,7 @@
     "vue-class-component": "^6.3.2",
     "vue-property-decorator": "^7.3.0",
     "vuetify": "^1.4.2",
-    "vuex": "^3.0.1"
+    "vuex": "^3.1.0"
   },
   "devDependencies": {
     "@types/jest": "^23.3.12",
