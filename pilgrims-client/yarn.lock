@@ -857,13 +857,13 @@
     webpack ">=4 < 4.29"
     workbox-webpack-plugin "^3.6.3"
 
-"@vue/cli-plugin-typescript@^3.4.0":
-  version "3.4.0"
-  resolved "https://registry.yarnpkg.com/@vue/cli-plugin-typescript/-/cli-plugin-typescript-3.4.0.tgz#a74f00a30bb253726a9d02e59fd6779853f764e8"
-  integrity sha512-VjNlHghaDEFheXg89C+RxPaYGKebst14/C2oVxHNeuzVO2SG6ac2LRJl0KM6eKKUD+QFj0/NJWrJZKmSgpHO9Q==
+"@vue/cli-plugin-typescript@^3.4.1":
+  version "3.4.1"
+  resolved "https://registry.yarnpkg.com/@vue/cli-plugin-typescript/-/cli-plugin-typescript-3.4.1.tgz#bb64ead2dc859da32555160e4680ecb252ab7152"
+  integrity sha512-OAlS4RLikwvhyFsUrwBMMPpQTSU2vp2DvES/Nk4sZcERoB5pXB6W1jk/lC51OyreBSj9jzqO6u0X3kke1xI9Dg==
   dependencies:
     "@types/webpack-env" "^1.13.6"
-    "@vue/cli-shared-utils" "^3.4.0"
+    "@vue/cli-shared-utils" "^3.4.1"
     fork-ts-checker-webpack-plugin "^0.5.2"
     globby "^9.0.0"
     ts-loader "^5.3.3"
