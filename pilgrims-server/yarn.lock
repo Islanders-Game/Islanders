@@ -412,10 +412,10 @@ has-cors@1.1.0:
   resolved "https://registry.yarnpkg.com/has-cors/-/has-cors-1.1.0.tgz#5e474793f7ea9843d1bb99c23eef49ff126fff39"
   integrity sha1-XkdHk/fqmEPRu5nCPu9J/xJv/zk=
 
-honeycomb-grid@^1.4.2:
-  version "1.4.2"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.2.tgz#485d2df7fb7b0c73ad49e17de26169eb4c544543"
-  integrity sha512-bxevQ78zVoY0TeHEG65lG0QUqtqXKQDErpZmtPKrAUpHOzzNs6oSfeSrNC/irJF6BQE57A+3O1NTHpq84rEdNw==
+honeycomb-grid@^1.4.3:
+  version "1.4.3"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.3.tgz#86c0662aa0bec3600661fa07be2f1e3941501ef7"
+  integrity sha512-XkdaBBHrvNpHTQVOoj5pWVWu7Un2QvEVXGoLGdJgKrZ4v82wMEoJV0heb76/XelOEm07jIKnE6ALa0rsu2B8lQ==
   dependencies:
     axis.js "1.2.1"
 
@@ -638,7 +638,7 @@ path-to-regexp@0.1.7:
 "pilgrims-shared@file:../pilgrims-shared":
   version "1.0.0"
   dependencies:
-    honeycomb-grid "^1.4.2"
+    honeycomb-grid "^1.4.3"
     uuid "^3.3.2"
 
 process-nextick-args@~1.0.6:
@@ -839,10 +839,10 @@ type-is@~1.6.16:
     media-typer "0.3.0"
     mime-types "~2.1.18"
 
-typescript@^3.3.3:
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.3.3.tgz#f1657fc7daa27e1a8930758ace9ae8da31403221"
-  integrity sha512-Y21Xqe54TBVp+VDSNbuDYdGw0BpoR/Q6wo/+35M8PAU0vipahnyduJWirxxdxjsAkS7hue53x2zp8gz7F05u0A==
+typescript@^3.3.3333:
+  version "3.3.3333"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.3.3333.tgz#171b2c5af66c59e9431199117a3bcadc66fdcfd6"
+  integrity sha512-JjSKsAfuHBE/fB2oZ8NxtRTk5iGcg6hkYXMnZ3Wc+b2RSqejEqTaem11mHASMnFilHrax3sLK0GDzcJrekZYLw==
 
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"
