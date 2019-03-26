@@ -7,11 +7,10 @@ import {
 } from '../../pilgrims-shared/dist/Shared';
 import { GameService } from './services/GameService';
 import { World } from '../../pilgrims-shared/dist/World';
-import { Turn } from '../../pilgrims-shared/dist/Turn';
 import { Tile } from '../../pilgrims-shared/dist/Tile';
 import { ChatService } from './services/ChatService';
 import { GameRepository } from './repositories/GameRepository';
-import { StartGameAction } from '../../pilgrims-shared/dist/Action';
+import { LockMapAction } from '../../pilgrims-shared/dist/Action';
 import { GamePlayerSockets, Disconnected } from './App';
 
 export class GameSocket {
@@ -53,12 +52,12 @@ export class GameSocket {
           this.logSocketEvent(gameID, SocketActions.initWorld);
           this.gameService.initWorld(init, gameID, nsp);
         });
-        socket.on(SocketActions.startGame, async () => {
-          this.logSocketEvent(gameID, SocketActions.startGame);
-          const start: StartGameAction = { type: 'startGame' };
+        socket.on(SocketActions.lockMap, async () => {
+          this.logSocketEvent(gameID, SocketActions.lockMap);
+          const lock: LockMapAction = { type: 'lockMap' };
           nsp.emit(
             SocketActions.newWorld,
-            await this.gameService.applyAction(gameID, start),
+            await this.gameService.applyAction(gameID, lock),
           );
         });
         socket.on(SocketActions.newMap, (map: Tile[]) => {
@@ -82,7 +81,6 @@ export class GameSocket {
           if (playerName) sockets[playerName] = Disconnected;
         });
 
-        console.log(gamePlayerSockets);
         this.checkForReconnect(
           gameID,
           playerName,

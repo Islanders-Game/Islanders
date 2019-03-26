@@ -2,6 +2,8 @@ import { MatrixCoordinate } from './MatrixCoordinate';
 import { HexCoordinate } from './HexCoordinate';
 import { DevelopmentCard } from './Entities/DevelopmentCard';
 import { Resources } from './Resources';
+import { TileType } from './Shared';
+import { HarborType } from './Tile';
 
 interface HasPlayerName {
   playerName: string;
@@ -16,21 +18,43 @@ interface BuildRoadParameters extends HasPlayerName {
   start: MatrixCoordinate;
   end: MatrixCoordinate;
 }
-interface PlaceThiefParameters extends HasPlayerName {
+interface MoveThiefParameters extends HasPlayerName {
   coordinates: HexCoordinate;
 }
-interface TradeParameters extends HasPlayerName {
-  otherPlayerID: string;
+interface MoveThiefDevCardParameters extends HasPlayerName {
+  coordinates: HexCoordinate;
+  playedCard: DevelopmentCard;
+}
+interface PlayerTradeParameters extends HasPlayerName {
+  otherPlayerName: string;
   resources: Resources;
+}
+interface BankTradeParameters extends HasPlayerName {
+  transfer: Resources;
+  receive: Resources;
+}
+interface HarborTradeParameters extends HasPlayerName {
+  harborType: HarborType;
+  transfer: Resources;
+  receive: Resources;
 }
 interface PlayCardParameters extends HasPlayerName {
   card: DevelopmentCard;
+  chosenResources: TileType | [TileType, TileType];
 }
 interface BuyCardParameters extends HasPlayerName {}
 interface EndTurnParameters extends HasPlayerName {}
 
 export class BuildHouseAction {
   public type: 'buildHouse' = 'buildHouse';
+  public parameters: BuildHouseParameters;
+  constructor(playerName: string, coordinates: MatrixCoordinate) {
+    this.parameters = { playerName, coordinates };
+  }
+}
+
+export class BuildHouseInitialAction {
+  public type: 'buildHouseInitial' = 'buildHouseInitial';
   public parameters: BuildHouseParameters;
   constructor(playerName: string, coordinates: MatrixCoordinate) {
     this.parameters = { playerName, coordinates };
@@ -57,19 +81,68 @@ export class BuildRoadAction {
   }
 }
 
-export class PlaceThiefAction {
-  public type: 'placeThief' = 'placeThief';
-  public parameters: PlaceThiefParameters;
+export class BuildRoadInitialAction {
+  public type: 'buildRoadInitial' = 'buildRoadInitial';
+  public parameters: BuildRoadParameters;
+  constructor(
+    playerName: string,
+    start: MatrixCoordinate,
+    end: MatrixCoordinate,
+  ) {
+    this.parameters = { playerName, start, end };
+  }
+}
+
+export class MoveThiefDevCardAction {
+  public type: 'moveThiefDevelopmentCard' = 'moveThiefDevelopmentCard';
+  public parameters: MoveThiefDevCardParameters;
+  constructor(
+    playerName: string,
+    coordinates: HexCoordinate,
+    playedCard: DevelopmentCard,
+  ) {
+    this.parameters = { playerName, coordinates, playedCard };
+  }
+}
+
+export class MoveThiefAction {
+  public type: 'moveThief' = 'moveThief';
+  public parameters: MoveThiefParameters;
   constructor(playerName: string, coordinates: HexCoordinate) {
     this.parameters = { playerName, coordinates };
   }
 }
 
-export class TradeAction {
-  public type: 'trade' = 'trade';
-  public parameters: TradeParameters;
-  constructor(playerName: string, otherPlayerID: string, resources: Resources) {
-    this.parameters = { playerName, otherPlayerID, resources };
+export class PlayerTradeAction {
+  public type: 'playerTrade' = 'playerTrade';
+  public parameters: PlayerTradeParameters;
+  constructor(
+    playerName: string,
+    otherPlayerName: string,
+    resources: Resources,
+  ) {
+    this.parameters = { playerName, otherPlayerName, resources };
+  }
+}
+
+export class BankTradeAction {
+  public type: 'bankTrade' = 'bankTrade';
+  public parameters: BankTradeParameters;
+  constructor(playerName: string, transfer: Resources, receive: Resources) {
+    this.parameters = { playerName, transfer, receive };
+  }
+}
+
+export class HarborTradeAction {
+  public type: 'harborTrade' = 'harborTrade';
+  public parameters: HarborTradeParameters;
+  constructor(
+    playerName: string,
+    harborType: HarborType,
+    transfer: Resources,
+    receive: Resources,
+  ) {
+    this.parameters = { playerName, harborType, transfer, receive };
   }
 }
 
@@ -84,13 +157,17 @@ export class BuyCardAction {
 export class PlayCardAction {
   public type: 'playCard' = 'playCard';
   public parameters: PlayCardParameters;
-  constructor(playerName: string, card: DevelopmentCard) {
-    this.parameters = { playerName, card };
+  constructor(
+    playerName: string,
+    card: DevelopmentCard,
+    chosenResources: TileType | [TileType, TileType],
+  ) {
+    this.parameters = { playerName, card, chosenResources };
   }
 }
 
-export class StartGameAction {
-  public type: 'startGame' = 'startGame';
+export class LockMapAction {
+  public type: 'lockMap' = 'lockMap';
 }
 
 export class EndTurnAction {
@@ -104,11 +181,16 @@ export class EndTurnAction {
 // An action is an closure which has the information necessary to perform one rule on a world.
 export type Action =
   | BuildHouseAction
+  | BuildHouseInitialAction
   | BuildCityAction
   | BuildRoadAction
-  | PlaceThiefAction
-  | TradeAction
+  | BuildRoadInitialAction
+  | MoveThiefAction
+  | MoveThiefDevCardAction
+  | PlayerTradeAction
+  | BankTradeAction
+  | HarborTradeAction
   | PlayCardAction
   | BuyCardAction
-  | StartGameAction
+  | LockMapAction
   | EndTurnAction;

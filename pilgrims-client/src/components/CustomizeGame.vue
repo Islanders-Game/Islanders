@@ -1,32 +1,52 @@
 <template>
     <v-footer dark color="#393939" id="CustomizeGame" height="auto">
       <v-layout row justify-space-around>
-        <v-flex xs3>
+        <v-flex xs2>
           <v-layout align-center justify-start row fill-height>
             <h1 style="color: whitesmoke">{{playerName}}</h1>
           </v-layout>
         </v-flex>
-        <v-flex xs6>
+        <v-flex xs7>
           <v-layout column align-space-around justify-start fill-height>
             <v-layout row align-center justify-start>
               <v-btn @click="randomizeMap">Randomize Map</v-btn>
             </v-layout>
             <v-layout row align-center justify-start>
-              <v-flex xs3 style="margin: 6px 8px">
+              <v-flex xs3>
                 <v-slider dark 
                   v-model="radius"
                   thumb-label
                   label="Radius"
-                  max="30"
-                  min="1"
+                  max="12"
+                  min="2"
                 ></v-slider>
+              </v-flex>
+              <v-flex xs1></v-flex>
+              <v-flex xs3>
+                  <v-slider dark 
+                  v-model="numberOfIslands"
+                  thumb-label
+                  label="Landmasses"
+                  max="12"
+                  min="0"
+                ></v-slider>
+              </v-flex>
+              <v-flex xs1></v-flex>
+              <v-flex xs2>
+                  <v-text-field dark 
+                  v-model="pointsToWin"
+                  label="Points to Win"
+                  max="100"
+                  min="3"
+                  type="number"
+                ></v-text-field>
               </v-flex>
             </v-layout>
           </v-layout>
         </v-flex>
         <v-flex xs3>
           <v-layout align-center row wrap fill-height>
-              <v-btn @click="startGame">Start Game</v-btn>
+              <v-btn large @click="startGame">Start Game</v-btn>
           </v-layout>
         </v-flex>
       </v-layout>
@@ -34,7 +54,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import {
   World,
   WorldGenerator,
@@ -44,7 +64,9 @@ import {
 export default class CustomizeGame extends Vue {
   public playerName: string = undefined;
   public mask = '##';
-  public radius: number = 3;
+  public radius: number = 2;
+  public numberOfIslands: number = 0;
+  public pointsToWin: number = 3;
   private worldGenerator: WorldGenerator;
 
   public constructor() {
@@ -61,8 +83,16 @@ export default class CustomizeGame extends Vue {
     await this.$store.dispatch('game/startGame');
   }
 
+  @Watch('pointsToWin')
+  private setPointsToWin(newPoints: number, oldPoints) {
+    this.$store.commit('game/setPointsToWin', this.pointsToWin);
+  }
+
   private async randomizeMap() {
-    const map: Tile[] = this.worldGenerator.generateRandomMap(this.radius);
+    const map: Tile[] = this.worldGenerator.generateRandomMap(
+      this.radius,
+      this.numberOfIslands,
+    );
     await this.$store.dispatch('game/updateMap', map);
   }
 }

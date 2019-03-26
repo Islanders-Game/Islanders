@@ -1,4 +1,5 @@
-FROM pilgrims/pilgrims-shared as library
+ARG BRANCH_TAG=latest
+FROM pilgrims/pilgrims-shared:${BRANCH_TAG} as library
 
 FROM node:alpine
 WORKDIR /app
@@ -8,7 +9,7 @@ COPY --from=library /app /app/pilgrims-shared
 # App dependencies
 WORKDIR /app/server
 COPY package.json ./
-RUN npm install
+RUN yarn install
 
 # Build app
 COPY . .

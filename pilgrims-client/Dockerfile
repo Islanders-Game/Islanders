@@ -1,5 +1,6 @@
 # Library
-FROM pilgrims/pilgrims-shared as library
+ARG BRANCH_TAG=latest
+FROM pilgrims/pilgrims-shared:${BRANCH_TAG} as library
 
 # Builder
 FROM node:alpine as builder
@@ -16,7 +17,7 @@ WORKDIR /app/client
 
 # Install Dependencies
 COPY ./package*.json ./
-RUN npm install
+RUN yarn install
 
 # Build app
 COPY . .

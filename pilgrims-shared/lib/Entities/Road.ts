@@ -7,6 +7,9 @@ export class Road implements Purchaseable {
   public cost = {
     wood: 1,
     clay: 1,
+    wool: 0,
+    stone: 0,
+    grain: 0,
   };
 
   constructor(

@@ -9,6 +9,7 @@ export class House implements Purchaseable {
     clay: 1,
     wool: 1,
     grain: 1,
+    stone: 0,
   };
 
   constructor(coordinates: MatrixCoordinate = { x: 0, y: 0 }) {

@@ -16,6 +16,20 @@ export function generateSprites(): { [s: string]: () => Sprite } {
     Ocean: () => Sprite.fromImage(`${tilePath}${tileStyle}/ocean.png`),
     House: () => Sprite.fromImage(`./img/pieces/house.png`),
     City: () => Sprite.fromImage(`./img/pieces/city.png`),
+    Thief: () => Sprite.fromImage(`./img/pieces/thief.png`),
+    Scorch: () => Sprite.fromImage(`${tilePath}/shared/scorch-with-thief.png`),
+    WoodHarbor: () =>
+      Sprite.fromImage(`${tilePath}${tileStyle}/woodharbor.png`),
+    WoolHarbor: () =>
+      Sprite.fromImage(`${tilePath}${tileStyle}/woolharbor.png`),
+    GrainHarbor: () =>
+      Sprite.fromImage(`${tilePath}${tileStyle}/grainharbor.png`),
+    ClayHarbor: () =>
+      Sprite.fromImage(`${tilePath}${tileStyle}/clayharbor.png`),
+    StoneHarbor: () =>
+      Sprite.fromImage(`${tilePath}${tileStyle}/stoneharbor.png`),
+    ThreeToOneHarbor: () =>
+      Sprite.fromImage(`${tilePath}${tileStyle}/threetooneharbor.png`),
     2: () => Sprite.fromImage(`./img/numbers/2.png`),
     3: () => Sprite.fromImage(`./img/numbers/3.png`),
     4: () => Sprite.fromImage(`./img/numbers/4.png`),
@@ -30,18 +44,44 @@ export function generateSprites(): { [s: string]: () => Sprite } {
   return sprites;
 }
 
-export function generateTile(
-  tileWidth,
-  tileHeight,
-  tile: Tile,
-  corner,
-  lineWidth,
-) {
+export function generateTile(tileWidth, tileHeight, tile: Tile, corner) {
   const generator = generateSprites()[tile.type.toString()];
   const s = generator();
   s.width = tileWidth;
   s.height = tileHeight;
-  s.position.x = corner.x - tileWidth - lineWidth / 2;
+  s.position.x = corner.x - tileWidth;
+  s.position.y = corner.y - tileHeight / 2;
+  return s;
+}
+
+export function generateSprite(
+  type: string,
+  tileWidth: number,
+  center,
+  origin,
+) {
+  const generator = generateSprites()[type];
+  const s = generator();
+  s.width = tileWidth / 4;
+  s.height = s.width;
+  s.anchor.x = 0.5;
+  s.anchor.y = 0.5;
+  s.position.x = center.x + origin.x;
+  s.position.y = center.y + origin.y;
+  return s;
+}
+
+export function generateThiefTile(
+  type: 'Scorch' | 'Thief',
+  tileWidth: number,
+  tileHeight: number,
+  corner: { x: number; y: number },
+) {
+  const generator = generateSprites()[type];
+  const s = generator();
+  s.width = tileWidth;
+  s.height = tileHeight;
+  s.position.x = corner.x - tileWidth;
   s.position.y = corner.y - tileHeight / 2;
   return s;
 }

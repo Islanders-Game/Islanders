@@ -1,13 +1,10 @@
 <template>
   <v-container fluid id="Game">
+    <Error></Error>
     <v-layout column fill-height>
       <v-layout row class="main-area">
-        <p id=gameID>
-          <span v-if="gameID">Tell your friends to join this game at: <b>{{gameID}}</b></span>
-          <span v-if="currentPlayer" class="pad">Current player: <b>{{currentPlayer.name}}</b></span>
-          <span v-if="currentDie" class="pad">Current die: <b>{{currentDie.toString()}}</b></span>
-        </p>
-        <v-flex xs9>
+        <v-flex xs9 @mousemove="mouseOver">
+          <GameInfo v-bind:showGameInfo="showGameInfo"></GameInfo>
           <Map/>
         </v-flex>
         <v-flex xs3>
@@ -15,9 +12,8 @@
         </v-flex>
       </v-layout>
       <CustomizeGame v-if="!started"/>
-      <Player v-if="started"/>
+      <Player v-else/>
     </v-layout>
-    <Error></Error>
   </v-container>
 </template>
 
@@ -28,6 +24,7 @@ import Map from './Map.vue';
 import Player from './Player.vue';
 import CustomizeGame from './CustomizeGame.vue';
 import Error from './Error.vue';
+import GameInfo from './GameInfo.vue';
 
 @Component({
   components: {
@@ -36,20 +33,22 @@ import Error from './Error.vue';
     Player,
     CustomizeGame,
     Error,
+    GameInfo,
   },
 })
 export default class Game extends Vue {
+  public showGameInfo: boolean = true;
+
   get started() {
     return this.$store.getters['game/getIsGameStarted'];
   }
-  get gameID() {
-    return this.$store.state.game.gameId;
-  }
-  get currentPlayer() {
-    return this.$store.getters['game/getCurrentPlayer'];
-  }
-  get currentDie() {
-    return this.$store.getters['game/getCurrentDie'];
+
+  public mouseOver(e: MouseEvent) {
+    if (e.offsetY <= 70) {
+      this.showGameInfo = true;
+    } else {
+      this.showGameInfo = false;
+    }
   }
 }
 </script>
@@ -57,17 +56,5 @@ export default class Game extends Vue {
 <style lang="scss" scoped>
 #Game {
   padding: 0px;
-}
-#gameID {
-  position: absolute;
-  top: 0;
-  background-color: rgba(255, 255, 255, 0.4);
-  text-align: left;
-  width: 100%;
-  padding-left: 6px;
-  font-size: 12px;
-}
-.pad {
-  padding: 0px 10px;
 }
 </style>

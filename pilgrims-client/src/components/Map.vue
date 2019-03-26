@@ -1,6 +1,5 @@
 <template>
-<v-container fluid fill-height id="Map">
-</v-container>
+  <v-container fluid fill-height id="Map"></v-container>
 </template>
 
 <script lang="ts">
@@ -29,14 +28,19 @@ import {
   Action,
   BuildCityAction,
   BuildRoadAction,
+  BuildHouseInitialAction,
+  BuildRoadInitialAction,
 } from '../../../pilgrims-shared/dist/Action';
 import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
 import { buildingType } from '../store/modules/ui';
 import {
   generateSprites,
+  generateSprite,
   generateTile,
   generateTileNumber,
+  generateThiefTile,
 } from '../helpers/SpriteGenerators';
+import { MoveThiefAction } from '../../../pilgrims-shared/lib/Action';
 
 @Component
 export default class Map extends Vue {
@@ -45,6 +49,7 @@ export default class Map extends Vue {
   private hexSize: number = 200;
   private tileHeight: number = 348;
   private tileWidth: number = 400;
+  private lineWidth: number = 14;
   private app: Application;
   private viewport: Viewport;
   private tileGraphics: Graphics = new Graphics();
@@ -64,14 +69,21 @@ export default class Map extends Vue {
       that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
       that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
     });
-    that.viewport.on('mousemove', this.handleMove);
-    that.viewport.on('pointerup', this.handleBuildClick);
+    this.viewport.on('mousemove', this.handleMove);
+    this.viewport.on('pointerup', this.handleClick);
+    this.viewport.on('mouseover', () => {
+      window.getSelection().removeAllRanges();
+    });
   }
 
   get player(): PlayerState {
     return this.$store.getters['game/getPlayer'](
       this.$store.state.game.playerName,
     );
+  }
+
+  get isMovingThief(): boolean {
+    return this.$store.state.ui.isMovingThief;
   }
 
   get isBuilding(): buildingType {
@@ -156,10 +168,29 @@ export default class Map extends Vue {
     return [closestPoint, secondClosestPoint];
   }
 
-  private dispatchBuildAction(event, action: Action) {
+  private async dispatchActionClearCursor(event, action: Action) {
     this.cursorGraphics.clear();
     this.cursorGraphics.removeChildren();
-    this.$store.dispatch('game/sendAction', action);
+    await this.$store.dispatch('game/sendAction', action);
+  }
+
+  private handleClick(event) {
+    if (this.isBuilding !== 'None') {
+      this.handleBuildClick(event);
+    } else if (this.isMovingThief) {
+      this.handleThiefClick(event);
+    }
+  }
+
+  private handleThiefClick(event) {
+    const inWorld = this.viewport.toWorld(event.data.global);
+    const hexToFind = this.grid.pointToHex(inWorld);
+    const moveThiefAction = new MoveThiefAction(
+      this.$store.state.game.playerName,
+      hexToFind,
+    );
+    this.dispatchActionClearCursor(event, moveThiefAction);
+    this.$store.commit('ui/setIsMovingThief', false);
   }
 
   private handleBuildClick(event) {
@@ -172,14 +203,19 @@ export default class Map extends Vue {
     const hexToFind = this.grid.pointToHex(inWorld);
     const coord = getMatrixCoordCorner(hexToFind, closestPoints[0].index);
     if (this.isBuilding === 'House') {
-      this.dispatchBuildAction(
-        event,
-        new BuildHouseAction(this.$store.state.game.playerName, coord),
-      );
+      const action =
+        this.world.gameState === 'Started'
+          ? new BuildHouseAction(this.$store.state.game.playerName, coord)
+          : new BuildHouseInitialAction(
+              this.$store.state.game.playerName,
+              coord,
+            );
+
+      this.dispatchActionClearCursor(event, action);
       this.$store.commit('ui/setIsBuilding', 'None');
     }
     if (this.isBuilding === 'City') {
-      this.dispatchBuildAction(
+      this.dispatchActionClearCursor(
         event,
         new BuildCityAction(this.$store.state.game.playerName, coord),
       );
@@ -187,10 +223,20 @@ export default class Map extends Vue {
     }
     if (this.isBuilding === 'Road' && closestPoints[1].index !== -1) {
       const coord2 = getMatrixCoordCorner(hexToFind, closestPoints[1].index);
-      this.dispatchBuildAction(
-        event,
-        new BuildRoadAction(this.$store.state.game.playerName, coord, coord2),
-      );
+      const action =
+        this.world.gameState === 'Started'
+          ? new BuildRoadAction(
+              this.$store.state.game.playerName,
+              coord,
+              coord2,
+            )
+          : new BuildRoadInitialAction(
+              this.$store.state.game.playerName,
+              coord,
+              coord2,
+            );
+
+      this.dispatchActionClearCursor(event, action);
       this.$store.commit('ui/setIsBuilding', 'None');
     }
   }
@@ -219,7 +265,7 @@ export default class Map extends Vue {
     this.cursorGraphics.clear();
     this.cursorGraphics.removeChildren();
     if (closestPoints[0].index !== -1 && closestPoints[1].index !== -1) {
-      this.cursorGraphics.lineStyle(30, 0xffff00);
+      this.cursorGraphics.lineStyle(this.lineWidth, this.player.color);
       this.cursorGraphics.moveTo(
         closestPoints[0].point.x,
         closestPoints[0].point.y,
@@ -228,6 +274,30 @@ export default class Map extends Vue {
         closestPoints[1].point.x,
         closestPoints[1].point.y,
       );
+    }
+  }
+
+  private cursorForHex(event) {
+    const inWorld = this.viewport.toWorld(event.data.global);
+    const hexToFind = this.grid.pointToHex(inWorld);
+    const hexOrigin = hexToFind.toPoint();
+    const centerOfHex = {
+      x: hexOrigin.x + hexToFind.width() / 2,
+      y: hexOrigin.y + hexToFind.height() / 2,
+    };
+    this.cursorGraphics.clear();
+    this.cursorGraphics.removeChildren();
+    if (hexToFind) {
+      this.cursorGraphics.clear();
+      this.cursorGraphics.removeChildren();
+      const piece = this.createPiece(
+        'Thief',
+        { x: 100, y: 100 },
+        this.player.color,
+        centerOfHex,
+      );
+      piece.alpha = 0.6;
+      this.cursorGraphics.addChild(piece);
     }
   }
 
@@ -242,6 +312,10 @@ export default class Map extends Vue {
     }
     if (this.isBuilding === 'Road') {
       this.cursorForRoad(event);
+      return;
+    }
+    if (this.isMovingThief) {
+      this.cursorForHex(event);
       return;
     }
   }
@@ -313,7 +387,7 @@ export default class Map extends Vue {
     const color = p.color;
     const roadGraphics = new Graphics();
     p.roads.forEach((r) => {
-      roadGraphics.lineStyle(24, color);
+      roadGraphics.lineStyle(this.lineWidth, color);
       const start = matrixCoordToWorldCoord(
         r.start,
         this.grid.Hex().width(),
@@ -367,11 +441,11 @@ export default class Map extends Vue {
     const redrawPieces = compare[1];
     let tileContainer: Container;
     let pieceContainer: Container;
+    const thief = this.world.thief ? this.world.thief.hexCoordinate : undefined;
 
     if (redrawTiles) {
       tileContainer = new PIXI.Container();
       const map: Tile[] = !newWorld || !newWorld.map ? [] : newWorld.map;
-      const lineWidth = 24;
       const Hex = extendHex({
         size: this.hexSize,
         orientation: 'flat',
@@ -393,11 +467,9 @@ export default class Map extends Vue {
           this.tileHeight,
           tile,
           firstCorner,
-          lineWidth,
         );
 
         tileContainer.addChild(tileSprite);
-
         if (newWorld.gameState === 'Started') {
           const tileNumber = generateTileNumber(
             this.tileWidth,
@@ -409,8 +481,19 @@ export default class Map extends Vue {
             tileContainer.addChild(tileNumber);
           }
         }
+
+        if (thief && thief.x === hex.x && thief.y === hex.y) {
+          const thiefSprite = generateThiefTile(
+            'Scorch',
+            this.tileWidth,
+            this.tileHeight,
+            firstCorner,
+          );
+          tileContainer.addChild(thiefSprite);
+        }
+
         // Hex lines
-        this.lineGraphics.lineStyle(lineWidth, 0xffffff);
+        this.lineGraphics.lineStyle(this.lineWidth, 0xffffff);
         this.lineGraphics.moveTo(firstCorner.x, firstCorner.y);
         otherCorners.forEach(({ x, y }) => this.lineGraphics.lineTo(x, y));
         this.lineGraphics.lineTo(firstCorner.x, firstCorner.y);
@@ -441,7 +524,7 @@ export default class Map extends Vue {
 
 <style lang="scss" scoped>
 #Map {
-  background-color: #e4e4e4;
+  background-color: #03518b;
   padding: 0px;
 }
 </style>

@@ -50,7 +50,9 @@ const getters: GetterTree<State, any> = {
     if (!state.world) {
       return false;
     }
-    return state.world.gameState === 'Started';
+    return (
+      state.world.gameState === 'Started' || state.world.gameState === 'Pregame'
+    );
   },
   getCurrentPlayer(state: State): Player {
     if (!state.world) {
@@ -86,6 +88,9 @@ const mutations: MutationTree<State> = {
   setError(state: State, errorMessage: string) {
     state.error = errorMessage;
   },
+  setPointsToWin(state: State, points: number) {
+    state.world.pointsToWin = points;
+  },
 };
 
 // Async methods
@@ -103,7 +108,7 @@ const actions: ActionTree<State, RootState> = {
     Socket.emit(SocketActions.getWorld);
   },
   async startGame({ commit }: ActionContext<State, RootState>) {
-    Socket.emit(SocketActions.startGame);
+    Socket.emit(SocketActions.lockMap);
   },
   async updateMap({ commit }: ActionContext<State, RootState>, map: Tile[]) {
     Socket.emit(SocketActions.newMap, map);

@@ -6,7 +6,10 @@
                 <v-layout column align-left>
                   <v-layout row align-left>
                       <v-list-tile-title>
-                        <h3>{{player.name}}</h3>
+                        <h3>
+                          <span>{{player.name}}</span>
+                          <span v-if="player.name === currentPlayer.name">'s turn</span>
+                        </h3>
                       </v-list-tile-title>
                       <v-spacer></v-spacer>
                       <div style="display:contents">
@@ -49,18 +52,21 @@
 
 <script lang="ts">
 import { Component, Prop, Vue } from 'vue-property-decorator';
-import { Player as PlayerState } from '../../../pilgrims-shared/dist/Shared';
+import { Player as PlayerModel } from '../../../pilgrims-shared/dist/Shared';
 @Component({
   components: {},
 })
 export default class Players extends Vue {
-  get players(): PlayerState[] {
+  get players(): PlayerModel[] {
     return this.$store.getters['game/getPlayers'];
+  }
+  get currentPlayer(): PlayerModel {
+    return this.$store.getters['game/getCurrentPlayer'];
   }
   private playerPoints(name: string) {
     return 0; // todo
   }
-  private playerResources(player: PlayerState) {
+  private playerResources(player: PlayerModel) {
     return (
       (player.resources.wood ? player.resources.wood : 0) +
       (player.resources.stone ? player.resources.stone : 0) +
@@ -69,13 +75,13 @@ export default class Players extends Vue {
       (player.resources.wool ? player.resources.wool : 0)
     );
   }
-  private playerDevCards(player: PlayerState) {
+  private playerDevCards(player: PlayerModel) {
     return player.devCards.filter((x) => x.type !== 'Knight').length;
   }
-  private playerKnightCards(player: PlayerState) {
+  private playerKnightCards(player: PlayerModel) {
     return player.devCards.filter((x) => x.type === 'Knight').length;
   }
-  private playerRoad(player: PlayerState) {
+  private playerRoad(player: PlayerModel) {
     return player.roads.length; // todo longest path :P
   }
 }

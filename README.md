@@ -19,6 +19,8 @@ Run the following on a system that has Docker installed:
 If you have a running traefik service you can access the app at pilgrims.localhost. 
 Otherwise, run `docker inspect pilgrims-client | grep IPAddress` to find the ip address of the app.
 
+![screenshot](doc/screenshot.png "Pilgrims")
+
 # Implementation
 [![Build Status](https://jenkins.anderswind.dk/buildStatus/icon?job=Pilgrims/master)](https://jenkins.anderswind.dk/job/Pilgrims/job/master/)
 [![codebeat badge](https://codebeat.co/badges/9fe73beb-c48f-4772-8d45-ab88e2241782)](https://codebeat.co/projects/github-com-awia00-pilgrims-master)

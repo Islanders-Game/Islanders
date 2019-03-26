@@ -5,24 +5,42 @@ import {
   subtractResources,
   resourcesAreNonNegative,
   purchase,
+  GameStatistics,
 } from '../lib/Shared';
+import { empty } from '../lib/Resources';
+
+const clayOnlyResource = (amount: number) => {
+  return { clay: amount, grain: 0, stone: 0, wood: 0, wool: 0 };
+};
+const grainOnlyResource = (amount: number) => {
+  return { clay: 0, grain: amount, stone: 0, wood: 0, wool: 0 };
+};
+const stoneOnlyResource = (amount: number) => {
+  return { clay: 0, grain: 0, stone: 0, wood: amount, wool: 0 };
+};
+const woodOnlyResource = (amount: number) => {
+  return { clay: 0, grain: 0, stone: 0, wood: amount, wool: 0 };
+};
+const woolOnlyResource = (amount: number) => {
+  return { clay: 0, grain: 0, stone: 0, wood: 0, wool: amount };
+};
 
 describe('Resource subtraction', () => {
   test('Check that subtract resources can subtract wood', () => {
-    const res = { wood: 5 };
-    const subRes = { wood: 3 };
-    expect(subtractResources(res, subRes)).toEqual({ wood: 2 });
+    const res = woodOnlyResource(5);
+    const subRes = woodOnlyResource(3);
+    expect(subtractResources(res, subRes)).toEqual(woodOnlyResource(2));
   });
 });
 
 describe('Negative resources are detected', () => {
   test('Non-negative resources are detected with any negative resource type', () => {
     const res = [
-      { wood: Number.NEGATIVE_INFINITY },
-      { wool: -1 },
-      { stone: Number.NEGATIVE_INFINITY },
-      { grain: -2 },
-      { clay: Number.NEGATIVE_INFINITY },
+      woodOnlyResource(Number.NEGATIVE_INFINITY),
+      woolOnlyResource(-1),
+      stoneOnlyResource(Number.NEGATIVE_INFINITY),
+      grainOnlyResource(-2),
+      clayOnlyResource(Number.NEGATIVE_INFINITY),
     ];
 
     res.forEach((r) => expect(resourcesAreNonNegative(r)).toBeFalsy());
@@ -30,21 +48,20 @@ describe('Negative resources are detected', () => {
 
   test('Non-negative resources are NOT detected with any positive resource type', () => {
     const res = [
-      { wood: Number.POSITIVE_INFINITY },
-      { wool: 1 },
-      { stone: Number.POSITIVE_INFINITY },
-      { grain: 2 },
-      { clay: Number.POSITIVE_INFINITY },
+      woodOnlyResource(Number.POSITIVE_INFINITY),
+      woolOnlyResource(1),
+      stoneOnlyResource(Number.POSITIVE_INFINITY),
+      grainOnlyResource(2),
+      clayOnlyResource(Number.POSITIVE_INFINITY),
     ];
 
-    res.forEach((r) => expect(resourcesAreNonNegative(r)).toBeFalsy());
+    res.forEach((r) => expect(resourcesAreNonNegative(r)));
   });
 });
 
 describe('Checking for purchaseability', () => {
   test('Player can afford purchase', () => {
-    const res = { wool: 1 };
-
+    const res = woolOnlyResource(1);
     const p: Player = new Player('P');
     p.resources = res;
 
@@ -52,7 +69,9 @@ describe('Checking for purchaseability', () => {
       currentDie: 'None',
       currentPlayer: 0,
       map: [],
+      winner: undefined,
       players: [p],
+      gameStatistics: new GameStatistics(),
       gameState: 'Uninitialized',
       pointsToWin: 0,
       gameRules: {
@@ -72,8 +91,8 @@ describe('Checking for purchaseability', () => {
   });
 
   test('Player can NOT afford purchase', () => {
-    const res = { wool: 0 };
-    const cost = { wool: 1 };
+    const res = empty;
+    const cost = woolOnlyResource(1);
     const p = new Player('P');
     p.resources = res;
 
@@ -82,8 +101,10 @@ describe('Checking for purchaseability', () => {
       currentPlayer: 0,
       map: [],
       players: [p],
+      winner: undefined,
       pointsToWin: 0,
       gameState: 'Uninitialized',
+      gameStatistics: new GameStatistics(),
       gameRules: {
         gameType: 'original',
         maxCities: 0,

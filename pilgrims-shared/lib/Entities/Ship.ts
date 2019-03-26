@@ -5,5 +5,7 @@ export class Ship extends Road {
     wood: 1,
     wool: 1,
     clay: 0,
+    stone: 0,
+    grain: 0,
   };
 }
