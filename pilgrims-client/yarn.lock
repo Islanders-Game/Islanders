@@ -9773,10 +9773,10 @@ vue-class-component@^7.0.1:
   resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-7.0.1.tgz#7af2225c600667c7042b60712eefdf41dfc6de63"
   integrity sha512-YIihdl7YmceEOjSwcxLhCXCNA3TKC2FStuMcjtuzhUAgw5x5d1T5gZTmVQHGyOaQsaKffL4GlZzYN3dlMYl53w==
 
-vue-cli-plugin-vuetify@^0.4.6:
-  version "0.4.6"
-  resolved "https://registry.yarnpkg.com/vue-cli-plugin-vuetify/-/vue-cli-plugin-vuetify-0.4.6.tgz#91c4534d17bc04bbd6f41eacdb6ff49be0f59f2b"
-  integrity sha512-vkai2B3XqanmscUYSioIjJkU7bzBZGl9mCuIISEZtaDy3qWEkF143UGdJ72u/rGuOytLxpV+9B+FNoV93qlnag==
+vue-cli-plugin-vuetify@^0.5.0:
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/vue-cli-plugin-vuetify/-/vue-cli-plugin-vuetify-0.5.0.tgz#14c9a61884da58cf6aaf8ff3309044931907f184"
+  integrity sha512-TigfiZUs7SN3Z6uxKilqJUtYxte8vp0F4QxabCli6hkKPqU97JzAZc3P7AL6omkRAd2DMI26fOrIGjuALTvXww==
 
 vue-hot-reload-api@^2.3.0:
   version "2.3.1"
