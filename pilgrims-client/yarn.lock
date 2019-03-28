@@ -915,12 +915,12 @@
     babel-loader "^8.0.5"
     webpack ">=4 < 4.29"
 
-"@vue/cli-plugin-pwa@^3.4.1":
-  version "3.4.1"
-  resolved "https://registry.yarnpkg.com/@vue/cli-plugin-pwa/-/cli-plugin-pwa-3.4.1.tgz#1fe91e17157d2b8d257a6925cea99f127a3fcb36"
-  integrity sha512-c9URQGwMTvLji4vz39G1b70Pya/UCuBnsmNoWyrNDt0I6qAykuvxI+wAvHLecrg6vZt8o2bVzeb1UG3Bil+wIw==
+"@vue/cli-plugin-pwa@^3.5.1":
+  version "3.5.1"
+  resolved "https://registry.yarnpkg.com/@vue/cli-plugin-pwa/-/cli-plugin-pwa-3.5.1.tgz#5bba2e533867b7fc8d62d028b6bfdc5a1962c120"
+  integrity sha512-BTwYPp6OLLDxuwZmeP9BNNKao48y+lsFzPPdEmH7nqdeELOge2MAcEG/Wn9Xgb/AF3IA/ywjzGtJS+hlALTGlw==
   dependencies:
-    "@vue/cli-shared-utils" "^3.4.1"
+    "@vue/cli-shared-utils" "^3.5.1"
     webpack ">=4 < 4.29"
     workbox-webpack-plugin "^3.6.3"
 
