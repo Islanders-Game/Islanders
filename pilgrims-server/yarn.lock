@@ -271,10 +271,10 @@ destroy@~1.0.4:
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
   integrity sha1-l4hXRCxEdJ5CBmE+N5RiBYJqvYA=
 
-dotenv@^6.2.0:
-  version "6.2.0"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-6.2.0.tgz#941c0410535d942c8becf28d3f357dbd9d476064"
-  integrity sha512-HygQCKUBSFl8wKQZBSemMywRWcEDNidvNbjGVyZu3nbZ8qq9ubiPoGLMdRDpfSrpkkm9BXYFkpKxxFX38o/76w==
+dotenv@^7.0.0:
+  version "7.0.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-7.0.0.tgz#a2be3cd52736673206e8a85fb5210eea29628e7c"
+  integrity sha512-M3NhsLbV1i6HuGzBUH8vXrtxOk+tWmzWKDMbAVSUp3Zsjm7ywFeuwrUXhmhQyRK1q5B5GGy7hcXPbj3bnfZg2g==
 
 ee-first@1.1.1:
   version "1.1.1"
@@ -412,10 +412,10 @@ has-cors@1.1.0:
   resolved "https://registry.yarnpkg.com/has-cors/-/has-cors-1.1.0.tgz#5e474793f7ea9843d1bb99c23eef49ff126fff39"
   integrity sha1-XkdHk/fqmEPRu5nCPu9J/xJv/zk=
 
-honeycomb-grid@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.3.tgz#86c0662aa0bec3600661fa07be2f1e3941501ef7"
-  integrity sha512-XkdaBBHrvNpHTQVOoj5pWVWu7Un2QvEVXGoLGdJgKrZ4v82wMEoJV0heb76/XelOEm07jIKnE6ALa0rsu2B8lQ==
+honeycomb-grid@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.4.tgz#592754c87cbb8c33e4bf0c51b4abb5115b50f01f"
+  integrity sha512-vV0voGFMoKbL6nS2kJvaDypnZafUAc/HeP3HP/aAXQXIuYtxWOY0+6VMFqHYojwgMDyuSrHkdMdEHg/toZCmTg==
   dependencies:
     axis.js "1.2.1"
 
@@ -638,7 +638,7 @@ path-to-regexp@0.1.7:
 "pilgrims-shared@file:../pilgrims-shared":
   version "1.0.0"
   dependencies:
-    honeycomb-grid "^1.4.3"
+    honeycomb-grid "^1.4.4"
     uuid "^3.3.2"
 
 process-nextick-args@~1.0.6:
