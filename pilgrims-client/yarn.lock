@@ -937,12 +937,12 @@
     tslint "^5.13.0"
     webpack ">=4 < 4.29"
 
-"@vue/cli-plugin-unit-jest@^3.5.0":
-  version "3.5.0"
-  resolved "https://registry.yarnpkg.com/@vue/cli-plugin-unit-jest/-/cli-plugin-unit-jest-3.5.0.tgz#55065b19c2c68f31528622d9f7cddfc3bb360555"
-  integrity sha512-JFKiuLil1ayzTZCYk1DgoUFYb0F3nfbdVH3C7CN39EOfNgvEMvtavgS2Pb6MU+xx1f2J71bwVHQYY0HIx8zWJw==
+"@vue/cli-plugin-unit-jest@^3.5.3":
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/@vue/cli-plugin-unit-jest/-/cli-plugin-unit-jest-3.5.3.tgz#d11f0879d73f6eb712df45072d9470d8a87d09e5"
+  integrity sha512-6GRN3dhFXF8FTqvAylHA8fh+ii5+KoKPPz972j18V/MedYgm39qVSkDWD2sLKOueTX5SSVqk3QKyF6gy+Uhp7Q==
   dependencies:
-    "@vue/cli-shared-utils" "^3.5.0"
+    "@vue/cli-shared-utils" "^3.5.1"
     babel-jest "^23.6.0"
     babel-plugin-transform-es2015-modules-commonjs "^6.26.2"
     jest "^23.6.0"
@@ -1009,7 +1009,7 @@
     webpack-merge "^4.2.1"
     yorkie "^2.0.0"
 
-"@vue/cli-shared-utils@^3.5.0", "@vue/cli-shared-utils@^3.5.1":
+"@vue/cli-shared-utils@^3.5.1":
   version "3.5.1"
   resolved "https://registry.yarnpkg.com/@vue/cli-shared-utils/-/cli-shared-utils-3.5.1.tgz#71d66f06fc619ba28df279bd7d37ba1ba29c9066"
   integrity sha512-hCB7UbKeeC41w2Q8+Q7jmw3gHdq+ltRqp80S3uDRRGxwiOhxrSmdBHMzKUjh01L8bXOBRgvLey+BERi1Nj9n6Q==
