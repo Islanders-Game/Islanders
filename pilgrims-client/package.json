@@ -15,7 +15,7 @@
     "honeycomb-grid": "^1.4.4",
     "material-design-icons-iconfont": "^4.0.5",
     "pilgrims-shared": "file:../pilgrims-shared",
-    "pixi-viewport": "^3.21.2",
+    "pixi-viewport": "^3.22.0",
     "pixi.js": "^4.8.7",
     "register-service-worker": "^1.6.2",
     "roboto-fontface": "*",
