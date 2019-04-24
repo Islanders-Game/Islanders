@@ -18,7 +18,7 @@
     "jest": "^24.7.1",
     "puppeteer": "^1.14.0",
     "ts-jest": "^24.0.2",
-    "typescript": "^3.4.4"
+    "typescript": "^3.4.5"
   },
   "dependencies": {
     "honeycomb-grid": "^1.4.4",
