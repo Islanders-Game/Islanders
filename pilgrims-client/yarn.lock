@@ -4897,13 +4897,6 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
-honeycomb-grid@^1.4.4:
-  version "1.4.4"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.4.tgz#592754c87cbb8c33e4bf0c51b4abb5115b50f01f"
-  integrity sha512-vV0voGFMoKbL6nS2kJvaDypnZafUAc/HeP3HP/aAXQXIuYtxWOY0+6VMFqHYojwgMDyuSrHkdMdEHg/toZCmTg==
-  dependencies:
-    axis.js "1.2.1"
-
 honeycomb-grid@^2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-2.0.0.tgz#068f374995520e9228335f7f9ca66a85b3ab3db9"
@@ -7623,7 +7616,7 @@ pify@^4.0.1:
 "pilgrims-shared@file:../pilgrims-shared":
   version "1.0.0"
   dependencies:
-    honeycomb-grid "^1.4.4"
+    honeycomb-grid "^2.0.0"
     uuid "^3.3.2"
 
 pinkie-promise@^2.0.0:
@@ -10398,10 +10391,10 @@ vuetify@^1.5.14:
   resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-1.5.14.tgz#ff67d0b8a398be5297da159b6cd1b31f4d2898b8"
   integrity sha512-7iM+TfghR/wu/Gl+k37lKr0N8Ddr6SxzqHtoK1dIyHgCH6SJRkpaXPw2MC5/FsAg9aUDJbYNWrzSeu5eHw+Q/w==
 
-vuex@^3.1.0:
-  version "3.1.0"
-  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.1.0.tgz#634b81515cf0cfe976bd1ffe9601755e51f843b9"
-  integrity sha512-mdHeHT/7u4BncpUZMlxNaIdcN/HIt1GsGG5LKByArvYG/v6DvHcOxvDCts+7SRdCoIRGllK8IMZvQtQXLppDYg==
+vuex@^3.1.1:
+  version "3.1.1"
+  resolved "https://registry.yarnpkg.com/vuex/-/vuex-3.1.1.tgz#0c264bfe30cdbccf96ab9db3177d211828a5910e"
+  integrity sha512-ER5moSbLZuNSMBFnEBVGhQ1uCBNJslH9W/Dw2W7GZN23UQA69uapP5GTT9Vm8Trc0PzBSVt6LzF3hGjmv41xcg==
 
 w3c-hr-time@^1.0.1:
   version "1.0.1"
