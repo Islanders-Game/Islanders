@@ -23,7 +23,7 @@
     "svg-pan-zoom": "github:ariutta/svg-pan-zoom",
     "svg.js": "^2.7.1",
     "vue": "^2.6.10",
-    "vue-class-component": "^7.0.2",
+    "vue-class-component": "^7.1.0",
     "vue-property-decorator": "^8.1.0",
     "vuetify": "^1.5.14",
     "vuex": "^3.1.0"
