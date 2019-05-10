@@ -2128,10 +2128,10 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
-honeycomb-grid@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-2.0.0.tgz#068f374995520e9228335f7f9ca66a85b3ab3db9"
-  integrity sha512-KTRj2dyu9e16RgJwengb2+ck/iILHQXpQpBvynmiHQs8J355dqX81CHOEyIFMeXIgHoAA5K2dYlHY1x4nzElcw==
+honeycomb-grid@^2.0.1:
+  version "2.0.1"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-2.0.1.tgz#3cee77e209de23bdcd0d424ad797281fe68926a2"
+  integrity sha512-49kuj0vbRj9R0ZxE7FSlULKzbNWe0cHl7/K7jtx9O87H4TWSSAzX+Xw+sFII8E0D193jFKGfQA1cMXnOrvb42w==
   dependencies:
     axis.js "1.2.1"
 
