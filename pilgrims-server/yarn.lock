@@ -481,10 +481,10 @@ mime@1.6.0:
   resolved "https://registry.yarnpkg.com/mime/-/mime-1.6.0.tgz#32cd9e5c64553bd58d19a568af452acff04981b1"
   integrity sha512-x0Vn8spI+wuJ1O6S7gnbaQg8Pxh4NNHb7KSINmEWKiPE4RKOplvijn+NkmYmmRgP68mc70j2EbeTFRsrswaQeg==
 
-mongodb-core@3.2.4:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-3.2.4.tgz#6731b46c5f367bfeca94a0989e0dcb9f54e95208"
-  integrity sha512-Ea/fjVntuj0nhLPuDPj54Kce+w4Ee6b1oSM2EvNB4OdwXJ5WIEh79st9/FRZVKwGnc2oB19P1SMSC1noOBXUCQ==
+mongodb-core@3.2.6:
+  version "3.2.6"
+  resolved "https://registry.yarnpkg.com/mongodb-core/-/mongodb-core-3.2.6.tgz#5522b721a744720a27a07b29177d10fe849ad20e"
+  integrity sha512-i+XRVjur9D0ywGF7cFebOUnALnbvMHajdNhhl3TQuopW6QDE655G8CpPeERbqSqfa3rOKEUo08lENDIiBIuAvQ==
   dependencies:
     bson "^1.1.1"
     require_optional "^1.0.1"
@@ -492,12 +492,12 @@ mongodb-core@3.2.4:
   optionalDependencies:
     saslprep "^1.0.0"
 
-mongodb@^3.2.3, mongodb@^3.2.4:
-  version "3.2.4"
-  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.2.4.tgz#770eca46ba89a830816e172830c0743660a2ce31"
-  integrity sha512-tjuwdRb89oyCamBG9lWkb7Sf4L/XJ0hsTC22NkbECl3j2X8n+rM+ZlK3dyIPdaJXdc4FOKIRd9dodVJgCtsYMA==
+mongodb@^3.2.3, mongodb@^3.2.6:
+  version "3.2.6"
+  resolved "https://registry.yarnpkg.com/mongodb/-/mongodb-3.2.6.tgz#bfd23bc0ae6cc57443cd256aec24aa4dc2b99f2f"
+  integrity sha512-qnHc4tjEkHKemuzBq9R7ycYnhFE0Dlpt6+n6suoZp2DcDdqviQ+teloJU24fsOw/PLmr75yGk4mRx/YabjDQEQ==
   dependencies:
-    mongodb-core "3.2.4"
+    mongodb-core "3.2.6"
     safe-buffer "^5.1.2"
 
 monk-middleware-cast-ids@^0.2.1:
