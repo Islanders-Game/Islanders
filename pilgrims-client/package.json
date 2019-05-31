@@ -11,7 +11,7 @@
   "dependencies": {
     "@babel/polyfill": "^7.4.4",
     "@types/socket.io-client": "^1.4.32",
-    "axios": "^0.18.0",
+    "axios": "^0.19.0",
     "honeycomb-grid": "^2.0.1",
     "material-design-icons-iconfont": "^5.0.1",
     "pilgrims-shared": "file:../pilgrims-shared",
