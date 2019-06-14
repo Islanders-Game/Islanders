@@ -1149,10 +1149,10 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.9.tgz#a07bfa74331471e1dc22a47eb72026843f7b95c8"
   integrity sha512-eajkMXG812/w3w4a1OcBlaTwsFPO5F7fJ/amy+tieQxEMWBlbV1JGSjkFM+zkHNf81Cad+dfIRA+IBkvmvdAeA==
 
-"@types/pixi.js@^4.8.7":
-  version "4.8.7"
-  resolved "https://registry.yarnpkg.com/@types/pixi.js/-/pixi.js-4.8.7.tgz#23cea9ce7aaf6a51223a8fbe3c3d1c89f6048698"
-  integrity sha512-SuaeAVDWNbvVzg+ipVrNzVxMDZHaa/MRNT/+Y270sYp/qxfB31KC1wEt7KDVNq9Ac/pRdSDrxVDcLDUaYn0aVg==
+"@types/pixi.js@^4.8.8":
+  version "4.8.8"
+  resolved "https://registry.yarnpkg.com/@types/pixi.js/-/pixi.js-4.8.8.tgz#48af24a4d8e4bf4735f6819fef04536522d6ea1b"
+  integrity sha512-5wmLnmL3foK/rqYMrrEM/3DxEwvwxJaP73RyqY8aMqq8zUm6CBlmc+12RIBH6iR/RHqU76XL238vWWJV1IN/zw==
 
 "@types/semver@^5.5.0":
   version "5.5.0"
@@ -1377,7 +1377,7 @@
     webpack-merge "^4.2.1"
     yorkie "^2.0.0"
 
-"@vue/cli-shared-utils@^3.7.0", "@vue/cli-shared-utils@^3.8.0":
+"@vue/cli-shared-utils@^3.8.0":
   version "3.8.0"
   resolved "https://registry.yarnpkg.com/@vue/cli-shared-utils/-/cli-shared-utils-3.8.0.tgz#e7e728164eb92bd9e205fcd08dae896ee79cba5a"
   integrity sha512-wn1L8pmQnotfftHOYm0VeXs2+cQTySd73uhWXwyO6pT0ehjqlY5c2RTipClmFF3Q+YCYjwlNpsV650F3l1tV8w==
@@ -5010,7 +5010,7 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
-honeycomb-grid@^2.0.1, honeycomb-grid@^2.0.3:
+honeycomb-grid@^2.0.3:
   version "2.0.3"
   resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-2.0.3.tgz#b4e524b3e8a3ff22c9687ab97bd2f03edb5056cd"
   integrity sha512-PsHO5o6Af38e0LM/A6X/lXfa0pPLNbAc3rfHktrjz2ADgAuwMj8rjZo2s3p7DbdMh957kvTMPocxfBQfGtdcJg==
@@ -7775,7 +7775,7 @@ pify@^4.0.1:
 "pilgrims-shared@file:../pilgrims-shared":
   version "1.0.0"
   dependencies:
-    honeycomb-grid "^2.0.1"
+    honeycomb-grid "^2.0.3"
     uuid "^3.3.2"
 
 pinkie-promise@^2.0.0:
