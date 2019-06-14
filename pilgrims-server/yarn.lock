@@ -399,10 +399,10 @@ has-cors@1.1.0:
   resolved "https://registry.yarnpkg.com/has-cors/-/has-cors-1.1.0.tgz#5e474793f7ea9843d1bb99c23eef49ff126fff39"
   integrity sha1-XkdHk/fqmEPRu5nCPu9J/xJv/zk=
 
-honeycomb-grid@^2.0.1:
-  version "2.0.1"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-2.0.1.tgz#3cee77e209de23bdcd0d424ad797281fe68926a2"
-  integrity sha512-49kuj0vbRj9R0ZxE7FSlULKzbNWe0cHl7/K7jtx9O87H4TWSSAzX+Xw+sFII8E0D193jFKGfQA1cMXnOrvb42w==
+honeycomb-grid@^2.0.3:
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-2.0.3.tgz#b4e524b3e8a3ff22c9687ab97bd2f03edb5056cd"
+  integrity sha512-PsHO5o6Af38e0LM/A6X/lXfa0pPLNbAc3rfHktrjz2ADgAuwMj8rjZo2s3p7DbdMh957kvTMPocxfBQfGtdcJg==
   dependencies:
     axis.js "1.2.1"
 
@@ -604,7 +604,7 @@ path-to-regexp@0.1.7:
 "pilgrims-shared@file:../pilgrims-shared":
   version "1.0.0"
   dependencies:
-    honeycomb-grid "^2.0.1"
+    honeycomb-grid "^2.0.3"
     uuid "^3.3.2"
 
 proxy-addr@~2.0.5:
@@ -780,10 +780,10 @@ type-is@~1.6.17, type-is@~1.6.18:
     media-typer "0.3.0"
     mime-types "~2.1.24"
 
-typescript@^3.5.1:
-  version "3.5.1"
-  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.1.tgz#ba72a6a600b2158139c5dd8850f700e231464202"
-  integrity sha512-64HkdiRv1yYZsSe4xC1WVgamNigVYjlssIoaH2HcZF0+ijsk5YK2g0G34w9wJkze8+5ow4STd22AynfO6ZYYLw==
+typescript@^3.5.2:
+  version "3.5.2"
+  resolved "https://registry.yarnpkg.com/typescript/-/typescript-3.5.2.tgz#a09e1dc69bc9551cadf17dba10ee42cf55e5d56c"
+  integrity sha512-7KxJovlYhTX5RaRbUdkAXN1KUZ8PwWlTzQdHV6xNqvuFOs7+WBo10TQUqT19Q/Jz2hk5v9TQDIhyLhhJY4p5AA==
 
 unpipe@1.0.0, unpipe@~1.0.0:
   version "1.0.0"
