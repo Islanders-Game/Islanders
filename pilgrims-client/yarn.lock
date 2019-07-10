@@ -4425,10 +4425,10 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
-honeycomb-grid@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.3.tgz#86c0662aa0bec3600661fa07be2f1e3941501ef7"
-  integrity sha512-XkdaBBHrvNpHTQVOoj5pWVWu7Un2QvEVXGoLGdJgKrZ4v82wMEoJV0heb76/XelOEm07jIKnE6ALa0rsu2B8lQ==
+honeycomb-grid@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.4.tgz#592754c87cbb8c33e4bf0c51b4abb5115b50f01f"
+  integrity sha512-vV0voGFMoKbL6nS2kJvaDypnZafUAc/HeP3HP/aAXQXIuYtxWOY0+6VMFqHYojwgMDyuSrHkdMdEHg/toZCmTg==
   dependencies:
     axis.js "1.2.1"
 
@@ -5870,9 +5870,9 @@ lodash.debounce@^4.0.8:
   integrity sha1-gteb/zCmfEAF/9XiUVMArZyk168=
 
 lodash.defaultsdeep@^4.6.0:
-  version "4.6.0"
-  resolved "https://registry.yarnpkg.com/lodash.defaultsdeep/-/lodash.defaultsdeep-4.6.0.tgz#bec1024f85b1bd96cbea405b23c14ad6443a6f81"
-  integrity sha1-vsECT4WxvZbL6kBbI8FK1kQ6b4E=
+  version "4.6.1"
+  resolved "https://registry.yarnpkg.com/lodash.defaultsdeep/-/lodash.defaultsdeep-4.6.1.tgz#512e9bd721d272d94e3d3a63653fa17516741ca6"
+  integrity sha512-3j8wdDzYuWO3lM3Reg03MuQR957t287Rpcxp1njpEa8oDrikb+FwGdW3n+FELh/A6qib6yPit0j/pv9G/yeAqA==
 
 lodash.kebabcase@^4.1.1:
   version "4.1.1"
@@ -7112,7 +7112,7 @@ pify@^4.0.1:
 "pilgrims-shared@file:../pilgrims-shared":
   version "1.0.0"
   dependencies:
-    honeycomb-grid "^1.4.3"
+    honeycomb-grid "^1.4.4"
     uuid "^3.3.2"
 
 pinkie-promise@^2.0.0:
