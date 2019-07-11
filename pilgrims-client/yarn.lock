@@ -4425,10 +4425,10 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
-honeycomb-grid@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.3.tgz#86c0662aa0bec3600661fa07be2f1e3941501ef7"
-  integrity sha512-XkdaBBHrvNpHTQVOoj5pWVWu7Un2QvEVXGoLGdJgKrZ4v82wMEoJV0heb76/XelOEm07jIKnE6ALa0rsu2B8lQ==
+honeycomb-grid@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.4.tgz#592754c87cbb8c33e4bf0c51b4abb5115b50f01f"
+  integrity sha512-vV0voGFMoKbL6nS2kJvaDypnZafUAc/HeP3HP/aAXQXIuYtxWOY0+6VMFqHYojwgMDyuSrHkdMdEHg/toZCmTg==
   dependencies:
     axis.js "1.2.1"
 
@@ -5890,9 +5890,9 @@ lodash.memoize@^4.1.2:
   integrity sha1-vMbEmkKihA7Zl/Mj6tpezRguC/4=
 
 lodash.mergewith@^4.6.0:
-  version "4.6.1"
-  resolved "https://registry.yarnpkg.com/lodash.mergewith/-/lodash.mergewith-4.6.1.tgz#639057e726c3afbdb3e7d42741caa8d6e4335927"
-  integrity sha512-eWw5r+PYICtEBgrBE5hhlT6aAa75f411bgDz/ZL2KZqYV03USvucsxcHUIlGTDTECs1eunpI7HOV7U+WLDvNdQ==
+  version "4.6.2"
+  resolved "https://registry.yarnpkg.com/lodash.mergewith/-/lodash.mergewith-4.6.2.tgz#617121f89ac55f59047c7aec1ccd6654c6590f55"
+  integrity sha512-GK3g5RPZWTRSeLSpgP8Xhra+pnjBC56q9FZYe1d5RN3TJ35dbkGy3YqBSMbyCrlbi+CM9Z3Jk5yTL7RCsqboyQ==
 
 lodash.sortby@^4.7.0:
   version "4.7.0"
@@ -7112,7 +7112,7 @@ pify@^4.0.1:
 "pilgrims-shared@file:../pilgrims-shared":
   version "1.0.0"
   dependencies:
-    honeycomb-grid "^1.4.3"
+    honeycomb-grid "^1.4.4"
     uuid "^3.3.2"
 
 pinkie-promise@^2.0.0:
