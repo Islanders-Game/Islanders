@@ -7815,10 +7815,10 @@ pinkie@^2.0.0:
   resolved "https://registry.yarnpkg.com/pinkie/-/pinkie-2.0.4.tgz#72556b80cfa0d48a974e80e77248e80ed4f7f870"
   integrity sha1-clVrgM+g1IqXToDnckjoDtT3+HA=
 
-pixi-viewport@^4.1.0:
-  version "4.1.0"
-  resolved "https://registry.yarnpkg.com/pixi-viewport/-/pixi-viewport-4.1.0.tgz#5d28bbaef82bc54aa138f9215363dfc22c29fe87"
-  integrity sha512-tmuFahOwTPpsR/HfkSx2FWTf3XHKP3Ao0y4snWsRiuLKQOs9OKfgnbiQuOoRNsd8abcxtkOKSd08xgZMVv67og==
+pixi-viewport@^4.1.2:
+  version "4.1.2"
+  resolved "https://registry.yarnpkg.com/pixi-viewport/-/pixi-viewport-4.1.2.tgz#8b5b387c44db456160405a5372277434916c9d36"
+  integrity sha512-GSwReHcMX7fGbESFCgLcGBPNVk8ujlN3cKxEDnP16Ki5pnaU5GWImQx/hTbuhf/+D7nTC0fxeNMGrTkWO6lQ4A==
   dependencies:
     penner "^0.1.3"
 
