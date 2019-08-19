@@ -20,7 +20,7 @@
   },
   "homepage": "https://github.com/Awia00/Pilgrims#readme",
   "dependencies": {
-    "@types/body-parser": "^1.17.0",
+    "@types/body-parser": "^1.17.1",
     "@types/mongodb": "^3.2.3",
     "@types/socket.io": "^2.1.2",
     "body-parser": "^1.19.0",
