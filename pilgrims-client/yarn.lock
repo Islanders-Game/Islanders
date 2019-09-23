@@ -10000,9 +10000,9 @@ supports-color@^6.1.0:
     has-flag "^3.0.0"
 
 "svg-pan-zoom@github:ariutta/svg-pan-zoom":
-  version "3.6.0"
-  uid "28d36679fcb612c1cc61de2d7e9c77fd534dd3ba"
-  resolved "https://codeload.github.com/ariutta/svg-pan-zoom/tar.gz/28d36679fcb612c1cc61de2d7e9c77fd534dd3ba"
+  version "3.6.1"
+  uid "31e763aa8e011693cf6086a357011825168b897d"
+  resolved "https://codeload.github.com/ariutta/svg-pan-zoom/tar.gz/31e763aa8e011693cf6086a357011825168b897d"
 
 svg-tags@^1.0.0:
   version "1.0.0"
