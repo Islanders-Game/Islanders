@@ -12,7 +12,7 @@
     "@babel/polyfill": "^7.6.0",
     "@types/socket.io-client": "^1.4.32",
     "axios": "^0.18.1",
-    "honeycomb-grid": "^3.0.0",
+    "honeycomb-grid": "^3.0.1",
     "material-design-icons-iconfont": "^5.0.1",
     "pilgrims-shared": "file:../pilgrims-shared",
     "pixi-viewport": "^4.2.3",
