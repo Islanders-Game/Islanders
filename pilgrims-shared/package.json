@@ -21,7 +21,7 @@
     "typescript": "^3.6.3"
   },
   "dependencies": {
-    "honeycomb-grid": "^3.0.0",
+    "honeycomb-grid": "^3.0.1",
     "uuid": "^3.3.3"
   }
 }
