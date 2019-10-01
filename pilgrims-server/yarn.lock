@@ -59,10 +59,10 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.0.tgz#5a7306e367c539b9f6543499de8dd519fac37a8b"
   integrity sha512-A2TAGbTFdBw9azHbpVd+/FkdW2T6msN1uct1O9bH3vTerEHKZhTXJUQXy+hNq1B0RagfU8U+KBdqiZpxjhOUQA==
 
-"@types/mongodb@^3.3.3":
-  version "3.3.3"
-  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-3.3.3.tgz#749ce52f1d958601dcc4cea3e2839a734c2723e2"
-  integrity sha512-ymI6OZB4kqaSgLDFn7PYGNC+BmwbKPuw88F+gr9SGyAltcSKI6nYf+rj8hrHEsypnjtT5rA+dnmjXdPSgXgSgQ==
+"@types/mongodb@^3.3.4":
+  version "3.3.4"
+  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-3.3.4.tgz#4539ad83966230817d91f1098f77d1f7792b0874"
+  integrity sha512-cCOIAK3+dDA4H/HelWbk2R8fHB1GUpLuFi76b1NBUIyoaQvuw3TG1prWRrtHrSV6PRhZNRnICA3P+Lye0m7lGA==
   dependencies:
     "@types/bson" "*"
     "@types/node" "*"
@@ -404,10 +404,10 @@ has-cors@1.1.0:
   resolved "https://registry.yarnpkg.com/has-cors/-/has-cors-1.1.0.tgz#5e474793f7ea9843d1bb99c23eef49ff126fff39"
   integrity sha1-XkdHk/fqmEPRu5nCPu9J/xJv/zk=
 
-honeycomb-grid@^3.0.0:
-  version "3.0.0"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-3.0.0.tgz#3c944c78b2bf8ebdada814f480a35662cae1a84e"
-  integrity sha512-3vL8dQz87hLE5XBm2/S+J9q6i2qkCSF8VKWgLZJ7KfJkEVvy5abgJ0u1TeSdViTMQEQWp4ieuAYe/fMreBtb1A==
+honeycomb-grid@^3.0.1:
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-3.0.1.tgz#9c7c6cc301fac44d4dcca696eea6e44aa4c1395e"
+  integrity sha512-ScBM5flUcItEfQHDEsDp+ZnTM7N5ZS4bNwTw4lZQvC8estmQRAkhXu9EPCbwnAzwIeRS4MK8BXE7lI+nQm/Xrg==
   dependencies:
     axis.js "1.2.1"
 
@@ -594,7 +594,7 @@ path-to-regexp@0.1.7:
 "pilgrims-shared@file:../pilgrims-shared":
   version "1.0.0"
   dependencies:
-    honeycomb-grid "^3.0.0"
+    honeycomb-grid "^3.0.1"
     uuid "^3.3.3"
 
 proxy-addr@~2.0.5:
