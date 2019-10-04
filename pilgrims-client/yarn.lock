@@ -5073,10 +5073,10 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
-honeycomb-grid@^3.0.1:
-  version "3.0.1"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-3.0.1.tgz#9c7c6cc301fac44d4dcca696eea6e44aa4c1395e"
-  integrity sha512-ScBM5flUcItEfQHDEsDp+ZnTM7N5ZS4bNwTw4lZQvC8estmQRAkhXu9EPCbwnAzwIeRS4MK8BXE7lI+nQm/Xrg==
+honeycomb-grid@^3.1.0:
+  version "3.1.0"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-3.1.0.tgz#cc185de07ee0b028c31d72befaedc7202d9a8333"
+  integrity sha512-0wnO4LJbzA8c2pzEhQTLrk6aCEiC6TGyMjXWH+s7BBGtP2lz/TJ5fdy4zfbU1i4r7/quC/QT17F5RwOJBcMunw==
   dependencies:
     axis.js "1.2.1"
 
@@ -7850,7 +7850,7 @@ pify@^4.0.1:
 "pilgrims-shared@file:../pilgrims-shared":
   version "1.0.0"
   dependencies:
-    honeycomb-grid "^3.0.1"
+    honeycomb-grid "^3.1.0"
     uuid "^3.3.3"
 
 pinkie-promise@^2.0.0:
