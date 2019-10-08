@@ -35,6 +35,11 @@
   resolved "https://registry.yarnpkg.com/@types/node/-/node-10.12.9.tgz#a07bfa74331471e1dc22a47eb72026843f7b95c8"
   integrity sha512-eajkMXG812/w3w4a1OcBlaTwsFPO5F7fJ/amy+tieQxEMWBlbV1JGSjkFM+zkHNf81Cad+dfIRA+IBkvmvdAeA==
 
+"@types/node@^12.7.11":
+  version "12.7.11"
+  resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.11.tgz#be879b52031cfb5d295b047f5462d8ef1a716446"
+  integrity sha512-Otxmr2rrZLKRYIybtdG/sgeO+tHY20GxeDjcGmUnmmlCWyEnv2a2x1ZXBo3BTec4OiTXMQCiazB8NMBf0iRlFw==
+
 "@types/uuid@^3.4.4":
   version "3.4.4"
   resolved "https://registry.yarnpkg.com/@types/uuid/-/uuid-3.4.4.tgz#7af69360fa65ef0decb41fd150bf4ca5c0cefdf5"
@@ -1762,10 +1767,10 @@ home-or-tmp@^2.0.0:
     os-homedir "^1.0.0"
     os-tmpdir "^1.0.1"
 
-honeycomb-grid@^1.4.3:
-  version "1.4.3"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.3.tgz#86c0662aa0bec3600661fa07be2f1e3941501ef7"
-  integrity sha512-XkdaBBHrvNpHTQVOoj5pWVWu7Un2QvEVXGoLGdJgKrZ4v82wMEoJV0heb76/XelOEm07jIKnE6ALa0rsu2B8lQ==
+honeycomb-grid@^1.4.4:
+  version "1.4.4"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-1.4.4.tgz#592754c87cbb8c33e4bf0c51b4abb5115b50f01f"
+  integrity sha512-vV0voGFMoKbL6nS2kJvaDypnZafUAc/HeP3HP/aAXQXIuYtxWOY0+6VMFqHYojwgMDyuSrHkdMdEHg/toZCmTg==
   dependencies:
     axis.js "1.2.1"
 

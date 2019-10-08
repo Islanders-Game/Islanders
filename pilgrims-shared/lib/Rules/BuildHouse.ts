@@ -5,15 +5,10 @@ import { House } from '../Shared';
 import { BuildHouseAction } from '../Action';
 
 export const BuildHouse = ({ parameters }: BuildHouseAction) => (
-  w: Result<World>,
-): Result<World> => {
-  const stateEnsured = ensureGameState('Started')(w);
-  const playerExists = findPlayer(parameters.playerName)(stateEnsured);
-  const purchased = purchase(new House().cost)(parameters.playerName)(
-    playerExists,
-  );
-  const placed = placeHouse(parameters.coordinates)(parameters.playerName)(
-    purchased,
-  );
-  return placed;
-};
+  w: Result,
+): Result =>
+  w
+    .flatMap(ensureGameState('Started'))
+    .flatMap(findPlayer(parameters.playerName))
+    .flatMap(purchase(new House().cost)(parameters.playerName))
+    .flatMap(placeHouse(parameters.coordinates)(parameters.playerName));

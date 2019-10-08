@@ -5,49 +5,31 @@ import {
   findPlayer,
   assignNextPlayerTurn,
   assignInitalRessourcesToPlayers,
-  randomGameDiceRoll,
 } from './Helpers';
 import { GameState } from '../Shared';
 
-export const EndTurn = ({ parameters }: EndTurnAction) => (
-  w: Result<World>,
-): Result<World> => {
-  const playerEnsuredWorld = findPlayer(parameters.playerName)(w);
-  const playerAssigned = assignNextPlayerTurn(playerEnsuredWorld);
-  const stateChanged = stateChanger(playerAssigned);
-  const victory = checkVictory(parameters.playerName)(stateChanged);
-  return victory;
-};
+export const EndTurn = ({ parameters }: EndTurnAction) => (w: Result): Result =>
+  w
+    .flatMap(findPlayer(parameters.playerName))
+    .flatMap((w: World) => assignNextPlayerTurn(w))
+    .flatMap((w: World) => stateChanger(w))
+    .flatMap(checkVictory(parameters.playerName));
 
-const checkVictory = (playerName: string) => (r: Result<World>) => {
-  if (r.tag === 'Failure') {
-    return r;
-  }
-
-  const winner = r.value.players.find(
-    (p) => p.points >= r.value.pointsToWin && p.name === playerName,
+const checkVictory = (playerName: string) => (w: World) => {
+  const winner = w.players.find(
+    (p) => p.points >= w.pointsToWin && p.name === playerName,
   )!;
-  if (winner) {
-    return success({ winner, gameState: 'Finished', ...r.value });
-  }
-
-  return r;
+  return winner ? success({ winner, gameState: 'Finished', ...w }) : success(w);
 };
 
-const stateChanger = (r: Result<World>): Result<World> => {
-  if (r.tag === 'Failure') {
-    return r;
-  }
-
-  const round = Math.floor(
-    r.value.gameStatistics.turns / r.value.players.length,
-  );
-  if (round == 2 && r.value.gameState === 'Pregame') {
-    const players = assignInitalRessourcesToPlayers(r);
+const stateChanger = (w: World): Result => {
+  const round = Math.floor(w.gameStatistics.turns / w.players.length);
+  if (round == 2 && w.gameState === 'Pregame') {
+    const players = assignInitalRessourcesToPlayers(w);
     // initial resources
     const gameState: GameState = 'Started';
-    return success({ ...r.value, gameState, players });
+    return success({ ...w, gameState, players });
   } else {
-    return r;
+    return success(w);
   }
 };
