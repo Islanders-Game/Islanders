@@ -14,6 +14,8 @@ import {
   Action,
   DiceRollType,
   GameState,
+  Success,
+  success,
 } from '../../../../pilgrims-shared/dist/Shared';
 import { Socket, State as RootState } from '../store';
 
@@ -97,12 +99,13 @@ const mutations: MutationTree<State> = {
 const actions: ActionTree<State, RootState> = {
   async bindToWorld({ commit }: ActionContext<State, RootState>) {
     // Connect to socket and setup listener for listening to events.
-    Socket.on(SocketActions.newWorld, (result: Result<World>) => {
-      if (result.tag === 'Success') {
-        commit('setWorld', result.value);
-      }
-      if (result.tag === 'Failure') {
-        commit('setError', result.reason);
+    Socket.on(SocketActions.newWorld, (result: Result) => {
+      const world_updated = result.flatMap((world: World) =>  {
+        commit('setWorld', world);
+        return success(world);
+      });
+      if ('reason' in world_updated) {
+        commit('setError', world_updated.reason);
       }
     });
     Socket.emit(SocketActions.getWorld);
