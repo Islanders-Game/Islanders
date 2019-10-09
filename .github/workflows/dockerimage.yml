@@ -7,16 +7,13 @@ jobs:
   build:
  
     runs-on: ubuntu-latest
-    env:
-      time_of_build: "$(date +%s)"
-
     steps:
     - uses: actions/checkout@v1
     - name: Build the shared image
-      run: echo $time_of_build && docker build --tag pilgrims/pilgrims-shared:$time_of_build --build-arg BRANCH_TAG=$time_of_build ./pilgrims-shared
+      run: docker build --tag pilgrims/pilgrims-shared:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./pilgrims-shared
     - name: Build the server
-      run: echo $time_of_build && docker build --tag pilgrims/pilgrims-server:$time_of_build --build-arg BRANCH_TAG=$time_of_build ./pilgrims-server
+      run: docker build --tag pilgrims/pilgrims-server:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./pilgrims-server
     - name: Build the client
-      run: echo $time_of_build && docker build --tag pilgrims/pilgrims-client:$time_of_build --build-arg BRANCH_TAG=$time_of_build ./pilgrims-client
+      run: docker build --tag pilgrims/pilgrims-client:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./pilgrims-client
     - name: Run tests
-      run: docker run --rm pilgrims/pilgrims-shared:$time_of_build
+      run: docker run --rm pilgrims/pilgrims-shared:$(git log --pretty=format:'%h' -n 1)
