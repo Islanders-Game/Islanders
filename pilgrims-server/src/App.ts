@@ -63,14 +63,14 @@ app.get('/joingame', async (req, res) => {
     // to ensure the await is handled properly.
   } finally {
     if (!game) {
-      res.send(fail('Game does not exist!'));
+      res.send('Game does not exist!');
     } else if (
       gamePlayerSockets[gameID][playerName] &&
       gamePlayerSockets[gameID][playerName] !== Disconnected
     ) {
       res.send(fail('A player with that name already exists on this game!'));
     }
-    res.send(success('Game exists and player name is not taken'));
+    res.send('Game exists and player name is not taken');
     db.close();
   }
 });

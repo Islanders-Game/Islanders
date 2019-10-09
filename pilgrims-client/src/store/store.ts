@@ -41,13 +41,13 @@ const actionTree: ActionTree<any, any> = {
     const query = `?playerName=${gameStartInfo.playerName}&gameId=${
       gameStartInfo.gameId
     }`;
-    const { data }: { data: Result<string> } = await Axios.get(
+    const { data }: { data: Result } = await Axios.get(
       `${host}joingame${query}`,
     );
 
-    if (data.tag === 'Failure') {
-      throw Error(data.reason);
-    }
+    data.onFailure(r => {
+      throw Error(r);
+    });
 
     const socket = io.connect(`${host}${gameStartInfo.gameId}`);
     socket.emit('join', gameStartInfo.playerName);

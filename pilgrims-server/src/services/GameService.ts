@@ -30,7 +30,11 @@ export class GameService {
     console.info(`[${gameID}] 'init_world' with World:`);
     console.info(init);
     const r = await this.gameRepository.getWorld(gameID);
-    if (r.tag === 'Success' && r.value.gameState !== 'Started') {
+    if (
+      'value' in r &&
+      r.tag === 'Success' &&
+      r.value.gameState !== 'Started'
+    ) {
       await this.gameRepository.createGame(init);
       namespace.emit(SocketActions.newWorld, success(init));
     }
@@ -42,7 +46,7 @@ export class GameService {
     namespace: SocketIO.Namespace,
   ) {
     const result = await this.gameRepository.getWorld(gameID);
-    if (result.tag === 'Failure') {
+    if ('reason' in result) {
       console.info(`[${gameID}] 'Failure' with reason: ${result.reason}`);
       return;
     }
@@ -59,10 +63,10 @@ export class GameService {
     namespace.emit(SocketActions.newWorld, result);
   }
 
-  public async addPlayer(gameID: string, name: string): Promise<Result<World>> {
+  public async addPlayer(gameID: string, name: string): Promise<Result> {
     try {
-      const result: Result<World> = await this.gameRepository.getWorld(gameID);
-      if (result.tag === 'Failure') return result;
+      const result: Result = await this.gameRepository.getWorld(gameID);
+      if ('reason' in result) return result;
       if (result.value.gameState === 'Started') return success(result.value); // spectator mode
 
       const player = new Player(name);
@@ -74,30 +78,24 @@ export class GameService {
       };
 
       await this.gameRepository.updateGame(gameID, world);
-      return { tag: 'Success', value: world };
+      return success(world);
     } catch (ex) {
-      return {
-        tag: 'Failure',
-        reason: `Could not add player ${name}! Ex: ${ex}`,
-      };
+      return fail(`Could not add player ${name}! Ex: ${ex}`);
     }
   }
 
-  public async applyAction(id: string, action: Action): Promise<Result<World>> {
+  public async applyAction(id: string, action: Action): Promise<Result> {
     console.log(`Applying action ${action.type}`);
     const toApply = this.mapRules([action]);
-    if (toApply.tag === 'Failure') return toApply;
     const result = await this.gameRepository.getWorld(id);
-    if (result.tag === 'Failure') return result;
-    const apply = toApply.value.reduce(ruleReducer, result);
+    if ('reason' in result) return result;
+    const apply = toApply.reduce(ruleReducer, result);
     if (apply.tag === 'Failure') return apply;
-
-    this.gameRepository.updateGame(id, apply.value);
+    if ('value' in apply) this.gameRepository.updateGame(id, apply.value);
     return apply;
   }
 
-  private mapRules(actions: Action[]): Result<Rule[]> {
-    if (!actions) return { tag: 'Failure', reason: 'No rules given!' };
+  private mapRules(actions: Action[]): Rule[] {
     const mapped: (Rule | string)[] = actions.map((a) => {
       switch (a.type) {
         case 'buildCity':
@@ -132,10 +130,6 @@ export class GameService {
           return `Could not map Action: { ${Object.keys(a).join(', ')} }!`;
       }
     });
-    if (mapped.some((r) => typeof r === 'string')) {
-      const reasons = mapped.filter((r) => typeof r === 'string').join(', ');
-      return { tag: 'Failure', reason: reasons };
-    }
-    return { tag: 'Success', value: mapped as Rule[] };
+    return mapped.filter((r) => typeof r === 'string') as Rule[];
   }
 }

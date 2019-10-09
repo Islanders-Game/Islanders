@@ -14,22 +14,14 @@ export class GameRepository {
     this.mongoURL = dbConnectionString;
   }
 
-  public async createGame(world: World): Promise<Result<string>> {
+  public async createGame(world: World): Promise<string> {
     const db = monk(this.mongoURL);
-    try {
-      const result = await db.get(this.tableName).insert(world);
-      return success(result._id);
-    } catch (ex) {
-      return fail(ex);
-    } finally {
-      db.close();
-    }
+    const result: { _id: string } = await db.get(this.tableName).insert(world);
+    db.close();
+    return result._id;
   }
 
-  public async updateGame(
-    gameId: string,
-    world: World,
-  ): Promise<Result<World>> {
+  public async updateGame(gameId: string, world: World): Promise<Result> {
     const db = monk(this.mongoURL);
     try {
       await db.get(this.tableName).update(new ObjectId(gameId), world);
@@ -41,7 +33,7 @@ export class GameRepository {
     }
   }
 
-  public async getWorld(gameId: string): Promise<Result<World>> {
+  public async getWorld(gameId: string): Promise<Result> {
     const db = monk(this.mongoURL);
     try {
       const result = await db.get(this.tableName).findOne(new ObjectId(gameId));

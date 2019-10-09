@@ -9,21 +9,17 @@ import {
 } from './Helpers';
 
 export const HarborTrade = ({ parameters }: HarborTradeAction) => (
-  w: Result<World>,
-): Result<World> => {
-  const playerExists = findPlayer(parameters.playerName)(w);
-  const ownsHarbor = playerHasHarbor(
-    parameters.playerName,
-    parameters.harborType,
-  )(playerExists);
-  const matches = resourcesMatchHarbor(
-    parameters.transfer,
-    parameters.harborType,
-  )(ownsHarbor);
-  const has = hasResources(parameters.playerName, parameters.transfer)(matches);
-  return transferResources(
-    parameters.playerName,
-    parameters.transfer,
-    parameters.receive,
-  )(has);
-};
+  w: Result,
+): Result =>
+  w
+    .flatMap(findPlayer(parameters.playerName))
+    .flatMap(playerHasHarbor(parameters.playerName, parameters.harborType))
+    .flatMap(resourcesMatchHarbor(parameters.transfer, parameters.harborType))
+    .flatMap(hasResources(parameters.playerName, parameters.transfer))
+    .flatMap(
+      transferResources(
+        parameters.playerName,
+        parameters.transfer,
+        parameters.receive,
+      ),
+    );
