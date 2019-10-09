@@ -11,10 +11,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build the shared image
-      run: docker build --tag pilgrims/pilgrims-shared:$(date +%s) ./pilgrims-shared
+      run: docker build --tag pilgrims/pilgrims-shared:$(date +%s) --build-arg BRANCH_TAG=$(date +%s) ./pilgrims-shared
     - name: Build the server
-      run: docker build --tag pilgrims/pilgrims-server:$(date +%s) ./pilgrims-server
+      run: docker build --tag pilgrims/pilgrims-server:$(date +%s) --build-arg BRANCH_TAG=$(date +%s) ./pilgrims-server
     - name: Build the client
-      run: docker build --tag pilgrims/pilgrims-client:$(date +%s) ./pilgrims-client
+      run: docker build --tag pilgrims/pilgrims-client:$(date +%s) --build-arg BRANCH_TAG=$(date +%s) ./pilgrims-client
     - name: Run tests
       run: docker run --rm pilgrims/pilgrims-shared:$(date +%s)
