@@ -13,10 +13,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build the shared image
-      run: docker build --tag pilgrims/pilgrims-shared:$(time_of_build) --build-arg BRANCH_TAG=$(time_of_build) ./pilgrims-shared
+      run: docker build --tag pilgrims/pilgrims-shared:$time_of_build --build-arg BRANCH_TAG=$time_of_build ./pilgrims-shared
     - name: Build the server
-      run: docker build --tag pilgrims/pilgrims-server:$(time_of_build) --build-arg BRANCH_TAG=$(time_of_build) ./pilgrims-server
+      run: docker build --tag pilgrims/pilgrims-server:$time_of_build --build-arg BRANCH_TAG=$time_of_build ./pilgrims-server
     - name: Build the client
-      run: docker build --tag pilgrims/pilgrims-client:$(time_of_build) --build-arg BRANCH_TAG=$(time_of_build) ./pilgrims-client
+      run: docker build --tag pilgrims/pilgrims-client:$time_of_build --build-arg BRANCH_TAG=$time_of_build ./pilgrims-client
     - name: Run tests
-      run: docker run --rm pilgrims/pilgrims-shared:$(time_of_build)
+      run: docker run --rm pilgrims/pilgrims-shared:$time_of_build
