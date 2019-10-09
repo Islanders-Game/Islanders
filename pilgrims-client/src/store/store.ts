@@ -45,9 +45,9 @@ const actionTree: ActionTree<any, any> = {
       `${host}joingame${query}`,
     );
 
-    if ('reason' in data) {
-        throw Error(data.reason);
-    }
+    data.onFailure(r => {
+      throw Error(r);
+    });
 
     const socket = io.connect(`${host}${gameStartInfo.gameId}`);
     socket.emit('join', gameStartInfo.playerName);

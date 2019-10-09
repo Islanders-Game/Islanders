@@ -104,9 +104,9 @@ const actions: ActionTree<State, RootState> = {
         commit('setWorld', world);
         return success(world);
       });
-      if ('reason' in world_updated) {
-        commit('setError', world_updated.reason);
-      }
+      world_updated.onFailure(r => {
+        commit('setError', r);
+      });
     });
     Socket.emit(SocketActions.getWorld);
   },

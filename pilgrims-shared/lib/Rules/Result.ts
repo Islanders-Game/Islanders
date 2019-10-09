@@ -10,6 +10,9 @@ export class Failure {
   flatMap<World>(f: (t: World) => Result): Result {
     return this;
   }
+  onFailure(f: (reason: string) => void) {
+    f(this.reason);
+  }
 }
 export class Success {
   public tag: Kind = 'Success';
@@ -20,6 +23,7 @@ export class Success {
   flatMap(f: (t: World) => Result): Result {
     return f(this.value);
   }
+  onFailure(f: (reason: string) => void) { }
 }
 export type Result = Success | Failure;
 
