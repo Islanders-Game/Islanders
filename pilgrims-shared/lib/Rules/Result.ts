@@ -1,8 +1,6 @@
 import { World } from '../World';
 
-export type Kind = 'Failure' | 'Success';
 export class Failure {
-  public tag: Kind = 'Failure';
   public reason: string;
   constructor(reason: string) {
     this.reason = reason;
@@ -10,18 +8,23 @@ export class Failure {
   flatMap<World>(f: (t: World) => Result): Result {
     return this;
   }
+  async flatMapAsync(f: (t: World) => Promise<Result>): Promise<Result> {
+    return this;
+  }
   onFailure(f: (reason: string) => void) {
     f(this.reason);
   }
 }
 export class Success {
-  public tag: Kind = 'Success';
   public value: World;
   constructor(value: World) {
     this.value = value;
   }
   flatMap(f: (t: World) => Result): Result {
     return f(this.value);
+  }
+  async flatMapAsync(f: (t: World) => Promise<Result>): Promise<Result> {
+    return await f(this.value);
   }
   onFailure(f: (reason: string) => void) { }
 }
