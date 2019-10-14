@@ -1,9 +1,10 @@
 import express from 'express';
 import http from 'http';
-import { ObjectId } from 'mongodb';
+import mongodb from 'mongodb';
 import monk from 'monk';
-import * as dotenv from 'dotenv';
-import { success, fail, World } from '../../pilgrims-shared/dist/Shared';
+import dotenv from 'dotenv';
+import { Request, Response, NextFunction } from 'express';
+import { fail, World } from '../../pilgrims-shared/dist/Shared';
 import { GameSocket } from './GameSocket';
 import { GameService } from './services/GameService';
 import { ChatService } from './services/ChatService';
@@ -29,7 +30,7 @@ export type PlayerSockets = { [playerName: string]: string };
 export const Disconnected: 'Disconnect' = 'Disconnect';
 const gamePlayerSockets: GamePlayerSockets = {};
 
-app.use(function(req, res, next) {
+app.use((req: Request, res: Response, next: NextFunction) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
     'Access-Control-Allow-Headers',
@@ -38,7 +39,7 @@ app.use(function(req, res, next) {
   next();
 });
 
-app.get('/newgame', async (_, res) => {
+app.get('/newgame', async (_: Request, res: Response) => {
   const world: World = new World();
   const db = monk(mongoURL);
   const result = await db.get('games').insert(world);
@@ -51,14 +52,16 @@ app.get('/newgame', async (_, res) => {
   db.close();
 });
 
-app.get('/joingame', async (req, res) => {
+app.get('/joingame', async (req: Request, res: Response) => {
   const playerName = req.query.playerName;
   const gameID = req.query.gameId;
   console.info(`[${gameID}] Received /joingame GET with player: ${playerName}`);
   const db = monk(mongoURL);
   let game: World | undefined;
   try {
-    game = (await db.get('games').findOne(new ObjectId(gameID))) as World;
+    game = (await db
+      .get('games')
+      .findOne(new mongodb.ObjectId(gameID))) as World;
   } catch (ex) {
     // to ensure the await is handled properly.
   } finally {
@@ -76,7 +79,7 @@ app.get('/joingame', async (req, res) => {
 });
 
 //Initialize
-app.get('/', function(req, res) {
+app.get('/', function(_: Request, res: Response) {
   res.sendFile(__dirname + '/index.html');
 });
 

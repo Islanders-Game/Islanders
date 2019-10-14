@@ -61,6 +61,13 @@
     "@types/bson" "*"
     "@types/node" "*"
 
+"@types/monk@^6.0.0":
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/@types/monk/-/monk-6.0.0.tgz#236750988e24d92c674529a81b9a296f8bbc3763"
+  integrity sha512-9qy4Gva0uVgaQsDqlcWD+XOXUmgInPAoxyyoN8uFUTjNFvswyCH1hwpnYuh2MVr60ekZgYiquWEjBYvfYfE1Jw==
+  dependencies:
+    monk "*"
+
 "@types/node@*":
   version "12.7.12"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.12.tgz#7c6c571cc2f3f3ac4a59a5f2bd48f5bdbc8653cc"
@@ -525,7 +532,7 @@ monk-middleware-wait-for-connection@^0.2.0:
   resolved "https://registry.yarnpkg.com/monk-middleware-wait-for-connection/-/monk-middleware-wait-for-connection-0.2.0.tgz#312958d30e588b57d09754dd7c97b4843316835a"
   integrity sha1-MSlY0w5Yi1fQl1TdfJe0hDMWg1o=
 
-monk@^7.1.1:
+monk@*, monk@^7.1.1:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/monk/-/monk-7.1.1.tgz#4b1653fe51c3ca7d6780e95dcaa7fcb5cf931b77"
   integrity sha512-7H4bKRUiopLkWsufom7xUZpflz/Ees4V3QXLKZMxMdh4B4R2zultrTUjPXj37DOijvj0PluJMmkffrsUkBVxCA==

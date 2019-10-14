@@ -6,8 +6,8 @@
   "scripts": {
     "build": "tsc",
     "test": "echo \"Error: no test specified\" && exit 1",
-    "dev": "tsc && node dist/App.js",
-    "start": "node dist/App.js"
+    "dev": "tsc && node -r esm dist/App.js",
+    "start": "node -r esm dist/App.js"
   },
   "repository": {
     "type": "git",
@@ -20,11 +20,9 @@
   },
   "homepage": "https://github.com/Awia00/Pilgrims#readme",
   "dependencies": {
-    "@types/body-parser": "^1.17.1",
-    "@types/mongodb": "^3.3.6",
-    "@types/socket.io": "^2.1.4",
     "body-parser": "^1.19.0",
     "dotenv": "^8.1.0",
+    "esm": "^3.2.25",
     "express": "^4.17.1",
     "mongodb": "^3.3.2",
     "monk": "^7.1.1",
@@ -36,6 +34,9 @@
     "@types/dotenv": "^6.1.1",
     "@types/express": "^4.17.1",
     "@types/uuid": "^3.4.5",
-    "typescript": "^3.6.4"
+    "typescript": "^3.6.4",
+    "@types/body-parser": "^1.17.1",
+    "@types/mongodb": "^3.3.6",
+    "@types/socket.io": "^2.1.4"
   }
 }
