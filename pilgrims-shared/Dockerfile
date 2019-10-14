@@ -8,5 +8,5 @@ RUN ["yarn", "install"]
 
 COPY . /app
 
-RUN ["npm", "run", "build"]
-CMD ["npm", "run", "test"]
+RUN ["yarn", "build"]
+CMD ["yarn", "run", "test"]

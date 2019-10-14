@@ -21,7 +21,7 @@ RUN yarn install
 
 # Build app
 COPY . .
-RUN npm run build
+RUN yarn build
 
 # Runtime image
 FROM nginx:alpine
