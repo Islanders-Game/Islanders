@@ -520,10 +520,10 @@ monk-middleware-wait-for-connection@^0.2.0:
   resolved "https://registry.yarnpkg.com/monk-middleware-wait-for-connection/-/monk-middleware-wait-for-connection-0.2.0.tgz#312958d30e588b57d09754dd7c97b4843316835a"
   integrity sha1-MSlY0w5Yi1fQl1TdfJe0hDMWg1o=
 
-monk@^7.1.0:
-  version "7.1.0"
-  resolved "https://registry.yarnpkg.com/monk/-/monk-7.1.0.tgz#60b64f0e699e85d6dbb3390ed7b5acf1f15669f9"
-  integrity sha512-ElfUWyCnJrZfMaAN9YXFnlUJ11JPcYW0o1T+9DtDsdASyXTxNSzy4JSaatQ8+3vJQaXUihbbJM5bdwxhpdm4gQ==
+monk@^7.1.1:
+  version "7.1.1"
+  resolved "https://registry.yarnpkg.com/monk/-/monk-7.1.1.tgz#4b1653fe51c3ca7d6780e95dcaa7fcb5cf931b77"
+  integrity sha512-7H4bKRUiopLkWsufom7xUZpflz/Ees4V3QXLKZMxMdh4B4R2zultrTUjPXj37DOijvj0PluJMmkffrsUkBVxCA==
   dependencies:
     debug "*"
     mongodb "^3.2.3"
