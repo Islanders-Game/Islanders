@@ -8,8 +8,10 @@ import {
 } from './Helpers';
 import { GameState } from '../Shared';
 
-export const EndTurn = ({ parameters }: EndTurnAction) => (w: Result): Result =>
-  w
+export const EndTurn = ({ parameters }: EndTurnAction) => (
+  world: Result,
+): Result =>
+  world
     .flatMap(findPlayer(parameters.playerName))
     .flatMap((w: World) => assignNextPlayerTurn(w))
     .flatMap((w: World) => stateChanger(w))
@@ -24,7 +26,7 @@ const checkVictory = (playerName: string) => (w: World) => {
 
 const stateChanger = (w: World): Result => {
   const round = Math.floor(w.gameStatistics.turns / w.players.length);
-  if (round == 2 && w.gameState === 'Pregame') {
+  if (round === 2 && w.gameState === 'Pregame') {
     const players = assignInitalRessourcesToPlayers(w);
     // initial resources
     const gameState: GameState = 'Started';

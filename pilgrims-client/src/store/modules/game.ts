@@ -100,11 +100,11 @@ const actions: ActionTree<State, RootState> = {
   async bindToWorld({ commit }: ActionContext<State, RootState>) {
     // Connect to socket and setup listener for listening to events.
     Socket.on(SocketActions.newWorld, (result: Result) => {
-      const world_updated = result.flatMap((world: World) =>  {
+      const worldUpdated = result.flatMap((world: World) => {
         commit('setWorld', world);
         return success(world);
       });
-      world_updated.onFailure(r => {
+      worldUpdated.onFailure((r) => {
         commit('setError', r);
       });
     });

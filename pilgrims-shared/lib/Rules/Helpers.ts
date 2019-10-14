@@ -36,16 +36,36 @@ export const numberOfResourcesForPlayer = (
 export const randomGameDiceRoll = (): DiceRollType => {
   // See https://www.catan.com/en/download/?SoC_rv_Rules_091907.pdf
   const roll = Math.random();
-  if (roll <= 0.03) return 2;
-  if (roll > 0.03 && roll <= 0.06) return 12;
-  if (roll > 0.06 && roll <= 0.12) return 3;
-  if (roll > 0.12 && roll <= 0.18) return 11;
-  if (roll > 0.18 && roll <= 0.26) return 4;
-  if (roll > 0.26 && roll <= 0.34) return 10;
-  if (roll > 0.34 && roll <= 0.45) return 5;
-  if (roll > 0.45 && roll <= 0.56) return 9;
-  if (roll > 0.56 && roll <= 0.7) return 6;
-  if (roll > 0.7 && roll <= 0.84) return 8;
+  if (roll <= 0.03) {
+    return 2;
+  }
+  if (roll > 0.03 && roll <= 0.06) {
+    return 12;
+  }
+  if (roll > 0.06 && roll <= 0.12) {
+    return 3;
+  }
+  if (roll > 0.12 && roll <= 0.18) {
+    return 11;
+  }
+  if (roll > 0.18 && roll <= 0.26) {
+    return 4;
+  }
+  if (roll > 0.26 && roll <= 0.34) {
+    return 10;
+  }
+  if (roll > 0.34 && roll <= 0.45) {
+    return 5;
+  }
+  if (roll > 0.45 && roll <= 0.56) {
+    return 9;
+  }
+  if (roll > 0.56 && roll <= 0.7) {
+    return 6;
+  }
+  if (roll > 0.7 && roll <= 0.84) {
+    return 8;
+  }
   return 7;
 };
 
@@ -166,7 +186,9 @@ export const hasResources = (playerName: string, check: Resources) => (
   const has = resourcesAreNonNegative(
     subtractResources(player.resources, check),
   );
-  if (!has) return fail('You do not have the resources for this!');
+  if (!has) {
+    return fail('You do not have the resources for this!');
+  }
   return success(w);
 };
 
@@ -203,16 +225,17 @@ export const playerHasHarbor = (playerName: string, harborType: HarborType) => (
 ): Result => {
   const player = w.players[w.currentPlayer];
   const tiles = w.map;
-  const hasHarbor = player.houses.some((h) => {
-    const hexes = neighbouringHexCoords(h.position);
+  const hasHarbor = player.houses.some((house) => {
+    const hexes = neighbouringHexCoords(house.position);
     return hexes.some(
       (h) =>
-        tiles.find((t) => t.coord.x == h.x && t.coord.y == h.y)!.type ==
+        tiles.find((t) => t.coord.x === h.x && t.coord.y === h.y)!.type ===
         harborType,
     );
   });
-  if (!hasHarbor)
+  if (!hasHarbor) {
     return fail('You do not have a house on a harbor for this trade!');
+  }
   return success(w);
 };
 
@@ -365,12 +388,12 @@ export const playCard = (
   card: DevelopmentCard,
   chosenResources: TileType | [TileType, TileType],
 ) => (w: World) => {
-  //Nasty... Couldn't see any other way.
-  //Clone existing card array, modify card played state.
+  // Nasty... Couldn't see any other way.
+  // Clone existing card array, modify card played state.
   const newCards = (w.players
     .find((p) => p.name === playerName)!
     .devCards.slice(0)
-    .find((c) => c.type == card.type && !c.played)!.played = true);
+    .find((c) => c.type === card.type && !c.played)!.played = true);
 
   if (card.type === 'Victory Point') {
     const players = w.players.map((pl) =>
@@ -463,7 +486,7 @@ export const addAmountToResourceOfType = (
   rs: Resources,
   type: TileType,
 ) => {
-  let toAdd: Resources = { wood: 0, grain: 0, stone: 0, wool: 0, clay: 0 };
+  const toAdd: Resources = { wood: 0, grain: 0, stone: 0, wool: 0, clay: 0 };
   switch (type) {
     case 'Wood':
       toAdd.wood += amount;
@@ -547,7 +570,7 @@ export const bankTrade = (start: MatrixCoordinate, end: MatrixCoordinate) => (
 };
 
 export const diceRollWasSeven = (w: World) => {
-  if (w.currentDie == 7) {
+  if (w.currentDie === 7) {
     return success(w);
   }
   return fail('You cannot move the Thief if you have not rolled a 7!');

@@ -45,7 +45,7 @@ const actionTree: ActionTree<any, any> = {
       `${host}joingame${query}`,
     );
 
-    data.onFailure(r => {
+    data.onFailure((r) => {
       throw Error(r);
     });
 

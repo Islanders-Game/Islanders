@@ -8,9 +8,9 @@ import {
 } from './Helpers';
 
 export const MoveThief = ({ parameters }: MoveThiefAction) => (
-  w: Result,
+  world: Result,
 ): Result =>
-  w
+  world
     .flatMap(ensureGameState('Started'))
     .flatMap(findPlayer(parameters.playerName))
     .flatMap((w: World) => diceRollWasSeven(w))

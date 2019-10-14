@@ -1,5 +1,5 @@
 export class GameStatistics {
-  turns: number;
+  public turns: number;
   constructor() {
     this.turns = 0;
   }
