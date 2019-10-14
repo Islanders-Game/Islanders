@@ -6,6 +6,8 @@ import {
   resourcesAreNonNegative,
   purchase,
   GameStatistics,
+  Failure,
+  Success,
 } from '../lib/Shared';
 import { empty } from '../lib/Resources';
 
@@ -83,10 +85,10 @@ describe('Checking for purchaseability', () => {
         rounds: 0,
       },
     };
-  
+
 
     const result = purchase(res)(p.name)(w);
-    expect(result.tag === 'Success');
+    expect(result instanceof Success);
   });
 
   test('Player can NOT afford purchase', () => {
@@ -115,6 +117,6 @@ describe('Checking for purchaseability', () => {
     };
 
     const result = purchase(cost)(p.name)(w);
-    expect(result.tag === 'Failure');
+    expect(result instanceof Failure);
   });
 });
