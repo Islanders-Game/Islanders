@@ -1,24 +1,38 @@
-version: '3.5'
+version: "3.5"
 services:
+  reverse-proxy:
+    container_name: traefik_pilgrims
+    image: traefik # The official Traefik docker image
+    command: --api --docker # Enables the web UI and tells Træfik to listen to docker
+    domainname: localhost
+    restart: unless-stopped
+    ports:
+      - "80:80" # The HTTP port
+      - "443:443" # The HTTP port
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock # So that Traefik can listen to the Docker events
+    networks:
+      traefik_proxy:
+
   mongo:
     image: mongo
     volumes:
-      - ./data:/data/db
+      - pilgrims-mongo-data:/data/db
     labels:
-      - 'traefik.port=27017'
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=traefik_proxy'
-      - 'traefik.backend=pilgrims-mongodb'
-      - 'traefik.frontend.rule=Host:pilgrims-db.localhost'
+      - "traefik.port=27017"
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.backend=pilgrims-mongodb"
+      - "traefik.frontend.rule=Host:pilgrims-db.localhost"
 
   pilgrims-client:
     image: pilgrims/pilgrims-client:latest
     restart: unless-stopped
     labels:
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=traefik_proxy'
-      - 'traefik.backend=pilgrims-client'
-      - 'traefik.frontend.rule=Host:pilgrims.localhost'
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.backend=pilgrims-client"
+      - "traefik.frontend.rule=Host:pilgrims.localhost"
     networks:
       - traefik_proxy
 
@@ -26,14 +40,17 @@ services:
     image: pilgrims/pilgrims-server:latest
     restart: unless-stopped
     labels:
-      - 'traefik.port=3000'
-      - 'traefik.enable=true'
-      - 'traefik.docker.network=traefik_proxy'
-      - 'traefik.backend=pilgrims-server'
-      - 'traefik.frontend.rule=Host:pilgrims-server.localhost'
+      - "traefik.port=3000"
+      - "traefik.enable=true"
+      - "traefik.docker.network=traefik_proxy"
+      - "traefik.backend=pilgrims-server"
+      - "traefik.frontend.rule=Host:pilgrims-server.localhost"
     networks:
       - traefik_proxy
 
 networks:
   traefik_proxy:
     external: true
+
+volumes:
+  pilgrims-mongo-data:
