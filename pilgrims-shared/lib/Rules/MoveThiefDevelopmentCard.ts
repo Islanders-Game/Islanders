@@ -9,15 +9,9 @@ import {
 
 export const MoveThiefDevelopmentCard = ({
   parameters,
-}: MoveThiefDevCardAction) => (w: Result<World>): Result<World> => {
-  if (w.tag === 'Failure') {
-    return w;
-  }
-
-  const stateEnsured = ensureGameState('Started')(w);
-  const correctPlayer = findPlayer(parameters.playerName)(stateEnsured);
-  const devCardHasNotBeenPlayed = developmentCardHasNotBeenPlayed(
-    parameters.playedCard,
-  )(correctPlayer);
-  return moveThief(parameters.coordinates)(devCardHasNotBeenPlayed);
-};
+}: MoveThiefDevCardAction) => (w: Result): Result =>
+  w
+    .flatMap(ensureGameState('Started'))
+    .flatMap(findPlayer(parameters.playerName))
+    .flatMap(developmentCardHasNotBeenPlayed(parameters.playedCard))
+    .flatMap(moveThief(parameters.coordinates));

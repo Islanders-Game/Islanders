@@ -4,27 +4,20 @@ import { findPlayer, hasResources, transferResources } from './Helpers';
 import { empty } from '../Resources';
 
 export const PlayerTrade = ({ parameters }: PlayerTradeAction) => (
-  w: Result<World>,
-): Result<World> => {
-  const playerExists = findPlayer(parameters.playerName)(w);
-  const otherPlayerExists = findPlayer(parameters.otherPlayerName)(
-    playerExists,
-  );
-  const playerHas = hasResources(parameters.playerName, parameters.resources)(
-    otherPlayerExists,
-  );
-  const otherHas = hasResources(parameters.playerName, parameters.resources)(
-    playerHas,
-  );
-  const addToPlayerResources = transferResources(
-    parameters.playerName,
-    empty,
-    parameters.resources,
-  )(otherHas);
-  const subtractOtherPlayerResources = transferResources(
-    parameters.otherPlayerName,
-    parameters.resources,
-    empty,
-  )(addToPlayerResources);
-  return subtractOtherPlayerResources;
-};
+  w: Result,
+): Result =>
+  w
+    .flatMap(findPlayer(parameters.playerName))
+    .flatMap(findPlayer(parameters.otherPlayerName))
+    .flatMap(hasResources(parameters.playerName, parameters.resources))
+    .flatMap(hasResources(parameters.playerName, parameters.resources))
+    .flatMap(
+      transferResources(parameters.playerName, empty, parameters.resources),
+    )
+    .flatMap(
+      transferResources(
+        parameters.otherPlayerName,
+        parameters.resources,
+        empty,
+      ),
+    );

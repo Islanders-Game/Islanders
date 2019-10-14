@@ -1,0 +1,19 @@
+name: Docker Image CI
+
+on: [push]
+
+jobs:
+
+  build:
+ 
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build the shared image
+      run: docker build --tag pilgrims/pilgrims-shared:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./pilgrims-shared
+    - name: Build the server
+      run: docker build --tag pilgrims/pilgrims-server:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./pilgrims-server
+    - name: Build the client
+      run: docker build --tag pilgrims/pilgrims-client:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./pilgrims-client
+    - name: Run tests
+      run: docker run --rm pilgrims/pilgrims-shared:$(git log --pretty=format:'%h' -n 1)

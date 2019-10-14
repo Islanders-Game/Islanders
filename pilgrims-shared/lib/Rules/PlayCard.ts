@@ -3,13 +3,15 @@ import { Result, World } from '../Shared';
 import { ensureGameState, playCard, findPlayer } from './Helpers';
 
 export const PlayCard = ({ parameters }: PlayCardAction) => (
-  w: Result<World>,
-): Result<World> => {
-  const stateEnsured = ensureGameState('Started')(w);
-  const validatePlayer = findPlayer(parameters.playerName)(stateEnsured);
-  return playCard(
-    parameters.playerName,
-    parameters.card,
-    parameters.chosenResources,
-  )(validatePlayer);
-};
+  w: Result,
+): Result =>
+  w
+    .flatMap(ensureGameState('Started'))
+    .flatMap(findPlayer(parameters.playerName))
+    .flatMap(
+      playCard(
+        parameters.playerName,
+        parameters.card,
+        parameters.chosenResources,
+      ),
+    );
