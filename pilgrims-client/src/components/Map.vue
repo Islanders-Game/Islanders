@@ -13,7 +13,7 @@ import {
   Texture,
   Container,
 } from 'pixi.js';
-import Viewport from 'pixi-viewport';
+import { Viewport } from 'pixi-viewport';
 import {
   World,
   Tile,
@@ -322,7 +322,8 @@ export default class Map extends Vue {
 
   private SetupCanvas(): void {
     this.app = new Application({
-      autoResize: true,
+      //TODO: This is unsupported in PIXI v4 and needs to be done differently:
+      //autoResize: true,
       resolution: 2,
       transparent: true,
       antialias: true,
