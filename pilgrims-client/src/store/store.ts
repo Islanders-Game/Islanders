@@ -7,6 +7,7 @@ import io from 'socket.io-client';
 import { ActionTree, ActionContext } from 'vuex';
 import Axios from 'axios';
 import { Result } from '../../../pilgrims-shared/dist/Shared';
+import { onFailure} from '../helpers/FlatMapper';
 
 Vue.use(Vuex);
 
@@ -45,7 +46,7 @@ const actionTree: ActionTree<any, any> = {
       `${host}joingame${query}`,
     );
 
-    data.onFailure((r) => {
+    onFailure(data, (r) => {
       throw Error(r);
     });
 

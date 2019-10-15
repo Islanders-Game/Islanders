@@ -5,10 +5,10 @@ export class Failure {
   constructor(reason: string) {
     this.reason = reason;
   }
-  public flatMap(f: (t: World) => Result): Result {
+  public flatMap(_: (t: World) => Result): Result {
     return this;
   }
-  public async flatMapAsync(f: (t: World) => Promise<Result>): Promise<Result> {
+  public async flatMapAsync(_: (t: World) => Promise<Result>): Promise<Result> {
     return this;
   }
   public onFailure(f: (reason: string) => void) {
