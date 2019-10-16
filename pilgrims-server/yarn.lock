@@ -61,13 +61,6 @@
     "@types/bson" "*"
     "@types/node" "*"
 
-"@types/monk@^6.0.0":
-  version "6.0.0"
-  resolved "https://registry.yarnpkg.com/@types/monk/-/monk-6.0.0.tgz#236750988e24d92c674529a81b9a296f8bbc3763"
-  integrity sha512-9qy4Gva0uVgaQsDqlcWD+XOXUmgInPAoxyyoN8uFUTjNFvswyCH1hwpnYuh2MVr60ekZgYiquWEjBYvfYfE1Jw==
-  dependencies:
-    monk "*"
-
 "@types/node@*":
   version "12.7.12"
   resolved "https://registry.yarnpkg.com/@types/node/-/node-12.7.12.tgz#7c6c571cc2f3f3ac4a59a5f2bd48f5bdbc8653cc"
@@ -264,10 +257,10 @@ destroy@~1.0.4:
   resolved "https://registry.yarnpkg.com/destroy/-/destroy-1.0.4.tgz#978857442c44749e4206613e37946205826abd80"
   integrity sha1-l4hXRCxEdJ5CBmE+N5RiBYJqvYA=
 
-dotenv@^8.1.0:
-  version "8.1.0"
-  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.1.0.tgz#d811e178652bfb8a1e593c6dd704ec7e90d85ea2"
-  integrity sha512-GUE3gqcDCaMltj2++g6bRQ5rBJWtkWTmqmD0fo1RnnMuUqHNCt2oTPeDnS9n6fKYvlhn7AeBkb38lymBtWBQdA==
+dotenv@^8.2.0:
+  version "8.2.0"
+  resolved "https://registry.yarnpkg.com/dotenv/-/dotenv-8.2.0.tgz#97e619259ada750eea3e4ea3e26bceea5424b16a"
+  integrity sha512-8sJ78ElpbDJBHNeBzUbUVLsqKdccaa/BXF1uPTw3GrvQTBgrQrtObr2mUrE38vzYd8cEv+m/JBfDLioYcfXoaw==
 
 ee-first@1.1.1:
   version "1.1.1"
@@ -323,6 +316,11 @@ escape-html@~1.0.3:
   version "1.0.3"
   resolved "https://registry.yarnpkg.com/escape-html/-/escape-html-1.0.3.tgz#0258eae4d3d0c0974de1c169188ef0051d1d1988"
   integrity sha1-Aljq5NPQwJdN4cFpGI7wBR0dGYg=
+
+esm@^3.2.25:
+  version "3.2.25"
+  resolved "https://registry.yarnpkg.com/esm/-/esm-3.2.25.tgz#342c18c29d56157688ba5ce31f8431fbb795cc10"
+  integrity sha512-U1suiZ2oDVWv4zPO56S0NcR5QriEahGtdN2OR6FiOG4WJvcjBVFB0qI4+eKoWFH483PKGuLuu6V8Z4T5g63UVA==
 
 etag@~1.8.1:
   version "1.8.1"
@@ -532,7 +530,7 @@ monk-middleware-wait-for-connection@^0.2.0:
   resolved "https://registry.yarnpkg.com/monk-middleware-wait-for-connection/-/monk-middleware-wait-for-connection-0.2.0.tgz#312958d30e588b57d09754dd7c97b4843316835a"
   integrity sha1-MSlY0w5Yi1fQl1TdfJe0hDMWg1o=
 
-monk@*, monk@^7.1.1:
+monk@^7.1.1:
   version "7.1.1"
   resolved "https://registry.yarnpkg.com/monk/-/monk-7.1.1.tgz#4b1653fe51c3ca7d6780e95dcaa7fcb5cf931b77"
   integrity sha512-7H4bKRUiopLkWsufom7xUZpflz/Ees4V3QXLKZMxMdh4B4R2zultrTUjPXj37DOijvj0PluJMmkffrsUkBVxCA==
