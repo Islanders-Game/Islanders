@@ -10039,10 +10039,10 @@ vue-class-component@^7.1.0:
   resolved "https://registry.yarnpkg.com/vue-class-component/-/vue-class-component-7.1.0.tgz#b33efcb10e17236d684f70b1e96f1946ec793e87"
   integrity sha512-G9152NzUkz0i0xTfhk0Afc8vzdXxDR1pfN4dTwE72cskkgJtdXfrKBkMfGvDuxUh35U500g5Ve4xL8PEGdWeHg==
 
-vue-cli-plugin-vuetify@^1.0.2:
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/vue-cli-plugin-vuetify/-/vue-cli-plugin-vuetify-1.0.2.tgz#3f2e277e23742113592eccbc92cccfa07d7e2c6e"
-  integrity sha512-qSOBHxK0MzKw5NEEe/dCO+koN3nNY+31D2NmJIXyVCvd6le3rs7lLcJ6conVAyt6iBYseknaF2xEs3ZHWB3JnQ==
+vue-cli-plugin-vuetify@^1.1.0:
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/vue-cli-plugin-vuetify/-/vue-cli-plugin-vuetify-1.1.0.tgz#0487bddbb733c774d783638c6443ff4f0453faca"
+  integrity sha512-PPgcIrqeDrta05AXufd7lWEm4eCs9fFgKYhUuRSgODV6s7zDFl5EyLWDg8sKeNgLmgHBk5NujJ99nyVIrXJp7A==
   dependencies:
     semver "^6.0.0"
     shelljs "^0.8.3"
