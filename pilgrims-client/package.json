@@ -30,7 +30,7 @@
   },
   "devDependencies": {
     "@types/jest": "^24.0.20",
-    "@types/pixi.js": "^4.8.9",
+    "@types/pixi.js": "^5.0.0",
     "@vue/cli-plugin-babel": "^4.0.5",
     "@vue/cli-plugin-pwa": "^4.0.5",
     "@vue/cli-plugin-typescript": "^4.0.5",
