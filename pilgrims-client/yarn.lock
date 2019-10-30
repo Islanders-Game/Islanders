@@ -9437,7 +9437,8 @@ supports-color@^6.1.0:
 
 "svg-pan-zoom@github:ariutta/svg-pan-zoom":
   version "3.6.1"
-  resolved "https://codeload.github.com/ariutta/svg-pan-zoom/tar.gz/70ca28599c9f154c8ea188bee7ea87563b71dff8"
+  uid e3aa8dee15d9d30645e8a0ebea82c0ce3f16d0b8
+  resolved "https://codeload.github.com/ariutta/svg-pan-zoom/tar.gz/e3aa8dee15d9d30645e8a0ebea82c0ce3f16d0b8"
 
 svg-tags@^1.0.0:
   version "1.0.0"
