@@ -40,7 +40,7 @@
     "babel-core": "7.0.0-bridge.0",
     "sass": "^1.23.7",
     "sass-loader": "^8.0.0",
-    "ts-jest": "^24.1.0",
+    "ts-jest": "^24.2.0",
     "typescript": "^3.7.2",
     "vue-cli-plugin-vuetify": "^2.0.2",
     "vue-template-compiler": "^2.6.10"
