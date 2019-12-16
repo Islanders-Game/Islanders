@@ -5117,10 +5117,10 @@ hmac-drbg@^1.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
-honeycomb-grid@^3.1.1:
-  version "3.1.1"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-3.1.1.tgz#56fa880b3608e7b42f39d64ce210d8453a4e46bb"
-  integrity sha512-Ts2Cil/xottlLP1DNWj7LEd/zvK57d3BDz1oGHSXvSKwB5S5xZpIsDSSTdCkms1Z9JcLMXdL0a0fvA9siXZ/4w==
+honeycomb-grid@^3.1.2:
+  version "3.1.2"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-3.1.2.tgz#78b6bb3b4dc82af793cdf3fdfd5f6540b842ac95"
+  integrity sha512-lq4OmrXs29I47MVkx1TG2ddfC95uYTAeM9wY1Ieys+1zQtQnkcCBiHPJhfFIf/qHa8n04WEZpKOYSVvvcZVmng==
   dependencies:
     axis.js "1.2.1"
 
@@ -7799,7 +7799,7 @@ pify@^4.0.1:
 "pilgrims-shared@file:../pilgrims-shared":
   version "1.0.0"
   dependencies:
-    honeycomb-grid "^3.1.1"
+    honeycomb-grid "^3.1.2"
     uuid "^3.3.3"
 
 pinkie-promise@^2.0.0:
