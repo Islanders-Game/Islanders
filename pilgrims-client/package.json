@@ -32,7 +32,7 @@
     "@types/jest": "^24.0.25",
     "@types/pixi.js": "^5.0.0",
     "@vue/cli-plugin-babel": "^4.1.2",
-    "@vue/cli-plugin-pwa": "^4.1.1",
+    "@vue/cli-plugin-pwa": "^4.1.2",
     "@vue/cli-plugin-typescript": "^4.1.2",
     "@vue/cli-plugin-unit-jest": "^4.1.2",
     "@vue/cli-service": "^4.1.2",
