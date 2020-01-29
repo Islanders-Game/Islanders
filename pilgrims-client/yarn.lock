@@ -10305,10 +10305,10 @@ vue@^2.6.11:
   resolved "https://registry.yarnpkg.com/vue/-/vue-2.6.11.tgz#76594d877d4b12234406e84e35275c6d514125c5"
   integrity sha512-VfPwgcGABbGAue9+sfrD4PuwFar7gPb1yl1UK1MwXoQPAw0BKSqWfoYCT/ThFrdEVWoI51dBuyCoiNU9bZDZxQ==
 
-vuetify@^2.1.17:
-  version "2.1.17"
-  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.1.17.tgz#21b2b61f82c1d450254f8f658bd63d3f16e239ed"
-  integrity sha512-Kz3tnwPm67ZenEGbPJt+u8nktNExDXcdvqhScIrSlkSEJYUsr1AjM61CsqRhBFPBdx7vX2Wc6K8EA0HwyxNGXA==
+vuetify@^2.2.7:
+  version "2.2.7"
+  resolved "https://registry.yarnpkg.com/vuetify/-/vuetify-2.2.7.tgz#d04bec542095be3e4c72b6cdd857f5ca8592fc95"
+  integrity sha512-vTJX8N3/uIIjQ6fwZhLxyE2ZDzsIIK4yiNslrCBY6T/g0BT+z9T47CFg7l91+U5F3rOAx/bLTdDJg/7r+fxdig==
 
 vuex@^3.1.2:
   version "3.1.2"
