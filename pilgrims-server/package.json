@@ -25,7 +25,7 @@
     "esm": "^3.2.25",
     "express": "^4.17.1",
     "mongodb": "^3.4.1",
-    "monk": "^7.1.1",
+    "monk": "^7.1.2",
     "pilgrims-shared": "file:../pilgrims-shared",
     "socket.io": "^2.3.0",
     "uuid": "^3.4.0"
