@@ -31,7 +31,7 @@
   "devDependencies": {
     "@types/jest": "^25.1.2",
     "@types/pixi.js": "^5.0.0",
-    "@vue/cli-plugin-babel": "^4.1.2",
+    "@vue/cli-plugin-babel": "^4.2.2",
     "@vue/cli-plugin-pwa": "^4.1.2",
     "@vue/cli-plugin-typescript": "^4.2.2",
     "@vue/cli-plugin-unit-jest": "^4.1.2",
