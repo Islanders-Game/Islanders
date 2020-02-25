@@ -28,7 +28,7 @@
     "monk": "^7.1.2",
     "pilgrims-shared": "file:../pilgrims-shared",
     "socket.io": "^2.3.0",
-    "uuid": "^3.4.0"
+    "uuid": "^7.0.0"
   },
   "devDependencies": {
     "@types/dotenv": "^8.2.0",
