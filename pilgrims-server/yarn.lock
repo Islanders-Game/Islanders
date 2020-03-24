@@ -53,10 +53,10 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.1.tgz#dc488842312a7f075149312905b5e3c0b054c79d"
   integrity sha512-FwI9gX75FgVBJ7ywgnq/P7tw+/o1GUbtP0KzbtusLigAOgIgNISRK0ZPl4qertvXSIE8YbsVJueQ90cDt9YYyw==
 
-"@types/mongodb@^3.5.2":
-  version "3.5.2"
-  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-3.5.2.tgz#2d815ebb9de9019dd12eb72e8ed1a5121619bf0a"
-  integrity sha512-/p4+HjfQqmNtq88rlLJ9XgUROhmbdUEU0yeVPCPIt8/vA1fSO1dSjwsRcGNaGuPMUSDRuRm8tDlXeGpWUVF71w==
+"@types/mongodb@^3.5.3":
+  version "3.5.3"
+  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-3.5.3.tgz#30187822af029b21c419a1e0415a7dcf48c2668a"
+  integrity sha512-89Ftby4+/qliA+Yb8FYMPYBryKdqnJ63FmZwZ0EFNI8HZ7adT9r2XxdMkqC9SdIOMfk39km9iFXr+obBm1dFGQ==
   dependencies:
     "@types/bson" "*"
     "@types/node" "*"
@@ -414,10 +414,10 @@ has-cors@1.1.0:
   resolved "https://registry.yarnpkg.com/has-cors/-/has-cors-1.1.0.tgz#5e474793f7ea9843d1bb99c23eef49ff126fff39"
   integrity sha1-XkdHk/fqmEPRu5nCPu9J/xJv/zk=
 
-honeycomb-grid@^3.1.3:
-  version "3.1.3"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-3.1.3.tgz#47a6887b8c2faca268dbd97c1490933697da2a8b"
-  integrity sha512-HCl8bXBYLzpfPwz86eh7CGvXZDTSUQUsvh2Vth+ywCVD+v8sTBSxNJtSPJA99bx8K7gsyN16xsjTQc2DiXbFbQ==
+honeycomb-grid@^3.1.4:
+  version "3.1.4"
+  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-3.1.4.tgz#87218edb0042fedc8ea3142e5635d7cc4e95a8e9"
+  integrity sha512-6eTrx+gqXOAiPnDKtUihX46MEfQhkK0r3j2LPI99kQpQSU0U0ClGjM4OJ4mqTA4WYRoqOtVamHF3A1DRe+VCQA==
   dependencies:
     axis.js "1.2.1"
 
@@ -639,7 +639,7 @@ path-to-regexp@0.1.7:
 "pilgrims-shared@file:../pilgrims-shared":
   version "1.0.0"
   dependencies:
-    honeycomb-grid "^3.1.3"
+    honeycomb-grid "^3.1.4"
     uuid "^7.0.2"
 
 process-nextick-args@~2.0.0:
