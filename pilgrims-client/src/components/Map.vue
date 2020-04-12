@@ -13,7 +13,8 @@ import {
   Texture,
   Container,
 } from 'pixi.js';
-import { Viewport } from 'pixi-viewport';
+import * as PIXI from "pixi.js";
+import { Viewport } from "pixi-viewport";
 import {
   World,
   Tile,
@@ -41,6 +42,11 @@ import {
   generateThiefTile,
 } from '../helpers/SpriteGenerators';
 import { MoveThiefAction } from '../../../pilgrims-shared/lib/Action';
+
+if ((window as any).global == undefined) {
+  (window as any).global = {};
+}
+(window as any).global = { PIXI: PIXI }; // fix due to some pixi 4 or 5 issue
 
 @Component
 export default class Map extends Vue {

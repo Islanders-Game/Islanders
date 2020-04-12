@@ -26,7 +26,9 @@ export class Success {
   public async flatMapAsync(f: (t: World) => Promise<Result>): Promise<Result> {
     return await f(this.value);
   }
-  public onFailure(f: (reason: string) => void) {}
+  public onFailure(f: (reason: string) => void) {
+    // Do nothing
+  }
 }
 export type Result = Success | Failure;
 
