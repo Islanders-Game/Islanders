@@ -36,7 +36,7 @@ export class GameService {
         namespace.emit(SocketActions.newWorld, success(init));
         return success(w);
       }
-      else return fail("The game has not been started!");
+      else return fail('The game has not been started!');
     })
   }
 
@@ -74,7 +74,7 @@ export class GameService {
         const player = new Player(name);
         const players = w.players.concat([player]);
         players.sort((x, y) => x.name.localeCompare(y.name));
-        const world = { ...w, players: players };
+        const world = { ...w, players };
         await this.gameRepository.updateGame(gameID, world);
         return success(world);
       });

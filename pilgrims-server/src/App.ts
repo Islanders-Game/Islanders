@@ -79,8 +79,8 @@ app.get('/joingame', async (req: Request, res: Response) => {
   }
 });
 
-//Initialize
-app.get('/', function (_: Request, res: Response) {
+// Initialize
+app.get('/', async (_: Request, res: Response) => {
   res.sendFile('public/index.html', { root: __dirname });
 });
 
