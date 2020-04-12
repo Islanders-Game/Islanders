@@ -9,6 +9,7 @@ import { GameSocket } from './GameSocket';
 import { GameService } from './services/GameService';
 import { ChatService } from './services/ChatService';
 import { GameRepository } from './repositories/GameRepository';
+import path from 'path'
 
 const app = express();
 const server = http.createServer(app);
@@ -30,7 +31,7 @@ export type PlayerSockets = { [playerName: string]: string };
 export const Disconnected: 'Disconnect' = 'Disconnect';
 const gamePlayerSockets: GamePlayerSockets = {};
 
-app.use((req: Request, res: Response, next: NextFunction) => {
+app.use((_req: Request, res: Response, next: NextFunction) => {
   res.header('Access-Control-Allow-Origin', '*');
   res.header(
     'Access-Control-Allow-Headers',
@@ -53,15 +54,15 @@ app.get('/newgame', async (_: Request, res: Response) => {
 });
 
 app.get('/joingame', async (req: Request, res: Response) => {
-  const playerName = req.query.playerName;
-  const gameID = req.query.gameId;
+  const playerName: string = String(req.query.playerName);
+  const gameID: number = Number(req.query.gameId);
   console.info(`[${gameID}] Received /joingame GET with player: ${playerName}`);
   const db = monk(mongoURL);
   let game: World | undefined;
   try {
     game = (await db
       .get('games')
-      .findOne(new mongodb.ObjectId(gameID))) as World;
+      .findOne<World>(new mongodb.ObjectId(gameID))) as World;
   } catch (ex) {
     // to ensure the await is handled properly.
   } finally {
@@ -79,8 +80,8 @@ app.get('/joingame', async (req: Request, res: Response) => {
 });
 
 //Initialize
-app.get('/', function(_: Request, res: Response) {
-  res.sendFile(__dirname + '/index.html');
+app.get('/', function (_: Request, res: Response) {
+  res.sendFile('public/index.html', { root: __dirname });
 });
 
 server.listen(process.env.PORT, () =>
