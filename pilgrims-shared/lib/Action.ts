@@ -65,7 +65,7 @@ export class BuildCityAction {
   public type: 'buildCity' = 'buildCity';
   public parameters: BuildCityParameters;
   constructor(playerName: string, coordinates: MatrixCoordinate) {
-    this.parameters = { playerName: playerName, coordinates: coordinates };
+    this.parameters = { playerName, coordinates };
   }
 }
 

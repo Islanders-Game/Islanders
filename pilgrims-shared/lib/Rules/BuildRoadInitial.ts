@@ -16,12 +16,12 @@ const checkNumberOfStructures = (w: World): Result => {
 };
 
 export const BuildRoadInitial = ({ parameters }: BuildRoadInitialAction) => (
-  w: Result,
+  world: Result,
 ): Result =>
   // todo check number of roads.
-  w
+  world
     .flatMap(ensureGameState('Pregame'))
-    .flatMap((w_: World) => checkNumberOfStructures(w_))
+    .flatMap((w: World) => checkNumberOfStructures(w))
     .flatMap(findPlayer(parameters.playerName))
     .flatMap(
       placeRoad(parameters.start, parameters.end)(parameters.playerName),

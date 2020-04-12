@@ -23,4 +23,9 @@ node('docker&&linux') {
             docker run --rm pilgrims/pilgrims-shared:${env.BRANCH_NAME}
         """
     }
+    stage('Remove Unused docker image') {
+        sh "docker rmi pilgrims/pilgrims-server:${env.BRANCH_NAME} || echo could not remove image"
+        sh "docker rmi pilgrims/pilgrims-client:${env.BRANCH_NAME} || echo could not remove image"
+        sh "docker rmi pilgrims/pilgrims-shared:${env.BRANCH_NAME} || echo could not remove image"
+    }
 }

@@ -15,11 +15,11 @@ const checkNumberOfStructures = (w: World): Result => {
 };
 
 export const BuildHouseInitial = ({ parameters }: BuildHouseInitialAction) => (
-  w: Result,
+  world: Result,
 ) =>
   // todo check number;
-  w
+  world
     .flatMap(ensureGameState('Pregame'))
-    .flatMap((w_: World) => checkNumberOfStructures(w_))
+    .flatMap((w: World) => checkNumberOfStructures(w))
     .flatMap(findPlayer(parameters.playerName))
     .flatMap(placeHouseInital(parameters.coordinates)(parameters.playerName));

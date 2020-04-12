@@ -33,7 +33,9 @@ export const getNeighbouringMatrixCoords = (
 ): MatrixCoordinate[] => {
   const matrixX = coord.x * 2;
   let matrixY = coord.y * 2 + 1;
-  if (coord.x % 2 !== 0) matrixY++;
+  if (coord.x % 2 !== 0) {
+    matrixY++;
+  }
   return [
     { x: matrixX + 3, y: matrixY },
     { x: matrixX + 2, y: matrixY + 1 },
@@ -50,7 +52,9 @@ export const getMatrixCoordCorner = (
 ): MatrixCoordinate => {
   const matrixX = coord.x * 2;
   let matrixY = coord.y * 2 + 1;
-  if (coord.x % 2 !== 0) matrixY++;
+  if (coord.x % 2 !== 0) {
+    matrixY++;
+  }
   switch (cornerIndex) {
     case 0:
       return { x: matrixX + 3, y: matrixY };

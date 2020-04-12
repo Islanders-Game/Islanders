@@ -36,23 +36,23 @@ export class GameSocket {
     gamePlayerSockets: GamePlayerSockets,
   ) {
     const nsp = this.io.of(`/${gameID}`);
-    nsp.on('connection', (socket) => {
-      this.logConnectEvent(gameID, socket.id);
-      socket.on(SocketActions.join, (name: string) => {
-        const playerName = name ? name : socket.id;
+    nsp.on('connection', (conSocket) => {
+      this.logConnectEvent(gameID, conSocket.id);
+      conSocket.on(SocketActions.join, (name: string) => {
+        const playerName = name ? name : conSocket.id;
         this.logJoinEvent(gameID, playerName);
-        socket.on(SocketActions.getWorld, async () => {
+        conSocket.on(SocketActions.getWorld, async () => {
           this.logSocketEvent(gameID, SocketActions.getWorld);
-          socket.emit(
+          conSocket.emit(
             SocketActions.newWorld,
             await this.gameRepository.getWorld(gameID),
           );
         });
-        socket.on(SocketActions.initWorld, (init: World) => {
+        conSocket.on(SocketActions.initWorld, (init: World) => {
           this.logSocketEvent(gameID, SocketActions.initWorld);
           this.gameService.initWorld(init, gameID, nsp);
         });
-        socket.on(SocketActions.lockMap, async () => {
+        conSocket.on(SocketActions.lockMap, async () => {
           this.logSocketEvent(gameID, SocketActions.lockMap);
           const lock: LockMapAction = { type: 'lockMap' };
           nsp.emit(
@@ -60,32 +60,32 @@ export class GameSocket {
             await this.gameService.applyAction(gameID, lock),
           );
         });
-        socket.on(SocketActions.newMap, (map: Tile[]) => {
+        conSocket.on(SocketActions.newMap, (map: Tile[]) => {
           this.logSocketEvent(gameID, SocketActions.newMap);
           this.gameService.updateMap(map, gameID, nsp);
         });
-        socket.on(SocketActions.chat, (chat: ChatMessage) => {
+        conSocket.on(SocketActions.chat, (chat: ChatMessage) => {
           this.logSocketEvent(gameID, SocketActions.chat);
           this.chatService.chatMessage(chat, gameID, nsp);
         });
-        socket.on(SocketActions.sendAction, async (action: Action) => {
+        conSocket.on(SocketActions.sendAction, async (action: Action) => {
           this.logSocketEvent(gameID, SocketActions.sendAction);
           const result = await this.gameService.applyAction(gameID, action);
           nsp.emit(SocketActions.newWorld, result);
         });
-        socket.on('disconnect', () => {
+        conSocket.on('disconnect', () => {
           const sockets = gamePlayerSockets[gameID];
-          const playerName = Object.keys(sockets).find(
-            (key) => sockets[key] === socket.id,
+          const disconnectPlayerName = Object.keys(sockets).find(
+            (key) => sockets[key] === conSocket.id,
           );
-          if (playerName) sockets[playerName] = Disconnected;
+          if (disconnectPlayerName) sockets[disconnectPlayerName] = Disconnected;
         });
 
         this.checkForReconnect(
           gameID,
           playerName,
           gamePlayerSockets,
-          socket.id,
+          conSocket.id,
         ).then((r) => nsp.emit(SocketActions.newWorld, r));
       });
 

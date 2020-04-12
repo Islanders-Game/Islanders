@@ -7,39 +7,39 @@ export function generateSprites(): { [s: string]: () => Sprite } {
   const tileStyle = 'realistic';
 
   const sprites = {
-    Clay: () => Sprite.fromImage(`${tilePath}${tileStyle}/clay.png`),
-    Desert: () => Sprite.fromImage(`${tilePath}${tileStyle}/desert.png`),
-    Grain: () => Sprite.fromImage(`${tilePath}${tileStyle}/grain.png`),
-    Wood: () => Sprite.fromImage(`${tilePath}${tileStyle}/wood.png`),
-    Stone: () => Sprite.fromImage(`${tilePath}${tileStyle}/stone.png`),
-    Wool: () => Sprite.fromImage(`${tilePath}${tileStyle}/wool.png`),
-    Ocean: () => Sprite.fromImage(`${tilePath}${tileStyle}/ocean.png`),
-    House: () => Sprite.fromImage(`./img/pieces/house.png`),
-    City: () => Sprite.fromImage(`./img/pieces/city.png`),
-    Thief: () => Sprite.fromImage(`./img/pieces/thief.png`),
-    Scorch: () => Sprite.fromImage(`${tilePath}/shared/scorch-with-thief.png`),
+    Clay: () => Sprite.from(`${tilePath}${tileStyle}/clay.png`),
+    Desert: () => Sprite.from(`${tilePath}${tileStyle}/desert.png`),
+    Grain: () => Sprite.from(`${tilePath}${tileStyle}/grain.png`),
+    Wood: () => Sprite.from(`${tilePath}${tileStyle}/wood.png`),
+    Stone: () => Sprite.from(`${tilePath}${tileStyle}/stone.png`),
+    Wool: () => Sprite.from(`${tilePath}${tileStyle}/wool.png`),
+    Ocean: () => Sprite.from(`${tilePath}${tileStyle}/ocean.png`),
+    House: () => Sprite.from(`./img/pieces/house.png`),
+    City: () => Sprite.from(`./img/pieces/city.png`),
+    Thief: () => Sprite.from(`./img/pieces/thief.png`),
+    Scorch: () => Sprite.from(`${tilePath}/shared/scorch-with-thief.png`),
     WoodHarbor: () =>
-      Sprite.fromImage(`${tilePath}${tileStyle}/woodharbor.png`),
+      Sprite.from(`${tilePath}${tileStyle}/woodharbor.png`),
     WoolHarbor: () =>
-      Sprite.fromImage(`${tilePath}${tileStyle}/woolharbor.png`),
+      Sprite.from(`${tilePath}${tileStyle}/woolharbor.png`),
     GrainHarbor: () =>
-      Sprite.fromImage(`${tilePath}${tileStyle}/grainharbor.png`),
+      Sprite.from(`${tilePath}${tileStyle}/grainharbor.png`),
     ClayHarbor: () =>
-      Sprite.fromImage(`${tilePath}${tileStyle}/clayharbor.png`),
+      Sprite.from(`${tilePath}${tileStyle}/clayharbor.png`),
     StoneHarbor: () =>
-      Sprite.fromImage(`${tilePath}${tileStyle}/stoneharbor.png`),
+      Sprite.from(`${tilePath}${tileStyle}/stoneharbor.png`),
     ThreeToOneHarbor: () =>
-      Sprite.fromImage(`${tilePath}${tileStyle}/threetooneharbor.png`),
-    2: () => Sprite.fromImage(`./img/numbers/2.png`),
-    3: () => Sprite.fromImage(`./img/numbers/3.png`),
-    4: () => Sprite.fromImage(`./img/numbers/4.png`),
-    5: () => Sprite.fromImage(`./img/numbers/5.png`),
-    6: () => Sprite.fromImage(`./img/numbers/6.png`),
-    8: () => Sprite.fromImage(`./img/numbers/8.png`),
-    9: () => Sprite.fromImage(`./img/numbers/9.png`),
-    10: () => Sprite.fromImage(`./img/numbers/10.png`),
-    11: () => Sprite.fromImage(`./img/numbers/11.png`),
-    12: () => Sprite.fromImage(`./img/numbers/12.png`),
+      Sprite.from(`${tilePath}${tileStyle}/threetooneharbor.png`),
+    2: () => Sprite.from(`./img/numbers/2.png`),
+    3: () => Sprite.from(`./img/numbers/3.png`),
+    4: () => Sprite.from(`./img/numbers/4.png`),
+    5: () => Sprite.from(`./img/numbers/5.png`),
+    6: () => Sprite.from(`./img/numbers/6.png`),
+    8: () => Sprite.from(`./img/numbers/8.png`),
+    9: () => Sprite.from(`./img/numbers/9.png`),
+    10: () => Sprite.from(`./img/numbers/10.png`),
+    11: () => Sprite.from(`./img/numbers/11.png`),
+    12: () => Sprite.from(`./img/numbers/12.png`),
   };
   return sprites;
 }
