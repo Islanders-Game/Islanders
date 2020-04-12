@@ -322,8 +322,8 @@ export default class Map extends Vue {
 
   private SetupCanvas(): void {
     this.app = new Application({
-      //TODO: This is unsupported in PIXI v4 and needs to be done differently:
-      //autoResize: true,
+      // TODO: This is unsupported in PIXI v4 and needs to be done differently:
+      // autoResize: true,
       resolution: 2,
       transparent: true,
       antialias: true,
