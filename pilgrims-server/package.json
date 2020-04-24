@@ -38,7 +38,7 @@
     "@types/mongodb": "^3.5.10",
     "@types/node": "^13.13.2",
     "@types/socket.io": "^2.1.4",
-    "@types/uuid": "^7.0.2",
+    "@types/uuid": "^7.0.3",
     "typescript": "^3.8.3",
     "shelljs": "^0.8.3"
   }
