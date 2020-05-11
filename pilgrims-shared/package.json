@@ -17,7 +17,7 @@
     "babel-preset-env": "^1.7.0",
     "jest": "^25.5.3",
     "puppeteer": "^3.0.2",
-    "ts-jest": "^25.4.0",
+    "ts-jest": "^25.5.1",
     "typescript": "^3.8.3"
   },
   "dependencies": {
