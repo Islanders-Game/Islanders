@@ -7701,10 +7701,10 @@ pirates@^4.0.1:
   dependencies:
     node-modules-regexp "^1.0.0"
 
-pixi-viewport@^4.11.0:
-  version "4.11.0"
-  resolved "https://registry.yarnpkg.com/pixi-viewport/-/pixi-viewport-4.11.0.tgz#36e92fb1274c92e36ff5fcce3f6123f36dc2fa49"
-  integrity sha512-6YgJdxEqh9mOxWKCLrx2HOZjVSa3odxgQHxaWpm2YugDMSHsJRcBd3Elp98Zr8xM9USI6MBJWOZqqbBtonff4Q==
+pixi-viewport@^4.18.0:
+  version "4.18.0"
+  resolved "https://registry.yarnpkg.com/pixi-viewport/-/pixi-viewport-4.18.0.tgz#99a9a3bdbcd6aee4953832e772e6d3c58884a6c1"
+  integrity sha512-JsOb10gFrmjIJPy/ViemVuken/hQyo7UAETEb5VuOxq0Gck50VBrWK7CUf/ZzAmzj25d9GOMM5oT0NVQ40TZcQ==
   dependencies:
     penner "^0.1.3"
 
