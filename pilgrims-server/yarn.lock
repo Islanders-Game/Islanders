@@ -47,10 +47,10 @@
   resolved "https://registry.yarnpkg.com/@types/mime/-/mime-2.0.1.tgz#dc488842312a7f075149312905b5e3c0b054c79d"
   integrity sha512-FwI9gX75FgVBJ7ywgnq/P7tw+/o1GUbtP0KzbtusLigAOgIgNISRK0ZPl4qertvXSIE8YbsVJueQ90cDt9YYyw==
 
-"@types/mongodb@^3.5.14":
-  version "3.5.14"
-  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-3.5.14.tgz#c6e679f2f64e5cc9da63814aacc46bc8853deb63"
-  integrity sha512-6SBBf4/pFTPu+Xmio6A4JPv/zXbsS/h7d3SdhaXRfTdE8pPNKUfOG3Tn7O0sjcu7Nz0syorSiQE6CMcoQD15TQ==
+"@types/mongodb@^3.5.14", "@types/mongodb@^3.5.25":
+  version "3.6.3"
+  resolved "https://registry.yarnpkg.com/@types/mongodb/-/mongodb-3.6.3.tgz#5655af409d9e32d5d5ae9a653abf3e5f9c83eb7a"
+  integrity sha512-6YNqGP1hk5bjUFaim+QoFFuI61WjHiHE1BNeB41TA00Xd2K7zG4lcWyLLq/XtIp36uMavvS5hoAUJ+1u/GcX2Q==
   dependencies:
     "@types/bson" "*"
     "@types/node" "*"
@@ -614,11 +614,12 @@ monk-middleware-wait-for-connection@^0.2.0:
   resolved "https://registry.yarnpkg.com/monk-middleware-wait-for-connection/-/monk-middleware-wait-for-connection-0.2.0.tgz#312958d30e588b57d09754dd7c97b4843316835a"
   integrity sha1-MSlY0w5Yi1fQl1TdfJe0hDMWg1o=
 
-monk@^7.2.0:
-  version "7.2.0"
-  resolved "https://registry.yarnpkg.com/monk/-/monk-7.2.0.tgz#6dec7ee7477cd2f4df0558a53edfbb8463afe595"
-  integrity sha512-PdCTlPhmUH5ULg80CS0Dgn9LQ7omldNQg+kVn7wtQF1cA/me/Kd5YmiRDxUeTUukpNFkrM3qEYP5oC5AqVjSgw==
+monk@^7.3.3:
+  version "7.3.3"
+  resolved "https://registry.yarnpkg.com/monk/-/monk-7.3.3.tgz#edd3acdeb354a7bbedb41026dd8f2650504d5944"
+  integrity sha512-S5M5N3PRMqXParscBFgKpGpzjzZqd3Lsv3GDAvRxbQq5WC9mx2gqU5aXCoI9Ny/AKgoW0J79bhLQ8fihxEvgeQ==
   dependencies:
+    "@types/mongodb" "^3.5.25"
     debug "*"
     mongodb "^3.2.3"
     monk-middleware-cast-ids "^0.2.1"
