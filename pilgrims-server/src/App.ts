@@ -3,7 +3,8 @@ import http from 'http';
 import mongodb from 'mongodb';
 import monk from 'monk';
 import dotenv from 'dotenv';
-import { Request, Response, NextFunction } from 'express';
+import cors from 'cors';
+import { Request, Response } from 'express';
 import { fail, World } from '../../pilgrims-shared/dist/Shared';
 import { GameSocket } from './GameSocket';
 import { GameService } from './services/GameService';
@@ -12,7 +13,10 @@ import { GameRepository } from './repositories/GameRepository';
 
 console.info(`[INFO] initializing pilgrims-server`)
 const app = express();
+app.use(cors())
+
 const server = http.createServer(app);
+
 dotenv.config();
 const mongoURL = `${process.env.MONGO_URL}:${process.env.MONGO_PORT}/pilgrims`;
 
@@ -30,15 +34,6 @@ export type GamePlayerSockets = { [gameID: string]: PlayerSockets };
 export type PlayerSockets = { [playerName: string]: string };
 export const Disconnected: 'Disconnect' = 'Disconnect';
 const gamePlayerSockets: GamePlayerSockets = {};
-
-app.use((_req: Request, res: Response, next: NextFunction) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept',
-  );
-  next();
-});
 
 app.get('/', async (_, response) => {
   response.send('Server is running.');

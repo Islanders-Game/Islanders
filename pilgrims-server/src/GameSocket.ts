@@ -25,7 +25,7 @@ export class GameSocket {
     chatService: ChatService,
     gameRepository: GameRepository,
   ) {
-    this.io = new Server(server, {});
+    this.io = new Server(server, { cors: { origin: "*" } });
     this.gameService = gameService;
     this.chatService = chatService;
     this.gameRepository = gameRepository;

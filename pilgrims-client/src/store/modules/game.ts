@@ -17,7 +17,7 @@ import {
   Success,
   success,
 } from '../../../../pilgrims-shared/dist/Shared';
-import { Socket, State as RootState } from '../store';
+import { ServerSocket, State as RootState } from '../store';
 import { flatMap, onFailure } from '../../helpers/FlatMapper';
 
 // The state
@@ -100,7 +100,7 @@ const mutations: MutationTree<State> = {
 const actions: ActionTree<State, RootState> = {
   async bindToWorld({ commit }: ActionContext<State, RootState>) {
     // Connect to socket and setup listener for listening to events.
-    Socket.on(SocketActions.newWorld, (result: Result) => {
+    ServerSocket.on(SocketActions.newWorld, (result: Result) => {
       const worldUpdated = flatMap(result, (world: World) => {
         commit('setWorld', world);
         return success(world);
@@ -109,19 +109,19 @@ const actions: ActionTree<State, RootState> = {
         commit('setError', r);
       });
     });
-    Socket.emit(SocketActions.getWorld);
+    ServerSocket.emit(SocketActions.getWorld);
   },
   async startGame({ commit }: ActionContext<State, RootState>) {
-    Socket.emit(SocketActions.lockMap);
+    ServerSocket.emit(SocketActions.lockMap);
   },
   async updateMap({ commit }: ActionContext<State, RootState>, map: Tile[]) {
-    Socket.emit(SocketActions.newMap, map);
+    ServerSocket.emit(SocketActions.newMap, map);
   },
   async sendAction(
     { commit }: ActionContext<State, RootState>,
     action: Action,
   ) {
-    Socket.emit(SocketActions.sendAction, action);
+    ServerSocket.emit(SocketActions.sendAction, action);
   },
 };
 
