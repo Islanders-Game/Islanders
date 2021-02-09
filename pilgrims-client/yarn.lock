@@ -5035,13 +5035,6 @@ hmac-drbg@^1.0.0:
     minimalistic-assert "^1.0.0"
     minimalistic-crypto-utils "^1.0.1"
 
-honeycomb-grid@^3.1.4:
-  version "3.1.5"
-  resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-3.1.5.tgz#ece9db9fdf26bce58802a685c615456b26691601"
-  integrity sha512-FZVrDsag1IlsNcyfoU1QCX2waQH3CwiNsj9tFFyEyp3Ow3zScunVLsYmppDRnxFYC5CnVed88QyWFzSu9fRz1Q==
-  dependencies:
-    axis.js "1.2.1"
-
 honeycomb-grid@^3.1.7:
   version "3.1.7"
   resolved "https://registry.yarnpkg.com/honeycomb-grid/-/honeycomb-grid-3.1.7.tgz#1a445bef2ca9c7dbedc29a32c9e4561c65c87317"
