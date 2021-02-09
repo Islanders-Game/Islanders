@@ -3,10 +3,12 @@ FROM node:latest
 WORKDIR /app
 
 # App dependencies
-COPY package.json /app
+COPY package.json ./
+COPY .yarnrc.yml ./
+COPY .yarn/releases/yarn-berry.cjs ./.yarn/releases/yarn-berry.cjs
 RUN ["yarn", "install"]
 
 COPY . /app
 
 RUN ["yarn", "build"]
-CMD ["yarn", "run", "test"]
+CMD ["yarn", "test"]
