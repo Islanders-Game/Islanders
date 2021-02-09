@@ -1,5 +1,4 @@
 import { House } from './House';
-import { MatrixCoordinate } from '../MatrixCoordinate';
 export class City extends House {
   public value: number = 2;
   public cost = {

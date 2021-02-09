@@ -9,7 +9,6 @@ import { GameSocket } from './GameSocket';
 import { GameService } from './services/GameService';
 import { ChatService } from './services/ChatService';
 import { GameRepository } from './repositories/GameRepository';
-import path from 'path';
 
 const app = express();
 const server = http.createServer(app);
@@ -62,7 +61,7 @@ app.get('/joingame', async (req: Request, res: Response) => {
   try {
     game = (await db
       .get('games')
-      .findOne<World>(new mongodb.ObjectId(gameID))) as World;
+      .findOne(new mongodb.ObjectId(gameID)));
   } catch (ex) {
     // to ensure the await is handled properly.
   } finally {

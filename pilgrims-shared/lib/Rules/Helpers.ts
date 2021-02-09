@@ -245,7 +245,7 @@ export const transferResources = (
   assign: Resources,
 ) => (w: World): Result => {
   const player = w.players[w.currentPlayer];
-  if (player.name !== name) {
+  if (player.name !== playerName) {
     return fail('It is not your turn!');
   }
   const subtracted = subtractResources(player.resources, remove);
@@ -390,26 +390,31 @@ export const playCard = (
 ) => (w: World) => {
   // Nasty... Couldn't see any other way.
   // Clone existing card array, modify card played state.
-  const newCards = (w.players
-    .find((p) => p.name === playerName)!
-    .devCards.slice(0)
-    .find((c) => c.type === card.type && !c.played)!.played = true);
+  const player = w.players.find((p) => p.name === playerName)!;
+  const devCards = player.devCards.slice();
+  let toPlay = devCards.find((c) => c.type === card.type && !c.played);
+  if (!toPlay) {
+    return fail("You do not have that card!");
+  }
+
+  //Side effect!
+  toPlay.played = true;
 
   if (card.type === 'Victory Point') {
     const players = w.players.map((pl) =>
       pl.name === playerName
-        ? { ...pl, points: pl.points + 1, devCards: newCards }
+        ? { ...pl, points: pl.points + 1, devCards: devCards }
         : pl,
     );
-    return success({ players, ...w });
+    return success({ ...w, players });
   }
   if (card.type === 'Knight') {
     const players = w.players.map((pl) =>
       pl.name === playerName
-        ? { ...pl, knights: pl.knights + 1, devCards: newCards }
+        ? { ...pl, knights: pl.knights + 1, devCards: devCards }
         : pl,
     );
-    return success({ players, ...w });
+    return success({ ...w, players });
   }
   if (card.type === 'Road Building') {
     const resources = w.players.find((pl) => pl.name === playerName)!.resources;
@@ -420,10 +425,10 @@ export const playCard = (
     );
     const players = w.players.map((pl) =>
       pl.name === playerName
-        ? { ...pl, resources: withTwoExtraRoads, devCards: newCards }
+        ? { ...pl, resources: withTwoExtraRoads, devCards: devCards }
         : pl,
     );
-    return success({ players, ...w });
+    return success({ ...w, players });
   }
   if (card.type === 'Year of Plenty') {
     const chosen = chosenResources as [TileType, TileType];
@@ -432,11 +437,11 @@ export const playCard = (
     const rrr = addAmountToResourceOfType(1, rr, chosen[1]);
     const players = w.players.map((pl) =>
       pl.name === playerName
-        ? { ...pl, resources: rrr, devCards: newCards }
+        ? { ...pl, resources: rrr, devCards: devCards }
         : pl,
     );
 
-    return success({ players, ...w });
+    return success({ ...w, players });
   }
   if (card.type === 'Monopoly') {
     const resources = w.players.find((pl) => pl.name === playerName)!.resources;
@@ -459,7 +464,7 @@ export const playCard = (
         ? { ...pl, resources: added }
         : { ...pl, resources: deleteAllResourcesOfType(chosen, pl.resources) },
     );
-    return success({ players, ...w });
+    return success({ ...w, players });
   }
   return success(w);
 };
@@ -512,15 +517,15 @@ export const addAmountToResourceOfType = (
 export const deleteAllResourcesOfType = (type: TileType, rs: Resources) => {
   switch (type) {
     case 'Wood':
-      return { wood: 0, ...rs };
+      return { ...rs, wood: 0 };
     case 'Wool':
-      return { wool: 0, ...rs };
+      return { ...rs, wool: 0 };
     case 'Clay':
-      return { clay: 0, ...rs };
+      return { ...rs, clay: 0 };
     case 'Grain':
-      return { grain: 0, ...rs };
+      return { ...rs, grain: 0 };
     case 'Stone':
-      return { stone: 0, ...rs };
+      return { ...rs, stone: 0 };
     default:
       return rs;
   }

@@ -1,4 +1,4 @@
-import { defineGrid, extendHex, HexFactory, PointLike } from 'honeycomb-grid';
+import { defineGrid, extendHex, HexFactory } from 'honeycomb-grid';
 import { Tile, TileType, GeneratorDiceRollType, HarborType } from './Tile';
 import { getNeighbouringHexCoords } from './HexCoordinate';
 import { HexCoordinate } from './Shared';
@@ -70,14 +70,14 @@ export class WorldGenerator {
     radius: number | undefined,
     generateIslands: number | undefined,
   ): Tile[] {
-    const Hex = extendHex({
+    const hex = extendHex({
       orientation: 'flat',
     });
     const r: number = radius !== undefined ? Number(radius) : 3;
-    const Grid = defineGrid(Hex);
+    const Grid = defineGrid(hex);
     const map: Tile[] = [];
 
-    const mainlandCenter = Hex(0, 0);
+    const mainlandCenter = hex(0, 0);
     let grid = Grid.hexagon({ radius: r, center: mainlandCenter });
 
     if (generateIslands) {
@@ -85,7 +85,7 @@ export class WorldGenerator {
         grid = grid.concat(
           Grid.hexagon({
             radius: Math.floor(r / 2),
-            center: generateIslandCenter(r, Hex),
+            center: generateIslandCenter(r, hex),
           }),
         );
       }
@@ -155,9 +155,7 @@ const coordinateIsHarbor = (hc: HexCoordinate, map: Tile[]) => {
 
 const generateIslandCenter = (
   r: number,
-  hex: HexFactory<{
-    orientation: string;
-  }>,
+  hex: HexFactory<{orientation: 'flat'}>,
 ) => {
   const angle = Math.random() * Math.PI * 2;
   const x = Math.ceil(Math.cos(angle) * (r * 2) + 1);

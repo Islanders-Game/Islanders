@@ -1,6 +1,5 @@
 import {
   World,
-  Turn,
   Tile,
   SocketActions,
   success,
@@ -13,6 +12,7 @@ import {
   rules,
 } from '../../../pilgrims-shared/dist/Shared';
 import { GameRepository } from '../repositories/GameRepository';
+import { Namespace } from 'socket.io';
 
 export class GameService {
   private gameRepository: GameRepository;
@@ -23,7 +23,7 @@ export class GameService {
   public async initWorld(
     init: World,
     gameID: string,
-    namespace: SocketIO.Namespace,
+    namespace: Namespace,
   ) {
     if (!init) console.info(`[${gameID}] 'init_world' with empty message.`);
     if (!init || !gameID) return;
@@ -43,7 +43,7 @@ export class GameService {
   public async updateMap(
     map: Tile[],
     gameID: string,
-    namespace: SocketIO.Namespace,
+    namespace: Namespace,
   ) {
     const result = await this.gameRepository.getWorld(gameID);
     result.onFailure(r => {

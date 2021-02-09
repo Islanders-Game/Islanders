@@ -21,7 +21,7 @@ const checkVictory = (playerName: string) => (w: World) => {
   const winner = w.players.find(
     (p) => p.points >= w.pointsToWin && p.name === playerName,
   )!;
-  return winner ? success({ winner, gameState: 'Finished', ...w }) : success(w);
+  return winner ? success({ ...w, winner, gameState: 'Finished' }) : success(w);
 };
 
 const stateChanger = (w: World): Result => {

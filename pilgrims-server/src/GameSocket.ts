@@ -1,4 +1,4 @@
-import socket, { Namespace } from 'socket.io';
+import { Server, Namespace } from 'socket.io';
 import http from 'http';
 import {
   SocketActions,
@@ -14,7 +14,7 @@ import { LockMapAction } from '../../pilgrims-shared/dist/Action';
 import { GamePlayerSockets, Disconnected } from './App';
 
 export class GameSocket {
-  private io: SocketIO.Server;
+  private io: Server;
   private gameService: GameService;
   private chatService: ChatService;
   private gameRepository: GameRepository;
@@ -25,7 +25,7 @@ export class GameSocket {
     chatService: ChatService,
     gameRepository: GameRepository,
   ) {
-    this.io = socket.listen(server);
+    this.io = new Server(server, {});
     this.gameService = gameService;
     this.chatService = chatService;
     this.gameRepository = gameRepository;
@@ -90,7 +90,7 @@ export class GameSocket {
       });
 
       setInterval(
-        () => this.clearNamespaceIfEmpty(nsp, this.io, gamePlayerSockets),
+        () => this.clearNamespaceIfEmpty(nsp, gamePlayerSockets),
         18000000,
       ); // Clear every half hour.
     });
@@ -123,17 +123,11 @@ export class GameSocket {
   }
 
   private clearNamespaceIfEmpty(
-    namespace: SocketIO.Namespace,
-    server: SocketIO.Server,
+    namespace: Namespace,
     gamePlayerSockets: GamePlayerSockets,
   ) {
-    const connectedSockets = Object.keys(namespace.connected);
-    if (connectedSockets.length <= 0) return;
-    connectedSockets.forEach((socketId) => {
-      namespace.connected[socketId].disconnect();
-    });
+    namespace.sockets.forEach(socket => socket.disconnect());
     namespace.removeAllListeners();
-    delete server.nsps[namespace.name];
     delete gamePlayerSockets[namespace.name.substring(1)];
   }
 }
