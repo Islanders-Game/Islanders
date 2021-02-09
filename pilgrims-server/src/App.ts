@@ -10,6 +10,7 @@ import { GameService } from './services/GameService';
 import { ChatService } from './services/ChatService';
 import { GameRepository } from './repositories/GameRepository';
 
+console.info(`[INFO] initializing pilgrims-server`)
 const app = express();
 const server = http.createServer(app);
 dotenv.config();
@@ -44,6 +45,8 @@ app.get('/', async (_, response) => {
 });
 
 app.get('/newgame', async (_: Request, res: Response) => {
+  console.trace(`[TRACE] /newgame called `)
+
   const world: World = new World();
   const db = monk(mongoURL);
   const result = await db.get('games').insert(world);
@@ -57,6 +60,8 @@ app.get('/newgame', async (_: Request, res: Response) => {
 });
 
 app.get('/joingame', async (req: Request, res: Response) => {
+  console.trace(`[TRACE] /joingame called `)
+
   const playerName: string = String(req.query.playerName);
   const gameID: string = String(req.query.gameId);
   console.info(`[${gameID}] Received /joingame GET with player: ${playerName}`);
