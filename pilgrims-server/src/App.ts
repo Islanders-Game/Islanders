@@ -39,6 +39,10 @@ app.use((_req: Request, res: Response, next: NextFunction) => {
   next();
 });
 
+app.get('/', async (_, response) => {
+  response.send('Server is running.');
+});
+
 app.get('/newgame', async (_: Request, res: Response) => {
   const world: World = new World();
   const db = monk(mongoURL);
