@@ -1,14 +1,22 @@
 <template>
     <v-snackbar
+      :top="true"
+      height="24"
       v-model="showGameInfo" 
-      id="snackbar"
-      :timeout="6000"
-      :top="'top'">
-        <small>Join this game at <b>{{gameID}}</b></small>
+      id="info"
+      >
+        <v-row>
+          <v-col sm="4">
+            <b>Game Code:</b>
+          </v-col>
+          <v-col sm="2">
+            <code>{{gameID}}</code>
+          </v-col>
+        </v-row>
     </v-snackbar>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
 @Component({
   props: {
@@ -25,8 +33,7 @@ export default class GameInfo extends Vue {
 }
 </script>
 <style lang="css" scoped>
-#snackbar {
-  pointer-events: none;
+#info {
   text-align: left;
 }
 </style>

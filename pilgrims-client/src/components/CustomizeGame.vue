@@ -1,56 +1,70 @@
 <template>
-    <v-footer dark color="#393939" id="CustomizeGame" height="auto">
-      <v-layout row justify-space-around>
-        <v-flex xs2>
-          <v-layout align-center justify-start row fill-height>
-            <h1 style="color: whitesmoke">{{playerName}}</h1>
-          </v-layout>
-        </v-flex>
-        <v-flex xs7>
-          <v-layout column align-space-around justify-start fill-height>
-            <v-layout row align-center justify-start>
-              <v-btn @click="randomizeMap">Randomize Map</v-btn>
-            </v-layout>
-            <v-layout row align-center justify-start>
-              <v-flex xs3>
-                <v-slider dark 
-                  v-model="radius"
-                  thumb-label
-                  label="Radius"
-                  max="12"
-                  min="2"
-                ></v-slider>
-              </v-flex>
-              <v-flex xs1></v-flex>
-              <v-flex xs3>
-                  <v-slider dark 
-                  v-model="numberOfIslands"
-                  thumb-label
-                  label="Landmasses"
-                  max="12"
-                  min="0"
-                ></v-slider>
-              </v-flex>
-              <v-flex xs1></v-flex>
-              <v-flex xs2>
-                  <v-text-field dark 
-                  v-model="pointsToWin"
-                  label="Points to Win"
-                  max="100"
-                  min="3"
-                  type="number"
-                ></v-text-field>
-              </v-flex>
-            </v-layout>
-          </v-layout>
-        </v-flex>
-        <v-flex xs3>
-          <v-layout align-center row wrap fill-height>
-              <v-btn large @click="startGame">Start Game</v-btn>
-          </v-layout>
-        </v-flex>
-      </v-layout>
-    </v-footer>
+    <v-container fluid id="CustomizeGame">
+      <v-row>
+        <v-col sm="2">
+          <v-card
+            dark
+            outlined class="fill-height">
+            <v-list-item three-line>
+              <v-list-item-content>
+                <div class="overline">
+                  You:
+                </div>
+                <v-list-item-title class="headline">{{playerName}}</v-list-item-title>                
+              </v-list-item-content>
+
+              <!-- TODO: Color based on player color. -->
+              <v-list-item-avatar
+                tile
+                size="40"
+                color="black" 
+              ></v-list-item-avatar>
+            </v-list-item>
+          </v-card>
+        </v-col>
+        <v-col sm="7">
+          <v-row no-gutters>
+            <v-btn light @click="randomizeMap">Randomize Map</v-btn>
+          </v-row>
+          <v-row><p/></v-row>
+          <v-row>
+            <v-col sm="3">
+              <v-text-field dark outlined dense
+                v-model="radius"
+                label="Radius"
+                max="12"
+                min="2"
+                type="number"
+              ></v-text-field>
+            </v-col>
+            <v-col sm="3">
+              <v-text-field dark outlined dense
+              v-model="numberOfIslands"
+              thumb-label
+              label="Number of Islands"
+              type="number"
+              max="12"
+              min="0"
+            ></v-text-field>
+            </v-col>
+            <v-col sm="3">
+                <v-text-field dark outlined dense
+                v-model="pointsToWin"
+                max="100"
+                min="3"
+                label="Points to Win"
+                type="number"
+              ></v-text-field>
+            </v-col>
+          </v-row>
+        </v-col>
+        <v-col sm="3">
+          <v-row no-gutters>
+            <v-btn light @click="startGame">Start Game</v-btn>
+          </v-row>
+        </v-col>
+      </v-row>
+    </v-container>
 </template>
 
 <script lang="ts">
@@ -79,6 +93,10 @@ export default class CustomizeGame extends Vue {
     return this.$store.state.game.world as World;
   }
 
+  get playerColor() {
+    return this.$store.getters['game/getCurrentPlayer']?.color;
+  }
+
   private async startGame() {
     await this.$store.dispatch('game/startGame');
   }
@@ -100,6 +118,10 @@ export default class CustomizeGame extends Vue {
 
 <style lang="scss" scoped>
 #CustomizeGame {
-  padding: 20px;
+
+}
+
+#player-name {
+  color: white;
 }
 </style>

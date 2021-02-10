@@ -17,7 +17,7 @@ import {
   Success,
   success,
 } from '../../../../pilgrims-shared/dist/Shared';
-import { Socket, State as RootState } from '../store';
+import { SocketConnection, State as RootState } from '../store';
 import { flatMap, onFailure } from '../../helpers/FlatMapper';
 
 // The state
@@ -38,16 +38,10 @@ const getters: GetterTree<State, any> = {
     return state.error;
   },
   getPlayers(state: State): Player[] {
-    if (!state.world) {
-      return undefined;
-    }
-    return state.world.players;
+    return state.world?.players;
   },
   getPlayer: (state: State) => (name: string) => {
-    if (!state.world) {
-      return undefined;
-    }
-    return state.world.players.find((x) => x.name === name);
+    return state.world?.players.find((x) => x.name === name);
   },
   getIsGameStarted(state: State): boolean {
     if (!state.world) {
@@ -100,7 +94,7 @@ const mutations: MutationTree<State> = {
 const actions: ActionTree<State, RootState> = {
   async bindToWorld({ commit }: ActionContext<State, RootState>) {
     // Connect to socket and setup listener for listening to events.
-    Socket.on(SocketActions.newWorld, (result: Result) => {
+    SocketConnection.on(SocketActions.newWorld, (result: Result) => {
       const worldUpdated = flatMap(result, (world: World) => {
         commit('setWorld', world);
         return success(world);
@@ -109,19 +103,19 @@ const actions: ActionTree<State, RootState> = {
         commit('setError', r);
       });
     });
-    Socket.emit(SocketActions.getWorld);
+    SocketConnection.emit(SocketActions.getWorld);
   },
   async startGame({ commit }: ActionContext<State, RootState>) {
-    Socket.emit(SocketActions.lockMap);
+    SocketConnection.emit(SocketActions.lockMap);
   },
   async updateMap({ commit }: ActionContext<State, RootState>, map: Tile[]) {
-    Socket.emit(SocketActions.newMap, map);
+    SocketConnection.emit(SocketActions.newMap, map);
   },
   async sendAction(
     { commit }: ActionContext<State, RootState>,
     action: Action,
   ) {
-    Socket.emit(SocketActions.sendAction, action);
+    SocketConnection.emit(SocketActions.sendAction, action);
   },
 };
 

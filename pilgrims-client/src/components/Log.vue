@@ -1,24 +1,24 @@
 <template>
-  <v-container fluid id="Log">
+  <v-container id="Log">
     <v-list three-line>
-        <v-list-tile>
-            <v-list-tile-content>
-                <v-list-tile-title>Info</v-list-tile-title>
-                <v-list-tile-sub-title>Move successful</v-list-tile-sub-title>
-            </v-list-tile-content>
-             <v-list-tile-action>
-                  <v-list-tile-action-text>13 min</v-list-tile-action-text>
-             </v-list-tile-action>
-        </v-list-tile>
-        <v-list-tile>
-            <v-list-tile-content>
-                <v-list-tile-title>Error</v-list-tile-title>
-                <v-list-tile-sub-title>Player1 could not place house on tile [1,4]</v-list-tile-sub-title>
-            </v-list-tile-content>
-             <v-list-tile-action>
-                  <v-list-tile-action-text>15 min</v-list-tile-action-text>
-             </v-list-tile-action>
-        </v-list-tile>
+        <v-list-item>
+            <v-list-item-content>
+                <v-list-item-title></v-list-item-title>
+                <v-list-item-sub-title></v-list-item-sub-title>
+            </v-list-item-content>
+             <v-list-item-action>
+                  <v-list-item-action-text></v-list-item-action-text>
+             </v-list-item-action>
+        </v-list-item>
+        <v-list-item>
+            <v-list-item-content>
+                <v-list-item-title></v-list-item-title>
+                <v-list-item-sub-title></v-list-item-sub-title>
+            </v-list-item-content>
+             <v-list-item-action>
+                  <v-list-item-action-text></v-list-item-action-text>
+             </v-list-item-action>
+        </v-list-item>
     </v-list>
   </v-container>
 </template>
@@ -37,6 +37,6 @@ export default class Log extends Vue {
 
 <style lang="scss" scoped>
 #Log {
-  padding: 0px;
+  // padding: 0px;
 }
 </style>

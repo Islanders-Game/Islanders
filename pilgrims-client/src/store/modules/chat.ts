@@ -1,6 +1,6 @@
 import { ChatMessage } from '../../../../pilgrims-shared/dist/Shared';
 import { GetterTree, MutationTree, ActionTree, ActionContext } from 'vuex';
-import { Socket, State as RootState } from '../store';
+import { SocketConnection, State as RootState } from '../store';
 // The state
 export class State {
   public messages: ChatMessage[] = [];
@@ -24,7 +24,7 @@ const mutationTree: MutationTree<State> = {
 const actionTree: ActionTree<State, RootState> = {
   async bindToMessages({ commit, rootState }: ActionContext<State, RootState>) {
     // Connect to socket and setup listener for listening to events.
-    Socket.on('chat', (message: ChatMessage) => {
+    SocketConnection.on('chat', (message: ChatMessage) => {
       commit('addMessage', message);
     });
   },
@@ -33,7 +33,7 @@ const actionTree: ActionTree<State, RootState> = {
     message: ChatMessage,
   ) {
     // emit chat message to socket.
-    Socket.emit('chat', message);
+    SocketConnection.emit('chat', message);
   },
 };
 

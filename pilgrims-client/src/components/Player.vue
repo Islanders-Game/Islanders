@@ -1,14 +1,14 @@
 <template>
   <v-footer color="#393939" id="Player" height="auto">
-    <v-layout row justify-space-around>
+    <v-container row justify-space-around>
       <v-flex xs3>
-        <v-layout align-center justify-start row fill-height>
-          <h1 style="color: whitesmoke">{{playerName}}</h1>
-        </v-layout>
+        <v-container align-center justify-start row>
+          <h1 color="whitesmoke">{{playerName}}</h1>
+        </v-container>
       </v-flex>
       <v-flex xs6>
-        <v-layout column align-space-around justify-start fill-height>
-          <v-layout row align-center justify-start>
+        <v-container column align-space-around justify-start>
+          <v-container row align-center justify-start>
             <v-flex xs2>
               <v-icon color="white">build</v-icon>
             </v-flex>
@@ -27,8 +27,8 @@
             <v-chip>
               <v-avatar class="white">{{ resourceCount('stone') }}</v-avatar>stone
             </v-chip>
-          </v-layout>
-          <v-layout row align-center justify-start>
+          </v-container>
+          <v-container row align-center justify-start>
             <v-flex xs2>
               <v-icon color="white">crop_portrait</v-icon>
               <v-icon color="white">traffic</v-icon>
@@ -42,32 +42,32 @@
             <v-chip>
               <v-avatar class="white">{{ roadLength }}</v-avatar>roads
             </v-chip>
-          </v-layout>
-        </v-layout>
+          </v-container>
+        </v-container>
       </v-flex>
       <v-flex xs3>
-        <v-layout align-center row wrap="" fill-height>
+        <v-container align-center row wrap="">
           <v-menu bottom offset-y>
             <v-btn dark slot="activator">Build</v-btn>
             <v-list dark>
-              <v-list-tile @click="setIsBuildingHouse">
-                <v-list-tile-title>House</v-list-tile-title>
-              </v-list-tile>
-              <v-list-tile @click="setIsBuildingCity">
-                <v-list-tile-title>City</v-list-tile-title>
-              </v-list-tile>
-              <v-list-tile @click="setIsBuildingRoad">
-                <v-list-tile-title dark>Road</v-list-tile-title>
-              </v-list-tile>
+              <v-list-item @click="setIsBuildingHouse">
+                <v-list-item-title>House</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="setIsBuildingCity">
+                <v-list-item-title>City</v-list-item-title>
+              </v-list-item>
+              <v-list-item @click="setIsBuildingRoad">
+                <v-list-item-title dark>Road</v-list-item-title>
+              </v-list-item>
             </v-list>
           </v-menu>
           <Trade></Trade>
           <v-btn dark @click="setIsMovingThief">Move Thief</v-btn>
           <v-btn dark @click="devCard">Buy Dev Card</v-btn>
           <v-btn @click="endTurn">End Turn</v-btn>
-        </v-layout>
+        </v-container>
       </v-flex>
-    </v-layout>
+    </v-container>
   </v-footer>
 </template>
 

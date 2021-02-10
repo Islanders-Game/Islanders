@@ -1,24 +1,24 @@
 <template>
-  <v-container fluid id="Game">
+  <v-container fluid class="fill-height" id="Game">
     <Error></Error>
-    <v-layout column fill-height>
-      <v-layout row class="main-area">
-        <v-flex xs9 @mousemove="mouseOver">
-          <GameInfo v-bind:showGameInfo="showGameInfo"></GameInfo>
-          <Map/>
-        </v-flex>
-        <v-flex xs3>
-          <Overview/>
-        </v-flex>
-      </v-layout>
+    <v-row no-gutters class="top-ui">
+      <v-col sm="9" @mousemove="mouseOver" class="fill-height">
+        <GameInfo v-bind:showGameInfo="showGameInfo"></GameInfo>
+        <Map class="fill-height"></Map>
+      </v-col>
+      <v-col sm="3" class="fill-height">
+        <Overview class="fill-height"/>
+      </v-col>
+    </v-row>
+    <v-row no-gutters class="bottom-ui">
       <CustomizeGame v-if="!started"/>
       <Player v-else/>
-    </v-layout>
+    </v-row>
   </v-container>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import Overview from './Overview.vue';
 import Map from './Map.vue';
 import Player from './Player.vue';
@@ -54,7 +54,22 @@ export default class Game extends Vue {
 </script>
 
 <style lang="scss" scoped>
+.top-ui {
+  height: 80%;
+  padding: 0;
+  margin: 0;
+}
+
+.bottom-ui {
+  padding: 0;
+  margin-top: 0px !important;
+  height: 20%;
+  background: #1e1e1e
+}
+
 #Game {
+  height: 100%;
   padding: 0px;
 }
+
 </style>

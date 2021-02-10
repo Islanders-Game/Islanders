@@ -1,16 +1,14 @@
 <template>
-  <v-container fluid fill-height id="Map"></v-container>
+  <v-container fluid id="Map"></v-container>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator';
 import { defineGrid, extendHex } from 'honeycomb-grid';
 import {
   Graphics,
-  Sprite,
   Application,
   Point,
-  Texture,
   Container,
 } from 'pixi.js';
 import * as PIXI from "pixi.js";
@@ -19,7 +17,6 @@ import {
   World,
   Tile,
   Player,
-  House,
   MatrixCoordinate,
   getMatrixCoordCorner,
   matrixCoordToWorldCoord,
@@ -43,10 +40,10 @@ import {
 } from '../helpers/SpriteGenerators';
 import { MoveThiefAction } from '../../../pilgrims-shared/lib/Action';
 
-if ((window as any).global == undefined) {
-  (window as any).global = {};
-}
-(window as any).global = { PIXI: PIXI }; // fix due to some pixi 4 or 5 issue
+// if ((window as any).global == undefined) {
+//   (window as any).global = {};
+// }
+// (window as any).global = { PIXI: PIXI };
 
 @Component
 export default class Map extends Vue {
@@ -66,14 +63,17 @@ export default class Map extends Vue {
   private grid;
 
   private async mounted() {
+    const displayHeight = (element: this) => element.$el.clientHeight / window.devicePixelRatio;
+    const displayWidth = (element: this) => element.$el.clientWidth / window.devicePixelRatio;
+
     await this.$store.dispatch('game/bindToWorld');
-    this.height = this.$el.clientHeight;
-    this.width = this.$el.clientWidth;
+    this.height = displayHeight(this);
+    this.width = displayWidth(this);
     this.SetupCanvas();
     const that = this;
     addEventListener('resize', () => {
-      that.app.renderer.resize(this.$el.clientWidth, this.$el.clientHeight);
-      that.viewport.resize(this.$el.clientWidth, this.$el.clientHeight);
+      that.app.renderer.resize(displayWidth(that), displayHeight(that));
+      that.viewport.resize(displayWidth(that), displayHeight(that));
     });
     this.viewport.on('mousemove', this.handleMove);
     this.viewport.on('pointerup', this.handleClick);
@@ -328,9 +328,7 @@ export default class Map extends Vue {
 
   private SetupCanvas(): void {
     this.app = new Application({
-      // TODO: This is unsupported in PIXI v4 and needs to be done differently:
-      // autoResize: true,
-      resolution: 2,
+      resolution: window.devicePixelRatio || 1,
       transparent: true,
       antialias: true,
       height: this.height,

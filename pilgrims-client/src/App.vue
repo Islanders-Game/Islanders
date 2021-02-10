@@ -1,12 +1,10 @@
 <template>
-<div id="app">
-    <v-app>
+    <v-app id="app">
       <StartGame v-if="!showGame"></StartGame>
-      <transition name="fade">
-        <Game v-if="showGame"></Game>
-      </transition>
+      <!-- <transition name="fade"> -->
+      <Game v-if="showGame" id="game"></Game>
+      <!-- </transition> -->
     </v-app>
-</div>
 </template>
 
 <script lang="ts">
@@ -24,7 +22,7 @@ export default class App extends Vue {
   public showGame: boolean = false;
 
   public created() {
-    this.$on('gameChoosen', () => {
+    this.$on('gameChosen', () => {
       this.showGame = true;
     });
   }
@@ -33,17 +31,20 @@ export default class App extends Vue {
 
 <style lang="scss">
 #app {
-  font-family: 'Avenir', Helvetica, Arial, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  text-align: center;
-  color: #2c3e50;
+  height: 100vh;
+  max-height: 100vh;
+  overflow: hidden;
 }
+
+#game {
+  padding: 0;
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.5s;
 }
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
+.fade-enter, .fade-leave-to {
   opacity: 0;
 }
 </style>

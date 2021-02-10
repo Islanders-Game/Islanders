@@ -1,6 +1,7 @@
 export const SocketActions = {
   getWorld: 'getWorld',
   initWorld: 'initWorld',
+  connect: 'connection',
   chat: 'chat',
   join: 'join',
   newWorld: 'world',

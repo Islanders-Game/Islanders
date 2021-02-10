@@ -1,6 +1,6 @@
 <template>
-  <v-content id="StartGame">
-    <v-container fluid fill-height>
+  <v-main id="StartGame">
+    <v-container>
       <v-layout align-center justify-center>
         <v-flex xs12 sm8 md4>
           <v-card class="elevation-12" style="height:30vh">
@@ -30,7 +30,7 @@
                     <v-text-field
                       prepend-icon="star"
                       name="gameid"
-                      label="To join a game, enter a game Id"
+                      label="To join a game, enter a Game Code"
                       type="text"
                       v-model="gameId"
                     ></v-text-field>
@@ -58,12 +58,11 @@
         </v-flex>
       </v-layout>
     </v-container>
-  </v-content>
+  </v-main>
 </template>
 
 <script lang="ts">
 import { Component, Prop, Vue } from "vue-property-decorator";
-import io from "socket.io-client";
 
 @Component({
   components: {}
@@ -94,7 +93,7 @@ export default class StartGame extends Vue {
 
     // todo check for createGame fail.
     if (this.$store.state.game.gameId) {
-      this.$parent.$parent.$emit("gameChoosen");
+      this.$parent.$parent.$emit("gameChosen");
     } else {
       this.error = true;
       this.errorMessage = "An error occured while connecting to the server";
@@ -104,7 +103,7 @@ export default class StartGame extends Vue {
   public async joinGame() {
     if (!this.validateGameId) {
       this.error = true;
-      this.errorMessage = "You need to enter a gameId";
+      this.errorMessage = "You need to enter a Game Code";
       return;
     } else if (!this.validatePlayerName) {
       this.error = true;
@@ -120,11 +119,12 @@ export default class StartGame extends Vue {
     } catch (ex) {
       this.error = true;
       this.errorMessage = ex.message;
+      console.log(ex);
       return;
     }
 
     if (this.$store.state.game.gameId) {
-      this.$parent.$parent.$emit("gameChoosen");
+      this.$parent.$parent.$emit("gameChosen");
     } else {
       this.error = true;
       this.errorMessage = "An error occured while connecting to the server";

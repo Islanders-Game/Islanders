@@ -1,10 +1,11 @@
 import express from 'express';
+import cors from 'cors';
 import http from 'http';
 import mongodb from 'mongodb';
 import monk from 'monk';
 import dotenv from 'dotenv';
 import { Request, Response, NextFunction } from 'express';
-import { fail, World } from '../../pilgrims-shared/dist/Shared';
+import { fail, success, World } from '../../pilgrims-shared/dist/Shared';
 import { GameSocket } from './GameSocket';
 import { GameService } from './services/GameService';
 import { ChatService } from './services/ChatService';
@@ -30,14 +31,7 @@ export type PlayerSockets = { [playerName: string]: string };
 export const Disconnected: 'Disconnect' = 'Disconnect';
 const gamePlayerSockets: GamePlayerSockets = {};
 
-app.use((_req: Request, res: Response, next: NextFunction) => {
-  res.header('Access-Control-Allow-Origin', '*');
-  res.header(
-    'Access-Control-Allow-Headers',
-    'Origin, X-Requested-With, Content-Type, Accept',
-  );
-  next();
-});
+app.use(cors());
 
 app.get('/', async (_, response) => {
   response.send('Server is running.');
@@ -66,19 +60,19 @@ app.get('/joingame', async (req: Request, res: Response) => {
     game = (await db
       .get('games')
       .findOne(new mongodb.ObjectId(gameID)));
+    await db.close();
   } catch (ex) {
-    // to ensure the await is handled properly.
+    console.log(ex);
   } finally {
     if (!game) {
-      res.send('Game does not exist!');
-    } else if (
-      gamePlayerSockets[gameID][playerName] &&
-      gamePlayerSockets[gameID][playerName] !== Disconnected
-    ) {
+      res.send(fail('Game does not exist!'));
+    } else if (gamePlayerSockets[gameID][playerName] && gamePlayerSockets[gameID][playerName] !== Disconnected) {
       res.send(fail('A player with that name already exists on this game!'));
     }
-    res.send('Game exists and player name is not taken');
-    db.close();
+    else {
+      res.status(200).send(success(game));
+    }
+    console.info(`[${gameID}] Finished /joingame GET with player: ${playerName}`);
   }
 });
 

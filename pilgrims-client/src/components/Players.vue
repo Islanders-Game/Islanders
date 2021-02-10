@@ -1,57 +1,57 @@
 <template>
-  <v-container fluid id="Players">
+  <v-container id="Players">
+    {{players}}
     <v-list>
-        <template v-for="player in players">
-            <v-list-tile class="player-tile" :key="player.name">
-                <v-layout column align-left>
-                  <v-layout row align-left>
-                      <v-list-tile-title>
-                        <h3>
-                          <span>{{player.name}}</span>
-                          <span v-if="player.name === currentPlayer.name">'s turn</span>
-                        </h3>
-                      </v-list-tile-title>
-                      <v-spacer></v-spacer>
-                      <div style="display:contents">
-                          {{ playerPoints(player.name) }}
-                          <v-icon color="grey lighten-1">star</v-icon>
-                      </div>
-                  </v-layout>
-                  <v-list-tile-sub-title>
-                      <v-chip small>
-                        <v-avatar small class="grey">
-                          <v-icon small>build</v-icon>
-                        </v-avatar>
-                        {{ playerResources(player) }}
+      <template v-for="player in players">
+        <v-list-item class="player-tile" :key="player.name">
+          <v-list-item-content>
+            <v-list-item-title>
+              <v-container>
+                <v-row no-gutters>
+                  <v-col sm="6">{{player.name}}<span v-if="player.name === currentPlayer.name">'s turn</span></v-col>
+                  <v-col sm="6" class="align-right">{{playerPoints(player)}} points</v-col>
+                </v-row>
+              </v-container>
+            </v-list-item-title>
+
+            <v-list-item-subtitle>
+                <v-container>
+                  <v-row>
+                    <v-col sm="6">
+                      <v-chip label outlined small>
+                        {{ playerResources(player) }} resource cards
                       </v-chip>
-                      <v-chip small>
-                        <v-avatar small class="grey">
-                          <v-icon small>crop_portrait</v-icon>
-                        </v-avatar>
-                        {{ playerDevCards(player) }}
+                    </v-col>
+                    <v-col sm="6" class="align-right">                    
+                      <v-chip label outlined small>
+                        {{ playerDevCards(player) }} dev cards
                       </v-chip>
-                      <v-chip small>
-                          <v-avatar small class="grey">
-                            <v-icon small>people</v-icon>
-                          </v-avatar>
-                          {{ playerKnightCards(player) }}                                
+                    </v-col>
+                  </v-row>
+                  <v-row>
+                    <v-col sm="6">                    
+                      <v-chip label outlined small>
+                        {{ playerKnightCards(player) }} knights
                       </v-chip>
-                      <v-chip small>
-                        <v-avatar small class="grey">
-                          <v-icon small>traffic</v-icon>
-                        </v-avatar>
-                        {{ playerRoad(player) }}
+                    </v-col>
+                    <v-col sm="6" class="align-right">                    
+                      <v-chip label outlined small>
+                        {{ playerRoad(player) }} roads
                       </v-chip>
-                  </v-list-tile-sub-title>
-                </v-layout>
-            </v-list-tile>
-        </template>
+                    </v-col>
+                  </v-row>
+                </v-container>
+            </v-list-item-subtitle>
+
+          </v-list-item-content>
+        </v-list-item>
+      </template>
     </v-list>
   </v-container>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 import { Player as PlayerModel } from '../../../pilgrims-shared/dist/Shared';
 @Component({
   components: {},
@@ -63,8 +63,8 @@ export default class Players extends Vue {
   get currentPlayer(): PlayerModel {
     return this.$store.getters['game/getCurrentPlayer'];
   }
-  private playerPoints(name: string) {
-    return 0; // todo
+  private playerPoints(player: PlayerModel) {
+    return player.points;
   }
   private playerResources(player: PlayerModel) {
     return (
@@ -92,6 +92,10 @@ export default class Players extends Vue {
   padding: 0px;
 }
 .player-tile {
-  padding: 20px;
+  padding: 0px;
+}
+
+#align-right {
+  text-align: right;
 }
 </style>

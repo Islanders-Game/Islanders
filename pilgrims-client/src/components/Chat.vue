@@ -1,17 +1,17 @@
 <template>
-  <v-container fluid id="Chat">
-    <v-layout column fill-height justify-end align-content-space-between>
+  <v-container id="Chat">
+    <v-layout column justify-end align-content-space-between>
         <v-list two-line class="message-list">
             <template v-for="(item, index) in messages">
-                <v-list-tile :key="index" avatar>
-                    <v-list-tile-avatar>
+                <v-list-item :key="index" avatar>
+                    <v-list-item-avatar>
                         <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
-                    </v-list-tile-avatar>
-                    <v-list-tile-content>
-                        <v-list-tile-title v-html="item.user"></v-list-tile-title>
-                        <v-list-tile-sub-title v-html="item.text"></v-list-tile-sub-title>
-                    </v-list-tile-content>
-                </v-list-tile>
+                    </v-list-item-avatar>
+                    <v-list-item-content>
+                        <v-list-item-title v-html="item.user"></v-list-item-title>
+                        <v-list-item-sub-title v-html="item.text"></v-list-item-sub-title>
+                    </v-list-item-content>
+                </v-list-item>
             </template>
         </v-list>
         <v-layout row style="padding:5px">
@@ -26,9 +26,7 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
-import { mapActions, mapGetters } from 'vuex';
-import { ChatMessage } from '../../../pilgrims-shared/dist/Shared';
+import { Component, Vue } from 'vue-property-decorator';
 
 @Component<Chat>({
   components: {},
@@ -62,11 +60,10 @@ export default class Chat extends Vue {
 
 <style lang="scss" scoped>
 #Chat {
-  padding: 0px;
+  // padding: 0px;
 }
 
 .message-list {
-  height: 73vh;
-  overflow-y: auto;
+  // overflow-y: auto;
 }
 </style>
