@@ -42,23 +42,22 @@ app.get('/', async (_, response) => {
 });
 
 app.get('/newgame', async (_: Request, res: Response) => {
-  console.trace(`[TRACE] /newgame called `)
-
-  const world: World = new World();
-  const db = monk(mongoURL);
-  const result = await db.get('games').insert(world);
-  const id = result._id;
-  console.info(`[${id}] Created game.`);
-
-  gamePlayerSockets[id.toString()] = {};
-  gameSocket.setupSocketOnNamespace(id.toString(), gamePlayerSockets);
-  res.send(id);
-  db.close();
+  try {
+    const world: World = new World();
+    const db = monk(mongoURL);
+    const result = await db.get('games').insert(world);
+    const id = result._id;
+    console.info(`[${id}] Created game.`);
+    gamePlayerSockets[id.toString()] = {};
+    gameSocket.setupSocketOnNamespace(id.toString(), gamePlayerSockets);
+    res.send(id);
+    db.close();
+  } catch (ex) {
+    res.send(fail("Couldn't create game!"));
+  }
 });
 
 app.get('/joingame', async (req: Request, res: Response) => {
-  console.trace(`[TRACE] /joingame called `)
-
   const playerName: string = String(req.query.playerName);
   const gameID: string = String(req.query.gameId);
   console.info(`[${gameID}] Received /joingame GET with player: ${playerName}`);
