@@ -32,7 +32,7 @@ const gameSocket = new GameSocket(
 
 export type GamePlayerSockets = { [gameID: string]: PlayerSockets };
 export type PlayerSockets = { [playerName: string]: string };
-export const Disconnected: 'Disconnect' = 'Disconnect';
+export const Disconnected = 'Disconnect';
 const gamePlayerSockets: GamePlayerSockets = {};
 
 app.use(cors());
@@ -81,11 +81,6 @@ app.get('/joingame', async (req: Request, res: Response) => {
     }
     console.info(`[${gameID}] Finished /joingame GET with player: ${playerName}`);
   }
-});
-
-// Initialize
-app.get('/', async (_: Request, res: Response) => {
-  res.sendFile('public/index.html', { root: __dirname });
 });
 
 server.listen(process.env.PORT, () =>

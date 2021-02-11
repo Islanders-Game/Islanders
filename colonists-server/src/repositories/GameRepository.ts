@@ -9,7 +9,7 @@ import { ObjectId } from 'mongodb';
 
 export class GameRepository {
   private mongoURL: string;
-  private tableName: string = 'games';
+  private tableName = 'games';
   constructor(dbConnectionString: string) {
     this.mongoURL = dbConnectionString;
   }
@@ -24,7 +24,7 @@ export class GameRepository {
   public async updateGame(gameId: string, world: World): Promise<Result> {
     const db = monk(this.mongoURL);
     try {
-      await db.get(this.tableName).update(new ObjectId(gameId), world);
+      await db.get(this.tableName).update(new ObjectId(gameId), world, { replace: true});
       return success(world);
     } catch (ex) {
       return fail(ex);
@@ -36,11 +36,11 @@ export class GameRepository {
   public async getWorld(gameId: string): Promise<Result> {
     const db = monk(this.mongoURL);
     try {
-      const result = await db.get(this.tableName).findOne(new ObjectId(gameId));
+      const result = await db.get(this.tableName).findOne(new ObjectId(gameId)) as World;
       if (!result) {
         return fail(`World with id: ${gameId} not found!`);
       }
-      return success(result as World);
+      return success(result);
     } catch (ex) {
       return fail(ex);
     } finally {
