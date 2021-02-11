@@ -1,27 +1,16 @@
 <template>
   <v-container id="Chat">
-    <v-layout column justify-end align-content-space-between>
-        <v-list two-line class="message-list">
-            <template v-for="(item, index) in messages.slice().reverse()">
-                <v-list-item :key="index" avatar>
-                    <v-list-item-avatar>
-                        <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
-                    </v-list-item-avatar>
-                    <v-list-item-content>
-                        <v-list-item-title v-html="item.user"></v-list-item-title>
-                        <v-list-item-sub-title v-html="item.text"></v-list-item-sub-title>
-                    </v-list-item-content>
-                </v-list-item>
-            </template>
-        </v-list>
-        <v-layout row style="padding:5px">
-            <v-text-field label="Write a message" v-model="message" v-on:keyup.enter="addMessage">
-            </v-text-field>
-            <v-btn @click="addMessage">
-                Send
-            </v-btn>
-        </v-layout>
-    </v-layout>
+    <v-list-item dense two-line v-for="(message, index) in messages.slice().reverse()" :key="index" avatar>
+      <v-list-item-avatar rounded :color="playerColor(message.user)"></v-list-item-avatar>
+      <v-list-item-content>
+          <v-list-item-title v-html="message.user"></v-list-item-title>
+          <v-list-item-subtitle v-html="message.text"></v-list-item-subtitle>
+      </v-list-item-content>
+    </v-list-item>
+    <v-container>
+          <v-text-field clearable solo dense hint="Press Enter to send the message" height="40px" id="chatbox" outlined label="Write a message " v-model="message" v-on:keyup.enter="addMessage">
+          </v-text-field>
+    </v-container>
   </v-container>
 </template>
 
@@ -34,18 +23,20 @@ import { Component, Vue } from 'vue-property-decorator';
 export default class Chat extends Vue {
   public message: string = '';
   private playerName: string;
-  private gameId: string;
 
   constructor() {
     super();
 
     this.playerName = this.$store.state.game.playerName;
-    this.gameId = this.$store.state.game.gameId;
     this.$store.dispatch('chat/bindToMessages');
   }
 
   get messages() {
     return this.$store.state.chat.messages;
+  }
+
+  public playerColor(playerName: string): string {
+    return this.$store.getters['game/getPlayerColorAsHex'](playerName);
   }
 
   public addMessage(): void {
@@ -59,11 +50,5 @@ export default class Chat extends Vue {
 </script>
 
 <style lang="scss" scoped>
-#Chat {
-  // padding: 0px;
-}
 
-.message-list {
-  // overflow-y: auto;
-}
 </style>

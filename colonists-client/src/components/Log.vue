@@ -1,42 +1,32 @@
 <template>
   <v-container id="Log">
-    <v-list three-line>
-        <v-list-item>
-            <v-list-item-content>
-                <v-list-item-title></v-list-item-title>
-                <v-list-item-sub-title></v-list-item-sub-title>
-            </v-list-item-content>
-             <v-list-item-action>
-                  <v-list-item-action-text></v-list-item-action-text>
-             </v-list-item-action>
-        </v-list-item>
-        <v-list-item>
-            <v-list-item-content>
-                <v-list-item-title></v-list-item-title>
-                <v-list-item-sub-title></v-list-item-sub-title>
-            </v-list-item-content>
-             <v-list-item-action>
-                  <v-list-item-action-text></v-list-item-action-text>
-             </v-list-item-action>
-        </v-list-item>
-    </v-list>
+      <v-list-item two-line v-for="(message, index) in messages" :key="index">
+        <v-list-item-content>
+            <v-list-item-title>{{message.header}}</v-list-item-title>
+            <v-list-item-subtitle>{{message.message}}</v-list-item-subtitle>
+        </v-list-item-content>     
+      </v-list-item>
   </v-container>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
+type LogMessage = {
+  header: string,
+  message: string
+}
 
-@Component({
+@Component<Log>({
   components: {},
 })
+
 export default class Log extends Vue {
-  @Prop()
-  private msg!: string;
+  get messages(): LogMessage[] {
+    return [{header: 'Test heading', message: "Test message"}, 
+            {header: 'Test heading', message: "Test message"}];;
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-#Log {
-  // padding: 0px;
-}
 </style>

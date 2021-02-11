@@ -39,6 +39,7 @@ export class GameSocket {
     nsp.on(SocketActions.connect, (connection) => {
       this.logSocketEvent(gameID, SocketActions.connect);
       this.logConnectEvent(gameID, connection.id);
+      
       connection.on(SocketActions.join, (name: string) => {
         this.logSocketEvent(gameID, SocketActions.join);
         const playerName = name ? name : connection.id;

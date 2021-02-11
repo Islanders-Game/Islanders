@@ -59,10 +59,10 @@ export class GameService {
         return failure;
       }
 
-      w.map = map;
-      await this.gameRepository.updateGame(gameID, w);
-      namespace.emit(SocketActions.newWorld, result);
-      return success(w);
+      const world = { ...w, map };
+      await this.gameRepository.updateGame(gameID, world);
+      namespace.emit(SocketActions.newWorld, success(world));
+      return success(world);
     });
   }
 
@@ -75,8 +75,8 @@ export class GameService {
         const players = w.players.concat([player]);
         players.sort((x, y) => x.name.localeCompare(y.name));
         const world = { ...w, players };
-        await this.gameRepository.updateGame(gameID, world);
-        return success(world);
+        const result = await this.gameRepository.updateGame(gameID, world);
+        return result;
       });
     } catch (ex) {
       return fail(`Could not add player ${name}! Ex: ${ex}`);
