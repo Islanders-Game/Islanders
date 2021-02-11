@@ -2,7 +2,7 @@
   <v-container id="Chat">
     <v-layout column justify-end align-content-space-between>
         <v-list two-line class="message-list">
-            <template v-for="(item, index) in messages">
+            <template v-for="(item, index) in messages.slice().reverse()">
                 <v-list-item :key="index" avatar>
                     <v-list-item-avatar>
                         <img src="/img/icons/apple-touch-icon-180x180.png" alt="avatar">
