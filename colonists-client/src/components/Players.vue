@@ -1,50 +1,48 @@
 <template>
   <v-container id="Players">
-    {{players}}
     <v-list>
       <template v-for="player in players">
-        <v-list-item class="player-tile" :key="player.name">
-          <v-list-item-content>
-            <v-list-item-title>
-              <v-container>
-                <v-row no-gutters>
-                  <v-col sm="6">{{player.name}}<span v-if="player.name === currentPlayer.name">'s turn</span></v-col>
-                  <v-col sm="6" class="align-right">{{playerPoints(player)}} points</v-col>
-                </v-row>
-              </v-container>
-            </v-list-item-title>
-
-            <v-list-item-subtitle>
+        <v-container :key="player.name">
+        <v-card>
+          <v-list-item three-line>
+            <v-list-item-content>
+              <div class="overline">{{player.name}}<span v-if="isCurrentPlayersTurn(player)">'s turn</span></div>
+              <v-list-item-title>
+                    {{playerPoints(player)}} points
+              </v-list-item-title>
+              <v-list-item-subtitle>
                 <v-container>
-                  <v-row>
-                    <v-col sm="6">
+                  <v-row dense>
+                    <v-col>
                       <v-chip label outlined small>
                         {{ playerResources(player) }} resource cards
                       </v-chip>
                     </v-col>
-                    <v-col sm="6" class="align-right">                    
+                    <v-col>
                       <v-chip label outlined small>
                         {{ playerDevCards(player) }} dev cards
                       </v-chip>
                     </v-col>
                   </v-row>
-                  <v-row>
-                    <v-col sm="6">                    
-                      <v-chip label outlined small>
-                        {{ playerKnightCards(player) }} knights
-                      </v-chip>
-                    </v-col>
-                    <v-col sm="6" class="align-right">                    
-                      <v-chip label outlined small>
-                        {{ playerRoad(player) }} roads
-                      </v-chip>
-                    </v-col>
+                  <v-row dense>
+                    <v-col>
+                    <v-chip label outlined small>
+                      {{ playerKnightCards(player) }} knights
+                    </v-chip>
+                  </v-col>
+                  <v-col>
+                    <v-chip label outlined small>
+                      {{ playerRoad(player) }} roads
+                    </v-chip>
+                  </v-col>
                   </v-row>
                 </v-container>
-            </v-list-item-subtitle>
-
-          </v-list-item-content>
-        </v-list-item>
+              </v-list-item-subtitle>
+            </v-list-item-content>
+            <v-list-item-avatar rounded :color="colorForAvatar(player)"></v-list-item-avatar>
+          </v-list-item>
+        </v-card>
+        </v-container>
       </template>
     </v-list>
   </v-container>
@@ -60,8 +58,13 @@ export default class Players extends Vue {
   get players(): PlayerModel[] {
     return this.$store.getters['game/getPlayers'];
   }
-  get currentPlayer(): PlayerModel {
-    return this.$store.getters['game/getCurrentPlayer'];
+  public colorForAvatar(player: PlayerModel) {
+    return this.$store.getters['game/getPlayerColorAsHex'](player.name);
+  }
+  public isCurrentPlayersTurn(player: PlayerModel) {
+    const currentPlayer = this.$store.getters['game/getCurrentPlayer'];
+    const isStarted = this.$store.getters['game/getIsGameStarted'];
+    return isStarted && player.name === currentPlayer.name;
   }
   private playerPoints(player: PlayerModel) {
     return player.points;
@@ -88,12 +91,6 @@ export default class Players extends Vue {
 </script>
 
 <style lang="scss" scoped>
-#Players {
-  padding: 0px;
-}
-.player-tile {
-  padding: 0px;
-}
 
 #align-right {
   text-align: right;
