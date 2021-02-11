@@ -12,6 +12,7 @@ COPY package.json ./
 COPY .yarnrc.yml ./
 COPY .yarn/releases/yarn-berry.cjs ./.yarn/releases/yarn-berry.cjs
 RUN yarn install
+RUN ["yarn", "global", "add", "typescript"]
 
 # Build app
 COPY . .

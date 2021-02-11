@@ -3,7 +3,7 @@ FROM node:latest
 WORKDIR /app
 
 # App dependencies
-RUN ["npm", "install", "-g", "typescript"]
+RUN ["yarn", "global", "add", "typescript"]
 COPY package.json ./
 COPY .yarnrc.yml ./
 COPY .yarn/releases/yarn-berry.cjs ./.yarn/releases/yarn-berry.cjs
