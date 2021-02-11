@@ -13,8 +13,8 @@ WORKDIR /app
 COPY --from=library /app /app/pilgrims-shared
 
 # App dependencies
+RUN ["npm", "install", "-g", "typescript"]
 WORKDIR /app/client
-RUN ["yarn", "global", "add", "typescript"]
 
 # Install Dependencies
 COPY ./package*.json ./
