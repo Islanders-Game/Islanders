@@ -87,7 +87,7 @@ export class GameSocket {
       const lock: LockMapAction = { type: 'lockMap' };
       namespace.emit(
         SocketActions.newWorld,
-        await this.gameService.applyAction(gameID, lock),
+        await this.gameService.applyAction(gameID, lock)
       );
     });
   }

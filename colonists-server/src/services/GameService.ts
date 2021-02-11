@@ -94,7 +94,7 @@ export class GameService {
   }
 
   private mapRules(actions: Action[]): Rule[] {
-    const mapped: (Rule | string)[] = actions.map((a) => {
+    const mapped: Rule[] = actions.map((a) => {
       switch (a.type) {
         case 'buildCity':
           return rules.BuildCity(a);
@@ -125,9 +125,9 @@ export class GameService {
         case 'endTurn':
           return rules.EndTurn(a);
         default:
-          return `Could not map Action: { ${Object.keys(a).join(', ')} }!`;
+          throw Error(`Could not map Action: { ${Object.keys(a).join(', ')} }!`);
       }
     });
-    return mapped.filter((r) => typeof r === 'string') as Rule[];
+    return mapped;
   }
 }
