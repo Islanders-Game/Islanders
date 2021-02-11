@@ -4,14 +4,14 @@ services:
     image: mongo
     restart: unless-stopped
     volumes:
-      - pilgrims-mongo-data:/data/db
+      - colonists-mongo-data:/data/db
     environment:
-      - MONGO_INITDB_DATABASE=pilgrims
+      - MONGO_INITDB_DATABASE=colonists
     ports:
       - 27017:27017
 
-  pilgrims-server:
-    image: pilgrims/pilgrims-server:latest
+  colonists-server:
+    image: colonists/colonists-server:latest
     restart: unless-stopped
     ports:
       - 3000:3000
@@ -20,12 +20,12 @@ services:
     links:
       - mongo
 
-  pilgrims-client:
-    image: pilgrims/pilgrims-client:latest
+  colonists-client:
+    image: colonists/colonists-client:latest
     restart: unless-stopped
     ports:
       - 80:80
 
 
 volumes:
-  pilgrims-mongo-data:
+  colonists-mongo-data:

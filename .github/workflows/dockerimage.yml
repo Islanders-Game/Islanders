@@ -10,10 +10,10 @@ jobs:
     steps:
     - uses: actions/checkout@v1
     - name: Build the shared image
-      run: docker build --tag pilgrims/pilgrims-shared:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./pilgrims-shared
+      run: docker build --tag colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-shared
     - name: Build the server
-      run: docker build --tag pilgrims/pilgrims-server:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./pilgrims-server
+      run: docker build --tag colonists/colonists-server:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-server
     - name: Build the client
-      run: docker build --tag pilgrims/pilgrims-client:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./pilgrims-client
+      run: docker build --tag colonists/colonists-client:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-client
     - name: Run tests
-      run: docker run --rm pilgrims/pilgrims-shared:$(git log --pretty=format:'%h' -n 1)
+      run: docker run --rm colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1)

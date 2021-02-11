@@ -1,5 +1,5 @@
 *.DS_Store
-pilgrims-server/data/db
+colonists-server/data/db
 .DS_Store
 .vscode/
 
