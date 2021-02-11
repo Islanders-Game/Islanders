@@ -39,10 +39,12 @@ export class GameSocket {
     nsp.on(SocketActions.connect, (connection) => {
       this.logSocketEvent(gameID, SocketActions.connect);
       this.logConnectEvent(gameID, connection.id);
+      
       connection.on(SocketActions.join, (name: string) => {
         this.logSocketEvent(gameID, SocketActions.join);
         const playerName = name ? name : connection.id;
         this.logJoinEvent(gameID, playerName);
+
         connection.on(SocketActions.getWorld, async () => {
           this.logSocketEvent(gameID, SocketActions.getWorld);
           connection.emit(
@@ -50,10 +52,12 @@ export class GameSocket {
             await this.gameRepository.getWorld(gameID),
           );
         });
+
         connection.on(SocketActions.initWorld, (init: World) => {
           this.logSocketEvent(gameID, SocketActions.initWorld);
           this.gameService.initWorld(init, gameID, nsp);
         });
+
         connection.on(SocketActions.lockMap, async () => {
           this.logSocketEvent(gameID, SocketActions.lockMap);
           const lock: LockMapAction = { type: 'lockMap' };
@@ -62,19 +66,23 @@ export class GameSocket {
             await this.gameService.applyAction(gameID, lock),
           );
         });
+
         connection.on(SocketActions.newMap, (map: Tile[]) => {
           this.logSocketEvent(gameID, SocketActions.newMap);
           this.gameService.updateMap(map, gameID, nsp);
         });
+
         connection.on(SocketActions.chat, (chat: ChatMessage) => {
           this.logSocketEvent(gameID, SocketActions.chat);
           this.chatService.chatMessage(chat, gameID, nsp);
         });
+
         connection.on(SocketActions.sendAction, async (action: Action) => {
           this.logSocketEvent(gameID, SocketActions.sendAction);
           const result = await this.gameService.applyAction(gameID, action);
           nsp.emit(SocketActions.newWorld, result);
         });
+
         connection.on('disconnect', () => {
           const sockets = gamePlayerSockets[gameID];
           const disconnectPlayerName = Object.keys(sockets).find(
@@ -88,7 +96,9 @@ export class GameSocket {
           playerName,
           gamePlayerSockets,
           connection.id,
-        ).then((r) => nsp.emit(SocketActions.newWorld, r));
+        ).then((r) => {
+          nsp.emit(SocketActions.newWorld, r)
+        });
       });
 
       setInterval(

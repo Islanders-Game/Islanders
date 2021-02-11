@@ -8,16 +8,14 @@
             <v-list-item three-line>
               <v-list-item-content>
                 <div class="overline">
-                  You:
+                  You
                 </div>
                 <v-list-item-title class="headline">{{playerName}}</v-list-item-title>                
               </v-list-item-content>
-
-              <!-- TODO: Color based on player color. -->
               <v-list-item-avatar
-                tile
-                size="40"
-                color="black" 
+                rounded
+                size="30"
+                :color="playerColor" 
               ></v-list-item-avatar>
             </v-list-item>
           </v-card>
@@ -94,7 +92,7 @@ export default class CustomizeGame extends Vue {
   }
 
   get playerColor() {
-    return this.$store.getters['game/getCurrentPlayer']?.color;
+    return this.$store.getters['game/getPlayerColorAsHex'](this.playerName);
   }
 
   private async startGame() {

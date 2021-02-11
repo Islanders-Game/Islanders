@@ -63,6 +63,11 @@ const getters: GetterTree<State, any> = {
     }
     return state.world.currentDie;
   },
+  getPlayerColorAsHex: (state: State) => (name: string) => {
+    const color = state.world?.players.find((x) => x.name === name)?.color;
+    const asHex = `#${(color >>> 0).toString(16)}`;
+    return asHex;
+  }
 };
 
 // Synchrounous setters MutationTree<local state, root state>

@@ -131,7 +131,7 @@ export default class Player extends Vue {
   }
 
   get player(): PlayerState {
-    return this.$store.getters['game/getPlayer'](this.playerName);
+    return this.$store.getters['game/getCurrentPlayer'];
   }
 
   get devCardsLength() {
