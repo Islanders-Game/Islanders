@@ -1,6 +1,6 @@
 <template>
   <div id="Trade">
-    <v-btn dark @click="dialog = true">Trade</v-btn>
+    <v-btn block dark @click="dialog = true">Trade</v-btn>
 
     <v-dialog v-model="dialog" max-width="500">
       <v-card>

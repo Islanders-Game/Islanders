@@ -1,63 +1,51 @@
 <template>
   <v-main id="StartGame">
     <v-container>
-      <v-layout align-center justify-center>
-        <v-flex xs12 sm8 md4>
-          <v-card class="elevation-12" style="height:30vh">
-            <v-toolbar dark color="primary">
-              <v-toolbar-title>colonists</v-toolbar-title>
-              <v-spacer></v-spacer>
-              <v-btn-toggle class="transparent" v-model="toggle">
-                <v-btn :value="2" text @click="isCreatingGame = true">Create</v-btn>
-                <v-btn text @click="isCreatingGame = false">Join</v-btn>
-              </v-btn-toggle>
-            </v-toolbar>
-            <v-card-text>
-              <v-text-field
-                autofocus
-                ref="playerName"
-                prepend-icon="person"
-                name="playerName"
-                label="Enter a playername"
-                type="text"
-                v-model="playerName"
-                :rules="rules"
-                counter="25"
-              ></v-text-field>
-              <div>
-                <transition name="fade">
-                  <div v-if="!isCreatingGame" class="fade-element">
-                    <v-text-field
-                      prepend-icon="star"
-                      name="gameid"
-                      label="To join a game, enter a Game Code"
-                      type="text"
-                      v-model="gameId"
-                    ></v-text-field>
-                    <v-btn
-                      color="primary"
-                      disabled
-                      v-if="!validatePlayerName || !validateGameId"
-                    >Join Game</v-btn>
-                    <v-btn color="primary" v-else @click="joinGame">Join Game</v-btn>
-                  </div>
-                </transition>
-                <transition name="fade">
-                  <div v-if="isCreatingGame" class="fade-element">
-                    <v-btn color="primary" disabled v-if="!validatePlayerName">Create Game</v-btn>
-                    <v-btn color="primary" v-else @click="createGame">Create Game</v-btn>
-                  </div>
-                </transition>
-              </div>
-            </v-card-text>
-            <v-card-actions>
-              <v-spacer></v-spacer>
-            </v-card-actions>
-          </v-card>
-          <v-alert :value="error" type="error" transition="scale-transition">{{errorMessage}}</v-alert>
-        </v-flex>
-      </v-layout>
+      <v-card fluid>
+        <v-toolbar dark color="primary">
+          <v-toolbar-title>Colonists</v-toolbar-title>
+          <v-spacer></v-spacer>
+          <v-btn-toggle class="transparent" v-model="toggle">
+            <v-btn :value="2" text @click="isCreatingGame = true">Create</v-btn>
+            <v-btn text @click="isCreatingGame = false">Join</v-btn>
+          </v-btn-toggle>
+        </v-toolbar>
+        
+        <v-card-text>
+          <v-text-field
+            autofocus
+            ref="playerName"
+            outlined
+            name="playerName"
+            dense
+            label="Enter your player name"
+            type="text"
+            v-model="playerName"
+            :rules="rules"
+            counter="14"
+          ></v-text-field>
+          <v-text-field v-show="!isCreatingGame"
+              name="gameid"
+              label="To join a game, enter a Game Code"
+              type="text"
+              outlined
+              dense
+              v-model="gameId"
+              counter="24"
+            ></v-text-field>
+        </v-card-text>
+        <v-card-actions>
+          <v-btn
+              v-if="!isCreatingGame"
+              color="primary"
+              :disabled="!validatePlayerName"
+              v-on:keyup.enter="joinGame"
+          >Join Game</v-btn>
+          <v-btn v-else color="primary" @click="createGame" :disabled="!validatePlayerName">Create Game</v-btn>
+        </v-card-actions>
+      </v-card>
     </v-container>
+    <v-alert :value="error" type="error" transition="scale-transition">{{errorMessage}}</v-alert>
   </v-main>
 </template>
 
@@ -70,7 +58,7 @@ import { Component, Prop, Vue } from "vue-property-decorator";
 export default class StartGame extends Vue {
   public error: boolean = false;
   public errorMessage: string = "Could not create game";
-  public rules = [v => v.length <= 25 || "Max 25 characters"];
+  public rules = [(v:string) => v.length <= 25 || "Max 25 characters"];
   public isCreatingGame = true;
   public playerName: string = "";
   public gameId: string = "";
@@ -148,9 +136,6 @@ export default class StartGame extends Vue {
 </script>
 
 <style lang="scss" scoped>
-#StartGame {
-  padding: 0px;
-}
 
 .fade-enter-active,
 .fade-leave-active {

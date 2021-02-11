@@ -1,74 +1,145 @@
 <template>
-  <v-footer color="#393939" id="Player" height="auto">
-    <v-container row justify-space-around>
-      <v-flex xs3>
-        <v-container align-center justify-start row>
-          <h1 color="whitesmoke">{{playerName}}</h1>
-        </v-container>
-      </v-flex>
-      <v-flex xs6>
-        <v-container column align-space-around justify-start>
-          <v-container row align-center justify-start>
-            <v-flex xs2>
-              <v-icon color="white">build</v-icon>
-            </v-flex>
-            <v-chip>
-              <v-avatar class="white">{{ resourceCount('wood') }}</v-avatar>lumber
-            </v-chip>
-            <v-chip>
-              <v-avatar class="white">{{ resourceCount('clay') }}</v-avatar>clay
-            </v-chip>
-            <v-chip>
-              <v-avatar class="white">{{ resourceCount('wool') }}</v-avatar>wool
-            </v-chip>
-            <v-chip>
-              <v-avatar class="white">{{ resourceCount('grain') }}</v-avatar>grain
-            </v-chip>
-            <v-chip>
-              <v-avatar class="white">{{ resourceCount('stone') }}</v-avatar>stone
-            </v-chip>
-          </v-container>
-          <v-container row align-center justify-start>
-            <v-flex xs2>
-              <v-icon color="white">crop_portrait</v-icon>
-              <v-icon color="white">traffic</v-icon>
-            </v-flex>
-            <v-chip>
-              <v-avatar class="white">{{ devCardsLength }}</v-avatar>dev-cards
-            </v-chip>
-            <v-chip>
-              <v-avatar class="white">{{ knightCardsLength }}</v-avatar>knights
-            </v-chip>
-            <v-chip>
-              <v-avatar class="white">{{ roadLength }}</v-avatar>roads
-            </v-chip>
-          </v-container>
-        </v-container>
-      </v-flex>
-      <v-flex xs3>
-        <v-container align-center row wrap="">
-          <v-menu bottom offset-y>
-            <v-btn dark slot="activator">Build</v-btn>
-            <v-list dark>
-              <v-list-item @click="setIsBuildingHouse">
-                <v-list-item-title>House</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="setIsBuildingCity">
-                <v-list-item-title>City</v-list-item-title>
-              </v-list-item>
-              <v-list-item @click="setIsBuildingRoad">
-                <v-list-item-title dark>Road</v-list-item-title>
-              </v-list-item>
-            </v-list>
-          </v-menu>
-          <Trade></Trade>
-          <v-btn dark @click="setIsMovingThief">Move Thief</v-btn>
-          <v-btn dark @click="devCard">Buy Dev Card</v-btn>
-          <v-btn @click="endTurn">End Turn</v-btn>
-        </v-container>
-      </v-flex>
-    </v-container>
-  </v-footer>
+  <v-container fluid id="Player">
+    <v-row class="fill-height">
+        <v-col sm="2">
+          <v-card
+            dark
+            outlined class="fill-height">
+            <v-list-item three-line>
+              <v-list-item-content>
+                <div class="overline">
+                  You
+                </div>
+                <v-list-item-title class="headline">{{playerName}}</v-list-item-title>   
+                <v-list-item-subtitle>{{playerPoints}} points</v-list-item-subtitle>             
+              </v-list-item-content>
+              <v-list-item-avatar
+                rounded
+                size="30"
+                :color="playerColor" 
+              ></v-list-item-avatar>
+            </v-list-item>
+          </v-card>
+        </v-col>
+
+        <v-col sm="5">
+          <v-card dark outlined class="fill-height">
+            <v-container>
+              <v-row>
+                <v-col sm="4">
+                  <v-row dense>
+                    <v-col sm="6">
+                      <v-chip fluid label dark outlined>{{ resourceCount('wood') }} wood</v-chip>
+                    </v-col>
+                    <v-col sm="6">
+                      <v-chip label dark outlined>{{ resourceCount('grain') }} wheat</v-chip>
+                    </v-col>
+                  </v-row>
+                  <v-row dense>
+                    <v-col sm="6">
+                      <v-chip label dark outlined>{{ resourceCount('stone') }} stone </v-chip>
+                    </v-col>
+                    <v-col sm="6">
+                      <v-chip fluid label dark outlined>{{ resourceCount('clay') }} clay</v-chip>
+                    </v-col>
+                  </v-row>
+                </v-col>
+
+                <v-col sm="2">
+                </v-col>
+
+                <v-col sm="4">
+                  <v-row dense>
+                    <v-col>
+                      <v-chip label dark outlined>{{ devCardsLength }} cards</v-chip>
+                    </v-col>
+                  </v-row>
+                  <v-row dense>
+                    <v-col>
+                      <v-chip label dark outlined>{{ knightCardsLength }} knights</v-chip>
+                    </v-col>
+                  </v-row>
+                  <v-row dense>
+                    <v-col>
+                      <v-chip label dark outlined>{{ roadLength }} roads</v-chip>
+                    </v-col>
+                  </v-row>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card>
+        </v-col>
+        
+        <v-col sm="3">
+          <v-card outlined dark class="fill-height">
+            <v-container>
+              <v-row>
+                <v-col sm="6">
+                  <v-menu
+                    :close-on-content-click="true"
+                    offset-x>
+                    <template v-slot:activator="{ on, attrs }">
+                      <v-btn
+                        block
+                        dark
+                        v-bind="attrs"
+                        v-on="on"
+                      >
+                        Build
+                      </v-btn>
+                    </template>
+
+                    <v-card outlined dark>
+                      <v-list dense>
+                        <v-list-item @click="setIsBuildingHouse">
+                          House
+                        </v-list-item>
+                        <v-list-item @click="setIsBuildingCity">
+                          City
+                        </v-list-item>
+                        <v-list-item @click="setIsBuildingRoad">
+                          Road
+                        </v-list-item>
+                      </v-list>
+                    </v-card>
+                  </v-menu>
+                </v-col>
+                
+                <v-col sm="6">
+                    <Trade></Trade>
+                </v-col>
+
+              </v-row>
+              <v-row>
+                <v-col sm="6">
+                  <v-btn block dark @click="devCard">Buy Card</v-btn>
+                </v-col>
+                
+                <v-col sm="6">
+                  <v-btn block dark @click="setIsMovingThief">Move Thief</v-btn>
+                </v-col>
+              </v-row>
+            </v-container>
+          </v-card>
+        </v-col>
+
+        <v-col sm="2">
+            <v-card class="fill-height" dark outlined>
+              <v-container>
+                <v-row no-gutters>
+                  <v-col sm="1">
+                  </v-col>
+                  <v-col sm="10">
+                    <v-btn block color="red darken-4" @click="endTurn">End Turn</v-btn>
+                  </v-col>
+                  <v-col sm="1">
+                  </v-col>
+              </v-row>
+              </v-container>
+            </v-card>
+        </v-col>
+      </v-row>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -134,6 +205,11 @@ export default class Player extends Vue {
     return this.$store.getters['game/getCurrentPlayer'];
   }
 
+  get playerColor(): PlayerState {
+    const player = this.$store.getters['game/getCurrentPlayer'];
+    return this.$store.getters['game/getPlayerColorAsHex'](player.name);
+  }
+
   get devCardsLength() {
     const player = this.player;
     if (!player) {
@@ -157,11 +233,13 @@ export default class Player extends Vue {
     }
     return player.roads.length; // todo calculate longest path ;D
   }
+
+  get playerPoints() {
+    return this.$store.getters['game/getCurrentPlayer'].points;
+  }
 }
 </script>
 
 <style lang="scss" scoped>
-#Player {
-  padding: 20px;
-}
+
 </style>
