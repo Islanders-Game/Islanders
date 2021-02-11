@@ -6,7 +6,7 @@ import ui from './modules/ui';
 import { io, Socket } from 'socket.io-client';
 import { ActionTree, ActionContext } from 'vuex';
 import Axios from 'axios';
-import { Result } from '../../../pilgrims-shared/dist/Shared';
+import { Result, SocketActions } from '../../../pilgrims-shared/dist/Shared';
 import { onFailure } from '../helpers/FlatMapper';
 
 Vue.use(Vuex);
@@ -14,15 +14,14 @@ Vue.use(Vuex);
 const debug = process.env.NODE_ENV !== 'production';
 export let SocketConnection: Socket;
 
-export class State {}
+export class State { }
 
 const getterTree: GetterTree<State, any> = {};
 
 const mutationTree: MutationTree<State> = {};
 
-const host = `http://${process.env.VUE_APP_SERVER}:${
-  process.env.VUE_APP_SERVERPORT
-}/`;
+const host = `http://${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVERPORT}/`;
+
 const actionTree: ActionTree<any, any> = {
   async createGame({ commit }: ActionContext<any, any>, playerName: string) {
     const { data }: { data: string } = await Axios.get(host + 'newgame');
@@ -42,10 +41,13 @@ const actionTree: ActionTree<any, any> = {
   ) {
     const query = `?playerName=${gameStartInfo.playerName}&gameId=${gameStartInfo.gameId}`;
     const { data }: { data: Result } = await Axios.get(`${host}joingame${query}`,);
+    
+    //TODO: Handle failure
 
     const connection = `${host}${gameStartInfo.gameId}`
     const socket = io(connection);
-    socket.emit('join', gameStartInfo.playerName);
+    
+    socket.emit(SocketActions.join, gameStartInfo.playerName);
     SocketConnection = socket;
 
     commit('game/setGameId', gameStartInfo.gameId);

@@ -17,6 +17,8 @@ WORKDIR /app/client
 
 # Install Dependencies
 COPY ./package*.json ./
+COPY .yarnrc.yml ./
+COPY .yarn/releases/yarn-berry.cjs ./.yarn/releases/yarn-berry.cjs
 RUN yarn install
 
 # Build app

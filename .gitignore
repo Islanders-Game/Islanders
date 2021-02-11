@@ -65,3 +65,12 @@ typings/
 
 # next.js build output
 .next
+
+
+# Yarn v2
+**/.yarn/*
+!**/.yarn/releases
+!**/.yarn/plugins
+!**/.yarn/sdks
+!**/.yarn/versions
+**/.pnp.*

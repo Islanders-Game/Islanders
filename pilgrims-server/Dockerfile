@@ -9,6 +9,8 @@ COPY --from=library /app /app/pilgrims-shared
 # App dependencies
 WORKDIR /app/server
 COPY package.json ./
+COPY .yarnrc.yml ./
+COPY .yarn/releases/yarn-berry.cjs ./.yarn/releases/yarn-berry.cjs
 RUN yarn install
 
 # Build app
@@ -18,4 +20,4 @@ RUN yarn build
 # Run
 ENV PORT 3000
 EXPOSE 3000
-CMD ["yarn", "run", "start"]
+CMD ["yarn", "start"]
