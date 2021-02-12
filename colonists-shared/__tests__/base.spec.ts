@@ -12,6 +12,7 @@ import {
   Road,
   success,
   City,
+  rules
 } from '../lib/Shared';
 
 import {
@@ -23,6 +24,7 @@ import {
 } from '../lib/Rules/Helpers';
 
 import { addResources, empty } from '../lib/Resources';
+import { BuyCardAction, EndTurnAction } from '../lib/Action';
 
 const clayOnlyResource = (amount: number) => {
   return { clay: amount, grain: 0, stone: 0, wood: 0, wool: 0 };
@@ -31,7 +33,7 @@ const grainOnlyResource = (amount: number) => {
   return { clay: 0, grain: amount, stone: 0, wood: 0, wool: 0 };
 };
 const stoneOnlyResource = (amount: number) => {
-  return { clay: 0, grain: 0, stone: 0, wood: amount, wool: 0 };
+  return { clay: 0, grain: 0, stone: amount, wood: 0, wool: 0 };
 };
 const woodOnlyResource = (amount: number) => {
   return { clay: 0, grain: 0, stone: 0, wood: amount, wool: 0 };
@@ -406,15 +408,159 @@ describe('Rules for ending a turn', () => {
 */
 describe('Rules for moving the thief', () => {
   test('Rolling a 7 and not moving the thief is not allowed', () => {
+    const p1: Player = new Player('P1');
 
+    const withThief: World = {
+      currentDie: 7,
+      currentPlayer: 0,
+      map: [],
+      players: [p1],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
+      thief: {hexCoordinate: {x: 0, y: 0}},
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+
+    const withoutThief: World = {
+      currentDie: 7,
+      currentPlayer: 0,
+      map: [],
+      players: [p1],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+
+    const withThiefResult = success(withThief);
+    const withoutThiefResult = success(withoutThief);
+    const ruleWithThief = rules.EndTurn(new EndTurnAction('P1'));
+    const ruleWithoutThief = rules.EndTurn(new EndTurnAction('P1'));
+    const withThiefApplied = ruleWithThief(withThiefResult);
+    const withoutThiefApplied = ruleWithoutThief(withoutThiefResult);
+
+    // expect(withThiefApplied).toHaveProperty('reason');
+    // expect(withoutThiefApplied).toHaveProperty('reason');
   });
 
   test('Rolling a 7 and moving the thief to a new tile is allowed', () => {
+    const p1: Player = new Player('P1');
 
+    const withThief: World = {
+      currentDie: 7,
+      currentPlayer: 0,
+      map: [],
+      players: [p1],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
+      thief: {hexCoordinate: {x: 0, y: 0}},
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+
+    const withoutThief: World = {
+      currentDie: 7,
+      currentPlayer: 0,
+      map: [],
+      players: [p1],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+
+    const withThiefResult = success(withThief);
+    const withoutThiefResult = success(withoutThief);
+    const ruleWithThief = rules.EndTurn(new EndTurnAction('P1'));
+    const ruleWithoutThief = rules.EndTurn(new EndTurnAction('P1'));
+    const withThiefApplied = ruleWithThief(withThiefResult);
+    const withoutThiefApplied = ruleWithoutThief(withoutThiefResult);
+
+    expect(withThiefApplied).not.toHaveProperty('reason');
+    expect(withoutThiefApplied).not.toHaveProperty('reason');
   });
 
   test('A player gaining a development card (giving +1 knight) increases their number of knights by 1', () => {
+    const p1: Player = new Player('P1');
+    p1.resources = 
+      addResources(grainOnlyResource(Number.POSITIVE_INFINITY), 
+        addResources(woolOnlyResource(Number.POSITIVE_INFINITY), 
+          stoneOnlyResource(Number.POSITIVE_INFINITY)));
 
+    const w: World = {
+      currentDie: 7,
+      currentPlayer: 0,
+      map: [],
+      players: [p1],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Started',
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+
+    const initialResult = success(w);
+    const rule = rules.BuyCard(new BuyCardAction('P1'));
+    
+    //Dealing with randomness is unfortunate...
+    let toTest: Result = initialResult;
+    let stop = false;
+    while(!stop) {
+      const intermediate = rule(initialResult);
+      if (intermediate.hasOwnProperty('value')) {
+        const shouldStop = (intermediate as Success).value.players.find(p => p.name === p1.name)!.devCards.some(c => c.type === 'Knight');
+        if (shouldStop) {
+          stop = shouldStop;
+          toTest = intermediate;
+        }
+      }
+    }
+
+    expect(toTest).not.toHaveProperty('reason');
+    toTest.flatMap((w) => {
+      expect(w.players.find(p => p.name === p1.name)!.knights === 1)
+      return success(w);
+    });
   });
 });
 
@@ -470,7 +616,11 @@ describe('Rules when playing development cards', () => {
 
   });
 
-  test('A player playing a "free roads" card and can then build two roads', () => {
+  test('A player playing a "Road Building" card and can then build two roads', () => {
+
+  });
+
+  test('A player playing a "Year of Plenty" card will then have two resources of the chosen type after choosing', () => {
 
   });
 });

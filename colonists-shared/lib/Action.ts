@@ -2,7 +2,7 @@ import { MatrixCoordinate } from './MatrixCoordinate';
 import { HexCoordinate } from './HexCoordinate';
 import { DevelopmentCard } from './Entities/DevelopmentCard';
 import { Resources } from './Resources';
-import { TileType } from './Shared';
+import { TileType, World } from './Shared';
 import { HarborType } from './Tile';
 
 interface HasPlayerName {
