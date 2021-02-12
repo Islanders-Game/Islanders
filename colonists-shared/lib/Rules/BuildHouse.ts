@@ -1,6 +1,6 @@
 import { Result } from './Result';
 import { World } from '../World';
-import { ensureGameState, findPlayer, purchase, placeHouse } from './Helpers';
+import { ensureGameState, findPlayer, purchase, placeHouse, increasePointsForPlayer } from './Helpers';
 import { House } from '../Shared';
 import { BuildHouseAction } from '../Action';
 
@@ -11,4 +11,5 @@ export const BuildHouse = ({ parameters }: BuildHouseAction) => (
     .flatMap(ensureGameState('Started'))
     .flatMap(findPlayer(parameters.playerName))
     .flatMap(purchase(new House().cost)(parameters.playerName))
-    .flatMap(placeHouse(parameters.coordinates)(parameters.playerName));
+    .flatMap(placeHouse(parameters.coordinates)(parameters.playerName))
+    .flatMap(increasePointsForPlayer(parameters.playerName));

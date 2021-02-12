@@ -70,7 +70,10 @@ export class GameService {
     try {
       const result: Result = await this.gameRepository.getWorld(gameID);
       return result.flatMapAsync(async (w: World) => {
-        if (w.gameState === 'Started') return success(w); // spectator mode
+        if (w.gameState === 'Started') return success(w); // Spectator mode
+        if (w.players.filter(p => p.name === name).length > 0) {
+          return fail(`Another player has already taken the name ${name}`);
+        }
         const player = new Player(name);
         const players = w.players.concat([player]);
         players.sort((x, y) => x.name.localeCompare(y.name));

@@ -7,7 +7,6 @@ import { io, Socket } from 'socket.io-client';
 import { ActionTree, ActionContext } from 'vuex';
 import Axios from 'axios';
 import { Result, SocketActions } from '../../../colonists-shared/dist/Shared';
-import { onFailure } from '../helpers/FlatMapper';
 
 Vue.use(Vuex);
 

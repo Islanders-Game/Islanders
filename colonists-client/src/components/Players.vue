@@ -15,7 +15,7 @@
                   <v-row dense>
                     <v-col>
                       <v-chip label outlined small>
-                        {{ playerResources(player) }} resource cards
+                        {{ playerResources(player) }} resources
                       </v-chip>
                     </v-col>
                     <v-col>

@@ -27,7 +27,7 @@ export class World implements World {
     this.players = [];
     this.gameState = 'Uninitialized';
     this.map = [{ type: 'Desert', diceRoll: 'None', coord: { x: 0, y: 0 } }];
-    this.pointsToWin = 0;
+    this.pointsToWin = 10;
     this.gameStatistics = new GameStatistics();
     this.thief = undefined;
   }

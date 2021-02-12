@@ -66,14 +66,18 @@ export default class Map extends Vue {
     const displayHeight = (element: this) => element.$el.clientHeight / window.devicePixelRatio;
     const displayWidth = (element: this) => element.$el.clientWidth / window.devicePixelRatio;
 
+    const resize = (that: this) => {
+      that.app.renderer.resize(displayWidth(that), displayHeight(that));
+      that.viewport.resize(displayWidth(that), displayHeight(that));
+    }
+
     await this.$store.dispatch('game/bindToWorld');
     this.height = displayHeight(this);
     this.width = displayWidth(this);
     this.SetupCanvas();
     const that = this;
     addEventListener('resize', () => {
-      that.app.renderer.resize(displayWidth(that), displayHeight(that));
-      that.viewport.resize(displayWidth(that), displayHeight(that));
+      resize(that);
     });
     this.viewport.on('mousemove', this.handleMove);
     this.viewport.on('pointerup', this.handleClick);
@@ -531,5 +535,6 @@ export default class Map extends Vue {
 #Map {
   background-color: #03518b;
   padding: 0px;
+  margin: 0px;
 }
 </style>

@@ -2,7 +2,7 @@
     <v-snackbar
       :top="true"
       height="24"
-      v-model="showGameInfo" 
+      :value="showGameInfo" 
       id="info"
       >
         <v-row>

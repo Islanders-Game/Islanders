@@ -78,7 +78,7 @@ export default class CustomizeGame extends Vue {
   public mask = '##';
   public radius: number = 2;
   public numberOfIslands: number = 0;
-  public pointsToWin: number = 3;
+  public pointsToWin: number = 10;
   private worldGenerator: WorldGenerator;
 
   public constructor() {

@@ -1,10 +1,11 @@
 <template>
+  <v-content>
   <v-container fluid class="fill-height" id="Game">
-    <Error></Error>
     <v-row no-gutters class="top-ui">
       <v-col sm="9" @mousemove="mouseOver" class="fill-height">
-        <GameInfo v-bind:showGameInfo="showGameInfo"></GameInfo>
+        <Error />
         <Map class="fill-height"></Map>
+        <GameInfo v-bind:showGameInfo="showGameInfo"></GameInfo>
       </v-col>
       <v-col sm="3" class="fill-height">
         <Overview class="fill-height"/>
@@ -15,6 +16,7 @@
       <Player v-else/>
     </v-row>
   </v-container>
+  </v-content>
 </template>
 
 <script lang="ts">
@@ -55,7 +57,7 @@ export default class Game extends Vue {
 
 <style lang="scss" scoped>
 .top-ui {
-  height: 80%;
+  height: 75%;
   padding: 0;
   margin: 0;
 }
@@ -63,7 +65,7 @@ export default class Game extends Vue {
 .bottom-ui {
   padding: 0;
   margin-top: 0px !important;
-  height: 20%;
+  height: 25%;
   background: #1e1e1e
 }
 

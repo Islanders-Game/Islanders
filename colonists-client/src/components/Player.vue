@@ -1,5 +1,5 @@
 <template>
-  <v-container fluid id="Player">
+  <v-container fluid id="Player" class="fill-height">
     <v-row class="fill-height">
         <v-col sm="2">
           <v-card
@@ -23,51 +23,69 @@
         </v-col>
 
         <v-col sm="5">
-          <v-card dark outlined class="fill-height">
-            <v-container>
-              <v-row>
-                <v-col sm="4">
-                  <v-row dense>
-                    <v-col sm="6">
-                      <v-chip fluid label dark outlined>{{ resourceCount('wood') }} wood</v-chip>
-                    </v-col>
-                    <v-col sm="6">
-                      <v-chip label dark outlined>{{ resourceCount('grain') }} wheat</v-chip>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col sm="6">
-                      <v-chip label dark outlined>{{ resourceCount('stone') }} stone </v-chip>
-                    </v-col>
-                    <v-col sm="6">
-                      <v-chip fluid label dark outlined>{{ resourceCount('clay') }} clay</v-chip>
-                    </v-col>
-                  </v-row>
-                </v-col>
+          <v-row>
+            <v-col sm="3">
+            <v-card dark outlined class="fill-height">
+              <v-list-item three-line>
+              <v-list-item-content>
+                <div class="overline">
+                  Dice Roll
+                </div>
+                <v-list-item-title class="headline">{{diceRoll !== 'None' ? diceRoll : '-'}}</v-list-item-title>   
+              </v-list-item-content>
+            </v-list-item>
+            </v-card>
+            </v-col>
+            <v-col sm="9">
+            <v-card dark outlined class="fill-height">
+              <v-container>
+                <v-row>
+                  <v-col sm="8">
+                    <v-row dense>
+                      <v-col sm="6">
+                        <v-chip fluid label dark outlined>{{ resourceCount('wood') }} wood</v-chip>
+                      </v-col>
+                      <v-col sm="6">
+                        <v-chip label dark outlined>{{ resourceCount('grain') }} wheat</v-chip>
+                      </v-col>
+                    </v-row>
+                    <v-row dense>
+                      <v-col sm="6">
+                        <v-chip label dark outlined>{{ resourceCount('stone') }} stone </v-chip>
+                      </v-col>
+                      <v-col sm="6">
+                        <v-chip fluid label dark outlined>{{ resourceCount('clay') }} clay</v-chip>
+                      </v-col>
+                    </v-row>
+                    <v-row dense>
+                      <v-col sm="6">
+                        <v-chip label dark outlined>{{ resourceCount('wool') }} wool </v-chip>
+                      </v-col>
+                    </v-row>
+                  </v-col>
 
-                <v-col sm="2">
-                </v-col>
-
-                <v-col sm="4">
-                  <v-row dense>
-                    <v-col>
-                      <v-chip label dark outlined>{{ devCardsLength }} cards</v-chip>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col>
-                      <v-chip label dark outlined>{{ knightCardsLength }} knights</v-chip>
-                    </v-col>
-                  </v-row>
-                  <v-row dense>
-                    <v-col>
-                      <v-chip label dark outlined>{{ roadLength }} roads</v-chip>
-                    </v-col>
-                  </v-row>
-                </v-col>
-              </v-row>
-            </v-container>
-          </v-card>
+                  <v-col sm="4">
+                    <v-row dense>
+                      <v-col>
+                        <v-chip label dark outlined>{{ devCardsLength }} cards</v-chip>
+                      </v-col>
+                    </v-row>
+                    <v-row dense>
+                      <v-col>
+                        <v-chip label :color="hasMostKnights ? 'green' : 'dark'" outlined>{{ knightCardsLength }} knights</v-chip>
+                      </v-col>
+                    </v-row>
+                    <v-row dense>
+                      <v-col>
+                        <v-chip label :color="hasLongestRoad ? 'green' : 'dark'" outlined>{{ roadLength }} roads</v-chip>
+                      </v-col>
+                    </v-row>
+                  </v-col>
+                </v-row>
+              </v-container>
+            </v-card>
+            </v-col>
+          </v-row>
         </v-col>
         
         <v-col sm="3">
@@ -234,8 +252,38 @@ export default class Player extends Vue {
     return player.roads.length; // todo calculate longest path ;D
   }
 
+  get hasLongestRoad() {
+    const players: PlayerState[] = this.$store.getters['game/getPlayers'];
+    if (players.length === 1 && players[0].roads.length > 4) return true;
+    const playerRoads = 
+      players
+        .filter((p:PlayerState) => p.name !== this.player.name)
+        .map((p: PlayerState) => p.roads.length)
+        .filter((r: number) => r > 4);
+    if (playerRoads.length === 0) return false;
+    const longestRoad = Math.max(...playerRoads);
+    return longestRoad >= this.roadLength;
+  }
+
+  get hasMostKnights() {
+    const players: PlayerState[] = this.$store.getters['game/getPlayers'];
+    if (players.length === 1 && players[0].knights > 2) return true;
+    const playerKnights = 
+      players
+        .filter((p:PlayerState) => p.name !== this.player.name)
+        .map((p: PlayerState) => p.knights)
+        .filter((r: number) => r > 2);
+    if (playerKnights.length === 0) return false;
+    const mostKnights = Math.max(...playerKnights);
+    return mostKnights >= this.roadLength;
+  }
+
   get playerPoints() {
     return this.$store.getters['game/getCurrentPlayer'].points;
+  }
+
+  get diceRoll() {
+    return this.$store.getters['game/getCurrentDie'];
   }
 }
 </script>

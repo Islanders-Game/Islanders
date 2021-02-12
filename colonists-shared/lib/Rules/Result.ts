@@ -38,3 +38,13 @@ export function fail(reason: string): Failure {
 export function success(t: World): Success {
   return new Success(t);
 }
+
+export function toResultInstance(result: any) {
+  if (result.value) {
+    return success(result.value);
+  }
+  if (result.reason) {
+    return fail(result.reason);
+  }
+  throw TypeError(`${result} is not of Result type`);
+}

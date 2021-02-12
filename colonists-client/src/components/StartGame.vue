@@ -39,6 +39,7 @@
               v-if="!isCreatingGame"
               color="primary"
               :disabled="!validatePlayerName"
+              @click="joinGame"
               v-on:keyup.enter="joinGame"
           >Join Game</v-btn>
           <v-btn v-else color="primary" @click="createGame" :disabled="!validatePlayerName">Create Game</v-btn>

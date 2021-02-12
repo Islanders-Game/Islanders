@@ -58,7 +58,7 @@ export const randomGameDiceRoll = (): DiceRollType => {
 };
 
 export const assignNextPlayerTurn = (w: World): Result => {
-  const diceRoll = randomGameDiceRoll();
+  const diceRoll = w.gameState !== 'Pregame' ? randomGameDiceRoll() : 'None';
   const players = assignRessourcesToPlayers(w, diceRoll);
   const nextPlayer = (w.currentPlayer + 1) % w.players.length;
   const newStatistics = {
@@ -73,6 +73,13 @@ export const assignNextPlayerTurn = (w: World): Result => {
     gameStatistics: newStatistics,
   });
 };
+
+export const increasePointsForPlayer = (name: string) => (w: World) => {
+  const players = w.players.map((pl) =>
+    pl.name === name ? { ...pl, points: pl.points+1 } : pl,
+  );
+  return success({ ...w, players });
+} 
 
 type TileRessource = { tile: Tile; amount: number };
 export const assignRessourcesToPlayers = (
@@ -156,7 +163,7 @@ export const purchase = (cost: Resources) => (playerName: string) => (
 
 export const ensureGameState = (state: GameState) => (world: World): Result =>
   world.gameState !== state
-    ? fail('You cannot do that action in state' + world.gameState)
+    ? fail('You cannot do that right now!' + world.gameState)
     : success(world);
 
 export const findPlayer = (name: string) => (w: World): Result => {

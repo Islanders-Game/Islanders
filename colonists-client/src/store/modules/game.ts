@@ -14,11 +14,10 @@ import {
   Action,
   DiceRollType,
   GameState,
-  Success,
   success,
+  toResultInstance
 } from '../../../../colonists-shared/dist/Shared';
 import { SocketConnection, State as RootState } from '../store';
-import { flatMap, onFailure } from '../../helpers/FlatMapper';
 
 // The state
 export class State {
@@ -65,7 +64,7 @@ const getters: GetterTree<State, any> = {
   },
   getPlayerColorAsHex: (state: State) => (name: string) => {
     const color = state.world?.players.find((x) => x.name === name)?.color;
-    const asHex = `#${(color >>> 0).toString(16)}`;
+    const asHex = `#${(color >>> 0).toString(16).padStart(6, '0')}`;
     return asHex;
   }
 };
@@ -100,15 +99,18 @@ const actions: ActionTree<State, RootState> = {
   async bindToWorld({ commit }: ActionContext<State, RootState>) {
     // Connect to socket and setup listener for listening to events.
     SocketConnection.on(SocketActions.newWorld, (result: Result) => {
-      const worldUpdated = flatMap(result, (world: World) => {
-        commit('setWorld', world);
-        return success(world);
-      });
-      onFailure(worldUpdated, (r) => {
-        commit('setError', r);
-      });
+      const asResultInstance = toResultInstance(result);
+      asResultInstance
+        .flatMap((world: World) => {
+          commit('setWorld', world);
+          return success(world);
+        })
+        .onFailure((r) => {
+          commit('setError', r);
+        });
     });
-    SocketConnection.emit(SocketActions.getWorld);
+    //TODO: Is this line needed? Looks very... cyclic.
+    // SocketConnection.emit(SocketActions.getWorld);
   },
   async startGame({ commit }: ActionContext<State, RootState>) {
     SocketConnection.emit(SocketActions.lockMap);
