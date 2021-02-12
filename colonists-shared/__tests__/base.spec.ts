@@ -8,8 +8,21 @@ import {
   GameStatistics,
   Failure,
   Success,
+  House,
+  Road,
+  success,
+  City,
 } from '../lib/Shared';
-import { empty } from '../lib/Resources';
+
+import {
+  playerHasHarbor,
+  placeHouse,
+  placeCity,
+  moveThief,
+  bankTrade
+} from '../lib/Rules/Helpers';
+
+import { addResources, empty } from '../lib/Resources';
 
 const clayOnlyResource = (amount: number) => {
   return { clay: amount, grain: 0, stone: 0, wood: 0, wool: 0 };
@@ -26,6 +39,8 @@ const woodOnlyResource = (amount: number) => {
 const woolOnlyResource = (amount: number) => {
   return { clay: 0, grain: 0, stone: 0, wood: 0, wool: amount };
 };
+
+const map = [{"coord":{"x":-2,"y":-2},"diceRoll":"None","type":"ThreeToOneHarbor"},{"coord":{"x":-3,"y":-1},"diceRoll":"None","type":"ThreeToOneHarbor"},{"coord":{"x":-3,"y":-2},"diceRoll":"None","type":"Ocean"},{"coord":{"x":-2,"y":-1},"diceRoll":12,"type":"Stone"},{"coord":{"x":-3,"y":0},"diceRoll":"None","type":"Ocean"},{"coord":{"x":-3,"y":-1},"diceRoll":"None","type":"GrainHarbor"},{"coord":{"x":-2,"y":0},"diceRoll":8,"type":"Grain"},{"coord":{"x":-2,"y":2},"diceRoll":"None","type":"ThreeToOneHarbor"},{"coord":{"x":-3,"y":1},"diceRoll":"None","type":"Ocean"},{"coord":{"x":-3,"y":0},"diceRoll":"None","type":"Ocean"},{"coord":{"x":-2,"y":1},"diceRoll":5,"type":"Wool"},{"coord":{"x":-1,"y":-3},"diceRoll":"None","type":"Ocean"},{"coord":{"x":-2,"y":-2},"diceRoll":"None","type":"ThreeToOneHarbor"},{"coord":{"x":-1,"y":-2},"diceRoll":3,"type":"Clay"},{"coord":{"x":-1,"y":-1},"diceRoll":9,"type":"Clay"},{"coord":{"x":-1,"y":0},"diceRoll":6,"type":"Grain"},{"coord":{"x":-1,"y":2},"diceRoll":"None","type":"Ocean"},{"coord":{"x":-2,"y":2},"diceRoll":"None","type":"WoolHarbor"},{"coord":{"x":-1,"y":1},"diceRoll":5,"type":"Grain"},{"coord":{"x":0,"y":-3},"diceRoll":"None","type":"ClayHarbor"},{"coord":{"x":-1,"y":-3},"diceRoll":"None","type":"Ocean"},{"coord":{"x":1,"y":-3},"diceRoll":"None","type":"Ocean"},{"coord":{"x":0,"y":-2},"diceRoll":"None","type":"Desert"},{"coord":{"x":0,"y":-1},"diceRoll":6,"type":"Grain"},{"coord":{"x":0,"y":0},"diceRoll":4,"type":"Grain"},{"coord":{"x":0,"y":1},"diceRoll":4,"type":"Grain"},{"coord":{"x":0,"y":3},"diceRoll":"None","type":"GrainHarbor"},{"coord":{"x":-1,"y":2},"diceRoll":"None","type":"Ocean"},{"coord":{"x":1,"y":2},"diceRoll":"None","type":"Ocean"},{"coord":{"x":0,"y":2},"diceRoll":6,"type":"Wool"},{"coord":{"x":1,"y":-3},"diceRoll":"None","type":"Ocean"},{"coord":{"x":2,"y":-2},"diceRoll":"None","type":"ThreeToOneHarbor"},{"coord":{"x":1,"y":-2},"diceRoll":4,"type":"Grain"},{"coord":{"x":1,"y":-1},"diceRoll":11,"type":"Wood"},{"coord":{"x":1,"y":0},"diceRoll":6,"type":"Wool"},{"coord":{"x":1,"y":2},"diceRoll":"None","type":"Ocean"},{"coord":{"x":2,"y":2},"diceRoll":"None","type":"ThreeToOneHarbor"},{"coord":{"x":1,"y":1},"diceRoll":4,"type":"Grain"},{"coord":{"x":2,"y":-2},"diceRoll":"None","type":"ClayHarbor"},{"coord":{"x":3,"y":-1},"diceRoll":"None","type":"GrainHarbor"},{"coord":{"x":3,"y":-2},"diceRoll":"None","type":"Ocean"},{"coord":{"x":2,"y":-1},"diceRoll":4,"type":"Clay"},{"coord":{"x":3,"y":0},"diceRoll":"None","type":"Ocean"},{"coord":{"x":3,"y":-1},"diceRoll":"None","type":"ThreeToOneHarbor"},{"coord":{"x":2,"y":0},"diceRoll":8,"type":"Stone"},{"coord":{"x":2,"y":2},"diceRoll":"None","type":"ThreeToOneHarbor"},{"coord":{"x":3,"y":1},"diceRoll":"None","type":"Ocean"},{"coord":{"x":3,"y":0},"diceRoll":"None","type":"Ocean"},{"coord":{"x":2,"y":1},"diceRoll":10,"type":"Wool"}]
 
 /*
 * Resources
@@ -66,7 +81,7 @@ describe('Negative resources are detected', () => {
 
 describe('Checking for purchaseability', () => {
   test('Player can afford purchase', () => {
-    const res = woolOnlyResource(1);
+    const res = addResources(woolOnlyResource(1), woodOnlyResource(1));
     const p: Player = new Player('P');
     p.resources = res;
 
@@ -91,7 +106,7 @@ describe('Checking for purchaseability', () => {
 
 
     const result = purchase(res)(p.name)(w);
-    expect(result instanceof Success);
+    expect(result).not.toHaveProperty('reason');
   });
 
   test('Player can NOT afford purchase', () => {
@@ -120,7 +135,8 @@ describe('Checking for purchaseability', () => {
     };
 
     const result = purchase(cost)(p.name)(w);
-    expect(result instanceof Failure);
+    expect(result).toHaveProperty('reason');
+    
   });
 });
 
@@ -128,37 +144,243 @@ describe('Checking for purchaseability', () => {
 * Building
 */
 describe('Building rules', () => {
-
-  test('Building a house where there are neighboring houses is not allowed', () => {
-
-  });
-
-  test('Building a house where there are no neighboring houses is allowed', () => {
-
-  });
-
+  
   test('Building a house without a road leading to it is not allowed', () => {
+    const p1: Player = new Player('P1');
 
+    const w: World = {
+      currentDie: 'None',
+      currentPlayer: 0,
+      map: [],
+      players: [p1],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+
+    const resultOnSamePlayer = placeHouse({x: 1, y: 2})('P1')(w);
+    expect(resultOnSamePlayer).toHaveProperty('reason');
   });
 
   test('Building a house with a road leading to it is allowed', () => {
+    const p1: Player = new Player('P1');
 
+    const w: World = {
+      currentDie: 'None',
+      currentPlayer: 0,
+      map: [],
+      players: [p1],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+
+    p1.roads = [new Road({x: 0, y: 0}, {x: 1, y: 1})]
+
+    const resultOnSamePlayer = placeHouse({x: 1, y: 1})('P1')(w);
+    expect(resultOnSamePlayer).not.toHaveProperty('reason');
+  });
+
+  test('Building a house where there are neighboring houses is not allowed', () => {
+    const p1: Player = new Player('P1');
+    p1.houses = [new House({x: 0, y: 0})];
+
+    const p2: Player = new Player('P2');
+    p1.houses = [new House({x: 4, y: 4})];
+
+    const w: World = {
+      currentDie: 'None',
+      currentPlayer: 0,
+      map: [],
+      players: [p1, p2],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+    
+    const resultOnSamePlayer = placeHouse({x: 1, y: 2})('P1')(w);
+    expect(resultOnSamePlayer).toHaveProperty('reason');
+
+    const resultOnOtherPlayer = placeHouse({x: 5, y: 5})('P1')(w);
+    expect(resultOnOtherPlayer).toHaveProperty('reason');
+  });
+
+  test('Building a house where there are no neighboring houses is allowed', () => {
+    const p1: Player = new Player('P1');
+    p1.roads = [new Road({x: 0, y: 0}, {x: 1, y: 1})]
+
+    const w: World = {
+      currentDie: 'None',
+      currentPlayer: 0,
+      map: [],
+      players: [p1],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+    
+    const resultOnSamePlayer = placeHouse({x: 1, y: 1})('P1')(w);
+    expect(resultOnSamePlayer).not.toHaveProperty('reason');
   });
 
   test('Building a house increases points for the player building the house', () => {
+    const p1: Player = new Player('P1');
+    p1.roads = [new Road({x: 0, y: 0}, {x: 1, y: 1})]
+    p1.points = 0;
 
-  });
-
-  test('Building a city without an existing house is not allowed', () => {
-
+    const w: World = {
+      currentDie: 'None',
+      currentPlayer: 0,
+      map: [],
+      players: [p1],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+    
+    const resultOnSamePlayer = placeHouse({x: 1, y: 1})('P1')(w);
+    expect(resultOnSamePlayer).not.toHaveProperty('reason');
+    expect(resultOnSamePlayer.flatMap((w: World) => {
+      expect(w.players.some((p: Player) => p.points === 1)); 
+      return success(w)
+    }));
   });
 
   test('Building a city with an existing house is allowed', () => {
+    const p1: Player = new Player('P1');
+    p1.houses = [new House({x: 0, y: 0})];
 
+    const w: World = {
+      currentDie: 'None',
+      currentPlayer: 0,
+      map: [],
+      players: [p1],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+    
+    const resultOnSamePlayer = placeCity({x: 0, y: 0})('P1')(w);
+    expect(resultOnSamePlayer).not.toHaveProperty('reason');
+    expect(resultOnSamePlayer.flatMap((w: World) => {
+      expect(w.players.every((p: Player) => p.cities.length === 1 && p.cities.every((c: City) => c.position === {x: 0, y: 0}))); 
+      return success(w)
+    }));
+  });
+
+  test('Building a city without an existing house is not allowed', () => {
+    const p1: Player = new Player('P1');
+
+    const w: World = {
+      currentDie: 'None',
+      currentPlayer: 0,
+      map: [],
+      players: [p1],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+    
+    const resultOnSamePlayer = placeCity({x: 0, y: 0})('P1')(w);
+    expect(resultOnSamePlayer.flatMap((w: World) => {
+      expect(w.players.every((p: Player) => p.cities.length === 0)); 
+      return success(w)
+    }));
+    expect(resultOnSamePlayer).toHaveProperty('reason');
   });
 
   test('Building a city increases points for the player building the city', () => {
+    const p1: Player = new Player('P1');
+    p1.houses = [new House({x: 0, y: 0})];
 
+    const w: World = {
+      currentDie: 'None',
+      currentPlayer: 0,
+      map: [],
+      players: [p1],
+      winner: undefined,
+      pointsToWin: 0,
+      gameState: 'Uninitialized',
+      gameStatistics: new GameStatistics(),
+      gameRules: {
+        gameType: 'original',
+        maxCities: 0,
+        maxHouses: 0,
+        maxRoads: 0,
+        pointsToWin: 0,
+        rounds: 0,
+      },
+    };
+
+    const resultOnSamePlayer = placeCity({x: 0, y: 0})('P1')(w);
+    expect(resultOnSamePlayer.flatMap((w: World) => {
+      expect(w.players.every((p: Player) => p.points === 1)); 
+      return success(w)
+    }));
+    expect(resultOnSamePlayer).not.toHaveProperty('reason');
   });
 });
 
