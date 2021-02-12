@@ -19,7 +19,9 @@ Run the following on a system that has Docker installed:
 If you have a running traefik service you can access the app at colonists.localhost.
 Otherwise, run `docker inspect colonists-client | grep IPAddress` to find the ip address of the app.
 
-![screenshot](doc/screenshot.jpg "colonists")
+![screenshot-1](doc/screenshot-1.jpg "colonists")
+
+![screenshot-2](doc/screenshot-2.jpg "colonists")
 
 ## Implementation
 
