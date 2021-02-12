@@ -24,7 +24,7 @@ import {
 } from '../lib/Rules/Helpers';
 
 import { addResources, empty } from '../lib/Resources';
-import { BuyCardAction, EndTurnAction } from '../lib/Action';
+import { BuyCardAction, EndTurnAction, MoveThiefAction } from '../lib/Action';
 
 const clayOnlyResource = (amount: number) => {
   return { clay: amount, grain: 0, stone: 0, wood: 0, wool: 0 };
@@ -417,27 +417,9 @@ describe('Rules for moving the thief', () => {
       players: [p1],
       winner: undefined,
       pointsToWin: 0,
-      gameState: 'Uninitialized',
+      gameState: 'Started',
       thief: {hexCoordinate: {x: 0, y: 0}},
-      gameStatistics: new GameStatistics(),
-      gameRules: {
-        gameType: 'original',
-        maxCities: 0,
-        maxHouses: 0,
-        maxRoads: 0,
-        pointsToWin: 0,
-        rounds: 0,
-      },
-    };
-
-    const withoutThief: World = {
-      currentDie: 7,
-      currentPlayer: 0,
-      map: [],
-      players: [p1],
-      winner: undefined,
-      pointsToWin: 0,
-      gameState: 'Uninitialized',
+      lastThiefPosition: {hexCoordinate: {x: 0, y: 0}},
       gameStatistics: new GameStatistics(),
       gameRules: {
         gameType: 'original',
@@ -450,14 +432,10 @@ describe('Rules for moving the thief', () => {
     };
 
     const withThiefResult = success(withThief);
-    const withoutThiefResult = success(withoutThief);
     const ruleWithThief = rules.EndTurn(new EndTurnAction('P1'));
-    const ruleWithoutThief = rules.EndTurn(new EndTurnAction('P1'));
     const withThiefApplied = ruleWithThief(withThiefResult);
-    const withoutThiefApplied = ruleWithoutThief(withoutThiefResult);
 
-    // expect(withThiefApplied).toHaveProperty('reason');
-    // expect(withoutThiefApplied).toHaveProperty('reason');
+    expect(withThiefApplied).toHaveProperty('reason');
   });
 
   test('Rolling a 7 and moving the thief to a new tile is allowed', () => {
@@ -470,7 +448,7 @@ describe('Rules for moving the thief', () => {
       players: [p1],
       winner: undefined,
       pointsToWin: 0,
-      gameState: 'Uninitialized',
+      gameState: 'Started',
       thief: {hexCoordinate: {x: 0, y: 0}},
       gameStatistics: new GameStatistics(),
       gameRules: {
@@ -490,7 +468,7 @@ describe('Rules for moving the thief', () => {
       players: [p1],
       winner: undefined,
       pointsToWin: 0,
-      gameState: 'Uninitialized',
+      gameState: 'Started',
       gameStatistics: new GameStatistics(),
       gameRules: {
         gameType: 'original',
@@ -504,10 +482,10 @@ describe('Rules for moving the thief', () => {
 
     const withThiefResult = success(withThief);
     const withoutThiefResult = success(withoutThief);
-    const ruleWithThief = rules.EndTurn(new EndTurnAction('P1'));
-    const ruleWithoutThief = rules.EndTurn(new EndTurnAction('P1'));
-    const withThiefApplied = ruleWithThief(withThiefResult);
-    const withoutThiefApplied = ruleWithoutThief(withoutThiefResult);
+    const moveRule = rules.MoveThief(new MoveThiefAction('P1', {x: 1, y: 1}));
+    const endRule = rules.EndTurn(new EndTurnAction('P1'));
+    const withThiefApplied = endRule(moveRule(withThiefResult));
+    const withoutThiefApplied = endRule(moveRule(withoutThiefResult));
 
     expect(withThiefApplied).not.toHaveProperty('reason');
     expect(withoutThiefApplied).not.toHaveProperty('reason');
@@ -521,7 +499,7 @@ describe('Rules for moving the thief', () => {
           stoneOnlyResource(Number.POSITIVE_INFINITY)));
 
     const w: World = {
-      currentDie: 7,
+      currentDie: 2,
       currentPlayer: 0,
       map: [],
       players: [p1],

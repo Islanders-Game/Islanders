@@ -577,7 +577,7 @@ export const diceRollWasSeven = (w: World) => {
 };
 
 export const moveThief = (coords: HexCoordinate) => (w: World) => {
-  return success({ ...w, thief: { hexCoordinate: coords } });
+  return success({ ...w, thief: { hexCoordinate: coords }, lastThiefPosition: { hexCoordinate: coords }});
 };
 
 export const developmentCardHasNotBeenPlayed = (

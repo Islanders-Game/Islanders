@@ -11,6 +11,7 @@ export interface World {
   currentDie: DiceRollType;
   players: Player[];
   thief?: Thief;
+  lastThiefPosition?: Thief;
   map: Tile[];
   gameState: GameState;
   gameRules: GameRules;

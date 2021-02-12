@@ -1,4 +1,4 @@
-import { Result, World, purchase, Road } from '../Shared';
+import { Result } from '../Shared';
 import { MoveThiefAction } from '../Action';
 import {
   diceRollWasSeven,
@@ -13,5 +13,5 @@ export const MoveThief = ({ parameters }: MoveThiefAction) => (
   world
     .flatMap(ensureGameState('Started'))
     .flatMap(findPlayer(parameters.playerName))
-    .flatMap((w: World) => diceRollWasSeven(w))
+    .flatMap(diceRollWasSeven)
     .flatMap(moveThief(parameters.coordinates));
