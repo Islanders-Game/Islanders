@@ -10,7 +10,6 @@
 
 Run the following on a system that has Docker installed:
 
-    docker network create traefik_proxy
     docker build -t colonists/colonists-shared ./colonists-shared
     docker build -t colonists/colonists-client ./colonists-client
     docker build -t colonists/colonists-server ./colonists-server
