@@ -1,5 +1,5 @@
 <template>
-  <v-content>
+  <v-main>
   <v-container fluid class="fill-height" id="Game">
     <v-row no-gutters class="top-ui">
       <v-col sm="9" @mousemove="mouseOver" class="fill-height">
@@ -16,7 +16,7 @@
       <Player v-else/>
     </v-row>
   </v-container>
-  </v-content>
+  </v-main>
 </template>
 
 <script lang="ts">
