@@ -24,29 +24,39 @@
             :rules="rules"
             counter="14"
           ></v-text-field>
-          <v-text-field v-show="!isCreatingGame"
-              name="gameid"
-              label="To join a game, enter a Game Code"
-              type="text"
-              outlined
-              dense
-              v-model="gameId"
-              counter="24"
-            ></v-text-field>
+          <v-text-field
+            v-show="!isCreatingGame"
+            name="gameid"
+            label="To join a game, enter a Game Code"
+            type="text"
+            outlined
+            dense
+            v-model="gameId"
+            counter="24"
+          ></v-text-field>
         </v-card-text>
         <v-card-actions>
           <v-btn
-              v-if="!isCreatingGame"
-              color="primary"
-              :disabled="!validatePlayerName"
-              @click="joinGame"
-              v-on:keyup.enter="joinGame"
-          >Join Game</v-btn>
-          <v-btn v-else color="primary" @click="createGame" :disabled="!validatePlayerName">Create Game</v-btn>
+            v-if="!isCreatingGame"
+            color="primary"
+            :disabled="!validatePlayerName"
+            @click="joinGame"
+            v-on:keyup.enter="joinGame"
+            >Join Game</v-btn
+          >
+          <v-btn
+            v-else
+            color="primary"
+            @click="createGame"
+            :disabled="!validatePlayerName"
+            >Create Game</v-btn
+          >
         </v-card-actions>
       </v-card>
     </v-container>
-    <v-alert :value="error" type="error" transition="scale-transition">{{errorMessage}}</v-alert>
+    <v-alert :value="error" type="error" transition="scale-transition">{{
+      errorMessage
+    }}</v-alert>
   </v-main>
 </template>
 

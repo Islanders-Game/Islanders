@@ -131,7 +131,11 @@ export default class Map extends Vue {
       corner.y += hexOrigin.y;
       const cornerDist = distanceFunc(point, corner);
       if (closestPoint.dist >= cornerDist) {
-        closestPoint = { point: corners[i], index: i, dist: cornerDist };
+        closestPoint = {
+          point: corners[i],
+          index: i,
+          dist: cornerDist,
+        };
       }
     }
     return closestPoint;
@@ -167,9 +171,17 @@ export default class Map extends Vue {
       const cornerDist = distanceFunc(point, corner);
       if (closestPoint.dist >= cornerDist) {
         secondClosestPoint = closestPoint;
-        closestPoint = { point: corners[i], index: i, dist: cornerDist };
+        closestPoint = {
+          point: corners[i],
+          index: i,
+          dist: cornerDist,
+        };
       } else if (secondClosestPoint.dist >= cornerDist) {
-        secondClosestPoint = { point: corners[i], index: i, dist: cornerDist };
+        secondClosestPoint = {
+          point: corners[i],
+          index: i,
+          dist: cornerDist,
+        };
       }
     }
     return [closestPoint, secondClosestPoint];
