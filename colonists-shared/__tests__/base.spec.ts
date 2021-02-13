@@ -96,6 +96,7 @@ describe('Checking for purchaseability', () => {
       gameStatistics: new GameStatistics(),
       gameState: 'Uninitialized',
       pointsToWin: 0,
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -126,6 +127,7 @@ describe('Checking for purchaseability', () => {
       pointsToWin: 0,
       gameState: 'Uninitialized',
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -159,6 +161,7 @@ describe('Building rules', () => {
       pointsToWin: 0,
       gameState: 'Uninitialized',
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -185,6 +188,7 @@ describe('Building rules', () => {
       pointsToWin: 0,
       gameState: 'Uninitialized',
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -217,6 +221,7 @@ describe('Building rules', () => {
       pointsToWin: 0,
       gameState: 'Uninitialized',
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -247,6 +252,7 @@ describe('Building rules', () => {
       pointsToWin: 0,
       gameState: 'Uninitialized',
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -275,6 +281,7 @@ describe('Building rules', () => {
       pointsToWin: 0,
       gameState: 'Uninitialized',
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -306,6 +313,7 @@ describe('Building rules', () => {
       pointsToWin: 0,
       gameState: 'Uninitialized',
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -336,6 +344,7 @@ describe('Building rules', () => {
       pointsToWin: 0,
       gameState: 'Uninitialized',
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -367,6 +376,7 @@ describe('Building rules', () => {
       pointsToWin: 0,
       gameState: 'Uninitialized',
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -421,6 +431,7 @@ describe('Rules for moving the thief', () => {
       thief: {hexCoordinate: {x: 0, y: 0}},
       lastThiefPosition: {hexCoordinate: {x: 0, y: 0}},
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -451,6 +462,7 @@ describe('Rules for moving the thief', () => {
       gameState: 'Started',
       thief: {hexCoordinate: {x: 0, y: 0}},
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -470,6 +482,7 @@ describe('Rules for moving the thief', () => {
       pointsToWin: 0,
       gameState: 'Started',
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -507,6 +520,7 @@ describe('Rules for moving the thief', () => {
       pointsToWin: 0,
       gameState: 'Started',
       gameStatistics: new GameStatistics(),
+      version: 0,
       gameRules: {
         gameType: 'original',
         maxCities: 0,
