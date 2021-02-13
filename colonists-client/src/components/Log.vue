@@ -11,9 +11,9 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-type LogMessage = {
-  header: string,
-  message: string
+interface LogMessage {
+  header: string;
+  message: string;
 }
 
 @Component<Log>({
@@ -22,8 +22,8 @@ type LogMessage = {
 
 export default class Log extends Vue {
   get messages(): LogMessage[] {
-    return [{header: 'Test heading', message: "Test message"}, 
-            {header: 'Test heading', message: "Test message"}];;
+    return [{header: 'Test heading', message: 'Test message'},
+            {header: 'Test heading', message: 'Test message'}];
   }
 }
 </script>

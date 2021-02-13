@@ -10,7 +10,7 @@
             <v-btn text @click="isCreatingGame = false">Join</v-btn>
           </v-btn-toggle>
         </v-toolbar>
-        
+
         <v-card-text>
           <v-text-field
             autofocus
@@ -51,29 +51,29 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Prop, Vue } from 'vue-property-decorator';
 
 @Component({
-  components: {}
+  components: {},
 })
 export default class StartGame extends Vue {
   public error: boolean = false;
-  public errorMessage: string = "Could not create game";
-  public rules = [(v:string) => v.length <= 25 || "Max 25 characters"];
+  public errorMessage: string = 'Could not create game';
+  public rules = [(v: string) => v.length <= 25 || 'Max 25 characters'];
   public isCreatingGame = true;
-  public playerName: string = "";
-  public gameId: string = "";
+  public playerName: string = '';
+  public gameId: string = '';
   public toggle = 2;
 
   public async createGame() {
     if (!this.validatePlayerName) {
       this.error = true;
-      this.errorMessage = "You need to enter a valid player name";
+      this.errorMessage = 'You need to enter a valid player name';
       return;
     }
 
     try {
-      await this.$store.dispatch("createGame", this.playerName);
+      await this.$store.dispatch('createGame', this.playerName);
     } catch (ex) {
       this.error = true;
       this.errorMessage = ex.message;
@@ -82,41 +82,41 @@ export default class StartGame extends Vue {
 
     // todo check for createGame fail.
     if (this.$store.state.game.gameId) {
-      this.$parent.$parent.$emit("gameChosen");
+      this.$parent.$parent.$emit('gameChosen');
     } else {
       this.error = true;
-      this.errorMessage = "An error occured while connecting to the server";
+      this.errorMessage = 'An error occured while connecting to the server';
     }
   }
 
   public async joinGame() {
     if (!this.validateGameId) {
       this.error = true;
-      this.errorMessage = "You need to enter a Game Code";
+      this.errorMessage = 'You need to enter a Game Code';
       return;
     } else if (!this.validatePlayerName) {
       this.error = true;
-      this.errorMessage = "You need to enter a valid player name";
+      this.errorMessage = 'You need to enter a valid player name';
       return;
     }
 
     try {
-      await this.$store.dispatch("joinGame", {
+      await this.$store.dispatch('joinGame', {
         gameId: this.gameId,
-        playerName: this.playerName
+        playerName: this.playerName,
       });
     } catch (ex) {
       this.error = true;
       this.errorMessage = ex.message;
-      console.log(ex);
+      console.warn(ex);
       return;
     }
 
     if (this.$store.state.game.gameId) {
-      this.$parent.$parent.$emit("gameChosen");
+      this.$parent.$parent.$emit('gameChosen');
     } else {
       this.error = true;
-      this.errorMessage = "An error occured while connecting to the server";
+      this.errorMessage = 'An error occured while connecting to the server';
     }
   }
 
@@ -137,7 +137,6 @@ export default class StartGame extends Vue {
 </script>
 
 <style lang="scss" scoped>
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s;

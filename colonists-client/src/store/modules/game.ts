@@ -15,7 +15,7 @@ import {
   DiceRollType,
   GameState,
   success,
-  toResultInstance
+  toResultInstance,
 } from '../../../../colonists-shared/dist/Shared';
 import { SocketConnection, State as RootState } from '../store';
 
@@ -66,7 +66,7 @@ const getters: GetterTree<State, any> = {
     const color = state.world?.players.find((x) => x.name === name)?.color;
     const asHex = `#${(color >>> 0).toString(16).padStart(6, '0')}`;
     return asHex;
-  }
+  },
 };
 
 // Synchrounous setters MutationTree<local state, root state>
@@ -109,7 +109,7 @@ const actions: ActionTree<State, RootState> = {
           commit('setError', r);
         });
     });
-    //TODO: Is this line needed? Looks very... cyclic.
+    // TODO: Is this line needed? Looks very... cyclic.
     // SocketConnection.emit(SocketActions.getWorld);
   },
   async startGame({ commit }: ActionContext<State, RootState>) {

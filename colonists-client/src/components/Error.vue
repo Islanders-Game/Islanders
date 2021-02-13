@@ -11,10 +11,10 @@ import { Component, Vue } from 'vue-property-decorator';
 @Component
 export default class Error extends Vue {
   private currentErrors: string[] = [];
-  
+
   get errors() {
     const result = this.$store.getters['game/getError'];
-    if (result && result !== '') this.currentErrors.push(result);
+    if (result && result !== '') { this.currentErrors.push(result); }
     return this.currentErrors;
   }
 

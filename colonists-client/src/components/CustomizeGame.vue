@@ -73,16 +73,16 @@
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from "vue-property-decorator";
+import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
 import {
   World,
   WorldGenerator,
   Tile,
-} from "../../../colonists-shared/dist/Shared";
+} from '../../../colonists-shared/dist/Shared';
 @Component
 export default class CustomizeGame extends Vue {
   public playerName: string = undefined;
-  public mask = "##";
+  public mask = '##';
   public radius: number = 2;
   public numberOfIslands: number = 1;
   public pointsToWin: number = 10;
@@ -99,24 +99,24 @@ export default class CustomizeGame extends Vue {
   }
 
   get playerColor() {
-    return this.$store.getters["game/getPlayerColorAsHex"](this.playerName);
+    return this.$store.getters['game/getPlayerColorAsHex'](this.playerName);
   }
 
   private async startGame() {
-    await this.$store.dispatch("game/startGame");
+    await this.$store.dispatch('game/startGame');
   }
 
-  @Watch("pointsToWin")
+  @Watch('pointsToWin')
   private setPointsToWin(newPoints: number, oldPoints) {
-    this.$store.commit("game/setPointsToWin", this.pointsToWin);
+    this.$store.commit('game/setPointsToWin', this.pointsToWin);
   }
 
   private async randomizeMap() {
     const map: Tile[] = this.worldGenerator.generateRandomMap(
       this.radius,
-      this.numberOfIslands
+      this.numberOfIslands,
     );
-    await this.$store.dispatch("game/updateMap", map);
+    await this.$store.dispatch('game/updateMap', map);
   }
 }
 </script>

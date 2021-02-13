@@ -39,13 +39,13 @@ const actionTree: ActionTree<any, any> = {
     gameStartInfo: { gameId: string; playerName: string },
   ) {
     const query = `?playerName=${gameStartInfo.playerName}&gameId=${gameStartInfo.gameId}`;
-    const { data }: { data: Result } = await Axios.get(`${host}joingame${query}`,);
-    
-    //TODO: Handle failure
+    const { data }: { data: Result } = await Axios.get(`${host}joingame${query}`);
 
-    const connection = `${host}${gameStartInfo.gameId}`
+    // TODO: Handle failure
+
+    const connection = `${host}${gameStartInfo.gameId}`;
     const socket = io(connection);
-    
+
     socket.emit(SocketActions.join, gameStartInfo.playerName);
     SocketConnection = socket;
 

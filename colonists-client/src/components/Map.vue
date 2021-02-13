@@ -5,14 +5,9 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { defineGrid, extendHex } from 'honeycomb-grid';
-import {
-  Graphics,
-  Application,
-  Point,
-  Container,
-} from 'pixi.js';
-import * as PIXI from "pixi.js";
-import { Viewport } from "pixi-viewport";
+import { Graphics, Application, Point, Container } from 'pixi.js';
+import * as PIXI from 'pixi.js';
+import { Viewport } from 'pixi-viewport';
 import {
   World,
   Tile,
@@ -63,21 +58,23 @@ export default class Map extends Vue {
   private grid;
 
   private async mounted() {
-    const displayHeight = (element: this) => element.$el.clientHeight / window.devicePixelRatio;
-    const displayWidth = (element: this) => element.$el.clientWidth / window.devicePixelRatio;
+    const displayHeight = (element: this) =>
+      element.$el.clientHeight / window.devicePixelRatio;
+    const displayWidth = (element: this) =>
+      element.$el.clientWidth / window.devicePixelRatio;
 
     const resize = (that: this) => {
       that.app.renderer.resize(displayWidth(that), displayHeight(that));
       that.viewport.resize(displayWidth(that), displayHeight(that));
-    }
+    };
 
     await this.$store.dispatch('game/bindToWorld');
     this.height = displayHeight(this);
     this.width = displayWidth(this);
     this.SetupCanvas();
-    const that = this;
+    const thisRef = this;
     addEventListener('resize', () => {
-      resize(that);
+      resize(thisRef);
     });
     this.viewport.on('mousemove', this.handleMove);
     this.viewport.on('pointerup', this.handleClick);
@@ -348,11 +345,7 @@ export default class Map extends Vue {
     });
 
     this.app.stage.addChild(this.viewport);
-    this.viewport
-      .drag()
-      .pinch()
-      .wheel()
-      .decelerate();
+    this.viewport.drag().pinch().wheel().decelerate();
 
     this.$el.appendChild(this.app.view);
     this.viewport.addChild(this.tileGraphics);
