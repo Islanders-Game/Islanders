@@ -255,11 +255,11 @@ __metadata:
 
 "colonists-shared@file:../colonists-shared::locator=colonists-server%40workspace%3A.":
   version: 1.0.0
-  resolution: "colonists-shared@file:../colonists-shared#../colonists-shared::hash=bc2716&locator=colonists-server%40workspace%3A."
+  resolution: "colonists-shared@file:../colonists-shared#../colonists-shared::hash=32bb22&locator=colonists-server%40workspace%3A."
   dependencies:
     honeycomb-grid: ^3.1.7
     uuid: ^8.3.2
-  checksum: 4e942bda01cb63bee71e6102ce54bf1d6249c0eb0415b838ef563fde4cc9f924302950c12f045d1bf04d58e13778e4bc1bb9a213adc97919f54e14660016cdd3
+  checksum: af0e23174ea5e84370923e86cd78715c090c533840a729e2d0a50aa427b7145382311fe99bfebe14d00ca8e1d5e3edace91e51cf805b3fbbe413cb07ad4d1a1d
   languageName: node
   linkType: hard
 
