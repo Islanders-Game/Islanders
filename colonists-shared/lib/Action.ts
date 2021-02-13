@@ -44,6 +44,7 @@ interface PlayCardParameters extends HasPlayerName {
 }
 interface BuyCardParameters extends HasPlayerName {}
 interface EndTurnParameters extends HasPlayerName {}
+interface UndoParameters {}
 
 export class BuildHouseAction {
   public type: 'buildHouse' = 'buildHouse';
@@ -178,6 +179,10 @@ export class EndTurnAction {
   }
 }
 
+export class UndoAction {
+  public type: 'undo' = 'undo';
+}
+
 // An action is an closure which has the information necessary to perform one rule on a world.
 export type Action =
   | BuildHouseAction
@@ -193,4 +198,5 @@ export type Action =
   | PlayCardAction
   | BuyCardAction
   | LockMapAction
-  | EndTurnAction;
+  | EndTurnAction
+  | UndoAction;

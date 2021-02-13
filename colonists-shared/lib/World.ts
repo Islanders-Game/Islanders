@@ -18,6 +18,7 @@ export interface World {
   pointsToWin: number;
   winner: Player | undefined;
   gameStatistics: GameStatistics;
+  version: number;
 }
 
 export class World implements World {
@@ -31,5 +32,6 @@ export class World implements World {
     this.pointsToWin = 10;
     this.gameStatistics = new GameStatistics();
     this.thief = undefined;
+    this.version = 0;
   }
 }

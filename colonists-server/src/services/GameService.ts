@@ -68,7 +68,7 @@ export class GameService {
 
   public async addPlayer(gameID: string, name: string): Promise<Result> {
     try {
-      const result: Result = await this.gameRepository.getWorld(gameID);
+      const result = await this.gameRepository.getWorld(gameID);
       return result.flatMapAsync(async (w: World) => {
         if (w.gameState === 'Started') return success(w); // Spectator mode
         if (w.players.filter(p => p.name === name).length > 0) {
@@ -88,6 +88,9 @@ export class GameService {
 
   public async applyAction(id: string, action: Action): Promise<Result> {
     console.log(`Applying action ${action.type}`);
+    if (action.type === 'undo') {
+      return this.gameRepository.undoMove(id);
+    }
     const toApply = this.mapRules([action]);
     const result = await this.gameRepository.getWorld(id);
     const apply = toApply.reduce(ruleReducer, result);

@@ -8,4 +8,5 @@ export const SocketActions = {
   lockMap: 'lockMap',
   newMap: 'newMap',
   sendAction: 'sendAction',
+  undo: 'undo'
 };

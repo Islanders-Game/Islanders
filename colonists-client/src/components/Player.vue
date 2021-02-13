@@ -21,23 +21,23 @@
             </v-list-item>
           </v-card>
         </v-col>
-
-        <v-col sm="5">
-          <v-row>
-            <v-col sm="3">
+        <v-col sm="1">
             <v-card dark outlined class="fill-height">
               <v-list-item three-line>
               <v-list-item-content>
                 <div class="overline">
-                  Dice Roll
+                  Dice
                 </div>
                 <v-list-item-title class="headline">{{diceRoll !== 'None' ? diceRoll : '-'}}</v-list-item-title>   
               </v-list-item-content>
             </v-list-item>
             </v-card>
             </v-col>
+
+        <v-col sm="4">
+          <v-card dark outlined class="fill-height">
+          <v-row class="fill-height">
             <v-col sm="9">
-            <v-card dark outlined class="fill-height">
               <v-container>
                 <v-row>
                   <v-col sm="8">
@@ -83,15 +83,15 @@
                   </v-col>
                 </v-row>
               </v-container>
-            </v-card>
             </v-col>
           </v-row>
+            </v-card>
         </v-col>
         
         <v-col sm="3">
           <v-card outlined dark class="fill-height">
             <v-container>
-              <v-row>
+              <v-row dense>
                 <v-col sm="6">
                   <v-menu
                     :close-on-content-click="true"
@@ -128,7 +128,7 @@
                 </v-col>
 
               </v-row>
-              <v-row>
+              <v-row dense>
                 <v-col sm="6">
                   <v-btn block dark @click="devCard">Buy Card</v-btn>
                 </v-col>
@@ -144,7 +144,16 @@
         <v-col sm="2">
             <v-card class="fill-height" dark outlined>
               <v-container>
-                <v-row no-gutters>
+                <v-row dense>
+                  <v-col sm="1">
+                  </v-col>
+                  <v-col sm="10">
+                    <v-btn block dark outlined @click="undo">Undo</v-btn>
+                  </v-col>
+                  <v-col sm="1">
+                  </v-col>
+                </v-row>
+                <v-row dense>
                   <v-col sm="1">
                   </v-col>
                   <v-col sm="10">
@@ -152,7 +161,7 @@
                   </v-col>
                   <v-col sm="1">
                   </v-col>
-              </v-row>
+                </v-row>
               </v-container>
             </v-card>
         </v-col>
@@ -170,6 +179,7 @@ import Trade from './Trade.vue';
 import {
   EndTurnAction,
   BuyCardAction,
+  UndoAction
 } from '../../../colonists-shared/dist/Action';
 @Component({
   components: {
@@ -208,6 +218,10 @@ export default class Player extends Vue {
 
   public endTurn() {
     this.$store.dispatch('game/sendAction', new EndTurnAction(this.playerName));
+  }
+
+  public undo() {
+    this.$store.dispatch('game/sendAction', new UndoAction());
   }
 
   private resourceCount(type: string) {

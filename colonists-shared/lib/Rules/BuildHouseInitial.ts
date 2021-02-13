@@ -14,8 +14,8 @@ const checkNumberOfStructures = (w: World): Result => {
 
   if (currentPlayer.houses.length > round) {
     return fail(
-      `You must not place a ${ordinal(currentPlayer.houses.length +
-        1)} in the ${ordinal(round + 1)} pre-game round!`,
+      `You cannot place a ${ordinal(currentPlayer.houses.length +
+        1)} house in the ${ordinal(round + 1)} pre-game round!`,
     );
   }
   return success(w);

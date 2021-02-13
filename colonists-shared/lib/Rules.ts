@@ -15,6 +15,7 @@ import {
   LockMapAction,
   BuildHouseInitialAction,
   BuildRoadInitialAction,
+  UndoAction,
 } from './Action';
 import { BuildHouse } from './Rules/BuildHouse';
 import { BuildHouseInitial } from './Rules/BuildHouseInitial';
