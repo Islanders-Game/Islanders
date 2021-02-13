@@ -1,25 +1,26 @@
 <template>
-  <div id="error-bar" window dark v-show="visible">{{error}}</div> 
+  <span id="error-bar">
+      <template v-for="(error, index) in errors">
+        <div class="individual-error" @click="remove(index)" :key="index"><v-label dark>×</v-label> {{error}}</div>
+      </template>
+  </span>
 </template>
 <script lang="ts">
-import { Component, Prop, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator';
 
 @Component
 export default class Error extends Vue {
-  public visible = true;
-
-  get error() {
+  private currentErrors: string[] = [];
+  
+  get errors() {
     const result = this.$store.getters['game/getError'];
-    console.log(result);
-    this.visible = !!result && result.length > 0;
-    return result;
+    if (result !== '') this.currentErrors.push(result);
+    return this.currentErrors;
   }
 
-  @Watch('visibility')
-  public removeError(newValue, oldValue) {
-    if (!newValue) {
-      this.$store.commit('game/setError', '');
-    }
+  public remove(index: number) {
+    this.currentErrors.splice(index);
+    this.$store.commit('game/setError', '');
   }
 }
 </script>
@@ -33,5 +34,11 @@ export default class Error extends Vue {
   font-size: 0.9rem;
   color: white;
   box-shadow: black 0 0px 6px;
+  cursor: pointer;
 }
+
+.individual-error {
+  border-bottom: darkred solid 1px;
+}
+
 </style>
