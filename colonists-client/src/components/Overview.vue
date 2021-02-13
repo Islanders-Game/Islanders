@@ -27,17 +27,6 @@
           <Log></Log>
         </v-tab-item>
       </v-tabs>
-
-      <v-container :bottom="0" fluid v-if="currentDie">
-          <v-row>
-            <v-col sm="4" >
-              <h1>Last roll:</h1>
-            </v-col>
-            <v-col sm="8">
-              <h1>{{currentDie}}</h1>
-            </v-col>
-          </v-row>
-        </v-container> 
     </v-container>
 </template>
 

@@ -3,7 +3,7 @@
     <v-row class="fill-height">
         <v-col sm="2">
           <v-card
-            dark
+            :dark="isCurrentTurn ? false : true"
             outlined class="fill-height">
             <v-list-item three-line>
               <v-list-item-content>
@@ -43,23 +43,24 @@
                   <v-col sm="8">
                     <v-row dense>
                       <v-col sm="6">
-                        <v-chip fluid label dark outlined>{{ resourceCount('wood') }} wood</v-chip>
+                        <!-- TODO: Replace emojis with mdi-icons/fontawesome -->
+                        <v-chip fluid label dark outlined><v-icon dense small color="green">🌲</v-icon> {{ resourceCount('wood') }} wood</v-chip>
                       </v-col>
                       <v-col sm="6">
-                        <v-chip label dark outlined>{{ resourceCount('grain') }} wheat</v-chip>
-                      </v-col>
-                    </v-row>
-                    <v-row dense>
-                      <v-col sm="6">
-                        <v-chip label dark outlined>{{ resourceCount('stone') }} stone </v-chip>
-                      </v-col>
-                      <v-col sm="6">
-                        <v-chip fluid label dark outlined>{{ resourceCount('clay') }} clay</v-chip>
+                        <v-chip label dark outlined><v-icon dense small color="green">🌾</v-icon> {{ resourceCount('grain') }} wheat</v-chip>
                       </v-col>
                     </v-row>
                     <v-row dense>
                       <v-col sm="6">
-                        <v-chip label dark outlined>{{ resourceCount('wool') }} wool </v-chip>
+                        <v-chip label dark outlined><v-icon dense small color="green">🪨</v-icon> {{ resourceCount('stone') }} stone </v-chip>
+                      </v-col>
+                      <v-col sm="6">
+                        <v-chip fluid label dark outlined><v-icon dense small color="green">🧱</v-icon> {{ resourceCount('clay') }} clay</v-chip>
+                      </v-col>
+                    </v-row>
+                    <v-row dense>
+                      <v-col sm="6">
+                        <v-chip label dark outlined><v-icon dense small color="green">🐑</v-icon> {{ resourceCount('wool') }} wool </v-chip>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -67,17 +68,17 @@
                   <v-col sm="4">
                     <v-row dense>
                       <v-col>
-                        <v-chip label dark outlined>{{ devCardsLength }} cards</v-chip>
+                        <v-chip label dark outlined><v-icon dense small color="green">🂠</v-icon> {{ devCardsLength }} cards</v-chip>
                       </v-col>
                     </v-row>
                     <v-row dense>
                       <v-col>
-                        <v-chip label :color="hasMostKnights ? 'green' : 'dark'" outlined>{{ knightCardsLength }} knights</v-chip>
+                        <v-chip label :color="hasMostKnights ? 'green' : 'dark'" outlined><v-icon dense small color="green">🂬</v-icon>  {{ knightCardsLength }} knights</v-chip>
                       </v-col>
                     </v-row>
                     <v-row dense>
                       <v-col>
-                        <v-chip label :color="hasLongestRoad ? 'green' : 'dark'" outlined>{{ roadLength }} roads</v-chip>
+                        <v-chip label :color="hasLongestRoad ? 'green' : 'dark'" outlined><v-icon dense small color="green">🚦</v-icon> {{ roadLength }} roads</v-chip>
                       </v-col>
                     </v-row>
                   </v-col>
@@ -112,11 +113,11 @@
                         <v-list-item @click="setIsBuildingHouse">
                           House
                         </v-list-item>
-                        <v-list-item @click="setIsBuildingCity">
-                          City
-                        </v-list-item>
                         <v-list-item @click="setIsBuildingRoad">
                           Road
+                        </v-list-item>
+                        <v-list-item @click="setIsBuildingCity">
+                          City
                         </v-list-item>
                       </v-list>
                     </v-card>
@@ -135,6 +136,15 @@
                 
                 <v-col sm="6">
                   <v-btn block dark @click="setIsMovingThief">Move Thief</v-btn>
+                </v-col>
+              </v-row>
+              
+              <v-row dense>
+                <v-col sm="6">
+                  <v-btn block dark :disabled="player.devCards.length === 0">Play Card</v-btn>
+                </v-col>
+                
+                <v-col sm="6">
                 </v-col>
               </v-row>
             </v-container>
@@ -235,6 +245,10 @@ export default class Player extends Vue {
 
   get player(): PlayerState {
     return this.$store.getters['game/getCurrentPlayer'];
+  }
+
+  get isCurrentTurn(): boolean {
+    return this.player.name === this.playerName;
   }
 
   get playerColor(): PlayerState {
