@@ -4,12 +4,12 @@ on: [push]
 
 jobs:
 
-  build-with-caching:
-    runs-on: ubuntu-latest
-    steps:
-    - uses: whoan/docker-build-with-cache-action@v5
-      with:
-        compose_file: docker-compose.yaml
+  # build-with-caching:
+  #   runs-on: ubuntu-latest
+  #   steps:
+  #   - uses: whoan/docker-build-with-cache-action@v5
+  #     with:
+  #       compose_file: docker-compose.yaml
     # - name: Build the shared image
     #   run: docker build --tag colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-shared
     # - name: Build the server
@@ -19,16 +19,15 @@ jobs:
     # - name: Run tests
     #   run: docker run --rm colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1)
 
-  # - build:
- 
-  #   runs-on: ubuntu-latest
-  #   steps:
-  #   - uses: actions/checkout@v1
-  #   - name: Build the shared image
-  #     run: docker build --tag colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-shared
-  #   - name: Build the server
-  #     run: docker build --tag colonists/colonists-server:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-server
-  #   - name: Build the client
-  #     run: docker build --tag colonists/colonists-client:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-client
-  #   - name: Run tests
-  #     run: docker run --rm colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1)
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v1
+    - name: Build the shared image
+      run: docker build --tag colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-shared
+    - name: Build the server
+      run: docker build --tag colonists/colonists-server:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-server
+    - name: Build the client
+      run: docker build --tag colonists/colonists-client:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-client
+    - name: Run tests
+      run: docker run --rm colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1)
