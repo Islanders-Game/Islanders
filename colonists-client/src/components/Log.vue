@@ -15,19 +15,18 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
-interface LogMessage {
-  header: string;
-  message: string;
-}
 
-@Component<Log>({
-  components: {}
-})
-
+@Component
 export default class Log extends Vue {
-  get messages (): LogMessage[] {
-    return [{ header: 'Test heading', message: 'Test message' },
-      { header: 'Test heading', message: 'Test message' }]
+  private messagesField: { header: string, message: string}[]
+
+  constructor () {
+    super()
+    this.messagesField = [{ header: 'Test heading', message: 'Test message' }, { header: 'Test heading', message: 'Test message' }]
+  }
+
+  get messages (): { header: string, message: string}[] {
+    return this.messagesField
   }
 }
 </script>

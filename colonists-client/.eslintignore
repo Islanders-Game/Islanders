@@ -2,3 +2,5 @@ node_modules
 dist
 .eslintrc.js
 tests
+shims-tsx.d.ts
+shims-vue.d.ts

@@ -18,15 +18,15 @@ import {
   MatrixCoordinate,
   getMatrixCoordCorner,
   matrixCoordToWorldCoord
- Player as PlayerState } from '../../../colonists-shared/dist/Shared';
+} from '../../../colonists-shared/dist/Shared'
 import {
   BuildHouseAction,
   Action,
   BuildCityAction,
   BuildRoadAction,
   BuildHouseInitialAction,
-  BuildRoadInitialAction,
-} from '../../../colonists-shared/dist/Action';
+  BuildRoadInitialAction
+} from '../../../colonists-shared/dist/Action'
 
 import { buildingType } from '../store/modules/ui'
 import {
@@ -68,7 +68,7 @@ export default class Map extends Vue {
     const resize = (that: this) => {
       that.app.renderer.resize(displayWidth(that), displayHeight(that))
       that.viewport.resize(displayWidth(that), displayHeight(that))
-    };
+    }
 
     await this.$store.dispatch('game/bindToWorld')
     this.height = displayHeight(this)
@@ -76,15 +76,15 @@ export default class Map extends Vue {
     this.SetupCanvas()
     addEventListener('resize', () => {
       resize(this)
-    });
+    })
     this.viewport.on('mousemove', this.handleMove)
     this.viewport.on('pointerup', this.handleClick)
     this.viewport.on('mouseover', () => {
       window.getSelection().removeAllRanges()
-    });
+    })
   }
 
-  get player (): PlayerState {
+  get player (): Player {
     return this.$store.getters['game/getPlayer'](
       this.$store.state.game.playerName
     )
@@ -102,7 +102,7 @@ export default class Map extends Vue {
     return this.$store.state.game.world as World
   }
 
-  private findTile (hex: any) {
+  private findTile (hex: {x: number, y: number}) {
     const map = this.world.map
     return map.find((tile) => tile.coord.x === hex.x && tile.coord.y === hex.y)
   }
@@ -115,7 +115,7 @@ export default class Map extends Vue {
         Math.pow(Math.abs(from.x - to.x), 2) +
           Math.pow(Math.abs(from.y - to.y), 2)
       )
-    };
+    }
     const hexToFind = this.grid.pointToHex(point)
     const hexOrigin = hexToFind.toPoint()
     const centerOfHex = {
@@ -150,7 +150,7 @@ export default class Map extends Vue {
         Math.pow(Math.abs(from.x - to.x), 2) +
           Math.pow(Math.abs(from.y - to.y), 2)
       )
-    };
+    }
     const hexToFind = this.grid.pointToHex(point)
     const hexOrigin = hexToFind.toPoint()
     const centerOfHex = {
@@ -324,19 +324,18 @@ export default class Map extends Vue {
   private handleMove (event) {
     if (this.isBuilding === 'House') {
       this.cursorForSprite(event, 'House')
-      return;
+      return
     }
     if (this.isBuilding === 'City') {
       this.cursorForSprite(event, 'City')
-      return;
+      return
     }
     if (this.isBuilding === 'Road') {
       this.cursorForRoad(event)
-      return;
+      return
     }
     if (this.isMovingThief) {
       this.cursorForHex(event)
-      return;
     }
   }
 
@@ -415,7 +414,7 @@ export default class Map extends Vue {
       )
       roadGraphics.moveTo(start.x, start.y)
       roadGraphics.lineTo(end.x, end.y)
-    });
+    })
     container.addChild(roadGraphics)
     p.houses.forEach((h) => {
       const piece = this.createPiece(
@@ -429,7 +428,7 @@ export default class Map extends Vue {
         )
       )
       container.addChild(piece)
-    });
+    })
     p.cities.forEach((c) => {
       const piece = this.createPiece(
         'City',
@@ -442,7 +441,7 @@ export default class Map extends Vue {
         )
       )
       container.addChild(piece)
-    });
+    })
   }
 
   @Watch('world')
@@ -511,7 +510,7 @@ export default class Map extends Vue {
         this.lineGraphics.moveTo(firstCorner.x, firstCorner.y)
         otherCorners.forEach(({ x, y }) => this.lineGraphics.lineTo(x, y))
         this.lineGraphics.lineTo(firstCorner.x, firstCorner.y)
-      });
+      })
     }
 
     // Game pieces
@@ -519,7 +518,7 @@ export default class Map extends Vue {
       pieceContainer = new PIXI.Container()
       newWorld.players.forEach((p) => {
         this.addPiecesToContainer(p, pieceContainer)
-      });
+      })
     }
 
     if (redrawTiles) {

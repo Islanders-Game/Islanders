@@ -36,9 +36,7 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 
-@Component<Chat>({
-  components: {}
-})
+@Component
 export default class Chat extends Vue {
   public message = '';
   private playerName: string;

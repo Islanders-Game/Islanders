@@ -44,7 +44,7 @@ export function generateSprites (): { [s: string]: () => Sprite } {
   return sprites
 }
 
-export function generateTile (tileWidth, tileHeight, tile: Tile, corner) {
+export function generateTile (tileWidth: number, tileHeight: number, tile: Tile, corner: {x: number, y: number}): Sprite {
   const generator = generateSprites()[tile.type.toString()]
   const s = generator()
   s.width = tileWidth
@@ -57,9 +57,9 @@ export function generateTile (tileWidth, tileHeight, tile: Tile, corner) {
 export function generateSprite (
   type: string,
   tileWidth: number,
-  center,
-  origin
-) {
+  center: {x: number, y: number},
+  origin: {x: number, y: number}
+): Sprite {
   const generator = generateSprites()[type]
   const s = generator()
   s.width = tileWidth / 4
@@ -76,7 +76,7 @@ export function generateThiefTile (
   tileWidth: number,
   tileHeight: number,
   corner: { x: number; y: number }
-) {
+): Sprite {
   const generator = generateSprites()[type]
   const s = generator()
   s.width = tileWidth
@@ -86,7 +86,7 @@ export function generateThiefTile (
   return s
 }
 
-export function generateTileNumber (tileWidth, center, origin, tile: Tile) {
+export function generateTileNumber (tileWidth: number, center: {x: number, y: number}, origin: {x: number, y: number}, tile: Tile): Sprite {
   if (tile.diceRoll === 'None') {
     return undefined
   }

@@ -2,8 +2,7 @@ import {
   GetterTree,
   MutationTree,
   ActionTree,
-  ActionContext,
-  Getter
+  ActionContext
 } from 'vuex'
 import {
   Player,
@@ -29,7 +28,7 @@ export class State {
 
 // Synchrounous getters: GetterTree<local state, root state>
 // Getters should only be used if caching the result gives performance ie. dont just return state objects.
-const getters: GetterTree<State, any> = {
+const getters: GetterTree<State, unknown> = {
   getWorld (state: State): World {
     return state.world
   },

@@ -6,7 +6,7 @@ import ui from './modules/ui'
 import { io, Socket } from 'socket.io-client'
 
 import Axios from 'axios'
-import { Result, SocketActions } from '../../../colonists-shared/dist/Shared'
+import { Result, SocketActions, success, toResultInstance, World } from '../../../colonists-shared/dist/Shared'
 
 Vue.use(Vuex)
 
@@ -15,14 +15,14 @@ export let SocketConnection: Socket
 
 export class State { }
 
-const getterTree: GetterTree<State, any> = {}
+const getterTree: GetterTree<State, unknown> = {}
 
 const mutationTree: MutationTree<State> = {}
 
 const host = `http://${process.env.VUE_APP_SERVER}:${process.env.VUE_APP_SERVERPORT}/`
 
-const actionTree: ActionTree<any, any> = {
-  async createGame ({ commit }: ActionContext<any, any>, playerName: string) {
+const actionTree: ActionTree<unknown, unknown> = {
+  async createGame ({ commit }: ActionContext<unknown, unknown>, playerName: string) {
     const { data }: { data: string } = await Axios.get(host + 'newgame')
     const gameId = data
 
@@ -35,22 +35,28 @@ const actionTree: ActionTree<any, any> = {
   },
 
   async joinGame (
-    { commit }: ActionContext<any, any>,
+    { commit }: ActionContext<unknown, unknown>,
     gameStartInfo: { gameId: string; playerName: string }
-  ) {
+  ): Promise<void> {
     const query = `?playerName=${gameStartInfo.playerName}&gameId=${gameStartInfo.gameId}`
     const { data }: { data: Result } = await Axios.get(`${host}joingame${query}`)
 
-    // TODO: Handle failure
+    console.log(data)
+    const flatmappable = toResultInstance(data)
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
+    flatmappable.flatMap((w: World) => {
+      const connection = `${host}${gameStartInfo.gameId}`
+      const socket = io(connection)
 
-    const connection = `${host}${gameStartInfo.gameId}`
-    const socket = io(connection)
+      socket.emit(SocketActions.join, gameStartInfo.playerName)
+      SocketConnection = socket
 
-    socket.emit(SocketActions.join, gameStartInfo.playerName)
-    SocketConnection = socket
+      commit('game/setGameId', gameStartInfo.gameId)
+      commit('game/setPlayerName', gameStartInfo.playerName)
+      return success(w)
+    })
 
-    commit('game/setGameId', gameStartInfo.gameId)
-    commit('game/setPlayerName', gameStartInfo.playerName)
+    flatmappable.onFailure((s: string) => commit('game/setError', s))
   }
 }
 

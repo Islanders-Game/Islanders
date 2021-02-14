@@ -5,6 +5,8 @@ module.exports = {
     'plugin:@typescript-eslint/recommended',
     '@vue/typescript/recommended',
     'plugin:vue/recommended',
+    'plugin:vue/essential',
+    '@vue/standard'
   ],
 
   plugins: ['@typescript-eslint'],
@@ -47,15 +49,6 @@ module.exports = {
   env: {
     node: true
   },
-
-  'extends': [
-    'eslint:recommended',
-    'plugin:@typescript-eslint/recommended',
-    '@vue/typescript/recommended',
-    'plugin:vue/recommended',
-    'plugin:vue/essential',
-    '@vue/standard'
-  ],
 
   overrides: [
     {
