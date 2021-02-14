@@ -1,17 +1,17 @@
-import express from 'express';
+import express, { Request, Response } from 'express';
 import cors from 'cors';
 import http from 'http';
 import dotenv from 'dotenv';
-import { Request, Response } from 'express';
+
 import { fail, success, World } from '../../colonists-shared/dist/Shared';
 import { GameSocket } from './GameSocket';
 import { GameService } from './services/GameService';
 import { ChatService } from './services/ChatService';
 import { GameRepository } from './repositories/GameRepository';
 
-console.info(`[INFO] initializing colonists-server`)
+console.info('[INFO] initializing colonists-server');
 const app = express();
-app.use(cors())
+app.use(cors());
 
 const server = http.createServer(app);
 
@@ -21,12 +21,7 @@ const mongoURL = `${process.env.MONGO_URL}:${process.env.MONGO_PORT}/colonists`;
 const gameRepository = new GameRepository(mongoURL);
 const gameService = new GameService(gameRepository);
 const chatService = new ChatService();
-const gameSocket = new GameSocket(
-  server,
-  gameService,
-  chatService,
-  gameRepository,
-);
+const gameSocket = new GameSocket(server, gameService, chatService, gameRepository);
 
 export type GamePlayerSockets = { [gameID: string]: PlayerSockets };
 export type PlayerSockets = { [playerName: string]: string };
@@ -72,6 +67,4 @@ app.get('/joingame', async (req: Request, res: Response) => {
   });
 });
 
-server.listen(process.env.PORT, () =>
-  console.info(`[INFO] colonists-server listening on port ${process.env.PORT}`),
-);
+server.listen(process.env.PORT, () => console.info(`[INFO] colonists-server listening on port ${process.env.PORT}`));

@@ -8,17 +8,18 @@ module.exports = {
   ],
   parser: '@typescript-eslint/parser',
   parserOptions: {
-    ecmaVersion: 12,
-    sourceType: 'module',
+    ecmaVersion: 2020,
   },
   plugins: [
     '@typescript-eslint',
   ],
   rules: {
+    'function-param-newline': 0,
     'implicit-arrow-linebreak': 0,
     'import/prefer-default-export': 0,
     'interface-name': 0,
     'linebreak-style': 0,
+    'lines-between-class-members': 0,
     'max-classes-per-file': 0,
     'max-len': [1, { code: 120, tabWidth: 2 }],
     'no-confusing-arrow': 0,
@@ -30,8 +31,8 @@ module.exports = {
     'no-use-before-define': 0,
     'no-warning-comments': [1, { terms: ['todo', 'fixme'], location: 'anywhere' }],
     'object-literal-sort-keys': 0,
-    'ordered-imports': 0,
     'operator-linebreak': 0,
+    'ordered-imports': 0,
     indent: [1, 2, { SwitchCase: 1 }],
     quotes: [1, 'single'],
     'import/extensions': [
@@ -46,14 +47,13 @@ module.exports = {
     ],
     'object-curly-newline': ['error', {
       ObjectPattern: { multiline: true },
-      ImportDeclaration: 'never',
       ExportDeclaration: { multiline: true, minProperties: 3 },
     }],
   },
   settings: {
     'import/resolver': {
       node: {
-        paths: ['src'],
+        paths: ['lib'],
         extensions: ['.js', '.jsx', '.ts', '.tsx'],
       },
     },

@@ -1,3 +1,4 @@
+import { Namespace } from 'socket.io';
 import {
   World,
   Tile,
@@ -12,50 +13,39 @@ import {
   rules,
 } from '../../../colonists-shared/dist/Shared';
 import { GameRepository } from '../repositories/GameRepository';
-import { Namespace } from 'socket.io';
 
 export class GameService {
   private gameRepository: GameRepository;
+
   constructor(gameRepository: GameRepository) {
     this.gameRepository = gameRepository;
   }
 
-  public async initWorld(
-    init: World,
-    gameID: string,
-    namespace: Namespace,
-  ): Promise<Result> {
-    if (!init) return fail(`init_world was called with an empty message.`); 
-    if (!init || !gameID) return fail("Game ID was not specified.");
+  public async initWorld(init: World, gameID: string, namespace: Namespace): Promise<Result> {
+    if (!init) return fail('init_world was called with an empty message.');
+    if (!init || !gameID) return fail('Game ID was not specified.');
     console.info(`[${gameID}] 'init_world' with World:`);
     console.info(init);
     const r = await this.gameRepository.getWorld(gameID);
     return r.flatMapAsync(async (w: World) => {
       if (w.gameState === 'Started') {
-        await this.gameRepository.createGame(init)
+        await this.gameRepository.createGame(init);
         namespace.emit(SocketActions.newWorld, success(init));
         return success(w);
       }
-      else return fail('The game has not been started!');
-    })
+      return fail('The game has not been started!');
+    });
   }
 
-  public async updateMap(
-    map: Tile[],
-    gameID: string,
-    namespace: Namespace,
-  ): Promise<Result> {
+  public async updateMap(map: Tile[], gameID: string, namespace: Namespace): Promise<Result> {
     const result = await this.gameRepository.getWorld(gameID);
-    result.onFailure(r => {
+    result.onFailure((r) => {
       console.info(`[${gameID}] 'Failure' with reason: ${r}`);
     });
     return result.flatMapAsync(async (w: World) => {
       if (w.gameState === 'Started') {
         const failure = fail('You cannot update the map once the game has started!');
-        namespace.emit(
-          SocketActions.newWorld,
-          failure,
-        );
+        namespace.emit(SocketActions.newWorld, failure);
         return failure;
       }
 
@@ -71,15 +61,14 @@ export class GameService {
       const result = await this.gameRepository.getWorld(gameID);
       return result.flatMapAsync(async (w: World) => {
         if (w.gameState === 'Started') return success(w); // Spectator mode
-        if (w.players.filter(p => p.name === name).length > 0) {
+        if (w.players.filter((p) => p.name === name).length > 0) {
           return fail(`Another player has already taken the name ${name}`);
         }
         const player = new Player(name);
         const players = w.players.concat([player]);
         players.sort((x, y) => x.name.localeCompare(y.name));
         const world = { ...w, players };
-        const result = await this.gameRepository.updateGame(gameID, world);
-        return result;
+        return this.gameRepository.updateGame(gameID, world);
       });
     } catch (ex) {
       return fail(`Could not add player ${name}! Ex: ${ex}`);
@@ -91,15 +80,13 @@ export class GameService {
     if (action.type === 'undo') {
       return this.gameRepository.undoMove(id);
     }
-    const toApply = this.mapRules([action]);
+    const toApply = GameService.mapRules([action]);
     const result = await this.gameRepository.getWorld(id);
     const apply = toApply.reduce(ruleReducer, result);
-    return apply.flatMapAsync(async (w: World) =>
-      await this.gameRepository.updateGame(id, w),
-    );
+    return apply.flatMapAsync(async (w: World) => this.gameRepository.updateGame(id, w));
   }
 
-  private mapRules(actions: Action[]): Rule[] {
+  private static mapRules(actions: Action[]): Rule[] {
     const mapped: Rule[] = actions.map((a) => {
       switch (a.type) {
         case 'buildCity':
