@@ -1,5 +1,5 @@
 *.DS_Store
-pilgrims-server/data/db
+colonists-server/data/db
 .DS_Store
 .vscode/
 
@@ -65,3 +65,12 @@ typings/
 
 # next.js build output
 .next
+
+
+# Yarn v2
+**/.yarn/*
+!**/.yarn/releases
+!**/.yarn/plugins
+!**/.yarn/sdks
+!**/.yarn/versions
+**/.pnp.*
