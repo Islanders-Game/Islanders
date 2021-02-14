@@ -47,6 +47,7 @@ app.get('/newgame', async (_: Request, res: Response) => {
   }
 });
 
+//TODO: This throws if the player attempts to join a nonexistent game!
 app.get('/joingame', async (req: Request, res: Response) => {
   const playerName = String(req.query.playerName);
   const gameID = String(req.query.gameId);
@@ -58,7 +59,6 @@ app.get('/joingame', async (req: Request, res: Response) => {
     console.info(`[${gameID}] Finished /joingame GET with player: ${playerName}`);
     return success(w);
   });
-
   result.onFailure(() => {
     if (gamePlayerSockets[gameID] && gamePlayerSockets[gameID][playerName] && gamePlayerSockets[gameID][playerName] !== Disconnected) {
       res.send(fail('A player with that name already exists on this game!'));
