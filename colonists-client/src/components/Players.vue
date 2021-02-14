@@ -19,6 +19,14 @@
                           outlined
                           small
                         >
+                          <v-icon
+                            dense
+                            small
+                            left
+                            dark
+                          >
+                            mdi-cards
+                          </v-icon>
                           {{ playerResources(player) }} resources
                         </v-chip>
                       </v-col>
@@ -28,7 +36,15 @@
                           outlined
                           small
                         >
-                          {{ playerDevCards(player) }} dev cards
+                          <v-icon
+                            dense
+                            small
+                            left
+                            dark
+                          >
+                            mdi-cards-playing-outline
+                          </v-icon>
+                          {{ playerDevCards(player) }} dev. cards
                         </v-chip>
                       </v-col>
                     </v-row>
@@ -39,6 +55,14 @@
                           outlined
                           small
                         >
+                          <v-icon
+                            dense
+                            small
+                            left
+                            dark
+                          >
+                            mdi-chess-knight
+                          </v-icon>
                           {{ playerKnightCards(player) }} knights
                         </v-chip>
                       </v-col>
@@ -48,6 +72,14 @@
                           outlined
                           small
                         >
+                          <v-icon
+                            dense
+                            small
+                            left
+                            dark
+                          >
+                            mdi-road
+                          </v-icon>
                           {{ playerRoad(player) }} roads
                         </v-chip>
                       </v-col>
@@ -69,31 +101,29 @@
 
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator';
-import { Player as PlayerModel } from '../../../colonists-shared/dist/Shared';
+import { Player } from '../../../colonists-shared/dist/Shared';
 
-@Component({
-  components: {},
-})
+@Component
 export default class Players extends Vue {
-  get players(): PlayerModel[] {
+  get players(): Player[] {
     return this.$store.getters['game/getPlayers'];
   }
 
-  public colorForAvatar(player: PlayerModel): void {
+  private colorForAvatar(player: Player): void {
     return this.$store.getters['game/getPlayerColorAsHex'](player.name);
   }
 
-  public isCurrentPlayersTurn(player: PlayerModel): boolean {
+  private isCurrentPlayersTurn(player: Player): boolean {
     const currentPlayer = this.$store.getters['game/getCurrentPlayer'];
     const isStarted = this.$store.getters['game/getIsGameStarted'];
     return isStarted && player.name === currentPlayer.name;
   }
 
-  private static playerPoints(player: PlayerModel) {
+  private playerPoints(player: Player): number {
     return player.points;
   }
 
-  private static playerResources(player: PlayerModel) {
+  private playerResources(player: Player): number {
     return (
       (player.resources.wood ? player.resources.wood : 0) +
       (player.resources.stone ? player.resources.stone : 0) +
@@ -103,15 +133,15 @@ export default class Players extends Vue {
     );
   }
 
-  private static playerDevCards(player: PlayerModel) {
+  private playerDevCards(player: Player): number {
     return player.devCards.filter((x) => x.type !== 'Knight').length;
   }
 
-  private static playerKnightCards(player: PlayerModel) {
+  private playerKnightCards(player: Player): number {
     return player.devCards.filter((x) => x.type === 'Knight').length;
   }
 
-  private static playerRoad(player: PlayerModel) {
+  private playerRoad(player: Player): number {
     return player.roads.length; // todo longest path :P
   }
 }

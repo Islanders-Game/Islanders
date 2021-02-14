@@ -29,11 +29,6 @@ import { buildingType } from '../store/modules/ui';
 import { generateSprites, generateTile, generateTileNumber, generateThiefTile } from '../helpers/SpriteGenerators';
 import { MoveThiefAction } from '../../../colonists-shared/lib/Action';
 
-// if ((window as any).global == undefined) {
-//   (window as any).global = {};
-// }
-// (window as any).global = { PIXI: PIXI };
-
 @Component
 export default class Map extends Vue {
   private height: number;

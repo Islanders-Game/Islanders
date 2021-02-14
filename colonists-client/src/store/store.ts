@@ -44,7 +44,6 @@ const actionTree: ActionTree<unknown, unknown> = {
     const query = `?playerName=${gameStartInfo.playerName}&gameId=${gameStartInfo.gameId}`;
     const { data }: { data: Result } = await Axios.get(`${host}joingame${query}`);
 
-    console.log(data);
     const flatmappable = toResultInstance(data);
     // eslint-disable-next-line @typescript-eslint/no-unused-vars
     flatmappable.flatMap((w: World) => {

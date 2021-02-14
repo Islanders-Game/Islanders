@@ -82,6 +82,8 @@ export default class Overview extends Vue {
 <style scoped lang="scss">
 #Overview {
   padding: 0px;
-  overflow: scroll;
+  scrollbar-width: thin;
+  overflow-x: hidden;
+  overflow-y: hidden visible;
 }
 </style>

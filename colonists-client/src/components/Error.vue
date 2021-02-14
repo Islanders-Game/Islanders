@@ -33,7 +33,7 @@ export default class Error extends Vue {
   padding-left: 6px;
   position: absolute;
   background-color: #B71C1C;
-  width: 100%;
+  width: 90%;
   font-family: Roboto, sans-serif;
   font-size: 0.9rem;
   color: white;

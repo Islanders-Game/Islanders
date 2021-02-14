@@ -61,7 +61,6 @@
                   <v-col sm="8">
                     <v-row dense>
                       <v-col sm="6">
-                        <!-- TODO: Replace emojis with mdi-icons/fontawesome -->
                         <v-chip
                           fluid
                           label
@@ -69,11 +68,11 @@
                           outlined
                         >
                           <v-icon
-                            dense
                             small
                             color="green"
+                            left
                           >
-                            🌲
+                            mdi-pine-tree
                           </v-icon> {{ resourceCount('wood') }} wood
                         </v-chip>
                       </v-col>
@@ -84,12 +83,12 @@
                           outlined
                         >
                           <v-icon
-                            dense
                             small
-                            color="green"
+                            color="yellow"
+                            left
                           >
-                            🌾
-                          </v-icon> {{ resourceCount('grain') }} wheat
+                            mdi-grain
+                          </v-icon> {{ resourceCount('grain') }} grain
                         </v-chip>
                       </v-col>
                     </v-row>
@@ -103,9 +102,10 @@
                           <v-icon
                             dense
                             small
-                            color="green"
+                            left
+                            color="blue-grey darken-1"
                           >
-                            🪨
+                            mdi-checkbox-blank-circle
                           </v-icon> {{ resourceCount('stone') }} stone
                         </v-chip>
                       </v-col>
@@ -119,9 +119,10 @@
                           <v-icon
                             dense
                             small
-                            color="green"
+                            left
+                            color="red"
                           >
-                            🧱
+                            mdi-toy-brick
                           </v-icon> {{ resourceCount('clay') }} clay
                         </v-chip>
                       </v-col>
@@ -136,9 +137,10 @@
                           <v-icon
                             dense
                             small
-                            color="green"
+                            left
+                            color="white"
                           >
-                            🐑
+                            mdi-sheep
                           </v-icon> {{ resourceCount('wool') }} wool
                         </v-chip>
                       </v-col>
@@ -156,10 +158,11 @@
                           <v-icon
                             dense
                             small
-                            color="green"
+                            left
+                            color="grey lighten-2"
                           >
-                            🂠
-                          </v-icon> {{ devCardsLength }} cards
+                            mdi-cards-playing-outline
+                          </v-icon> {{ devCardsLength }} dev. cards
                         </v-chip>
                       </v-col>
                     </v-row>
@@ -173,9 +176,10 @@
                           <v-icon
                             dense
                             small
-                            color="green"
+                            left
+                            color="grey lighten-2"
                           >
-                            🂬
+                            mdi-chess-knight
                           </v-icon> {{ knightCardsLength }} knights
                         </v-chip>
                       </v-col>
@@ -190,9 +194,10 @@
                           <v-icon
                             dense
                             small
-                            color="green"
+                            left
+                            color="grey lighten-2"
                           >
-                            🚦
+                            mdi-road
                           </v-icon> {{ roadLength }} roads
                         </v-chip>
                       </v-col>
