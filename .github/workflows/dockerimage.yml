@@ -7,7 +7,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - uses: satackey/action-docker-layer-caching@latest
+    - uses: satackey/action-docker-layer-caching@v0.0.11
       continue-on-error: false
     - name: Build the shared image
       run: docker build --tag colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-shared
