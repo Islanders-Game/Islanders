@@ -6,7 +6,7 @@ export class ChatService {
     chat: ChatMessage,
     gameID: string,
     namespace: Namespace,
-  ) {
+  ): void {
     if (!chat) console.info(`[${gameID}] Chat with empty message.`);
     if (!chat || !chat.user || !chat.text) return;
     console.info(`[${gameID}] Chat by ${chat.user}: "${chat.text}".`);

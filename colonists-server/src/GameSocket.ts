@@ -1,4 +1,4 @@
-import { Server, Namespace } from 'socket.io';
+import { Server, Namespace, Socket } from 'socket.io';
 import http from 'http';
 import {
   SocketActions,
@@ -34,9 +34,9 @@ export class GameSocket {
   public setupSocketOnNamespace(
     gameID: string,
     gamePlayerSockets: GamePlayerSockets,
-  ) {
+  ): void {
     const nsp = this.io.of(`/${gameID}`);
-    nsp.on(SocketActions.connect, (connection) => {
+    nsp.on(SocketActions.connect, (connection: Socket) => {
       this.logSocketEvent(gameID, SocketActions.connect);
       this.logConnectEvent(gameID, connection.id);
       
@@ -64,7 +64,7 @@ export class GameSocket {
     });
   }
 
-  private setUpGetWorld(connection: any, gameID: string) {
+  private setUpGetWorld(connection: Socket, gameID: string) {
     connection.on(SocketActions.getWorld, async () => {
       this.logSocketEvent(gameID, SocketActions.getWorld);
       connection.emit(
@@ -74,14 +74,14 @@ export class GameSocket {
     });
   }
 
-  private setupInitWorld(connection: any, gameID: string, namespace: Namespace) {
+  private setupInitWorld(connection: Socket, gameID: string, namespace: Namespace) {
     connection.on(SocketActions.initWorld, (init: World) => {
       this.logSocketEvent(gameID, SocketActions.initWorld);
       this.gameService.initWorld(init, gameID, namespace);
     });
   }
 
-  private setUpLockMap(connection: any, gameID: string, namespace: Namespace) {
+  private setUpLockMap(connection: Socket, gameID: string, namespace: Namespace) {
     connection.on(SocketActions.lockMap, async () => {
       this.logSocketEvent(gameID, SocketActions.lockMap);
       const lock: LockMapAction = { type: 'lockMap' };
@@ -92,21 +92,21 @@ export class GameSocket {
     });
   }
 
-  private setUpNewMap(connection: any, gameID: string, namespace: Namespace) {
+  private setUpNewMap(connection: Socket, gameID: string, namespace: Namespace) {
     connection.on(SocketActions.newMap, (map: Tile[]) => {
       this.logSocketEvent(gameID, SocketActions.newMap);
       this.gameService.updateMap(map, gameID, namespace);
     });
   }
 
-  private setUpChat(connection: any, gameID: string, namespace: Namespace) {
+  private setUpChat(connection: Socket, gameID: string, namespace: Namespace) {
     connection.on(SocketActions.chat, (chat: ChatMessage) => {
       this.logSocketEvent(gameID, SocketActions.chat);
       this.chatService.chatMessage(chat, gameID, namespace);
     });
   }
 
-  private setUpSendAction(connection: any, gameID: string, namespace: Namespace) {
+  private setUpSendAction(connection: Socket, gameID: string, namespace: Namespace) {
     connection.on(SocketActions.sendAction, async (action: Action) => {
       this.logSocketEvent(gameID, SocketActions.sendAction);
       const result = await this.gameService.applyAction(gameID, action);
@@ -114,7 +114,7 @@ export class GameSocket {
     });
   }
 
-  private setUpDisconnect(connection: any, gameID: string, gameSockets: GamePlayerSockets) {
+  private setUpDisconnect(connection: Socket, gameID: string, gameSockets: GamePlayerSockets) {
     connection.on('disconnect', () => {
       const sockets = gameSockets[gameID];
       const disconnectPlayerName = Object.keys(sockets).find(

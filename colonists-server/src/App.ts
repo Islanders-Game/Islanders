@@ -53,8 +53,8 @@ app.get('/newgame', async (_: Request, res: Response) => {
 });
 
 app.get('/joingame', async (req: Request, res: Response) => {
-  const playerName: string = String(req.query.playerName);
-  const gameID: string = String(req.query.gameId);
+  const playerName = String(req.query.playerName);
+  const gameID = String(req.query.gameId);
   console.info(`[${gameID}] Received /joingame GET with player: ${playerName}`);
   const result = await gameRepository.getWorld(gameID);
   
@@ -64,7 +64,7 @@ app.get('/joingame', async (req: Request, res: Response) => {
     return success(w);
   });
 
-  result.onFailure(_ => {
+  result.onFailure(() => {
     if (gamePlayerSockets[gameID][playerName] && gamePlayerSockets[gameID][playerName] !== Disconnected) {
       res.send(fail('A player with that name already exists on this game!'));
     }

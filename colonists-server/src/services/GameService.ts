@@ -24,13 +24,13 @@ export class GameService {
     init: World,
     gameID: string,
     namespace: Namespace,
-  ) {
-    if (!init) console.info(`[${gameID}] 'init_world' with empty message.`);
-    if (!init || !gameID) return;
+  ): Promise<Result> {
+    if (!init) return fail(`init_world was called with an empty message.`); 
+    if (!init || !gameID) return fail("Game ID was not specified.");
     console.info(`[${gameID}] 'init_world' with World:`);
     console.info(init);
     const r = await this.gameRepository.getWorld(gameID);
-    r.flatMapAsync(async (w: World) => {
+    return r.flatMapAsync(async (w: World) => {
       if (w.gameState === 'Started') {
         await this.gameRepository.createGame(init)
         namespace.emit(SocketActions.newWorld, success(init));
@@ -44,7 +44,7 @@ export class GameService {
     map: Tile[],
     gameID: string,
     namespace: Namespace,
-  ) {
+  ): Promise<Result> {
     const result = await this.gameRepository.getWorld(gameID);
     result.onFailure(r => {
       console.info(`[${gameID}] 'Failure' with reason: ${r}`);
