@@ -47,130 +47,182 @@ type EndTurnParameters = HasPlayerName
 
 export class BuildHouseAction {
   public type: 'buildHouse' = 'buildHouse';
+
   public parameters: BuildHouseParameters;
+
   constructor(playerName: string, coordinates: MatrixCoordinate) {
-    this.parameters = { playerName, coordinates };
+    this.parameters = {
+      playerName, coordinates,
+    };
   }
 }
 
 export class BuildHouseInitialAction {
   public type: 'buildHouseInitial' = 'buildHouseInitial';
+
   public parameters: BuildHouseParameters;
+
   constructor(playerName: string, coordinates: MatrixCoordinate) {
-    this.parameters = { playerName, coordinates };
+    this.parameters = {
+      playerName, coordinates,
+    };
   }
 }
 
 export class BuildCityAction {
   public type: 'buildCity' = 'buildCity';
+
   public parameters: BuildCityParameters;
+
   constructor(playerName: string, coordinates: MatrixCoordinate) {
-    this.parameters = { playerName, coordinates };
+    this.parameters = {
+      playerName, coordinates,
+    };
   }
 }
 
 export class BuildRoadAction {
   public type: 'buildRoad' = 'buildRoad';
+
   public parameters: BuildRoadParameters;
+
   constructor(
     playerName: string,
     start: MatrixCoordinate,
     end: MatrixCoordinate,
   ) {
-    this.parameters = { playerName, start, end };
+    this.parameters = {
+      playerName, start, end,
+    };
   }
 }
 
 export class BuildRoadInitialAction {
   public type: 'buildRoadInitial' = 'buildRoadInitial';
+
   public parameters: BuildRoadParameters;
+
   constructor(
     playerName: string,
     start: MatrixCoordinate,
     end: MatrixCoordinate,
   ) {
-    this.parameters = { playerName, start, end };
+    this.parameters = {
+      playerName, start, end,
+    };
   }
 }
 
 export class MoveThiefDevCardAction {
   public type: 'moveThiefDevelopmentCard' = 'moveThiefDevelopmentCard';
+
   public parameters: MoveThiefDevCardParameters;
+
   constructor(
     playerName: string,
     coordinates: HexCoordinate,
     playedCard: DevelopmentCard,
   ) {
-    this.parameters = { playerName, coordinates, playedCard };
+    this.parameters = {
+      playerName, coordinates, playedCard,
+    };
   }
 }
 
 export class MoveThiefAction {
   public type: 'moveThief' = 'moveThief';
+
   public parameters: MoveThiefParameters;
+
   constructor(playerName: string, coordinates: HexCoordinate) {
-    this.parameters = { playerName, coordinates };
+    this.parameters = {
+      playerName, coordinates,
+    };
   }
 }
 
 export class PlayerTradeAction {
   public type: 'playerTrade' = 'playerTrade';
+
   public parameters: PlayerTradeParameters;
+
   constructor(
     playerName: string,
     otherPlayerName: string,
     resources: Resources,
   ) {
-    this.parameters = { playerName, otherPlayerName, resources };
+    this.parameters = {
+      playerName, otherPlayerName, resources,
+    };
   }
 }
 
 export class BankTradeAction {
   public type: 'bankTrade' = 'bankTrade';
+
   public parameters: BankTradeParameters;
+
   constructor(playerName: string, transfer: Resources, receive: Resources) {
-    this.parameters = { playerName, transfer, receive };
+    this.parameters = {
+      playerName, transfer, receive,
+    };
   }
 }
 
 export class HarborTradeAction {
   public type: 'harborTrade' = 'harborTrade';
+
   public parameters: HarborTradeParameters;
+
   constructor(
     playerName: string,
     harborType: HarborType,
     transfer: Resources,
     receive: Resources,
   ) {
-    this.parameters = { playerName, harborType, transfer, receive };
+    this.parameters = {
+      playerName, harborType, transfer, receive,
+    };
   }
 }
 
 export class BuyCardAction {
   public type: 'buyCard' = 'buyCard';
+
   public parameters: BuyCardParameters;
+
   constructor(playerName: string) {
-    this.parameters = { playerName };
+    this.parameters = {
+      playerName,
+    };
   }
 }
 
 export class PlayCardAction {
   public type: 'playCard' = 'playCard';
+
   public parameters: PlayCardParameters;
+
   constructor(
     playerName: string,
     card: DevelopmentCard,
     chosenResources: TileType | [TileType, TileType],
   ) {
-    this.parameters = { playerName, card, chosenResources };
+    this.parameters = {
+      playerName, card, chosenResources,
+    };
   }
 }
 
 export class EndTurnAction {
   public type: 'endTurn' = 'endTurn';
+
   public parameters: EndTurnParameters;
+
   constructor(playerName: string) {
-    this.parameters = { playerName };
+    this.parameters = {
+      playerName,
+    };
   }
 }
 

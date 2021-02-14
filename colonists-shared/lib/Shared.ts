@@ -1,20 +1,14 @@
 import { Turn } from './Turn';
-import {
-  Resources,
+import { Resources,
   subtractResources,
-  resourcesAreNonNegative,
-} from './Resources';
-import {
-  HexCoordinate,
+  resourcesAreNonNegative } from './Resources';
+import { HexCoordinate,
   getMatrixCoordCorner,
-  getNeighbouringMatrixCoords,
-} from './HexCoordinate';
-import {
-  MatrixCoordinate,
+  getNeighbouringMatrixCoords } from './HexCoordinate';
+import { MatrixCoordinate,
   neighbouringHexCoords,
   neighbouringMatrixCoords,
-  matrixCoordToWorldCoord,
-} from './MatrixCoordinate';
+  matrixCoordToWorldCoord } from './MatrixCoordinate';
 import { Thief } from './Thief';
 import { Ship } from './Entities/Ship';
 import { Road } from './Entities/Road';
@@ -30,14 +24,12 @@ import { Action } from './Action';
 import { Rules, Rule, ruleReducer, rules } from './Rules';
 import { ChatMessage } from './ChatMessage';
 import { SocketActions } from './SocketAction';
-import {
-  Result,
+import { Result,
   Failure,
   Success,
   success,
   fail,
-  toResultInstance,
-} from './Rules/Result';
+  toResultInstance } from './Rules/Result';
 import { WorldGenerator } from './WorldGenerator';
 import { purchase } from './Rules/Helpers';
 
