@@ -105,12 +105,10 @@ export default class CustomizeGame extends Vue {
   public radius = 2;
   public numberOfIslands = 1;
   public pointsToWin = 10;
-  private worldGenerator: WorldGenerator;
 
   public constructor () {
     super()
     this.playerName = this.$store.state.game.playerName
-    this.worldGenerator = new WorldGenerator()
   }
 
   get world (): World {
@@ -131,7 +129,7 @@ export default class CustomizeGame extends Vue {
   }
 
   private async randomizeMap () {
-    const map: Tile[] = this.worldGenerator.generateRandomMap(
+    const map: Tile[] = WorldGenerator.generateRandomMap(
       this.radius,
       this.numberOfIslands
     )
