@@ -1,6 +1,8 @@
 import { House } from './House';
+
 export class City extends House {
   public value = 2;
+
   public cost = {
     grain: 2,
     stone: 3,

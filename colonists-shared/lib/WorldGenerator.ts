@@ -65,26 +65,26 @@ const generatorDiceRoll = (): GeneratorDiceRollType => {
 };
 
 export class WorldGenerator {
-  public generateRandomMap(
-    radius: number | undefined,
-    generateIslands: number | undefined,
-  ): Tile[] {
-    const hex = extendHex({
+  public static generateRandomMap(radius: number | undefined, generateIslands: number | undefined): Tile[] {
+    const mainHex = extendHex({
       orientation: 'flat',
     });
     const r: number = radius !== undefined ? Number(radius) : 3;
-    const Grid = defineGrid(hex);
+    const Grid = defineGrid(mainHex);
     const map: Tile[] = [];
 
-    const mainlandCenter = hex(0, 0);
-    let grid = Grid.hexagon({ radius: r, center: mainlandCenter });
+    const mainlandCenter = mainHex(0, 0);
+    let grid = Grid.hexagon({
+      radius: r,
+      center: mainlandCenter,
+    });
 
     if (generateIslands && generateIslands > 1) {
       for (let i = 0; i < generateIslands; i++) {
         grid = grid.concat(
           Grid.hexagon({
             radius: Math.floor(r / 2),
-            center: generateIslandCenter(r, hex),
+            center: generateIslandCenter(r, mainHex),
           }),
         );
       }
@@ -101,8 +101,7 @@ export class WorldGenerator {
       'ThreeToOneHarbor',
       'ThreeToOneHarbor',
     ];
-    const getHarbor = () =>
-      harborProbabilites[Math.floor(Math.random() * harborProbabilites.length)];
+    const getHarbor = () => harborProbabilites[Math.floor(Math.random() * harborProbabilites.length)];
 
     grid.forEach((hex) => {
       const tileType = randomTileType();
@@ -129,7 +128,10 @@ export class WorldGenerator {
       });
 
       map.push({
-        coord: { x: hex.x, y: hex.y },
+        coord: {
+          x: hex.x,
+          y: hex.y,
+        },
         diceRoll,
         type: tileType,
       });
@@ -152,10 +154,7 @@ const coordinateIsHarbor = (hc: HexCoordinate, map: Tile[]) => {
   );
 };
 
-const generateIslandCenter = (
-  r: number,
-  hex: HexFactory<{ orientation: 'flat' }>,
-) => {
+const generateIslandCenter = (r: number, hex: HexFactory<{ orientation: 'flat' }>) => {
   const angle = Math.random() * Math.PI * 2;
   const x = Math.ceil(Math.cos(angle) * (r * 2) + 1);
   const y = Math.ceil(Math.sin(angle) * (r * 2) + 1);

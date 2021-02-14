@@ -48,7 +48,7 @@ app.get('/newgame', async (_: Request, res: Response) => {
     gameSocket.setupSocketOnNamespace(id.toString(), gamePlayerSockets);
     res.send(id);
   } catch (ex) {
-    res.send(fail("Couldn't create game!"));
+    res.send(fail('Couldn\'t create game!'));
   }
 });
 
@@ -57,7 +57,7 @@ app.get('/joingame', async (req: Request, res: Response) => {
   const gameID = String(req.query.gameId);
   console.info(`[${gameID}] Received /joingame GET with player: ${playerName}`);
   const result = await gameRepository.getWorld(gameID);
-  
+
   result.flatMap((w: World) => {
     res.status(200).send(success(w));
     console.info(`[${gameID}] Finished /joingame GET with player: ${playerName}`);

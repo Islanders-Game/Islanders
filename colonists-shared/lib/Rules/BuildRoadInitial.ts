@@ -8,8 +8,8 @@ const checkNumberOfStructures = (w: World): Result => {
   const currentPlayer = w.players[w.currentPlayer];
   if (currentPlayer.roads.length > round) {
     return fail(
-      `Cannot place road number ${currentPlayer.roads.length +
-        1} in pregame round ${round + 1}`,
+      `Cannot place road number ${currentPlayer.roads.length
+        + 1} in pregame round ${round + 1}`,
     );
   }
   return success(w);
