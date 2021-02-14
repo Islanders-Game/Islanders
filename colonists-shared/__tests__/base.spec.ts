@@ -107,7 +107,6 @@ describe('Checking for purchaseability', () => {
       },
     };
 
-
     const result = purchase(res)(p.name)(w);
     expect(result).not.toHaveProperty('reason');
   });
