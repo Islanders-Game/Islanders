@@ -4,7 +4,7 @@ on: [push]
 
 jobs:
 
-  build-with-caching:
+  - build-with-caching:
  
     runs-on: ubuntu-latest
     steps:
@@ -20,7 +20,7 @@ jobs:
     # - name: Run tests
     #   run: docker run --rm colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1)
 
-build:
+  - build:
  
     runs-on: ubuntu-latest
     steps:
