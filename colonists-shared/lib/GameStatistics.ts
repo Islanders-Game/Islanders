@@ -1,4 +1,4 @@
-export default class GameStatistics {
+export class GameStatistics {
   public turns: number;
 
   constructor() {
