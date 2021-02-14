@@ -30,7 +30,14 @@ import { Action } from './Action';
 import { Rules, Rule, ruleReducer, rules } from './Rules';
 import { ChatMessage } from './ChatMessage';
 import { SocketActions } from './SocketAction';
-import { Result, Failure, Success, success, fail, toResultInstance } from './Rules/Result';
+import {
+  Result,
+  Failure,
+  Success,
+  success,
+  fail,
+  toResultInstance,
+} from './Rules/Result';
 import { WorldGenerator } from './WorldGenerator';
 import { purchase } from './Rules/Helpers';
 
@@ -74,5 +81,5 @@ export {
   WorldGenerator,
   GameState,
   GameStatistics,
-  toResultInstance
+  toResultInstance,
 };

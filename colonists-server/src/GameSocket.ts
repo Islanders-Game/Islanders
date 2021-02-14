@@ -25,7 +25,7 @@ export class GameSocket {
     chatService: ChatService,
     gameRepository: GameRepository,
   ) {
-    this.io = new Server(server, { cors: { origin: "*" } });
+    this.io = new Server(server, { cors: { origin: '*' } });
     this.gameService = gameService;
     this.chatService = chatService;
     this.gameRepository = gameRepository;
@@ -39,7 +39,7 @@ export class GameSocket {
     nsp.on(SocketActions.connect, (connection: Socket) => {
       this.logSocketEvent(gameID, SocketActions.connect);
       this.logConnectEvent(gameID, connection.id);
-      
+
       connection.on(SocketActions.join, (name: string) => {
         this.logSocketEvent(gameID, SocketActions.join);
         const playerName = name ? name : connection.id;
@@ -87,7 +87,7 @@ export class GameSocket {
       const lock: LockMapAction = { type: 'lockMap' };
       namespace.emit(
         SocketActions.newWorld,
-        await this.gameService.applyAction(gameID, lock)
+        await this.gameService.applyAction(gameID, lock),
       );
     });
   }

@@ -54,7 +54,7 @@ export class GameService {
         const failure = fail('You cannot update the map once the game has started!');
         namespace.emit(
           SocketActions.newWorld,
-          failure
+          failure,
         );
         return failure;
       }
@@ -95,7 +95,7 @@ export class GameService {
     const result = await this.gameRepository.getWorld(id);
     const apply = toApply.reduce(ruleReducer, result);
     return apply.flatMapAsync(async (w: World) =>
-      await this.gameRepository.updateGame(id, w)
+      await this.gameRepository.updateGame(id, w),
     );
   }
 

@@ -79,7 +79,7 @@ export const increasePointsForPlayer = (name: string) => (w: World): Result => {
     pl.name === name ? { ...pl, points: pl.points+1 } : pl,
   );
   return success({ ...w, players });
-} 
+}
 
 type TileRessource = { tile: Tile; amount: number };
 export const assignRessourcesToPlayers = (
@@ -398,16 +398,16 @@ export const playCard = (
   const devCards = player.devCards.slice();
   const toPlay = devCards.find((c) => c.type === card.type && !c.played);
   if (!toPlay) {
-    return fail("You do not have that card!");
+    return fail('You do not have that card!');
   }
 
-  //Side effect!
+  // Side effect!
   toPlay.played = true;
 
   if (card.type === 'Victory Point') {
     const players = w.players.map((pl) =>
       pl.name === playerName
-        ? { ...pl, points: pl.points + 1, devCards: devCards }
+        ? { ...pl, points: pl.points + 1, devCards }
         : pl,
     );
     return success({ ...w, players });
@@ -415,7 +415,7 @@ export const playCard = (
   if (card.type === 'Knight') {
     const players = w.players.map((pl) =>
       pl.name === playerName
-        ? { ...pl, knights: pl.knights + 1, devCards: devCards }
+        ? { ...pl, knights: pl.knights + 1, devCards }
         : pl,
     );
     return success({ ...w, players });
@@ -431,7 +431,7 @@ export const playCard = (
     );
     const players = w.players.map((pl) =>
       pl.name === playerName
-        ? { ...pl, resources: withTwoExtraRoads, devCards: devCards }
+        ? { ...pl, resources: withTwoExtraRoads, devCards }
         : pl,
     );
     return success({ ...w, players });
@@ -445,7 +445,7 @@ export const playCard = (
     const rrr = addAmountToResourceOfType(1, rr, chosen[1]);
     const players = w.players.map((pl) =>
       pl.name === playerName
-        ? { ...pl, resources: rrr, devCards: devCards }
+        ? { ...pl, resources: rrr, devCards }
         : pl,
     );
 

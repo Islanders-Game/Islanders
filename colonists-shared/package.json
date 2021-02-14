@@ -5,7 +5,8 @@
   "main": "dist/lib/shared.js",
   "scripts": {
     "build": "tsc",
-    "test": "jest"
+    "test": "jest",
+    "lint": "tslint -c tslint.json -p tsconfig.json --fix"
   },
   "author": "",
   "license": "ISC",
