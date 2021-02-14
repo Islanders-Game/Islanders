@@ -1,5 +1,8 @@
 <template>
-  <v-container fluid id="Map"></v-container>
+  <v-container
+    id="Map"
+    fluid
+  />
 </template>
 
 <script lang="ts">
@@ -11,8 +14,8 @@ import {
   Point,
   Container,
 } from 'pixi.js';
-import * as PIXI from "pixi.js";
-import { Viewport } from "pixi-viewport";
+import * as PIXI from 'pixi.js';
+import { Viewport } from 'pixi-viewport';
 import {
   World,
   Tile,
@@ -33,7 +36,6 @@ import { Player as PlayerState } from '../../../colonists-shared/dist/Shared';
 import { buildingType } from '../store/modules/ui';
 import {
   generateSprites,
-  generateSprite,
   generateTile,
   generateTileNumber,
   generateThiefTile,
@@ -49,10 +51,10 @@ import { MoveThiefAction } from '../../../colonists-shared/lib/Action';
 export default class Map extends Vue {
   private height: number;
   private width: number;
-  private hexSize: number = 200;
-  private tileHeight: number = 348;
-  private tileWidth: number = 400;
-  private lineWidth: number = 14;
+  private hexSize = 200;
+  private tileHeight = 348;
+  private tileWidth = 400;
+  private lineWidth = 14;
   private app: Application;
   private viewport: Viewport;
   private tileGraphics: Graphics = new Graphics();
@@ -75,9 +77,8 @@ export default class Map extends Vue {
     this.height = displayHeight(this);
     this.width = displayWidth(this);
     this.SetupCanvas();
-    const that = this;
     addEventListener('resize', () => {
-      resize(that);
+      resize(this);
     });
     this.viewport.on('mousemove', this.handleMove);
     this.viewport.on('pointerup', this.handleClick);
@@ -100,11 +101,11 @@ export default class Map extends Vue {
     return this.$store.state.ui.isBuilding;
   }
 
-  get world() {
+  get world(): World {
     return this.$store.state.game.world as World;
   }
 
-  private findTile(hex) {
+  private findTile(hex: any) {
     const map = this.world.map;
     return map.find((tile) => tile.coord.x === hex.x && tile.coord.y === hex.y);
   }
@@ -217,9 +218,9 @@ export default class Map extends Vue {
         this.world.gameState === 'Started'
           ? new BuildHouseAction(this.$store.state.game.playerName, coord)
           : new BuildHouseInitialAction(
-              this.$store.state.game.playerName,
-              coord,
-            );
+            this.$store.state.game.playerName,
+            coord,
+          );
 
       this.dispatchActionClearCursor(event, action);
       this.$store.commit('ui/setIsBuilding', 'None');
@@ -236,15 +237,15 @@ export default class Map extends Vue {
       const action =
         this.world.gameState === 'Started'
           ? new BuildRoadAction(
-              this.$store.state.game.playerName,
-              coord,
-              coord2,
-            )
+            this.$store.state.game.playerName,
+            coord,
+            coord2,
+          )
           : new BuildRoadInitialAction(
-              this.$store.state.game.playerName,
-              coord,
-              coord2,
-            );
+            this.$store.state.game.playerName,
+            coord,
+            coord2,
+          );
 
       this.dispatchActionClearCursor(event, action);
       this.$store.commit('ui/setIsBuilding', 'None');
@@ -344,7 +345,7 @@ export default class Map extends Vue {
       screenHeight: this.height,
       worldHeight: 1000,
       worldWidth: 1000,
-      interaction: this.app.renderer!.plugins.interaction,
+      interaction: this.app.renderer.plugins.interaction,
     });
 
     this.app.stage.addChild(this.viewport);
@@ -460,7 +461,6 @@ export default class Map extends Vue {
         orientation: 'flat',
       });
       this.grid = defineGrid(Hex);
-      const center = Hex(0, 0);
 
       this.lineGraphics.removeChildren();
       this.lineGraphics.clear();

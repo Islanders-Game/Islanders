@@ -1,8 +1,12 @@
 <template>
   <span id="error-bar">
-      <template v-for="(error, index) in errors">
-        <div class="individual-error" @click="remove(index)" :key="index"><v-label dark>×</v-label> {{error}}</div>
-      </template>
+    <template v-for="(error, index) in errors">
+      <div
+        :key="index"
+        class="individual-error"
+        @click="remove(index)"
+      ><v-label dark>×</v-label> {{ error }}</div>
+    </template>
   </span>
 </template>
 <script lang="ts">
@@ -12,13 +16,13 @@ import { Component, Vue } from 'vue-property-decorator';
 export default class Error extends Vue {
   private currentErrors: string[] = [];
   
-  get errors() {
+  get errors(): string[] {
     const result = this.$store.getters['game/getError'];
-    if (result && result !== '') this.currentErrors.push(result);
+    if (result && result !== '') this.currentErrors.push(result);
     return this.currentErrors;
   }
 
-  public remove(index: number) {
+  public remove(index: number): void {
     this.currentErrors.splice(index);
     this.$store.commit('game/setError', '');
   }

@@ -1,11 +1,15 @@
 <template>
   <v-container id="Log">
-      <v-list-item two-line v-for="(message, index) in messages" :key="index">
-        <v-list-item-content>
-            <v-list-item-title>{{message.header}}</v-list-item-title>
-            <v-list-item-subtitle>{{message.message}}</v-list-item-subtitle>
-        </v-list-item-content>     
-      </v-list-item>
+    <v-list-item
+      v-for="(message, index) in messages"
+      :key="index"
+      two-line
+    >
+      <v-list-item-content>
+        <v-list-item-title>{{ message.header }}</v-list-item-title>
+        <v-list-item-subtitle>{{ message.message }}</v-list-item-subtitle>
+      </v-list-item-content>     
+    </v-list-item>
   </v-container>
 </template>
 
@@ -22,8 +26,8 @@ type LogMessage = {
 
 export default class Log extends Vue {
   get messages(): LogMessage[] {
-    return [{header: 'Test heading', message: "Test message"}, 
-            {header: 'Test heading', message: "Test message"}];;
+    return [{header: 'Test heading', message: 'Test message'}, 
+      {header: 'Test heading', message: 'Test message'}];
   }
 }
 </script>

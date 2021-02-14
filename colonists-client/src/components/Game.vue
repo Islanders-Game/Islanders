@@ -1,21 +1,38 @@
 <template>
   <v-main>
-  <v-container fluid class="fill-height" id="Game">
-    <v-row no-gutters class="top-ui">
-      <v-col sm="9" @mousemove="mouseOver" class="fill-height">
-        <Error />
-        <Map class="fill-height"></Map>
-        <GameInfo v-bind:showGameInfo="showGameInfo"></GameInfo>
-      </v-col>
-      <v-col sm="3" class="fill-height">
-        <Overview class="fill-height"/>
-      </v-col>
-    </v-row>
-    <v-row no-gutters class="bottom-ui">
-      <CustomizeGame v-if="!started"/>
-      <Player v-else/>
-    </v-row>
-  </v-container>
+    <v-container
+      id="Game"
+      fluid
+      class="fill-height"
+    >
+      <v-row
+        no-gutters
+        class="top-ui"
+      >
+        <v-col
+          sm="9"
+          class="fill-height"
+          @mousemove="mouseOver"
+        >
+          <Error />
+          <Map class="fill-height" />
+          <GameInfo :show-game-info="showGameInfo" />
+        </v-col>
+        <v-col
+          sm="3"
+          class="fill-height"
+        >
+          <Overview class="fill-height" />
+        </v-col>
+      </v-row>
+      <v-row
+        no-gutters
+        class="bottom-ui"
+      >
+        <CustomizeGame v-if="!started" />
+        <Player v-else />
+      </v-row>
+    </v-container>
   </v-main>
 </template>
 
@@ -39,13 +56,13 @@ import GameInfo from './GameInfo.vue';
   },
 })
 export default class Game extends Vue {
-  public showGameInfo: boolean = true;
+  public showGameInfo = true;
 
-  get started() {
+  get started(): boolean {
     return this.$store.getters['game/getIsGameStarted'];
   }
 
-  public mouseOver(e: MouseEvent) {
+  public mouseOver(e: MouseEvent): void{
     if (e.offsetY <= 70) {
       this.showGameInfo = true;
     } else {

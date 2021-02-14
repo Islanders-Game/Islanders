@@ -1,10 +1,11 @@
 <template>
-    <v-app id="app">
-      <StartGame v-if="!showGame"></StartGame>
-      <!-- <transition name="fade"> -->
-      <Game v-if="showGame" id="game"></Game>
-      <!-- </transition> -->
-    </v-app>
+  <v-app id="app">
+    <StartGame v-if="!showGame" />
+    <Game
+      v-if="showGame"
+      id="game"
+    />
+  </v-app>
 </template>
 
 <script lang="ts">
@@ -18,10 +19,10 @@ import StartGame from './components/StartGame.vue';
     StartGame,
   },
 })
-export default class App extends Vue {
-  public showGame: boolean = false;
+export class App extends Vue {
+  public showGame = false;
 
-  public created() {
+  public created(): void {
     this.$on('gameChosen', () => {
       this.showGame = true;
     });

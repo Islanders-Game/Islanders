@@ -1,33 +1,61 @@
 <template>
-    <v-container fluid id="Overview">
-      <v-tabs dark fluid center-active show-arrows fixed-tabs class="fill-height">
-        <v-tabs-slider></v-tabs-slider>
+  <v-container
+    id="Overview"
+    fluid
+  >
+    <v-tabs
+      dark
+      fluid
+      center-active
+      show-arrows
+      fixed-tabs
+      class="fill-height"
+    >
+      <v-tabs-slider />
 
-        <v-tab dark href="#tab-1">
-          Players
-        </v-tab>
+      <v-tab
+        dark
+        href="#tab-1"
+      >
+        Players
+      </v-tab>
 
-        <v-tab dark href="#tab-2">
-          Chat
-        </v-tab>
+      <v-tab
+        dark
+        href="#tab-2"
+      >
+        Chat
+      </v-tab>
 
-        <v-tab dark href="#tab-3">
-          Logs
-        </v-tab>
+      <v-tab
+        dark
+        href="#tab-3"
+      >
+        Logs
+      </v-tab>
 
-        <v-tab-item :value="'tab-1'" :key="1">
-          <Players></Players>
-        </v-tab-item>
+      <v-tab-item
+        :key="1"
+        :value="'tab-1'"
+      >
+        <Players />
+      </v-tab-item>
 
-        <v-tab-item :value="'tab-2'" :key="2">
-          <Chat></Chat>
-        </v-tab-item>
+      <v-tab-item
+        :key="2"
+        :value="'tab-2'"
+      >
+        <Chat />
+      </v-tab-item>
 
-        <v-tab-item :value="'tab-3'" :key="3">
-          <Log></Log>
-        </v-tab-item>
-      </v-tabs>
-    </v-container>
+      <v-tab-item
+        :key="3"
+        :value="'tab-3'"
+      >
+        <Log />
+      </v-tab-item>
+    </v-tabs>
+  </v-container>
 </template>
 
 <script lang="ts">
@@ -44,7 +72,7 @@ import Players from './Players.vue';
   },
 })
 export default class Overview extends Vue {
-  get currentDie() {
+  get currentDie(): number | undefined {
     const roll = this.$store.getters['game/getCurrentDie'];
     return roll === 'None' ? undefined : roll;
   }

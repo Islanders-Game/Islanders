@@ -2,78 +2,111 @@
   <v-main id="StartGame">
     <v-container>
       <v-card fluid>
-        <v-toolbar dark color="primary">
+        <v-toolbar
+          dark
+          color="primary"
+        >
           <v-toolbar-title>Colonists</v-toolbar-title>
-          <v-spacer></v-spacer>
-          <v-btn-toggle class="transparent" v-model="toggle">
-            <v-btn :value="2" text @click="isCreatingGame = true">Create</v-btn>
-            <v-btn text @click="isCreatingGame = false">Join</v-btn>
+          <v-spacer />
+          <v-btn-toggle
+            v-model="toggle"
+            class="transparent"
+          >
+            <v-btn
+              :value="2"
+              text
+              @click="isCreatingGame = true"
+            >
+              Create
+            </v-btn>
+            <v-btn
+              text
+              @click="isCreatingGame = false"
+            >
+              Join
+            </v-btn>
           </v-btn-toggle>
         </v-toolbar>
         
         <v-card-text>
           <v-text-field
-            autofocus
             ref="playerName"
+            v-model="playerName"
+            autofocus
             outlined
             name="playerName"
             dense
             label="Enter your player name"
             type="text"
-            v-model="playerName"
             :rules="rules"
             counter="14"
-          ></v-text-field>
-          <v-text-field v-show="!isCreatingGame"
-              name="gameid"
-              label="To join a game, enter a Game Code"
-              type="text"
-              outlined
-              dense
-              v-model="gameId"
-              counter="24"
-            ></v-text-field>
+          />
+          <v-text-field
+            v-show="!isCreatingGame"
+            v-model="gameId"
+            name="gameid"
+            label="To join a game, enter a Game Code"
+            type="text"
+            outlined
+            dense
+            counter="24"
+          />
         </v-card-text>
         <v-card-actions>
           <v-btn
-              v-if="!isCreatingGame"
-              color="primary"
-              :disabled="!validatePlayerName"
-              @click="joinGame"
-              v-on:keyup.enter="joinGame"
-          >Join Game</v-btn>
-          <v-btn v-else color="primary" @click="createGame" :disabled="!validatePlayerName">Create Game</v-btn>
+            v-if="!isCreatingGame"
+            color="primary"
+            :disabled="!validatePlayerName"
+            @click="joinGame"
+            @keyup.enter="joinGame"
+          >
+            Join Game
+          </v-btn>
+          <v-btn
+            v-else
+            color="primary"
+            :disabled="!validatePlayerName"
+            @click="createGame"
+          >
+            Create Game
+          </v-btn>
         </v-card-actions>
       </v-card>
     </v-container>
-    <v-alert :value="error" type="error" transition="scale-transition">{{errorMessage}}</v-alert>
+    <v-alert
+      :value="error"
+      type="error"
+      transition="scale-transition"
+    >
+      {{ errorMessage }}
+    </v-alert>
   </v-main>
 </template>
 
 <script lang="ts">
-import { Component, Prop, Vue } from "vue-property-decorator";
+import { Component, Vue } from 'vue-property-decorator';
 
 @Component({
   components: {}
 })
 export default class StartGame extends Vue {
-  public error: boolean = false;
-  public errorMessage: string = "Could not create game";
-  public rules = [(v:string) => v.length <= 25 || "Max 25 characters"];
+  public error = false;
+  public errorMessage = 'Could not create game';
+  public rules = [(v:string): boolean | string => v.length <= 25 || 'Max 25 characters'];
   public isCreatingGame = true;
-  public playerName: string = "";
-  public gameId: string = "";
+  public playerName = '';
+  public gameId = '';
   public toggle = 2;
 
-  public async createGame() {
+  public async createGame(): Promise<void> {
     if (!this.validatePlayerName) {
       this.error = true;
-      this.errorMessage = "You need to enter a valid player name";
+      this.errorMessage = 'You need to enter a valid player name';
       return;
     }
 
     try {
-      await this.$store.dispatch("createGame", this.playerName);
+      await this.$store.dispatch('createGame', this.playerName);
     } catch (ex) {
       this.error = true;
       this.errorMessage = ex.message;
@@ -82,26 +115,26 @@ export default class StartGame extends Vue {
 
     // todo check for createGame fail.
     if (this.$store.state.game.gameId) {
-      this.$parent.$parent.$emit("gameChosen");
+      this.$parent.$parent.$emit('gameChosen');
     } else {
       this.error = true;
-      this.errorMessage = "An error occured while connecting to the server";
+      this.errorMessage = 'An error occured while connecting to the server';
     }
   }
 
-  public async joinGame() {
+  public async joinGame(): Promise<void> {
     if (!this.validateGameId) {
       this.error = true;
-      this.errorMessage = "You need to enter a Game Code";
+      this.errorMessage = 'You need to enter a Game Code';
       return;
     } else if (!this.validatePlayerName) {
       this.error = true;
-      this.errorMessage = "You need to enter a valid player name";
+      this.errorMessage = 'You need to enter a valid player name';
       return;
     }
 
     try {
-      await this.$store.dispatch("joinGame", {
+      await this.$store.dispatch('joinGame', {
         gameId: this.gameId,
         playerName: this.playerName
       });
@@ -113,10 +146,10 @@ export default class StartGame extends Vue {
     }
 
     if (this.$store.state.game.gameId) {
-      this.$parent.$parent.$emit("gameChosen");
+      this.$parent.$parent.$emit('gameChosen');
     } else {
       this.error = true;
-      this.errorMessage = "An error occured while connecting to the server";
+      this.errorMessage = 'An error occured while connecting to the server';
     }
   }
 

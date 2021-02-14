@@ -1,15 +1,34 @@
 <template>
   <v-container id="Chat">
-    <v-list-item dense two-line v-for="(message, index) in messages.slice().reverse()" :key="index" avatar>
-      <v-list-item-avatar rounded :color="playerColor(message.user)"></v-list-item-avatar>
+    <v-list-item
+      v-for="(message, index) in messages.slice().reverse()"
+      :key="index"
+      dense
+      two-line
+      avatar
+    >
+      <v-list-item-avatar
+        rounded
+        :color="playerColor(message.user)"
+      />
       <v-list-item-content>
-          <v-list-item-title v-html="message.user"></v-list-item-title>
-          <v-list-item-subtitle v-html="message.text"></v-list-item-subtitle>
+        <v-list-item-title>{{ message.user }}</v-list-item-title>
+        <v-list-item-subtitle>{{ message.text }}</v-list-item-subtitle>
       </v-list-item-content>
     </v-list-item>
     <v-container>
-          <v-text-field clearable solo dense hint="Press Enter to send the message" height="40px" id="chatbox" outlined label="Write a message " v-model="message" v-on:keyup.enter="addMessage">
-          </v-text-field>
+      <v-text-field
+        id="chatbox"
+        v-model="message"
+        clearable
+        solo
+        dense
+        hint="Press Enter to send the message"
+        height="40px"
+        outlined
+        label="Write a message "
+        @keyup.enter="addMessage"
+      />
     </v-container>
   </v-container>
 </template>
@@ -21,7 +40,7 @@ import { Component, Vue } from 'vue-property-decorator';
   components: {},
 })
 export default class Chat extends Vue {
-  public message: string = '';
+  public message = '';
   private playerName: string;
 
   constructor() {
@@ -31,7 +50,7 @@ export default class Chat extends Vue {
     this.$store.dispatch('chat/bindToMessages');
   }
 
-  get messages() {
+  get messages(): string[] {
     return this.$store.state.chat.messages;
   }
 
