@@ -9,7 +9,8 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: whoan/docker-build-with-cache-action@v5
-      compose_file: docker-compose.yaml
+      with:
+        compose_file: docker-compose.yaml
     # - name: Build the shared image
     #   run: docker build --tag colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-shared
     # - name: Build the server
