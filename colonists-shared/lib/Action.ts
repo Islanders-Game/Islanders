@@ -2,7 +2,7 @@ import { MatrixCoordinate } from './MatrixCoordinate';
 import { HexCoordinate } from './HexCoordinate';
 import { DevelopmentCard } from './Entities/DevelopmentCard';
 import { Resources } from './Resources';
-import { TileType, World } from './Shared';
+import { TileType } from './Shared';
 import { HarborType } from './Tile';
 
 interface HasPlayerName {
@@ -42,9 +42,8 @@ interface PlayCardParameters extends HasPlayerName {
   card: DevelopmentCard;
   chosenResources: TileType | [TileType, TileType];
 }
-interface BuyCardParameters extends HasPlayerName {}
-interface EndTurnParameters extends HasPlayerName {}
-interface UndoParameters {}
+type BuyCardParameters = HasPlayerName
+type EndTurnParameters = HasPlayerName
 
 export class BuildHouseAction {
   public type: 'buildHouse' = 'buildHouse';
@@ -167,16 +166,16 @@ export class PlayCardAction {
   }
 }
 
-export class LockMapAction {
-  public type: 'lockMap' = 'lockMap';
-}
-
 export class EndTurnAction {
   public type: 'endTurn' = 'endTurn';
   public parameters: EndTurnParameters;
   constructor(playerName: string) {
     this.parameters = { playerName };
   }
+}
+
+export class LockMapAction {
+  public type: 'lockMap' = 'lockMap';
 }
 
 export class UndoAction {

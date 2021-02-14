@@ -1,5 +1,4 @@
 import { Result } from './Rules/Result';
-import { World } from './World';
 import {
   BuildHouseAction,
   BuildCityAction,
@@ -15,7 +14,6 @@ import {
   LockMapAction,
   BuildHouseInitialAction,
   BuildRoadInitialAction,
-  UndoAction,
 } from './Action';
 import { BuildHouse } from './Rules/BuildHouse';
 import { BuildHouseInitial } from './Rules/BuildHouseInitial';
@@ -50,7 +48,7 @@ export interface Rules {
   EndTurn: (data: EndTurnAction) => Rule;
 }
 
-export function ruleReducer(acc: Result, curr: (x: Result) => Result) {
+export function ruleReducer(acc: Result, curr: (x: Result) => Result): Result {
   return curr(acc);
 }
 

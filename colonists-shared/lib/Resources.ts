@@ -33,7 +33,7 @@ export const addResources = (
   };
 };
 
-export const resourcesAreNonNegative = (resources: Resources) => {
+export const resourcesAreNonNegative = (resources: Resources): boolean => {
   return (
     resources.clay >= 0 &&
     resources.grain >= 0 &&

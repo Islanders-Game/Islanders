@@ -12,7 +12,7 @@ import {
 } from '../Shared';
 
 import { Tile, DiceRollType, TileType, HarborType } from '../Tile';
-import { Result, fail, success, Success } from './Result';
+import { Result, fail, success } from './Result';
 import { World, GameState } from '../World';
 import { Player } from '../Player';
 import { addResources } from '../Resources';
@@ -74,7 +74,7 @@ export const assignNextPlayerTurn = (w: World): Result => {
   });
 };
 
-export const increasePointsForPlayer = (name: string) => (w: World) => {
+export const increasePointsForPlayer = (name: string) => (w: World): Result => {
   const players = w.players.map((pl) =>
     pl.name === name ? { ...pl, points: pl.points+1 } : pl,
   );
@@ -86,7 +86,7 @@ export const assignRessourcesToPlayers = (
   w: World,
   diceRoll: DiceRollType,
   useDiceRoll = true,
-) => {
+): Player[] => {
   const players: Player[] = w.players.map((pl) => {
     const allTiles: TileRessource[] = w.map
       .filter((tile) => {
@@ -117,7 +117,7 @@ export const assignRessourcesToPlayers = (
 };
 
 // assign the resources that the players have houses up to
-export const assignInitalRessourcesToPlayers = (w: World) => {
+export const assignInitalRessourcesToPlayers = (w: World): Player[] => {
   const players: Player[] = w.players.map((pl) => {
     const allTiles: TileRessource[] = w.map
       .filter((tile) => {
@@ -147,9 +147,11 @@ export const assignInitalRessourcesToPlayers = (w: World) => {
 
 export const purchase = (cost: Resources) => (playerName: string) => (
   w: World,
-) => {
+): Result => {
+  const player = w.players.find((pl) => pl.name === playerName);
+  if (!player) return fail(`The player ${playerName} was not found!`);
   const resources = subtractResources(
-    w.players.find((pl) => pl.name === playerName)!.resources,
+    player.resources,
     cost,
   );
   if (!resourcesAreNonNegative(resources)) {
@@ -177,7 +179,8 @@ export const findPlayer = (name: string) => (w: World): Result => {
 export const hasResources = (playerName: string, check: Resources) => (
   w: World,
 ): Result => {
-  const player = w.players.find((p) => p.name === playerName)!;
+  const player = w.players.find((p) => p.name === playerName);
+  if (!player) return fail(`The player ${playerName} was not found!`);
   const has = resourcesAreNonNegative(
     subtractResources(player.resources, check),
   );
@@ -223,9 +226,10 @@ export const playerHasHarbor = (playerName: string, harborType: HarborType) => (
   const hasHarbor = player.houses.some((house) => {
     const hexes = neighbouringHexCoords(house.position);
     return hexes.some(
-      (h) =>
-        tiles.find((t) => t.coord.x === h.x && t.coord.y === h.y)!.type ===
-        harborType,
+      (h) => {
+        const tile = tiles.find((t) => t.coord.x === h.x && t.coord.y === h.y)
+        return tile && tile.type === harborType
+      }
     );
   });
   if (!hasHarbor) {
@@ -253,7 +257,7 @@ export const transferResources = (
 
 export const placeHouseInital = (coord: MatrixCoordinate) => (
   playerName: string,
-) => (world: World) => {
+) => (world: World): Result => {
   const allHouses = world.players.reduce(
     (acc: House[], p) => acc.concat(p.houses),
     [],
@@ -276,7 +280,7 @@ export const placeHouseInital = (coord: MatrixCoordinate) => (
 
 export const placeHouse = (coord: MatrixCoordinate) => (playerName: string) => (
   world: World,
-) => {
+): Result => {
   const allHouses = world.players.reduce(
     (acc: House[], p) => acc.concat(p.houses),
     [],
@@ -285,7 +289,8 @@ export const placeHouse = (coord: MatrixCoordinate) => (playerName: string) => (
   const illegalPlacement = (h: House) =>
     (h.position.x === coord.x && h.position.y === coord.y) ||
     neighbouring.some((c) => c.x === h.position.x && c.y === h.position.y);
-  const player = world.players.find((pl) => pl.name === playerName)!;
+  const player = world.players.find((pl) => pl.name === playerName);
+  if (!player) return fail(`The player ${playerName} was not found!`);
   const hasRoad = player.roads.some(
     (r) =>
       (r.start.x === coord.x && r.start.y === coord.y) ||
@@ -308,8 +313,9 @@ export const placeHouse = (coord: MatrixCoordinate) => (playerName: string) => (
 
 export const placeCity = (coord: MatrixCoordinate) => (playerName: string) => (
   w: World,
-) => {
-  const player = w.players.find((pl) => pl.name === playerName)!;
+): Result => {
+  const player = w.players.find((pl) => pl.name === playerName);
+  if (!player) return fail(`The player ${playerName} was not found!`);
   const canPlace = player.houses.some(
     (h) => h.position.x === coord.x && h.position.y === coord.y,
   );
@@ -328,8 +334,9 @@ export const placeCity = (coord: MatrixCoordinate) => (playerName: string) => (
 
 export const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
   playerName: string,
-) => (w: World) => {
-  const player = w.players.find((pl) => pl.name === playerName)!;
+) => (w: World): Result => {
+  const player = w.players.find((pl) => pl.name === playerName);
+  if (!player) return fail(`The player ${playerName} was not found!`);
   const allPlayerRoads = w.players.reduce(
     (acc, p) => acc.concat(p.roads),
     [] as Road[],
@@ -368,9 +375,10 @@ export const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (
   return success({ ...w, players });
 };
 
-export const assignDevelopmentCard = (playerName: string) => (w: World) => {
+export const assignDevelopmentCard = (playerName: string) => (w: World): Result => {
   const randomCard = new DevelopmentCard();
-  const player = w.players.find((pl) => pl.name === playerName)!;
+  const player = w.players.find((pl) => pl.name === playerName);
+  if (!player) return fail(`The player ${playerName} was not found!`);
   const newCards = player.devCards.concat(randomCard);
   const players = w.players.map((pl) =>
     pl.name === playerName ? { ...pl, devCards: newCards } : pl,
@@ -382,12 +390,13 @@ export const playCard = (
   playerName: string,
   card: DevelopmentCard,
   chosenResources: TileType | [TileType, TileType],
-) => (w: World) => {
+) => (w: World): Result => {
   // Nasty... Couldn't see any other way.
   // Clone existing card array, modify card played state.
-  const player = w.players.find((p) => p.name === playerName)!;
+  const player = w.players.find((p) => p.name === playerName);
+  if (!player) return fail(`The player ${playerName} was not found!`);
   const devCards = player.devCards.slice();
-  let toPlay = devCards.find((c) => c.type === card.type && !c.played);
+  const toPlay = devCards.find((c) => c.type === card.type && !c.played);
   if (!toPlay) {
     return fail("You do not have that card!");
   }
@@ -412,7 +421,9 @@ export const playCard = (
     return success({ ...w, players });
   }
   if (card.type === 'Road Building') {
-    const resources = w.players.find((pl) => pl.name === playerName)!.resources;
+    const player = w.players.find((pl) => pl.name === playerName);
+    if (!player) return fail(`The player ${playerName} was not found!`);
+    const resources = player.resources;
     const roadCost = new Road().cost;
     const withTwoExtraRoads = addResources(
       addResources(resources, roadCost),
@@ -427,7 +438,9 @@ export const playCard = (
   }
   if (card.type === 'Year of Plenty') {
     const chosen = chosenResources as [TileType, TileType];
-    const resources = w.players.find((pl) => pl.name === playerName)!.resources;
+    const player = w.players.find((pl) => pl.name === playerName);
+    if (!player) return fail(`The player ${playerName} was not found!`);
+    const resources = player.resources;
     const rr = addAmountToResourceOfType(1, resources, chosen[0]);
     const rrr = addAmountToResourceOfType(1, rr, chosen[1]);
     const players = w.players.map((pl) =>
@@ -439,7 +452,9 @@ export const playCard = (
     return success({ ...w, players });
   }
   if (card.type === 'Monopoly') {
-    const resources = w.players.find((pl) => pl.name === playerName)!.resources;
+    const player = w.players.find((pl) => pl.name === playerName);
+    if (!player) return fail(`The player ${playerName} was not found!`);
+    const resources = player.resources;
     const allResources = w.players.reduce(
       (acc, p) => acc.concat(p.resources),
       [] as Resources[],
@@ -464,7 +479,7 @@ export const playCard = (
   return success(w);
 };
 
-export const getResourceAmountOfType = (type: TileType, rs: Resources) => {
+export const getResourceAmountOfType = (type: TileType, rs: Resources): number => {
   switch (type) {
     case 'Wood':
       return rs.wood ? rs.wood : 0;
@@ -485,7 +500,7 @@ export const addAmountToResourceOfType = (
   amount: number,
   rs: Resources,
   type: TileType,
-) => {
+): Resources => {
   const toAdd: Resources = { wood: 0, grain: 0, stone: 0, wool: 0, clay: 0 };
   switch (type) {
     case 'Wood':
@@ -509,7 +524,7 @@ export const addAmountToResourceOfType = (
   return addResources(toAdd, rs);
 };
 
-export const deleteAllResourcesOfType = (type: TileType, rs: Resources) => {
+export const deleteAllResourcesOfType = (type: TileType, rs: Resources): Resources => {
   switch (type) {
     case 'Wood':
       return { ...rs, wood: 0 };
@@ -528,8 +543,9 @@ export const deleteAllResourcesOfType = (type: TileType, rs: Resources) => {
 
 export const bankTrade = (start: MatrixCoordinate, end: MatrixCoordinate) => (
   playerName: string,
-) => (w: World) => {
-  const player = w.players.find((pl) => pl.name === playerName)!;
+) => (w: World): Result => {
+  const player = w.players.find((pl) => pl.name === playerName);
+  if (!player) return fail(`The player ${playerName} was not found!`);
 
   const allPlayerRoads = w.players.reduce(
     (acc, p) => acc.concat(p.roads),
@@ -569,20 +585,20 @@ export const bankTrade = (start: MatrixCoordinate, end: MatrixCoordinate) => (
   return success({ ...w, players });
 };
 
-export const diceRollWasSeven = (w: World) => {
+export const diceRollWasSeven = (w: World): Result => {
   if (w.currentDie === 7) {
     return success(w);
   }
   return fail('You cannot move the Thief if you have not rolled a 7!');
 };
 
-export const moveThief = (coords: HexCoordinate) => (w: World) => {
+export const moveThief = (coords: HexCoordinate) => (w: World): Result => {
   return success({ ...w, thief: { hexCoordinate: coords }, lastThiefPosition: { hexCoordinate: coords }});
 };
 
 export const developmentCardHasNotBeenPlayed = (
   developmentCard: DevelopmentCard,
-) => (w: World) => {
+) => (w: World): Result => {
   if (developmentCard.played) {
     return fail('This card has already been played!');
   }

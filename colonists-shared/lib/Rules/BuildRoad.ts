@@ -1,8 +1,8 @@
 import { BuildRoadAction } from '../Action';
-import { Result, World, purchase, Road } from '../Shared';
+import { Result, purchase, Road } from '../Shared';
 import { findPlayer, placeRoad } from './Helpers';
 
-export const BuildRoad = ({ parameters }: BuildRoadAction) => (w: Result) =>
+export const BuildRoad = ({ parameters }: BuildRoadAction) => (w: Result): Result =>
   w
     .flatMap(findPlayer(parameters.playerName))
     .flatMap(purchase(new Road().cost)(parameters.playerName))

@@ -1,8 +1,8 @@
 import { BuildCityAction } from '../Action';
-import { Result, World, purchase, City } from '../Shared';
+import { Result, purchase, City } from '../Shared';
 import { ensureGameState, findPlayer, placeCity, increasePointsForPlayer } from './Helpers';
 
-export const BuildCity = ({ parameters }: BuildCityAction) => (w: Result) =>
+export const BuildCity = ({ parameters }: BuildCityAction) => (w: Result): Result =>
   w
     .flatMap(ensureGameState('Started'))
     .flatMap(findPlayer(parameters.playerName))

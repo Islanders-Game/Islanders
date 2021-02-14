@@ -1,5 +1,5 @@
 import { BankTradeAction } from '../Action';
-import { Result, World } from '../Shared';
+import { Result } from '../Shared';
 import { findPlayer, hasResources, transferResources } from './Helpers';
 
 export const BankTrade = ({ parameters }: BankTradeAction) => (

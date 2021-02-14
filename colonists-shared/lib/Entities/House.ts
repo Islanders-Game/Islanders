@@ -3,7 +3,7 @@ import { MatrixCoordinate } from '../MatrixCoordinate';
 
 export class House implements Purchaseable {
   public position: MatrixCoordinate;
-  public value: number = 1;
+  public value = 1;
   public cost = {
     wood: 1,
     clay: 1,

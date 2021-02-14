@@ -30,7 +30,6 @@ const randomTileType = (): TileType => {
 };
 
 const generatorDiceRoll = (): GeneratorDiceRollType => {
-  // See https://www.catan.com/en/download/?SoC_rv_Rules_091907.pdf
   const roll = Math.random();
   if (roll <= 0.03) {
     return 2;

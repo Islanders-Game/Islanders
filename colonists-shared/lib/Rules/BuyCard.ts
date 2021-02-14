@@ -1,5 +1,5 @@
 import { BuyCardAction } from '../Action';
-import { Result, World, purchase } from '../Shared';
+import { Result, purchase } from '../Shared';
 import { ensureGameState, findPlayer, assignDevelopmentCard } from './Helpers';
 import { DevelopmentCard } from '../Entities/DevelopmentCard';
 

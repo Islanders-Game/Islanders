@@ -1,5 +1,5 @@
 import { BuildHouseInitialAction } from '../Action';
-import { World, Result, fail, success, purchase, House } from '../Shared';
+import { World, Result, fail, success } from '../Shared';
 import { ensureGameState, findPlayer, placeHouseInital, increasePointsForPlayer } from './Helpers';
 
 const checkNumberOfStructures = (w: World): Result => {
@@ -7,8 +7,8 @@ const checkNumberOfStructures = (w: World): Result => {
   const currentPlayer = w.players[w.currentPlayer];
 
   const ordinal = (n: number) => {
-    var s = ["th", "st", "nd", "rd"];
-    var v = n%100;
+    const s = ["th", "st", "nd", "rd"];
+    const v = n%100;
     return n + (s[(v-20)%10] || s[v] || s[0]);
   }
 
@@ -21,13 +21,12 @@ const checkNumberOfStructures = (w: World): Result => {
   return success(w);
 };
 
-export const BuildHouseInitial = ({ parameters }: BuildHouseInitialAction) => (
-  world: Result,
-) =>
+export const BuildHouseInitial = ({ parameters }: BuildHouseInitialAction) => 
+  (world: Result): Result =>
   // todo check number;
-  world
-    .flatMap(ensureGameState('Pregame'))
-    .flatMap((w: World) => checkNumberOfStructures(w))
-    .flatMap(findPlayer(parameters.playerName))
-    .flatMap(placeHouseInital(parameters.coordinates)(parameters.playerName))
-    .flatMap(increasePointsForPlayer(parameters.playerName));
+    world
+      .flatMap(ensureGameState('Pregame'))
+      .flatMap((w: World) => checkNumberOfStructures(w))
+      .flatMap(findPlayer(parameters.playerName))
+      .flatMap(placeHouseInital(parameters.coordinates)(parameters.playerName))
+      .flatMap(increasePointsForPlayer(parameters.playerName));

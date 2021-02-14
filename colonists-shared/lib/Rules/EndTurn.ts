@@ -22,7 +22,7 @@ export const EndTurn = ({ parameters }: EndTurnAction) => (
 const checkVictory = (playerName: string) => (w: World) => {
   const winner = w.players.find(
     (p) => p.points >= w.pointsToWin && p.name === playerName,
-  )!;
+  );
   return winner ? success({ ...w, winner, gameState: 'Finished' }) : success(w);
 };
 

@@ -1,5 +1,5 @@
 import { PlayerTradeAction } from '../Action';
-import { Result, World } from '../Shared';
+import { Result } from '../Shared';
 import { findPlayer, hasResources, transferResources } from './Helpers';
 import { empty } from '../Resources';
 

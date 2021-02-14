@@ -1,6 +1,6 @@
 import { HexCoordinate } from './HexCoordinate';
 
-export interface MatrixCoordinate extends HexCoordinate {}
+export type MatrixCoordinate = HexCoordinate
 
 // Because of decisions, we have to deal with this hex->matrix mapping:
 // 0 1 | 2 3 | 4 5 | 6 7

@@ -1,5 +1,5 @@
 import { HarborTradeAction } from '../Action';
-import { Result, World } from '../Shared';
+import { Result } from '../Shared';
 import {
   findPlayer,
   hasResources,

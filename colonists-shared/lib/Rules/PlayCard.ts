@@ -1,5 +1,5 @@
 import { PlayCardAction } from '../Action';
-import { Result, World } from '../Shared';
+import { Result } from '../Shared';
 import { ensureGameState, playCard, findPlayer } from './Helpers';
 
 export const PlayCard = ({ parameters }: PlayCardAction) => (

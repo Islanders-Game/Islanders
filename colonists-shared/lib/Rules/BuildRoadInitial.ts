@@ -1,5 +1,5 @@
 import { BuildRoadInitialAction } from '../Action';
-import { Result, World, fail, purchase, Road } from '../Shared';
+import { Result, World, fail } from '../Shared';
 import { findPlayer, placeRoad, ensureGameState } from './Helpers';
 import { success } from './Result';
 
