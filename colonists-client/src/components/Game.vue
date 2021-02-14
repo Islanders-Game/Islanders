@@ -37,13 +37,13 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import Overview from './Overview.vue';
-import Map from './Map.vue';
-import Player from './Player.vue';
-import CustomizeGame from './CustomizeGame.vue';
-import Error from './Error.vue';
-import GameInfo from './GameInfo.vue';
+import { Component, Vue } from 'vue-property-decorator'
+import Overview from './Overview.vue'
+import Map from './Map.vue'
+import Player from './Player.vue'
+import CustomizeGame from './CustomizeGame.vue'
+import Error from './Error.vue'
+import GameInfo from './GameInfo.vue'
 
 @Component({
   components: {
@@ -52,21 +52,21 @@ import GameInfo from './GameInfo.vue';
     Player,
     CustomizeGame,
     Error,
-    GameInfo,
-  },
+    GameInfo
+  }
 })
 export default class Game extends Vue {
   public showGameInfo = true;
 
-  get started(): boolean {
-    return this.$store.getters['game/getIsGameStarted'];
+  get started (): boolean {
+    return this.$store.getters['game/getIsGameStarted']
   }
 
-  public mouseOver(e: MouseEvent): void{
+  public mouseOver (e: MouseEvent): void {
     if (e.offsetY <= 70) {
-      this.showGameInfo = true;
+      this.showGameInfo = true
     } else {
-      this.showGameInfo = false;
+      this.showGameInfo = false
     }
   }
 }

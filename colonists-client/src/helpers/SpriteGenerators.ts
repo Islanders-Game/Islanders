@@ -1,10 +1,10 @@
-import { Sprite } from 'pixi.js';
+import { Sprite } from 'pixi.js'
 
-import { Tile } from '../../../colonists-shared/dist/Shared';
+import { Tile } from '../../../colonists-shared/dist/Shared'
 
-export function generateSprites(): { [s: string]: () => Sprite } {
-  const tilePath = './img/tilesets/';
-  const tileStyle = 'realistic';
+export function generateSprites (): { [s: string]: () => Sprite } {
+  const tilePath = './img/tilesets/'
+  const tileStyle = 'realistic'
 
   const sprites = {
     Clay: () => Sprite.from(`${tilePath}${tileStyle}/clay.png`),
@@ -39,64 +39,64 @@ export function generateSprites(): { [s: string]: () => Sprite } {
     9: () => Sprite.from('./img/numbers/9.png'),
     10: () => Sprite.from('./img/numbers/10.png'),
     11: () => Sprite.from('./img/numbers/11.png'),
-    12: () => Sprite.from('./img/numbers/12.png'),
-  };
-  return sprites;
+    12: () => Sprite.from('./img/numbers/12.png')
+  }
+  return sprites
 }
 
-export function generateTile(tileWidth, tileHeight, tile: Tile, corner) {
-  const generator = generateSprites()[tile.type.toString()];
-  const s = generator();
-  s.width = tileWidth;
-  s.height = tileHeight;
-  s.position.x = corner.x - tileWidth;
-  s.position.y = corner.y - tileHeight / 2;
-  return s;
+export function generateTile (tileWidth, tileHeight, tile: Tile, corner) {
+  const generator = generateSprites()[tile.type.toString()]
+  const s = generator()
+  s.width = tileWidth
+  s.height = tileHeight
+  s.position.x = corner.x - tileWidth
+  s.position.y = corner.y - tileHeight / 2
+  return s
 }
 
-export function generateSprite(
+export function generateSprite (
   type: string,
   tileWidth: number,
   center,
-  origin,
+  origin
 ) {
-  const generator = generateSprites()[type];
-  const s = generator();
-  s.width = tileWidth / 4;
-  s.height = s.width;
-  s.anchor.x = 0.5;
-  s.anchor.y = 0.5;
-  s.position.x = center.x + origin.x;
-  s.position.y = center.y + origin.y;
-  return s;
+  const generator = generateSprites()[type]
+  const s = generator()
+  s.width = tileWidth / 4
+  s.height = s.width
+  s.anchor.x = 0.5
+  s.anchor.y = 0.5
+  s.position.x = center.x + origin.x
+  s.position.y = center.y + origin.y
+  return s
 }
 
-export function generateThiefTile(
+export function generateThiefTile (
   type: 'Scorch' | 'Thief',
   tileWidth: number,
   tileHeight: number,
-  corner: { x: number; y: number },
+  corner: { x: number; y: number }
 ) {
-  const generator = generateSprites()[type];
-  const s = generator();
-  s.width = tileWidth;
-  s.height = tileHeight;
-  s.position.x = corner.x - tileWidth;
-  s.position.y = corner.y - tileHeight / 2;
-  return s;
+  const generator = generateSprites()[type]
+  const s = generator()
+  s.width = tileWidth
+  s.height = tileHeight
+  s.position.x = corner.x - tileWidth
+  s.position.y = corner.y - tileHeight / 2
+  return s
 }
 
-export function generateTileNumber(tileWidth, center, origin, tile: Tile) {
+export function generateTileNumber (tileWidth, center, origin, tile: Tile) {
   if (tile.diceRoll === 'None') {
-    return undefined;
+    return undefined
   }
-  const generator = generateSprites()[tile.diceRoll.toString()];
-  const s = generator();
-  s.width = tileWidth / 4;
-  s.height = s.width;
-  s.anchor.x = 0.5;
-  s.anchor.y = 0.5;
-  s.position.x = center.x + origin.x;
-  s.position.y = center.y + origin.y;
-  return s;
+  const generator = generateSprites()[tile.diceRoll.toString()]
+  const s = generator()
+  s.width = tileWidth / 4
+  s.height = s.width
+  s.anchor.x = 0.5
+  s.anchor.y = 0.5
+  s.position.x = center.x + origin.x
+  s.position.y = center.y + origin.y
+  return s
 }

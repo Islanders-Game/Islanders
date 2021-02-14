@@ -8,26 +8,26 @@
       <v-list-item-content>
         <v-list-item-title>{{ message.header }}</v-list-item-title>
         <v-list-item-subtitle>{{ message.message }}</v-list-item-subtitle>
-      </v-list-item-content>     
+      </v-list-item-content>
     </v-list-item>
   </v-container>
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator'
 interface LogMessage {
   header: string;
   message: string;
 }
 
 @Component<Log>({
-  components: {},
+  components: {}
 })
 
 export default class Log extends Vue {
-  get messages(): LogMessage[] {
-    return [{header: 'Test heading', message: 'Test message'},
-      {header: 'Test heading', message: 'Test message'}];
+  get messages (): LogMessage[] {
+    return [{ header: 'Test heading', message: 'Test message' },
+      { header: 'Test heading', message: 'Test message' }]
   }
 }
 </script>

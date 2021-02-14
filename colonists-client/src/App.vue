@@ -9,23 +9,23 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import Game from './components/Game.vue';
-import StartGame from './components/StartGame.vue';
+import { Component, Vue } from 'vue-property-decorator'
+import Game from './components/Game.vue'
+import StartGame from './components/StartGame.vue'
 
 @Component({
   components: {
     Game,
-    StartGame,
-  },
+    StartGame
+  }
 })
 export default class App extends Vue {
   public showGame = false;
 
-  public created(): void {
+  public created (): void {
     this.$on('gameChosen', () => {
-      this.showGame = true;
-    });
+      this.showGame = true
+    })
   }
 }
 </script>

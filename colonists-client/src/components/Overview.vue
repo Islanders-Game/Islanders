@@ -59,22 +59,22 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import Chat from './Chat.vue';
-import Log from './Log.vue';
-import Players from './Players.vue';
+import { Component, Vue } from 'vue-property-decorator'
+import Chat from './Chat.vue'
+import Log from './Log.vue'
+import Players from './Players.vue'
 
 @Component({
   components: {
     Players,
     Chat,
-    Log,
-  },
+    Log
+  }
 })
 export default class Overview extends Vue {
-  get currentDie(): number | undefined {
-    const roll = this.$store.getters['game/getCurrentDie'];
-    return roll === 'None' ? undefined : roll;
+  get currentDie (): number | undefined {
+    const roll = this.$store.getters['game/getCurrentDie']
+    return roll === 'None' ? undefined : roll
   }
 }
 </script>

@@ -1,13 +1,13 @@
 <template>
-  <v-container 
+  <v-container
     id="CustomizeGame"
     fluid
   >
     <v-row>
       <v-col sm="2">
-        <v-card 
-          dark 
-          outlined 
+        <v-card
+          dark
+          outlined
           class="fill-height"
         >
           <v-list-item three-line>
@@ -29,8 +29,8 @@
       </v-col>
       <v-col sm="7">
         <v-row no-gutters>
-          <v-btn 
-            light 
+          <v-btn
+            light
             @click="randomizeMap"
           >
             Randomize Map
@@ -79,8 +79,8 @@
       </v-col>
       <v-col sm="3">
         <v-row no-gutters>
-          <v-btn 
-            light 
+          <v-btn
+            light
             @click="startGame"
           >
             Start Game
@@ -92,12 +92,12 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue, Watch } from 'vue-property-decorator';
+import { Component, Vue, Watch } from 'vue-property-decorator'
 import {
   World,
   WorldGenerator,
-  Tile,
-} from '../../../colonists-shared/dist/Shared';
+  Tile
+} from '../../../colonists-shared/dist/Shared'
 @Component
 export default class CustomizeGame extends Vue {
   public playerName: string = undefined;
@@ -107,35 +107,35 @@ export default class CustomizeGame extends Vue {
   public pointsToWin = 10;
   private worldGenerator: WorldGenerator;
 
-  public constructor() {
-    super();
-    this.playerName = this.$store.state.game.playerName;
-    this.worldGenerator = new WorldGenerator();
+  public constructor () {
+    super()
+    this.playerName = this.$store.state.game.playerName
+    this.worldGenerator = new WorldGenerator()
   }
 
-  get world(): World {
-    return this.$store.state.game.world as World;
+  get world (): World {
+    return this.$store.state.game.world as World
   }
 
-  get playerColor(): string {
-    return this.$store.getters['game/getPlayerColorAsHex'](this.playerName);
+  get playerColor (): string {
+    return this.$store.getters['game/getPlayerColorAsHex'](this.playerName)
   }
 
-  private async startGame() {
-    await this.$store.dispatch('game/startGame');
+  private async startGame () {
+    await this.$store.dispatch('game/startGame')
   }
 
   @Watch('pointsToWin')
-  private setPointsToWin() {
-    this.$store.commit('game/setPointsToWin', this.pointsToWin);
+  private setPointsToWin () {
+    this.$store.commit('game/setPointsToWin', this.pointsToWin)
   }
 
-  private async randomizeMap() {
+  private async randomizeMap () {
     const map: Tile[] = this.worldGenerator.generateRandomMap(
       this.radius,
-      this.numberOfIslands,
-    );
-    await this.$store.dispatch('game/updateMap', map);
+      this.numberOfIslands
+    )
+    await this.$store.dispatch('game/updateMap', map)
   }
 }
 </script>

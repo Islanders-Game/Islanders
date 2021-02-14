@@ -73,9 +73,9 @@
         </v-card-actions>
       </v-card>
     </v-container>
-    <v-alert 
-      :value="error" 
-      type="error" 
+    <v-alert
+      :value="error"
+      type="error"
       transition="scale-transition"
     >
       {{ errorMessage }}
@@ -84,10 +84,10 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
-  components: {},
+  components: {}
 })
 export default class StartGame extends Vue {
   public error = false;
@@ -98,73 +98,73 @@ export default class StartGame extends Vue {
   public gameId = '';
   public toggle = 2;
 
-  public async createGame(): Promise<void> {
+  public async createGame (): Promise<void> {
     if (!this.validatePlayerName) {
-      this.error = true;
-      this.errorMessage = 'You need to enter a valid player name';
-      return;
+      this.error = true
+      this.errorMessage = 'You need to enter a valid player name'
+      return
     }
 
     try {
-      await this.$store.dispatch('createGame', this.playerName);
+      await this.$store.dispatch('createGame', this.playerName)
     } catch (ex) {
-      this.error = true;
-      this.errorMessage = ex.message;
-      return;
+      this.error = true
+      this.errorMessage = ex.message
+      return
     }
 
     // todo check for createGame fail.
     if (this.$store.state.game.gameId) {
-      this.$parent.$parent.$emit('gameChosen');
+      this.$parent.$parent.$emit('gameChosen')
     } else {
-      this.error = true;
-      this.errorMessage = 'An error occured while connecting to the server';
+      this.error = true
+      this.errorMessage = 'An error occured while connecting to the server'
     }
   }
 
-  public async joinGame(): Promise<void> {
+  public async joinGame (): Promise<void> {
     if (!this.validateGameId) {
-      this.error = true;
-      this.errorMessage = 'You need to enter a Game Code';
-      return;
+      this.error = true
+      this.errorMessage = 'You need to enter a Game Code'
+      return
     } else if (!this.validatePlayerName) {
-      this.error = true;
-      this.errorMessage = 'You need to enter a valid player name';
-      return;
+      this.error = true
+      this.errorMessage = 'You need to enter a valid player name'
+      return
     }
 
     try {
       await this.$store.dispatch('joinGame', {
         gameId: this.gameId,
-        playerName: this.playerName,
-      });
+        playerName: this.playerName
+      })
     } catch (ex) {
-      this.error = true;
-      this.errorMessage = ex.message;
-      console.warn(ex);
-      return;
+      this.error = true
+      this.errorMessage = ex.message
+      console.warn(ex)
+      return
     }
 
     if (this.$store.state.game.gameId) {
-      this.$parent.$parent.$emit('gameChosen');
+      this.$parent.$parent.$emit('gameChosen')
     } else {
-      this.error = true;
-      this.errorMessage = 'An error occured while connecting to the server';
+      this.error = true
+      this.errorMessage = 'An error occured while connecting to the server'
     }
   }
 
-  get validateGameId(): boolean {
+  get validateGameId (): boolean {
     if (!this.gameId) {
-      return false;
+      return false
     }
-    return true;
+    return true
   }
 
-  get validatePlayerName(): boolean {
+  get validatePlayerName (): boolean {
     if (!this.playerName || this.playerName.length >= 25) {
-      return false;
+      return false
     }
-    return true;
+    return true
   }
 }
 </script>

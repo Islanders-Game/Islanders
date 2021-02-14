@@ -18,13 +18,13 @@
               </div>
               <v-list-item-title class="headline">
                 {{ playerName }}
-              </v-list-item-title>   
-              <v-list-item-subtitle>{{ playerPoints }} points</v-list-item-subtitle>             
+              </v-list-item-title>
+              <v-list-item-subtitle>{{ playerPoints }} points</v-list-item-subtitle>
             </v-list-item-content>
             <v-list-item-avatar
               rounded
               size="30"
-              :color="playerColor" 
+              :color="playerColor"
             />
           </v-list-item>
         </v-card>
@@ -42,7 +42,7 @@
               </div>
               <v-list-item-title class="headline">
                 {{ diceRoll !== 'None' ? diceRoll : '-' }}
-              </v-list-item-title>   
+              </v-list-item-title>
             </v-list-item-content>
           </v-list-item>
         </v-card>
@@ -204,7 +204,7 @@
           </v-row>
         </v-card>
       </v-col>
-        
+
       <v-col sm="3">
         <v-card
           outlined
@@ -247,7 +247,7 @@
                   </v-card>
                 </v-menu>
               </v-col>
-                
+
               <v-col sm="6">
                 <Trade />
               </v-col>
@@ -262,7 +262,7 @@
                   Buy Card
                 </v-btn>
               </v-col>
-                
+
               <v-col sm="6">
                 <v-btn
                   block
@@ -273,7 +273,7 @@
                 </v-btn>
               </v-col>
             </v-row>
-              
+
             <v-row dense>
               <v-col sm="6">
                 <v-btn
@@ -284,7 +284,7 @@
                   Play Card
                 </v-btn>
               </v-col>
-                
+
               <v-col sm="6" />
             </v-row>
           </v-container>
@@ -333,138 +333,138 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator'
 import {
   DiceRollType,
-  Player as PlayerState,
-} from '../../../colonists-shared/dist/Shared';
-import Trade from './Trade.vue';
+  Player as PlayerState
+} from '../../../colonists-shared/dist/Shared'
+import Trade from './Trade.vue'
 import {
   EndTurnAction,
   BuyCardAction,
-  UndoAction,
-} from '../../../colonists-shared/dist/Action';
+  UndoAction
+} from '../../../colonists-shared/dist/Action'
 @Component({
   components: {
-    Trade,
-  },
+    Trade
+  }
 })
 export default class Player extends Vue {
   public playerName: string = undefined;
 
-  public constructor() {
-    super();
-    this.playerName = this.$store.state.game.playerName;
+  public constructor () {
+    super()
+    this.playerName = this.$store.state.game.playerName
   }
 
-  public setIsMovingThief(): void {
+  public setIsMovingThief (): void {
     if ((this.$store.state.game.world.currentDie as DiceRollType) === 7) {
-      this.$store.commit('ui/setIsMovingThief', true);
+      this.$store.commit('ui/setIsMovingThief', true)
     }
   }
 
-  public setIsBuildingHouse(): void {
-    this.$store.commit('ui/setIsBuilding', 'House');
+  public setIsBuildingHouse (): void {
+    this.$store.commit('ui/setIsBuilding', 'House')
   }
 
-  public setIsBuildingCity(): void {
-    this.$store.commit('ui/setIsBuilding', 'City');
+  public setIsBuildingCity (): void {
+    this.$store.commit('ui/setIsBuilding', 'City')
   }
 
-  public setIsBuildingRoad(): void {
-    this.$store.commit('ui/setIsBuilding', 'Road');
+  public setIsBuildingRoad (): void {
+    this.$store.commit('ui/setIsBuilding', 'Road')
   }
 
-  public devCard(): void {
-    this.$store.dispatch('game/sendAction', new BuyCardAction(this.playerName));
+  public devCard (): void {
+    this.$store.dispatch('game/sendAction', new BuyCardAction(this.playerName))
   }
 
-  public endTurn(): void {
-    this.$store.dispatch('game/sendAction', new EndTurnAction(this.playerName));
+  public endTurn (): void {
+    this.$store.dispatch('game/sendAction', new EndTurnAction(this.playerName))
   }
 
-  public undo(): void {
-    this.$store.dispatch('game/sendAction', new UndoAction());
+  public undo (): void {
+    this.$store.dispatch('game/sendAction', new UndoAction())
   }
 
-  private resourceCount(type: string) {
-    const player = this.player;
+  private resourceCount (type: string) {
+    const player = this.player
     if (!player) {
-      return 0;
+      return 0
     }
-    const result = player.resources[type];
-    return result ? result : 0;
+    const result = player.resources[type]
+    return result || 0
   }
 
-  get player(): PlayerState {
-    return this.$store.getters['game/getCurrentPlayer'];
+  get player (): PlayerState {
+    return this.$store.getters['game/getCurrentPlayer']
   }
 
-  get isCurrentTurn(): boolean {
-    return this.player.name === this.playerName;
+  get isCurrentTurn (): boolean {
+    return this.player.name === this.playerName
   }
 
-  get playerColor(): PlayerState {
-    const player = this.$store.getters['game/getCurrentPlayer'];
-    return this.$store.getters['game/getPlayerColorAsHex'](player.name);
+  get playerColor (): PlayerState {
+    const player = this.$store.getters['game/getCurrentPlayer']
+    return this.$store.getters['game/getPlayerColorAsHex'](player.name)
   }
 
-  get devCardsLength(): number {
-    const player = this.player;
+  get devCardsLength (): number {
+    const player = this.player
     if (!player) {
-      return 0;
+      return 0
     }
-    return player.devCards.filter((x) => x.type !== 'Knight').length;
+    return player.devCards.filter((x) => x.type !== 'Knight').length
   }
 
-  get knightCardsLength(): number {
-    const player = this.player;
+  get knightCardsLength (): number {
+    const player = this.player
     if (!player) {
-      return 0;
+      return 0
     }
-    return player.devCards.filter((x) => x.type === 'Knight').length;
+    return player.devCards.filter((x) => x.type === 'Knight').length
   }
 
-  get roadLength(): number {
-    const player = this.player;
+  get roadLength (): number {
+    const player = this.player
     if (!player) {
-      return 0;
+      return 0
     }
-    return player.roads.length; // todo calculate longest path ;D
+    return player.roads.length // todo calculate longest path ;D
   }
 
-  get hasLongestRoad(): boolean {
-    const players: PlayerState[] = this.$store.getters['game/getPlayers'];
-    if (players.length === 1 && players[0].roads.length > 4) { return true; }
+  get hasLongestRoad (): boolean {
+    const players: PlayerState[] = this.$store.getters['game/getPlayers']
+    if (players.length === 1 && players[0].roads.length > 4) { return true }
     const playerRoads =
       players
         .filter((p: PlayerState) => p.name !== this.player.name)
         .map((p: PlayerState) => p.roads.length)
-        .filter((r: number) => r > 4);
-    if (playerRoads.length === 0) { return false; }
-    const longestRoad = Math.max(...playerRoads);
-    return longestRoad >= this.roadLength;
+        .filter((r: number) => r > 4)
+    if (playerRoads.length === 0) { return false }
+    const longestRoad = Math.max(...playerRoads)
+    return longestRoad >= this.roadLength
   }
 
-  get hasMostKnights(): boolean {
-    const players: PlayerState[] = this.$store.getters['game/getPlayers'];
-    if (players.length === 1 && players[0].knights > 2) { return true; }
+  get hasMostKnights (): boolean {
+    const players: PlayerState[] = this.$store.getters['game/getPlayers']
+    if (players.length === 1 && players[0].knights > 2) { return true }
     const playerKnights =
       players
         .filter((p: PlayerState) => p.name !== this.player.name)
         .map((p: PlayerState) => p.knights)
-        .filter((r: number) => r > 2);
-    if (playerKnights.length === 0) { return false; }
-    const mostKnights = Math.max(...playerKnights);
-    return mostKnights >= this.roadLength;
+        .filter((r: number) => r > 2)
+    if (playerKnights.length === 0) { return false }
+    const mostKnights = Math.max(...playerKnights)
+    return mostKnights >= this.roadLength
   }
 
-  get playerPoints(): number {
-    return this.$store.getters['game/getCurrentPlayer'].points;
+  get playerPoints (): number {
+    return this.$store.getters['game/getCurrentPlayer'].points
   }
 
-  get diceRoll(): number {
-    return this.$store.getters['game/getCurrentDie'];
+  get diceRoll (): number {
+    return this.$store.getters['game/getCurrentDie']
   }
 }
 </script>

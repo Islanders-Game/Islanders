@@ -2,7 +2,7 @@
   <v-snackbar
     id="info"
     :top="true"
-    height="24" 
+    height="24"
     :value="showGameInfo"
   >
     <v-row>
@@ -16,19 +16,20 @@
   </v-snackbar>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
   props: {
-    showGameInfo: Boolean,
-  },
+    showGameInfo: Boolean
+  }
 })
 export default class GameInfo extends Vue {
-  get gameID(): string {
-    return this.$store.state.game.gameId;
+  get gameID (): string {
+    return this.$store.state.game.gameId
   }
-  get currentDie(): number {
-    return this.$store.getters['game/getCurrentDie'];
+
+  get currentDie (): number {
+    return this.$store.getters['game/getCurrentDie']
   }
 }
 </script>

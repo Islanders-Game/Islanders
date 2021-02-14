@@ -10,21 +10,21 @@
   </span>
 </template>
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator'
 
 @Component
 export default class Error extends Vue {
   private currentErrors: string[] = [];
-  
-  get errors(): string[] {
-    const result = this.$store.getters['game/getError'];
-    if (result && result !== '') this.currentErrors.push(result);
-    return this.currentErrors;
+
+  get errors (): string[] {
+    const result = this.$store.getters['game/getError']
+    if (result && result !== '') this.currentErrors.push(result)
+    return this.currentErrors
   }
 
-  public remove(index: number): void {
-    this.currentErrors.splice(index);
-    this.$store.commit('game/setError', '');
+  public remove (index: number): void {
+    this.currentErrors.splice(index)
+    this.$store.commit('game/setError', '')
   }
 }
 </script>

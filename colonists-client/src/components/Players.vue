@@ -70,43 +70,50 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { Player as PlayerModel } from '../../../colonists-shared/dist/Shared';
+import { Component, Vue } from 'vue-property-decorator'
+import { Player as PlayerModel } from '../../../colonists-shared/dist/Shared'
 @Component({
-  components: {},
+  components: {}
 })
 export default class Players extends Vue {
-  get players(): PlayerModel[] {
-    return this.$store.getters['game/getPlayers'];
+  get players (): PlayerModel[] {
+    return this.$store.getters['game/getPlayers']
   }
-  public colorForAvatar(player: PlayerModel): void {
-    return this.$store.getters['game/getPlayerColorAsHex'](player.name);
+
+  public colorForAvatar (player: PlayerModel): void {
+    return this.$store.getters['game/getPlayerColorAsHex'](player.name)
   }
-  public isCurrentPlayersTurn(player: PlayerModel): boolean {
-    const currentPlayer = this.$store.getters['game/getCurrentPlayer'];
-    const isStarted = this.$store.getters['game/getIsGameStarted'];
-    return isStarted && player.name === currentPlayer.name;
+
+  public isCurrentPlayersTurn (player: PlayerModel): boolean {
+    const currentPlayer = this.$store.getters['game/getCurrentPlayer']
+    const isStarted = this.$store.getters['game/getIsGameStarted']
+    return isStarted && player.name === currentPlayer.name
   }
-  private playerPoints(player: PlayerModel) {
-    return player.points;
+
+  private playerPoints (player: PlayerModel) {
+    return player.points
   }
-  private playerResources(player: PlayerModel) {
+
+  private playerResources (player: PlayerModel) {
     return (
       (player.resources.wood ? player.resources.wood : 0) +
       (player.resources.stone ? player.resources.stone : 0) +
       (player.resources.clay ? player.resources.clay : 0) +
       (player.resources.grain ? player.resources.grain : 0) +
       (player.resources.wool ? player.resources.wool : 0)
-    );
+    )
   }
-  private playerDevCards(player: PlayerModel) {
-    return player.devCards.filter((x) => x.type !== 'Knight').length;
+
+  private playerDevCards (player: PlayerModel) {
+    return player.devCards.filter((x) => x.type !== 'Knight').length
   }
-  private playerKnightCards(player: PlayerModel) {
-    return player.devCards.filter((x) => x.type === 'Knight').length;
+
+  private playerKnightCards (player: PlayerModel) {
+    return player.devCards.filter((x) => x.type === 'Knight').length
   }
-  private playerRoad(player: PlayerModel) {
-    return player.roads.length; // todo longest path :P
+
+  private playerRoad (player: PlayerModel) {
+    return player.roads.length // todo longest path :P
   }
 }
 </script>

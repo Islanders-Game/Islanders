@@ -34,36 +34,36 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
+import { Component, Vue } from 'vue-property-decorator'
 
 @Component<Chat>({
-  components: {},
+  components: {}
 })
 export default class Chat extends Vue {
   public message = '';
   private playerName: string;
 
-  constructor() {
-    super();
+  constructor () {
+    super()
 
-    this.playerName = this.$store.state.game.playerName;
-    this.$store.dispatch('chat/bindToMessages');
+    this.playerName = this.$store.state.game.playerName
+    this.$store.dispatch('chat/bindToMessages')
   }
 
-  get messages(): string[] {
-    return this.$store.state.chat.messages;
+  get messages (): string[] {
+    return this.$store.state.chat.messages
   }
 
-  public playerColor(playerName: string): string {
-    return this.$store.getters['game/getPlayerColorAsHex'](playerName);
+  public playerColor (playerName: string): string {
+    return this.$store.getters['game/getPlayerColorAsHex'](playerName)
   }
 
-  public addMessage(): void {
+  public addMessage (): void {
     this.$store.dispatch('chat/addMessage', {
       text: this.message,
-      user: this.playerName,
-    });
-    this.message = '';
+      user: this.playerName
+    })
+    this.message = ''
   }
 }
 </script>
