@@ -8,12 +8,7 @@
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { defineGrid, extendHex } from 'honeycomb-grid';
-import {
-  Graphics,
-  Application,
-  Point,
-  Container,
-} from 'pixi.js';
+import { Graphics, Application, Point, Container } from 'pixi.js';
 import * as PIXI from 'pixi.js';
 import { Viewport } from 'pixi-viewport';
 import {
@@ -65,13 +60,15 @@ export default class Map extends Vue {
   private grid;
 
   private async mounted() {
-    const displayHeight = (element: this) => element.$el.clientHeight / window.devicePixelRatio;
-    const displayWidth = (element: this) => element.$el.clientWidth / window.devicePixelRatio;
+    const displayHeight = (element: this) =>
+      element.$el.clientHeight / window.devicePixelRatio;
+    const displayWidth = (element: this) =>
+      element.$el.clientWidth / window.devicePixelRatio;
 
     const resize = (that: this) => {
       that.app.renderer.resize(displayWidth(that), displayHeight(that));
       that.viewport.resize(displayWidth(that), displayHeight(that));
-    }
+    };
 
     await this.$store.dispatch('game/bindToWorld');
     this.height = displayHeight(this);
@@ -135,7 +132,11 @@ export default class Map extends Vue {
       corner.y += hexOrigin.y;
       const cornerDist = distanceFunc(point, corner);
       if (closestPoint.dist >= cornerDist) {
-        closestPoint = { point: corners[i], index: i, dist: cornerDist };
+        closestPoint = {
+          point: corners[i],
+          index: i,
+          dist: cornerDist,
+        };
       }
     }
     return closestPoint;
@@ -171,9 +172,17 @@ export default class Map extends Vue {
       const cornerDist = distanceFunc(point, corner);
       if (closestPoint.dist >= cornerDist) {
         secondClosestPoint = closestPoint;
-        closestPoint = { point: corners[i], index: i, dist: cornerDist };
+        closestPoint = {
+          point: corners[i],
+          index: i,
+          dist: cornerDist,
+        };
       } else if (secondClosestPoint.dist >= cornerDist) {
-        secondClosestPoint = { point: corners[i], index: i, dist: cornerDist };
+        secondClosestPoint = {
+          point: corners[i],
+          index: i,
+          dist: cornerDist,
+        };
       }
     }
     return [closestPoint, secondClosestPoint];
@@ -349,11 +358,7 @@ export default class Map extends Vue {
     });
 
     this.app.stage.addChild(this.viewport);
-    this.viewport
-      .drag()
-      .pinch()
-      .wheel()
-      .decelerate();
+    this.viewport.drag().pinch().wheel().decelerate();
 
     this.$el.appendChild(this.app.view);
     this.viewport.addChild(this.tileGraphics);

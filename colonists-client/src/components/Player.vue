@@ -342,7 +342,7 @@ import Trade from './Trade.vue';
 import {
   EndTurnAction,
   BuyCardAction,
-  UndoAction
+  UndoAction,
 } from '../../../colonists-shared/dist/Action';
 @Component({
   components: {
@@ -435,26 +435,26 @@ export default class Player extends Vue {
 
   get hasLongestRoad(): boolean {
     const players: PlayerState[] = this.$store.getters['game/getPlayers'];
-    if (players.length === 1 && players[0].roads.length > 4) return true;
-    const playerRoads = 
+    if (players.length === 1 && players[0].roads.length > 4) { return true; }
+    const playerRoads =
       players
-        .filter((p:PlayerState) => p.name !== this.player.name)
+        .filter((p: PlayerState) => p.name !== this.player.name)
         .map((p: PlayerState) => p.roads.length)
         .filter((r: number) => r > 4);
-    if (playerRoads.length === 0) return false;
+    if (playerRoads.length === 0) { return false; }
     const longestRoad = Math.max(...playerRoads);
     return longestRoad >= this.roadLength;
   }
 
   get hasMostKnights(): boolean {
     const players: PlayerState[] = this.$store.getters['game/getPlayers'];
-    if (players.length === 1 && players[0].knights > 2) return true;
-    const playerKnights = 
+    if (players.length === 1 && players[0].knights > 2) { return true; }
+    const playerKnights =
       players
-        .filter((p:PlayerState) => p.name !== this.player.name)
+        .filter((p: PlayerState) => p.name !== this.player.name)
         .map((p: PlayerState) => p.knights)
         .filter((r: number) => r > 2);
-    if (playerKnights.length === 0) return false;
+    if (playerKnights.length === 0) { return false; }
     const mostKnights = Math.max(...playerKnights);
     return mostKnights >= this.roadLength;
   }

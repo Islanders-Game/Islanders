@@ -79,7 +79,7 @@ export class WorldGenerator {
     const mainlandCenter = hex(0, 0);
     let grid = Grid.hexagon({ radius: r, center: mainlandCenter });
 
-    if (generateIslands) {
+    if (generateIslands && generateIslands > 1) {
       for (let i = 0; i < generateIslands; i++) {
         grid = grid.concat(
           Grid.hexagon({
@@ -154,7 +154,7 @@ const coordinateIsHarbor = (hc: HexCoordinate, map: Tile[]) => {
 
 const generateIslandCenter = (
   r: number,
-  hex: HexFactory<{orientation: 'flat'}>,
+  hex: HexFactory<{ orientation: 'flat' }>,
 ) => {
   const angle = Math.random() * Math.PI * 2;
   const x = Math.ceil(Math.cos(angle) * (r * 2) + 1);

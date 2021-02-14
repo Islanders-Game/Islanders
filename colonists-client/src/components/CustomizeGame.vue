@@ -1,13 +1,13 @@
 <template>
-  <v-container
+  <v-container 
     id="CustomizeGame"
     fluid
   >
     <v-row>
       <v-col sm="2">
-        <v-card
-          dark
-          outlined
+        <v-card 
+          dark 
+          outlined 
           class="fill-height"
         >
           <v-list-item three-line>
@@ -17,20 +17,20 @@
               </div>
               <v-list-item-title class="headline">
                 {{ playerName }}
-              </v-list-item-title>                
+              </v-list-item-title>
             </v-list-item-content>
             <v-list-item-avatar
               rounded
               size="30"
-              :color="playerColor" 
+              :color="playerColor"
             />
           </v-list-item>
         </v-card>
       </v-col>
       <v-col sm="7">
         <v-row no-gutters>
-          <v-btn
-            light
+          <v-btn 
+            light 
             @click="randomizeMap"
           >
             Randomize Map
@@ -59,8 +59,8 @@
               thumb-label
               label="Number of Islands"
               type="number"
-              max="12"
-              min="0"
+              max="13"
+              min="1"
             />
           </v-col>
           <v-col sm="3">
@@ -79,8 +79,8 @@
       </v-col>
       <v-col sm="3">
         <v-row no-gutters>
-          <v-btn
-            light
+          <v-btn 
+            light 
             @click="startGame"
           >
             Start Game
@@ -103,7 +103,7 @@ export default class CustomizeGame extends Vue {
   public playerName: string = undefined;
   public mask = '##';
   public radius = 2;
-  public numberOfIslands = 0;
+  public numberOfIslands = 1;
   public pointsToWin = 10;
   private worldGenerator: WorldGenerator;
 

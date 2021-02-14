@@ -27,7 +27,7 @@
             </v-btn>
           </v-btn-toggle>
         </v-toolbar>
-        
+
         <v-card-text>
           <v-text-field
             ref="playerName"
@@ -58,7 +58,7 @@
             color="primary"
             :disabled="!validatePlayerName"
             @click="joinGame"
-            @keyup.enter="joinGame"
+            @on:keyup.enter="joinGame"
           >
             Join Game
           </v-btn>
@@ -73,9 +73,9 @@
         </v-card-actions>
       </v-card>
     </v-container>
-    <v-alert
-      :value="error"
-      type="error"
+    <v-alert 
+      :value="error" 
+      type="error" 
       transition="scale-transition"
     >
       {{ errorMessage }}
@@ -87,7 +87,7 @@
 import { Component, Vue } from 'vue-property-decorator';
 
 @Component({
-  components: {}
+  components: {},
 })
 export default class StartGame extends Vue {
   public error = false;
@@ -136,12 +136,12 @@ export default class StartGame extends Vue {
     try {
       await this.$store.dispatch('joinGame', {
         gameId: this.gameId,
-        playerName: this.playerName
+        playerName: this.playerName,
       });
     } catch (ex) {
       this.error = true;
       this.errorMessage = ex.message;
-      console.log(ex);
+      console.warn(ex);
       return;
     }
 
@@ -170,7 +170,6 @@ export default class StartGame extends Vue {
 </script>
 
 <style lang="scss" scoped>
-
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s;
