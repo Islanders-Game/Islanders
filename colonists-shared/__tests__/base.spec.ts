@@ -6,7 +6,6 @@ import {
   resourcesAreNonNegative,
   purchase,
   GameStatistics,
-  Failure,
   Success,
   House,
   Road,
@@ -16,12 +15,8 @@ import {
 } from '../lib/Shared';
 
 import {
-  playerHasHarbor,
   placeHouse,
-  placeCity,
-  moveThief,
-  bankTrade
-} from '../lib/Rules/Helpers';
+  placeCity} from '../lib/Rules/Helpers';
 
 import { addResources, empty } from '../lib/Resources';
 import { BuyCardAction, EndTurnAction, MoveThiefAction } from '../lib/Action';
