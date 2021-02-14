@@ -20,8 +20,8 @@ import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
   props: {
-    showGameInfo: Boolean
-  }
+    showGameInfo: Boolean,
+  },
 })
 export default class GameInfo extends Vue {
   get gameID (): string {

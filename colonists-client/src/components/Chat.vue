@@ -59,7 +59,7 @@ export default class Chat extends Vue {
   public addMessage (): void {
     this.$store.dispatch('chat/addMessage', {
       text: this.message,
-      user: this.playerName
+      user: this.playerName,
     })
     this.message = ''
   }

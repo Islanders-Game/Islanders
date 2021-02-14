@@ -52,8 +52,8 @@ import GameInfo from './GameInfo.vue'
     Player,
     CustomizeGame,
     Error,
-    GameInfo
-  }
+    GameInfo,
+  },
 })
 export default class Game extends Vue {
   public showGameInfo = true;

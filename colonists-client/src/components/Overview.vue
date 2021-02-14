@@ -68,8 +68,8 @@ import Players from './Players.vue'
   components: {
     Players,
     Chat,
-    Log
-  }
+    Log,
+  },
 })
 export default class Overview extends Vue {
   get currentDie (): number | undefined {

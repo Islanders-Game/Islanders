@@ -16,8 +16,8 @@ import StartGame from './components/StartGame.vue'
 @Component({
   components: {
     Game,
-    StartGame
-  }
+    StartGame,
+  },
 })
 export default class App extends Vue {
   public showGame = false;

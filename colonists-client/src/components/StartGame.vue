@@ -87,7 +87,7 @@
 import { Component, Vue } from 'vue-property-decorator'
 
 @Component({
-  components: {}
+  components: {},
 })
 export default class StartGame extends Vue {
   public error = false;
@@ -127,7 +127,7 @@ export default class StartGame extends Vue {
       this.error = true
       this.errorMessage = 'You need to enter a Game Code'
       return
-    } else if (!this.validatePlayerName) {
+    } if (!this.validatePlayerName) {
       this.error = true
       this.errorMessage = 'You need to enter a valid player name'
       return
@@ -136,7 +136,7 @@ export default class StartGame extends Vue {
     try {
       await this.$store.dispatch('joinGame', {
         gameId: this.gameId,
-        playerName: this.playerName
+        playerName: this.playerName,
       })
     } catch (ex) {
       this.error = true

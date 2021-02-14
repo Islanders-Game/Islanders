@@ -4828,6 +4828,7 @@ __metadata:
     babel-eslint: ^10.1.0
     colonists-shared: "file:../colonists-shared"
     eslint: ^7.20.0
+    eslint-config-airbnb-base: ^14.2.1
     eslint-plugin-import: ^2.20.2
     eslint-plugin-node: ^11.1.0
     eslint-plugin-promise: ^4.2.1
@@ -4859,11 +4860,11 @@ __metadata:
 
 "colonists-shared@file:../colonists-shared::locator=colonists-client%40workspace%3A.":
   version: 1.0.0
-  resolution: "colonists-shared@file:../colonists-shared#../colonists-shared::hash=e7ffd5&locator=colonists-client%40workspace%3A."
+  resolution: "colonists-shared@file:../colonists-shared#../colonists-shared::hash=2ec164&locator=colonists-client%40workspace%3A."
   dependencies:
     honeycomb-grid: ^3.1.7
     uuid: ^8.3.2
-  checksum: e201e15c24382ff8a97d0de7a380a0f5f2af73be7dedd6ea96a89ede9792ad1e26404c7e18c9e74d8c3d3774167af077b83565d4b4728a6a220a94548d7e6e0c
+  checksum: 08b3c5d70f7c30a9644e2b268d0f3ae0b13b9e45e1c534ba6b0aa54bdb28f7aa19c6e1cc97283e32e44c32ded424b923c51e8503d3ec582f60ee6242322fd4c8
   languageName: node
   linkType: hard
 
@@ -5038,6 +5039,13 @@ __metadata:
     ini: ^1.3.4
     proto-list: ~1.2.1
   checksum: caf4b96491c2ea6fc5e6e23cebc526040cf21779ffc544c705a21b788f7dc3d34bc439878dcdfae8c15830052be55d62b26acada13da1236142d3efc5b4329be
+  languageName: node
+  linkType: hard
+
+"confusing-browser-globals@npm:^1.0.10":
+  version: 1.0.10
+  resolution: "confusing-browser-globals@npm:1.0.10"
+  checksum: 47e9365de6afe12e11b8dfbd12ce38d20bf8f4fd4614c838f88be5deb7c84dd20a5f00e432a6dd7e85d9e2be4601553cc6f28cc54d4cb07a3b04508aae0b4bd0
   languageName: node
   linkType: hard
 
@@ -6338,6 +6346,20 @@ __metadata:
     escodegen: bin/escodegen.js
     esgenerate: bin/esgenerate.js
   checksum: 548c5a83a81a51122f1006309a392e1412bb00657f15aca60f01f9d4553851bdaf0519d898fd3ee2bb46f116e03ee48757f4d9a28a7b58bc8c096fd4b33f6cbc
+  languageName: node
+  linkType: hard
+
+"eslint-config-airbnb-base@npm:^14.2.1":
+  version: 14.2.1
+  resolution: "eslint-config-airbnb-base@npm:14.2.1"
+  dependencies:
+    confusing-browser-globals: ^1.0.10
+    object.assign: ^4.1.2
+    object.entries: ^1.1.2
+  peerDependencies:
+    eslint: ^5.16.0 || ^6.8.0 || ^7.2.0
+    eslint-plugin-import: ^2.22.1
+  checksum: ef1057740ed109bd6df0cddbd973e6ceee42551c6aa7f31c8cae53438011765b67b2fe47ad9f5e72593a8661abef4acef2478b0aae8861a5a89baa911715e611
   languageName: node
   linkType: hard
 
@@ -10942,6 +10964,18 @@ fsevents@~2.3.1:
   languageName: node
   linkType: hard
 
+"object.entries@npm:^1.1.2":
+  version: 1.1.3
+  resolution: "object.entries@npm:1.1.3"
+  dependencies:
+    call-bind: ^1.0.0
+    define-properties: ^1.1.3
+    es-abstract: ^1.18.0-next.1
+    has: ^1.0.3
+  checksum: 89eec6d43bf8440dfd800ad76486d76a900ff7e3e20b560abb4cba8494bdc8524af8cf49a897739da776fe434f8091569b2422333075378f9fd5a50d599601eb
+  languageName: node
+  linkType: hard
+
 "object.getownpropertydescriptors@npm:^2.0.3, object.getownpropertydescriptors@npm:^2.1.0, object.getownpropertydescriptors@npm:^2.1.1":
   version: 2.1.1
   resolution: "object.getownpropertydescriptors@npm:2.1.1"
@@ -14029,7 +14063,7 @@ resolve@1.1.7:
 "svg-pan-zoom@github:ariutta/svg-pan-zoom":
   version: 3.6.1
   resolution: "svg-pan-zoom@https://github.com/ariutta/svg-pan-zoom.git#commit=e3aa8dee15d9d30645e8a0ebea82c0ce3f16d0b8"
-  checksum: 8cae4de16bcc306b3e2a7f5b77abefa9e48c6cb0999ad0c7c4b91f0fe0599dca8f1e3a3d037da9bf8ab03ee26aa816369e327d62144b14e9f202737f0899d387
+  checksum: 5f214c461e3043c876ce9c91a2f2657f05508a92c574632c7575c99e1f575f36576d36ab00e59951f252d5dd552ec1cfa8e898da289ef7ba438245fde36d252d
   languageName: node
   linkType: hard
 

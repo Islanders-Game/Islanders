@@ -65,7 +65,8 @@ const generatorDiceRoll = (): GeneratorDiceRollType => {
 };
 
 export class WorldGenerator {
-  public static generateRandomMap(radius: number | undefined, generateIslands: number | undefined): Tile[] {
+  // eslint-disable-next-line class-methods-use-this
+  public generateRandomMap(radius: number | undefined, generateIslands: number | undefined): Tile[] {
     const mainHex = extendHex({
       orientation: 'flat',
     });
