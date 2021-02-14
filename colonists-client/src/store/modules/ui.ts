@@ -1,10 +1,10 @@
-import { GetterTree, MutationTree, ActionTree, ActionContext } from 'vuex';
+import { GetterTree, MutationTree, ActionTree } from 'vuex';
 import { State as RootState } from '../store';
 // The state
 export type buildingType = 'None' | 'House' | 'City' | 'Road';
 export class State {
   public isBuilding: buildingType = 'None';
-  public isMovingThief: boolean = false;
+  public isMovingThief = false;
 }
 
 // Synchrounous getters: GetterTree<local state, root state>

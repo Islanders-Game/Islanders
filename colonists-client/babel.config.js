@@ -1,9 +1,10 @@
+// eslint-disable-next-line no-undef
 module.exports = {
-  'presets': [
+  presets: [
     [
       '@vue/app',
       {
-        'useBuiltIns': 'entry'
+        useBuiltIns: 'entry'
       }
     ]
   ]

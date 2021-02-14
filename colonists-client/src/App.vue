@@ -19,7 +19,7 @@ import StartGame from './components/StartGame.vue';
     StartGame,
   },
 })
-export class App extends Vue {
+export default class App extends Vue {
   public showGame = false;
 
   public created(): void {
