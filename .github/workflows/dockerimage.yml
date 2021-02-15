@@ -15,5 +15,5 @@ jobs:
       run: docker build --tag colonists/colonists-server:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-server
     - name: Build colonists-client
       run: docker build --tag colonists/colonists-client:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-client
-    - name: Run tests
+    - name: Run shared tests
       run: docker run --rm colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1)
