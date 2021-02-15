@@ -9,11 +9,11 @@ jobs:
     - uses: actions/checkout@v2
     - uses: satackey/action-docker-layer-caching@v0.0.11
       continue-on-error: false
-    - name: Build the shared image
+    - name: Build colonists-shared
       run: docker build --tag colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-shared
-    - name: Build the server
+    - name: Build colonists-server
       run: docker build --tag colonists/colonists-server:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-server
-    - name: Build the client
+    - name: Build colonists-client
       run: docker build --tag colonists/colonists-client:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-client
     - name: Run tests
       run: docker run --rm colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1)

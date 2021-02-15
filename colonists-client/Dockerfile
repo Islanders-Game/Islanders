@@ -2,29 +2,36 @@
 ARG BRANCH_TAG=latest
 FROM colonists/colonists-shared:${BRANCH_TAG} as library
 
+# Cache
+FROM node:alpine as dependency-cache-client
+RUN apk update && apk upgrade && \
+    apk add --no-cache bash git openssh python3 make g++
+WORKDIR /cache
+COPY ./package*.json ./
+#     --legacy-peer-deps is needed for Vue 2
+RUN npm install --legacy-peer-deps 
+
 # Builder
 FROM node:alpine as builder
 # Global dependencies
+RUN ["npm", "install", "-g", "typescript"]
 RUN apk update && apk upgrade && \
-    apk add --no-cache bash git openssh
+    apk add --no-cache bash git openssh python3 make g++
 
 WORKDIR /app
 # Copy over library
 COPY --from=library /app /app/colonists-shared
 
 # App dependencies
-RUN ["npm", "install", "-g", "typescript"]
 WORKDIR /app/client
-
-# Install Dependencies
+COPY --from=dependency-cache-client /cache/node_modules ./node_modules
 COPY ./package*.json ./
-COPY .yarnrc.yml ./
-COPY .yarn/releases/yarn-berry.cjs ./.yarn/releases/yarn-berry.cjs
-RUN yarn install
+#     --legacy-peer-deps is needed for Vue 2
+RUN npm install --legacy-peer-deps
 
 # Build app
 COPY . .
-RUN yarn build
+RUN npm run build
 
 # Runtime image
 FROM nginx:alpine
