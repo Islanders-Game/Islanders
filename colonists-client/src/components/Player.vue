@@ -4,6 +4,90 @@
     fluid
     class="fill-height"
   >
+    <v-dialog v-model="showDevelopmentCardPicker" persistent max-width="650px">
+      <v-card>
+        <v-card-title>Play a development card</v-card-title>
+        <v-container>
+          <v-row>
+            <v-col sm="6">
+              <v-card
+                :disabled="devCardsOfType('Road Building') === 0"
+                class="development-card"
+                @click="selectedCard('Road Building')"
+              >
+                <v-card-title class="subtitle-2">Road Building</v-card-title>
+                <v-card-text>Place 2 new roads as if you just built them.</v-card-text>
+              </v-card>
+            </v-col>
+            <v-col sm="6">
+              <v-card
+                :disabled="devCardsOfType('Year of Plenty') === 0"
+                class="development-card"
+                @click="selectedCard('Year of Plenty')"
+              >
+                <v-card-title class="subtitle-2">Year of Plenty</v-card-title>
+                <v-card-text>Take any 2 resources from the bank.</v-card-text>
+                <v-combobox
+                  v-show="currentlySelectedCard === 'Year of Plenty'"
+                  v-model="chosenResources"
+                  :items="resourceTypes"
+                  small-chips
+                  dense
+                  label="Choose resource types"
+                  hint="Maximum of 2 resource types"
+                  outlined
+                  multiple
+                  type="number"
+                />
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col sm="6">
+              <v-card
+                :disabled="devCardsOfType('Monopoly') === 0"
+                class="development-card"
+                @click="selectedCard('Monopoly')"
+              >
+                <v-card-title class="subtitle-2">Monopoly</v-card-title>
+                <v-card-text>Take all of a chosen resource from all players.</v-card-text>
+                <v-combobox
+                  v-show="currentlySelectedCard === 'Monopoly'"
+                  v-model="chosenResources"
+                  :items="resourceTypes"
+                  hint="Maximum of 1 resource type"
+                  label="Choose a resource type"
+                  dense
+                  small-chips
+                  outlined
+                  multiple
+                  type="number"
+                />
+              </v-card>
+            </v-col>
+            <v-col sm="6">
+              <v-card
+                :disabled="devCardsOfType('Knight') === 0"
+                class="development-card"
+                @click="selectedCard('Knight')"
+              >
+                <v-card-title class="subtitle-2">Knight</v-card-title>
+                <v-card-text>Move the thief and take 2 cards from another player.</v-card-text>
+              </v-card>
+            </v-col>
+          </v-row>
+        </v-container>
+        <v-card-actions>
+          <v-btn
+            :disabled="!canSelectCard"
+            @click="selectDevelopmentCard"
+          >
+            Select Card
+          </v-btn>
+          <v-btn right color="red" @click="showDevelopmentCardPicker = false">Close</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
     <v-row class="fill-height">
       <v-col sm="2">
         <v-card
@@ -180,7 +264,7 @@
                             color="grey lighten-2"
                           >
                             mdi-chess-knight
-                          </v-icon> {{ knightCardsLength }} knights
+                          </v-icon> {{ devCardsOfType('Knight') }} knights
                         </v-chip>
                       </v-col>
                     </v-row>
@@ -264,7 +348,7 @@
                   dark
                   @click="devCard"
                 >
-                  Buy Card
+                  Buy Dev. Card
                 </v-btn>
               </v-col>
 
@@ -284,9 +368,10 @@
                 <v-btn
                   block
                   dark
-                  :disabled="player.devCards.length === 0"
+                  @click="showDevelopmentCardPicker = true"
                 >
-                  Play Card
+                  Play Dev. Card
+                  <!-- :disabled="player.devCards.length === 0" -->
                 </v-btn>
               </v-col>
 
@@ -338,10 +423,11 @@
 </template>
 
 <script lang="ts">
-import { Component, Vue } from 'vue-property-decorator';
-import { DiceRollType, Player as PlayerState } from '../../../colonists-shared/dist/Shared';
+import { Component, Vue, Watch } from 'vue-property-decorator';
+import { DiceRollType, Player as PlayerState, TileType } from '../../../colonists-shared/dist/Shared';
 import Trade from './Trade.vue';
-import { EndTurnAction, BuyCardAction, UndoAction } from '../../../colonists-shared/dist/Action';
+import { EndTurnAction, BuyCardAction, UndoAction, PlayCardAction } from '../../../colonists-shared/dist/Action';
+import { DevelopmentCardType } from '../../../colonists-shared/dist/Entities/DevelopmentCard';
 
 @Component({
   components: {
@@ -350,6 +436,9 @@ import { EndTurnAction, BuyCardAction, UndoAction } from '../../../colonists-sha
 })
 export default class Player extends Vue {
   public playerName: string = undefined;
+  public showDevelopmentCardPicker = false;
+  public chosenResources: [TileType] | [TileType, TileType] = ['Wood'];
+  private currentlySelectedCard: DevelopmentCardType = 'None';
 
   public constructor () {
     super();
@@ -413,15 +502,15 @@ export default class Player extends Vue {
     if (!player) {
       return 0;
     }
-    return player.devCards.filter((x) => x.type !== 'Knight').length;
+    return player.devCards.length;
   }
 
-  get knightCardsLength (): number {
+  public devCardsOfType (type: DevelopmentCardType): number {
     const { player } = this;
     if (!player) {
       return 0;
     }
-    return player.devCards.filter((x) => x.type === 'Knight').length;
+    return player.devCards.filter((x) => x.type === type).length;
   }
 
   get roadLength (): number {
@@ -471,8 +560,61 @@ export default class Player extends Vue {
   get diceRoll (): number {
     return this.$store.getters['game/getCurrentDie'];
   }
+
+  get canSelectCard(): boolean {
+    const chosen = this.currentlySelectedCard
+    return ((chosen === 'Monopoly' && this.chosenResources && this.chosenResources.length === 1)
+      || (chosen === 'Year of Plenty' && this.chosenResources && this.chosenResources.length >= 1))
+      && this.currentlySelectedCard !== 'None'
+  }
+
+  get resourceTypes(): TileType[] {
+    return ['Wood', 'Stone', 'Clay', 'Grain', 'Wool']
+  }
+
+  public selectedCard(type: DevelopmentCardType): void {
+    this.currentlySelectedCard = type;
+  }
+
+  public selectDevelopmentCard(): void {
+    const card = this.player.devCards.filter((c) => c.type === this.currentlySelectedCard)[0];
+    if (!card) return
+    if (card.type === 'Year of Plenty') {
+      const chosen = this.chosenResources as unknown as TileType | [TileType, TileType];
+      this.$store.dispatch('game/sendAction',
+        new PlayCardAction(this.playerName, card, chosen));
+    } else if (card.type === 'Monopoly') {
+      this.$store.dispatch('game/sendAction',
+        new PlayCardAction(this.playerName, card, this.chosenResources as [TileType, TileType]));
+    } else {
+      this.$store.dispatch('game/sendAction',
+        new PlayCardAction(this.playerName, card, undefined));
+    }
+  }
+
+  @Watch('chosenResources')
+  public onChosenResoucesChanged(value: TileType[]): void {
+    if (this.currentlySelectedCard === 'Year of Plenty' && value.length > 2) {
+      this.$nextTick(() => (this.chosenResources as [TileType, TileType]).shift())
+    } else if (this.currentlySelectedCard === 'Monopoly' && value.length > 1) {
+      this.$nextTick(() => { this.chosenResources.shift() })
+    }
+  }
+
+  @Watch('currentlySelectedCard')
+  public onCurrentlySelectedCardChanged(value: DevelopmentCardType): void {
+    if (value === 'Monopoly' && this.chosenResources.length > 2) {
+      this.$nextTick(() => (this.chosenResources as [TileType, TileType]).shift())
+    } else if (value && this.chosenResources.length > 1) {
+      this.$nextTick(() => { this.chosenResources.pop() })
+    }
+  }
 }
 </script>
 
 <style lang="scss" scoped>
+.development-card {
+  height: 100%;
+  min-height: 180px;
+}
 </style>

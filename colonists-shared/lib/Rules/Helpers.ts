@@ -323,8 +323,9 @@ export const assignDevelopmentCard = (playerName: string) => (w: World): Result 
   const player = w.players.find((pl) => pl.name === playerName);
   if (!player) return fail(`The player ${playerName} was not found!`);
   const newCards = player.devCards.concat(randomCard);
+  const victoryPointCards = newCards.filter((c: DevelopmentCard) => c.type === 'Victory Point').length;
   const players = w.players.map((pl) => (pl.name === playerName ? {
-    ...pl, devCards: newCards,
+    ...pl, points: pl.points + victoryPointCards, devCards: newCards,
   } : pl));
   return success({
     ...w, players,
@@ -334,7 +335,7 @@ export const assignDevelopmentCard = (playerName: string) => (w: World): Result 
 export const playCard = (
   playerName: string,
   card: DevelopmentCard,
-  chosenResources: TileType | [TileType, TileType],
+  chosenResources?: TileType | [TileType, TileType],
 ) => (w: World): Result => {
   // Nasty... Couldn't see any other way.
   // Clone existing card array, modify card played state.
@@ -379,6 +380,7 @@ export const playCard = (
   }
   if (card.type === 'Year of Plenty') {
     const chosen = chosenResources as [TileType, TileType];
+    if (!chosen) return fail('You must choose resources to play this card!');
     const { resources } = player;
     const rr = addAmountToResourceOfType(1, resources, chosen[0]);
     const rrr = addAmountToResourceOfType(1, rr, chosen[1]);
