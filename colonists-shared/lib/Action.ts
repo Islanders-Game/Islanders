@@ -40,7 +40,7 @@ interface HarborTradeParameters extends HasPlayerName {
 }
 interface PlayCardParameters extends HasPlayerName {
   card: DevelopmentCard;
-  chosenResources?: TileType | [TileType, TileType];
+  chosenResources?: [TileType] | [TileType, TileType];
 }
 type BuyCardParameters = HasPlayerName
 type EndTurnParameters = HasPlayerName
@@ -206,7 +206,7 @@ export class PlayCardAction {
   constructor(
     playerName: string,
     card: DevelopmentCard,
-    chosenResources?: undefined | TileType | [TileType, TileType],
+    chosenResources?: undefined | [TileType] | [TileType, TileType],
   ) {
     this.parameters = {
       playerName, card, chosenResources,
@@ -227,7 +227,12 @@ export class EndTurnAction {
 }
 
 export class LockMapAction {
+  public pointsToWin: number;
   public type: 'lockMap' = 'lockMap';
+
+  constructor(pointsToWin: number) {
+    this.pointsToWin = pointsToWin;
+  }
 }
 
 export class UndoAction {

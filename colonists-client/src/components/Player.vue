@@ -563,9 +563,9 @@ export default class Player extends Vue {
 
   get canSelectCard(): boolean {
     const chosen = this.currentlySelectedCard
-    return ((chosen === 'Monopoly' && this.chosenResources && this.chosenResources.length === 1)
-      || (chosen === 'Year of Plenty' && this.chosenResources && this.chosenResources.length >= 1))
-      && this.currentlySelectedCard !== 'None'
+    if (chosen === 'Monopoly') return this.chosenResources && this.chosenResources.length === 1
+    if (chosen === 'Year of Plenty') return this.chosenResources && this.chosenResources.length >= 1
+    return this.currentlySelectedCard !== 'None'
   }
 
   get resourceTypes(): TileType[] {
@@ -580,9 +580,16 @@ export default class Player extends Vue {
     const card = this.player.devCards.filter((c) => c.type === this.currentlySelectedCard)[0];
     if (!card) return
     if (card.type === 'Year of Plenty') {
-      const chosen = this.chosenResources as unknown as TileType | [TileType, TileType];
-      this.$store.dispatch('game/sendAction',
-        new PlayCardAction(this.playerName, card, chosen));
+      if (this.chosenResources.length === 2) {
+        const chosen = this.chosenResources as [TileType, TileType]
+        this.$store.dispatch('game/sendAction',
+          new PlayCardAction(this.playerName, card, chosen));
+      } else if (this.chosenResources.length === 1) {
+        const chosen = this.chosenResources as [TileType]
+        const asTwoResources = chosen.concat(chosen) as [TileType, TileType]
+        this.$store.dispatch('game/sendAction',
+          new PlayCardAction(this.playerName, card, asTwoResources));
+      }
     } else if (card.type === 'Monopoly') {
       this.$store.dispatch('game/sendAction',
         new PlayCardAction(this.playerName, card, this.chosenResources as [TileType, TileType]));
@@ -590,6 +597,7 @@ export default class Player extends Vue {
       this.$store.dispatch('game/sendAction',
         new PlayCardAction(this.playerName, card, undefined));
     }
+    this.showDevelopmentCardPicker = false
   }
 
   @Watch('chosenResources')

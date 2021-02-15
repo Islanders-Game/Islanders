@@ -335,7 +335,7 @@ export const assignDevelopmentCard = (playerName: string) => (w: World): Result 
 export const playCard = (
   playerName: string,
   card: DevelopmentCard,
-  chosenResources?: TileType | [TileType, TileType],
+  chosenResources?: [TileType] | [TileType, TileType],
 ) => (w: World): Result => {
   // Nasty... Couldn't see any other way.
   // Clone existing card array, modify card played state.
@@ -384,9 +384,10 @@ export const playCard = (
     const { resources } = player;
     const rr = addAmountToResourceOfType(1, resources, chosen[0]);
     const rrr = addAmountToResourceOfType(1, rr, chosen[1]);
-    const players = w.players.map((pl) => (pl.name === playerName ? {
-      ...pl, resources: rrr, devCards,
-    } : pl));
+    const players = w.players.map((pl) =>
+      (pl.name === playerName ? {
+        ...pl, resources: rrr, devCards,
+      } : pl));
 
     return success({
       ...w, players,
@@ -395,22 +396,22 @@ export const playCard = (
   if (card.type === 'Monopoly') {
     const { resources } = player;
     const allResources = w.players.reduce((acc, p) => acc.concat(p.resources), [] as Resources[]);
-    const chosen = chosenResources as TileType;
-    const toTake = allResources.reduce((acc, rr) => acc + getResourceAmountOfType(chosen, rr), 0);
-    const added = addAmountToResourceOfType(toTake, resources, chosenResources as TileType);
+    const chosen = chosenResources as [TileType];
+    const toTake = allResources.reduce((acc, rr) => acc + getResourceAmountOfType(chosen[0], rr), 0);
+    const added = addAmountToResourceOfType(toTake, resources, chosen[0]);
     const players = w.players.map((pl) =>
       pl.name === playerName
         ? {
           ...pl, resources: added,
         }
         : {
-          ...pl, resources: deleteAllResourcesOfType(chosen, pl.resources),
+          ...pl, resources: deleteAllResourcesOfType(chosen[0], pl.resources),
         });
     return success({
       ...w, players,
     });
   }
-  return success(w);
+  return fail('You tried to play an invalid card!');
 };
 
 export const getResourceAmountOfType = (type: TileType, rs: Resources): number => {

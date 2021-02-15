@@ -19,6 +19,7 @@ import { SocketConnection, State as RootState } from '../store';
 export class State {
   public gameId: string = undefined;
   public playerName: string = undefined;
+  public pointsToWin = 10;
   public world: World = undefined;
   public error: string = undefined;
 }
@@ -53,6 +54,9 @@ const getters: GetterTree<State, unknown> = {
       return undefined;
     }
     return state.world.currentDie;
+  },
+  getPointsToWin(state: State) {
+    return state.world.pointsToWin;
   },
   getPlayerColorAsHex: (state: State) => (name: string) => {
     const color = state.world?.players.find((x) => x.name === name)?.color;
@@ -102,8 +106,8 @@ const actions: ActionTree<State, RootState> = {
         });
     });
   },
-  async startGame({ commit }: ActionContext<State, RootState>) {
-    SocketConnection.socket.emit(SocketActions.lockMap);
+  async startGame({ commit }: ActionContext<State, RootState>, pointsToWin: number) {
+    SocketConnection.socket.emit(SocketActions.lockMap, pointsToWin);
   },
   async updateMap({ commit }: ActionContext<State, RootState>, map: Tile[]) {
     SocketConnection.socket.emit(SocketActions.newMap, map);

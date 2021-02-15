@@ -8,14 +8,13 @@ import { GameState } from '../Shared';
 
 export const EndTurn = ({ parameters }: EndTurnAction) => (
   world: Result,
-): Result => {
-  const p = world.flatMap(findPlayer(parameters.playerName));
-  const v = p.flatMap(verifyThief);
-  const a = v.flatMap(assignNextPlayerTurn);
-  const s = a.flatMap(stateChanger);
-  const c = s.flatMap(checkVictory(parameters.playerName));
-  return c;
-};
+): Result =>
+  world
+    .flatMap(findPlayer(parameters.playerName))
+    .flatMap(verifyThief)
+    .flatMap(assignNextPlayerTurn)
+    .flatMap(stateChanger)
+    .flatMap(checkVictory(parameters.playerName));
 
 const checkVictory = (playerName: string) => (w: World) => {
   const winner = w.players.find(

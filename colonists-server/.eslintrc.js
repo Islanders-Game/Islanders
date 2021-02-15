@@ -49,7 +49,7 @@ module.exports = {
       ObjectPattern: { multiline: true },
       ExportDeclaration: { multiline: true, minProperties: 3 },
     }],
-    'no-console': [1, { allow: ['warn', 'error'] }],
+    'no-console': 'off',
   },
   settings: {
     'import/resolver': {
