@@ -147,7 +147,7 @@ export const purchase = (cost: Resources) => (playerName: string) => (w: World):
 };
 
 export const ensureGameState = (state: GameState) => (world: World): Result =>
-  world.gameState !== state ? fail(`You cannot do that right now!${world.gameState}`) : success(world);
+  world.gameState !== state ? fail('You cannot do that right now!') : success(world);
 
 export const findPlayer = (name: string) => (w: World): Result => {
   const player = w.players[w.currentPlayer];

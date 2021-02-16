@@ -27,7 +27,15 @@
             </v-btn>
           </v-btn-toggle>
         </v-toolbar>
-
+        <v-alert
+          :value="error"
+          type="error"
+          transition="slide-y-transition"
+          dense
+          tile
+        >
+          {{ errorMessage }}
+        </v-alert>
         <v-card-text>
           <v-text-field
             ref="playerName"
@@ -73,13 +81,6 @@
         </v-card-actions>
       </v-card>
     </v-container>
-    <v-alert
-      :value="error"
-      type="error"
-      transition="scale-transition"
-    >
-      {{ errorMessage }}
-    </v-alert>
   </v-main>
 </template>
 
@@ -105,20 +106,14 @@ export default class StartGame extends Vue {
       return
     }
 
-    try {
-      await this.$store.dispatch('createGame', this.playerName)
-    } catch (ex) {
-      this.error = true
-      this.errorMessage = ex.message
-      return
-    }
+    await this.$store.dispatch('createGame', this.playerName)
 
-    // todo check for createGame fail.
     if (this.$store.state.game.gameId) {
       this.$parent.$parent.$emit('gameChosen')
+      this.$store.commit('game/setError', '')
     } else {
-      this.error = true
-      this.errorMessage = 'An error occured while connecting to the server'
+      this.error = true;
+      this.errorMessage = this.$store.getters['game/getError']
     }
   }
 
@@ -134,6 +129,7 @@ export default class StartGame extends Vue {
     }
 
     try {
+      this.$store.commit('game/setError', '')
       await this.$store.dispatch('joinGame', {
         gameId: this.gameId,
         playerName: this.playerName,
@@ -147,9 +143,10 @@ export default class StartGame extends Vue {
 
     if (this.$store.state.game.gameId) {
       this.$parent.$parent.$emit('gameChosen')
+      this.$store.commit('game/setError', '')
     } else {
-      this.error = true
-      this.errorMessage = 'An error occured while connecting to the server'
+      this.error = true;
+      this.errorMessage = this.$store.getters['game/getError']
     }
   }
 
@@ -170,15 +167,4 @@ export default class StartGame extends Vue {
 </script>
 
 <style lang="scss" scoped>
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s;
-}
-.fade-enter, .fade-leave-to /* .fade-leave-active below version 2.1.8 */ {
-  opacity: 0.1s;
-}
-.fade-element {
-  position: absolute;
-  width: 93%;
-}
 </style>

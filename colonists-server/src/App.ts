@@ -47,7 +47,6 @@ app.get('/newgame', async (_: Request, res: Response) => {
   }
 });
 
-//TODO: This throws if the player attempts to join a nonexistent game!
 app.get('/joingame', async (req: Request, res: Response) => {
   const playerName = String(req.query.playerName);
   const gameID = String(req.query.gameId);
@@ -55,7 +54,7 @@ app.get('/joingame', async (req: Request, res: Response) => {
   const result = await gameRepository.getWorld(gameID);
 
   result.flatMap((w: World) => {
-    res.status(200).send(success(w));
+    res.send(success(w));
     console.info(`[${gameID}] Finished /joingame GET with player: ${playerName}`);
     return success(w);
   });
