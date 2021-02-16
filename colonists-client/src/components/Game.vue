@@ -12,11 +12,19 @@
         <v-col
           sm="9"
           class="fill-height"
-          @mousemove="mouseOver"
         >
           <Error />
+          <v-chip id="gameInfo" x-small dark absolute label outlined>
+            <span id="idLabel">ID:</span>{{ gameID }}
+          </v-chip>
+          <v-dialog v-model="playerHasWon" width="40%">
+            <v-card>
+              <v-card-title>
+                {{ winner }} has won the game!
+              </v-card-title>
+            </v-card>
+          </v-dialog>
           <Map class="fill-height" />
-          <GameInfo :show-game-info="showGameInfo" />
         </v-col>
         <v-col
           sm="3"
@@ -43,7 +51,6 @@ import Map from './Map.vue'
 import Player from './Player.vue'
 import CustomizeGame from './CustomizeGame.vue'
 import Error from './Error.vue'
-import GameInfo from './GameInfo.vue'
 
 @Component({
   components: {
@@ -52,22 +59,23 @@ import GameInfo from './GameInfo.vue'
     Player,
     CustomizeGame,
     Error,
-    GameInfo,
   },
 })
 export default class Game extends Vue {
-  public showGameInfo = true;
-
   get started (): boolean {
     return this.$store.getters['game/getIsGameStarted']
   }
 
-  public mouseOver (e: MouseEvent): void {
-    if (e.offsetY <= 70) {
-      this.showGameInfo = true
-    } else {
-      this.showGameInfo = false
-    }
+  get gameID(): string {
+    return this.$store.state.game.gameId
+  }
+
+  get playerHasWon(): boolean {
+    return this.$store.state.game.winner !== undefined;
+  }
+
+  get winner(): string {
+    return this.$store.state.game?.winner;
   }
 }
 </script>
@@ -91,4 +99,20 @@ export default class Game extends Vue {
   padding: 0px;
 }
 
+#gameInfo {
+  position: absolute;
+  bottom: 25.5%;
+  left: 6px;
+  opacity: 0.35;
+
+  &:hover {
+    opacity: 1;
+  }
+}
+
+#idLabel {
+  padding-right: 5px;
+  color: lightgray;
+  pointer-events: none;
+}
 </style>
