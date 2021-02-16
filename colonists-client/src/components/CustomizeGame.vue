@@ -93,7 +93,7 @@ export default class CustomizeGame extends Vue {
 
   @Watch('pointsToWin')
   public setPointsToWin(value: number): void {
-    this.$store.commit('game/setPointsToWin', value);
+    this.$store.commit('game/setPointsToWin', +value);
   }
 
   private async randomizeMap() {
