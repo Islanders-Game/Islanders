@@ -7,14 +7,6 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
-    - name: Set weekly cache expiration
-      run: echo "WEEK=$(date +%W)" >> $GITHUB_ENV
-    - uses: satackey/action-docker-layer-caching@v0.0.11
-      continue-on-error: true
-      with:
-        key: ${{ github.workflow }}-${{ env.WEEK }}-{hash}
-        restore-keys: |
-          ${{ github.workflow }}-${{ env.WEEK }}-
     - name: Build colonists-shared
       run: docker build --tag colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-shared
     - name: Build colonists-server
