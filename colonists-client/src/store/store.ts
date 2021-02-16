@@ -29,7 +29,7 @@ const actionTree: ActionTree<unknown, unknown> = {
     const { data }: { data: string } = await Axios.get(`${host}newgame`);
     const gameId = data;
 
-    const socket = io(`${host}${gameId}`);
+    const socket = io(`${host}${gameId}`, { transports: ['websocket'] });
     socket.emit('join', playerName);
     SocketConnection.socket = socket;
 
