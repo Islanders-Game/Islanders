@@ -10,7 +10,7 @@ jobs:
     - name: Set weekly cache expiration
       run: echo "WEEK=$(date +%W)" >> $GITHUB_ENV
     - uses: satackey/action-docker-layer-caching@v0.0.11
-      continue-on-error: false
+      continue-on-error: true
       with:
         key: ${{ github.workflow }}-${{ env.WEEK }}-{hash}
         restore-keys: |
