@@ -323,9 +323,8 @@ export const assignDevelopmentCard = (playerName: string) => (w: World): Result 
   const player = w.players.find((pl) => pl.name === playerName);
   if (!player) return fail(`The player ${playerName} was not found!`);
   const newCards = player.devCards.concat(randomCard);
-  const victoryPointCards = newCards.filter((c: DevelopmentCard) => c.type === 'Victory Point').length;
   const players = w.players.map((pl) => (pl.name === playerName ? {
-    ...pl, points: pl.points + victoryPointCards, devCards: newCards,
+    ...pl, devCards: newCards,
   } : pl));
   return success({
     ...w, players,
@@ -351,12 +350,7 @@ export const playCard = (
   toPlay.played = true;
 
   if (card.type === 'Victory Point') {
-    const players = w.players.map((pl) => (pl.name === playerName ? {
-      ...pl, points: pl.points + 1, devCards,
-    } : pl));
-    return success({
-      ...w, players,
-    });
+    return increasePointsForPlayer(playerName)(w);
   }
   if (card.type === 'Knight') {
     const players = w.players.map((pl) => (pl.name === playerName ? {
@@ -394,18 +388,20 @@ export const playCard = (
     });
   }
   if (card.type === 'Monopoly') {
-    const { resources } = player;
-    const allResources = w.players.reduce((acc, p) => acc.concat(p.resources), [] as Resources[]);
-    const chosen = chosenResources as [TileType];
-    const toTake = allResources.reduce((acc, rr) => acc + getResourceAmountOfType(chosen[0], rr), 0);
-    const added = addAmountToResourceOfType(toTake, resources, chosen[0]);
+    const allOthersResources = w.players
+      .filter((p) => p.name !== playerName)
+      .reduce((acc, p) => acc.concat(p.resources), [] as Resources[]);
+    const chosenType = chosenResources as [TileType];
+    const toReceive = allOthersResources
+      .reduce((acc, rr) => acc + getResourceAmountOfType(chosenType[0], rr), 0);
+    const added = addAmountToResourceOfType(toReceive, player.resources, chosenType[0]);
     const players = w.players.map((pl) =>
       pl.name === playerName
         ? {
           ...pl, resources: added,
         }
         : {
-          ...pl, resources: deleteAllResourcesOfType(chosen[0], pl.resources),
+          ...pl, resources: deleteAllResourcesOfType(chosenType[0], pl.resources),
         });
     return success({
       ...w, players,
@@ -432,33 +428,20 @@ export const getResourceAmountOfType = (type: TileType, rs: Resources): number =
 };
 
 export const addAmountToResourceOfType = (amount: number, rs: Resources, type: TileType): Resources => {
-  const toAdd: Resources = {
-    wood: 0,
-    grain: 0,
-    stone: 0,
-    wool: 0,
-    clay: 0,
-  };
   switch (type) {
     case 'Wood':
-      toAdd.wood += amount;
-      break;
+      return { ...rs, wood: amount };
     case 'Wool':
-      toAdd.wool += amount;
-      break;
+      return { ...rs, wool: amount };
     case 'Clay':
-      toAdd.clay += amount;
-      break;
+      return { ...rs, clay: amount };
     case 'Grain':
-      toAdd.grain += amount;
-      break;
+      return { ...rs, grain: amount };
     case 'Stone':
-      toAdd.stone += amount;
-      break;
+      return { ...rs, stone: amount };
     default:
       return rs;
   }
-  return addResources(toAdd, rs);
 };
 
 export const deleteAllResourcesOfType = (type: TileType, rs: Resources): Resources => {

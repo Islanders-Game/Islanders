@@ -11,45 +11,15 @@
           <v-row>
             <v-col sm="6">
               <v-card
-                :disabled="devCardsOfType('Road Building') === 0"
-                class="development-card"
-                @click="selectedCard('Road Building')"
-              >
-                <v-card-title class="subtitle-2">Road Building</v-card-title>
-                <v-card-text>Place 2 new roads as if you just built them.</v-card-text>
-              </v-card>
-            </v-col>
-            <v-col sm="6">
-              <v-card
-                :disabled="devCardsOfType('Year of Plenty') === 0"
-                class="development-card"
-                @click="selectedCard('Year of Plenty')"
-              >
-                <v-card-title class="subtitle-2">Year of Plenty</v-card-title>
-                <v-card-text>Take any 2 resources from the bank.</v-card-text>
-                <v-combobox
-                  v-show="currentlySelectedCard === 'Year of Plenty'"
-                  v-model="chosenResources"
-                  :items="resourceTypes"
-                  small-chips
-                  dense
-                  label="Choose resource types"
-                  hint="Maximum of 2 resource types"
-                  outlined
-                  multiple
-                  type="number"
-                />
-              </v-card>
-            </v-col>
-          </v-row>
-          <v-row>
-            <v-col sm="6">
-              <v-card
-                :disabled="devCardsOfType('Monopoly') === 0"
+                :disabled="devCardsOfType('Monopoly', true) === 0"
                 class="development-card"
                 @click="selectedCard('Monopoly')"
               >
-                <v-card-title class="subtitle-2">Monopoly</v-card-title>
+                <v-card-title class="subtitle-2">
+                  Monopoly
+                  <v-spacer />
+                  <v-chip right outlined label small>{{ devCardsOfType('Monopoly', true) }}x</v-chip>
+                </v-card-title>
                 <v-card-text>Take all of a chosen resource from all players.</v-card-text>
                 <v-combobox
                   v-show="currentlySelectedCard === 'Monopoly'"
@@ -67,11 +37,71 @@
             </v-col>
             <v-col sm="6">
               <v-card
-                :disabled="devCardsOfType('Knight') === 0"
+                :disabled="devCardsOfType('Year of Plenty', true) === 0"
+                class="development-card"
+                @click="selectedCard('Year of Plenty')"
+              >
+                <v-card-title class="subtitle-2">
+                  Year of Plenty
+                  <v-spacer />
+                  <v-chip right outlined label small>{{ devCardsOfType('Year of Plenty', true) }}x</v-chip>
+                </v-card-title>
+                <v-card-text>Take any 2 resources from the bank.</v-card-text>
+                <v-combobox
+                  v-show="currentlySelectedCard === 'Year of Plenty'"
+                  v-model="chosenResources"
+                  :items="resourceTypes"
+                  small-chips
+                  dense
+                  label="Choose resource types"
+                  hint="Maximum of 2 resource types"
+                  outlined
+                  multiple
+                  type="number"
+                />
+              </v-card>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col sm="4">
+              <v-card
+                :disabled="devCardsOfType('Road Building', true) === 0"
+                class="development-card"
+                @click="selectedCard('Road Building')"
+              >
+                <v-card-title class="subtitle-2">
+                  Road Building
+                  <v-spacer />
+                  <v-chip right outlined label small>{{ devCardsOfType('Road Building', true) }}x</v-chip>
+                </v-card-title>
+                <v-card-text>Place 2 new roads as if you just built them.</v-card-text>
+              </v-card>
+            </v-col>
+            <v-col sm="4">
+              <v-card
+                :disabled="devCardsOfType('Victory Point', true) === 0"
+                class="development-card"
+                @click="selectedCard('Victory Point')"
+              >
+                <v-card-title class="subtitle-2">
+                  Victory Point
+                  <v-spacer />
+                  <v-chip right outlined label small>{{ devCardsOfType('Victory Point', true) }}x</v-chip>
+                </v-card-title>
+                <v-card-text>Gain a Victory Point.</v-card-text>
+              </v-card>
+            </v-col>
+            <v-col sm="4">
+              <v-card
+                :disabled="devCardsOfType('Knight', true) === 0"
                 class="development-card"
                 @click="selectedCard('Knight')"
               >
-                <v-card-title class="subtitle-2">Knight</v-card-title>
+                <v-card-title class="subtitle-2">
+                  Knight
+                  <v-spacer />
+                  <v-chip right outlined label small>{{ devCardsOfType('Knight', true) }}x</v-chip>
+                </v-card-title>
                 <v-card-text>Move the thief and take 2 cards from another player.</v-card-text>
               </v-card>
             </v-col>
@@ -91,14 +121,14 @@
     <v-row class="fill-height">
       <v-col sm="2">
         <v-card
-          :dark="isCurrentTurn ? false : true"
+          :dark="!isCurrentTurn"
           outlined
           class="fill-height"
         >
           <v-list-item three-line>
             <v-list-item-content>
               <div class="overline">
-                You
+                You<span v-if="isCurrentTurn">r turn</span>
               </div>
               <v-list-item-title class="headline">
                 {{ playerName }}
@@ -505,10 +535,13 @@ export default class Player extends Vue {
     return player.devCards.length;
   }
 
-  public devCardsOfType (type: DevelopmentCardType): number {
-    const { player } = this;
-    if (!player) {
+  public devCardsOfType (type: DevelopmentCardType, shouldFilterPlayed?: boolean): number {
+    const player: PlayerState = this.$store.getters['game/getCurrentPlayer'];
+    if (!player || !player.devCards) {
       return 0;
+    }
+    if (shouldFilterPlayed) {
+      return player.devCards.filter((x) => x.type === type && !x.played).length;
     }
     return player.devCards.filter((x) => x.type === type).length;
   }
@@ -585,8 +618,7 @@ export default class Player extends Vue {
         this.$store.dispatch('game/sendAction',
           new PlayCardAction(this.playerName, card, chosen));
       } else if (this.chosenResources.length === 1) {
-        const chosen = this.chosenResources as [TileType]
-        const asTwoResources = chosen.concat(chosen) as [TileType, TileType]
+        const asTwoResources: [TileType, TileType] = [this.chosenResources[0], this.chosenResources[0]]
         this.$store.dispatch('game/sendAction',
           new PlayCardAction(this.playerName, card, asTwoResources));
       }
@@ -595,9 +627,10 @@ export default class Player extends Vue {
         new PlayCardAction(this.playerName, card, this.chosenResources as [TileType, TileType]));
     } else {
       this.$store.dispatch('game/sendAction',
-        new PlayCardAction(this.playerName, card, undefined));
+        new PlayCardAction(this.playerName, card));
     }
     this.showDevelopmentCardPicker = false
+    this.currentlySelectedCard = 'None'
   }
 
   @Watch('chosenResources')

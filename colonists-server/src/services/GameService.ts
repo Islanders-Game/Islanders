@@ -83,7 +83,7 @@ export class GameService {
     const toApply = GameService.mapRules([action]);
     const result = await this.gameRepository.getWorld(id);
     const apply = toApply.reduce(ruleReducer, result);
-    return apply.flatMapAsync(async (w: World) => this.gameRepository.updateGame(id, w));
+    return apply.flatMapAsync((w: World) => this.gameRepository.updateGame(id, w));
   }
 
   private static mapRules(actions: Action[]): Rule[] {

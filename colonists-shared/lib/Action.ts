@@ -206,7 +206,7 @@ export class PlayCardAction {
   constructor(
     playerName: string,
     card: DevelopmentCard,
-    chosenResources?: undefined | [TileType] | [TileType, TileType],
+    chosenResources?: [TileType] | [TileType, TileType],
   ) {
     this.parameters = {
       playerName, card, chosenResources,
