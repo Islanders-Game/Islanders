@@ -1,6 +1,7 @@
 # Library
 ARG BRANCH_TAG=latest
-FROM colonists/colonists-shared:${BRANCH_TAG} as library
+ARG LOCAL_REGISTRY=
+FROM ${LOCAL_REGISTRY}colonists/colonists-shared:${BRANCH_TAG} as library
 
 # Cache
 FROM node:alpine as dependency-cache-client

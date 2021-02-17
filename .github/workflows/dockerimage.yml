@@ -3,15 +3,68 @@ name: Docker Image CI
 on: [push]
 
 jobs:
-  build:
+  build_test_project:
     runs-on: ubuntu-latest
+    services:
+      registry:
+        image: registry:2
+        ports:
+          - 5000:5000
     steps:
     - uses: actions/checkout@v2
-    - name: Build colonists-shared
-      run: docker build --tag colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-shared
-    - name: Build colonists-server
-      run: docker build --tag colonists/colonists-server:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-server
-    - name: Build colonists-client
-      run: docker build --tag colonists/colonists-client:$(git log --pretty=format:'%h' -n 1) --build-arg BRANCH_TAG=$(git log --pretty=format:'%h' -n 1) ./colonists-client
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v1
+      with:
+          driver-opts: network=host
+    - name: Set colonists-shared cache
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache-shared
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+    - name: Set colonists-server cache
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache-server
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+    - name: Set colonists-client cache
+      uses: actions/cache@v2
+      with:
+        path: /tmp/.buildx-cache-client
+        key: ${{ runner.os }}-buildx-${{ github.sha }}
+        restore-keys: |
+          ${{ runner.os }}-buildx-
+    - name: Build shared
+      uses: docker/build-push-action@v2
+      with:
+        push: true
+        tags: localhost:5000/colonists/colonists-shared
+        cache-from: type=local,src=/tmp/.buildx-cache-shared
+        cache-to: type=local,dest=/tmp/.buildx-cache-shared
+        context: ./colonists-shared
     - name: Run shared tests
-      run: docker run --rm colonists/colonists-shared:$(git log --pretty=format:'%h' -n 1)
+      run: docker run --rm localhost:5000/colonists/colonists-shared
+    - name: Build server
+      uses: docker/build-push-action@v2
+      with:
+        push: false
+        tags: colonists/colonists-server
+        cache-from: type=local,src=/tmp/.buildx-cache-server
+        cache-to: type=local,dest=/tmp/.buildx-cache-server
+        context: ./colonists-server
+        build-args: |
+          "LOCAL_REGISTRY=localhost:5000/"
+    - name: Build client
+      uses: docker/build-push-action@v2
+      with:
+        push: false
+        tags: colonists/colonists-client
+        cache-from: type=local,src=/tmp/.buildx-cache-client
+        cache-to: type=local,dest=/tmp/.buildx-cache-client
+        context: ./colonists-client
+        build-args: |
+          "LOCAL_REGISTRY=localhost:5000/"
+        
