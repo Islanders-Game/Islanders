@@ -40,10 +40,6 @@ export class World implements World {
     this.gameStatistics = new GameStatistics();
     this.thief = undefined;
     this.version = 0;
-    this.conditions = {
-      playedKnight: undefined,
-      rolledASeven: undefined,
-      playedRoadBuilding: undefined,
-    };
+    this.conditions = { };
   }
 }
