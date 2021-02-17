@@ -13,7 +13,7 @@ import { Road } from './Entities/Road';
 import { House } from './Entities/House';
 import { City } from './Entities/City';
 import { Purchaseable } from './Entities/Purchaseable';
-import { Tile, TileType, DiceRollType } from './Tile';
+import { Tile, TileType, DiceRoll } from './Tile';
 import { World, GameState } from './World';
 import { GameRules } from './GameRules';
 import { GameStatistics } from './GameStatistics';
@@ -43,7 +43,7 @@ export {
   Road,
   Tile,
   TileType,
-  DiceRollType,
+  DiceRoll,
   Result,
   World,
   GameRules,

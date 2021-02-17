@@ -454,7 +454,7 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import { DiceRollType, Player as PlayerState, TileType } from '../../../colonists-shared/dist/Shared';
+import { DiceRoll, Player as PlayerState, TileType } from '../../../colonists-shared/dist/Shared';
 import Trade from './Trade.vue';
 import { EndTurnAction, BuyCardAction, UndoAction, PlayCardAction } from '../../../colonists-shared/dist/Action';
 import { DevelopmentCardType } from '../../../colonists-shared/dist/Entities/DevelopmentCard';
@@ -476,7 +476,7 @@ export default class Player extends Vue {
   }
 
   public setIsMovingThief (): void {
-    if ((this.$store.state.game.world.currentDie as DiceRollType) === 7) {
+    if ((this.$store.state.game.world.currentDie as DiceRoll) === 7) {
       this.$store.commit('ui/setIsMovingThief', true);
     }
   }
