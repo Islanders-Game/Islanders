@@ -19,6 +19,7 @@ describe('Rules for ending a turn', () => {
       gameState: 'Started',
       gameStatistics: new GameStatistics(),
       version: 0,
+      conditions: {},
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -30,23 +31,23 @@ describe('Rules for ending a turn', () => {
     };
 
     const initialResult = success(w);
-    const rule1 = rules.EndTurn(new EndTurnAction('P1'));
-    const applied1 = rule1(initialResult);
+    const endTurnRule = rules.EndTurn(new EndTurnAction('P1'));
+    const firstApplication = endTurnRule(initialResult);
 
-    expect(applied1).not.toHaveProperty('reason');
-    applied1.flatMap((w) => {
+    firstApplication.flatMap((w) => {
       expect(w.currentPlayer === 1)
+      // Avoid rolling a 7 and the implications of that for the next application
+      w.currentDie = 2;
       return success(w);
     });
 
-    const rule2 = rules.EndTurn(new EndTurnAction('P2'));
-    const applied2 = rule2(applied1);
+    const secondEndTurnRule = rules.EndTurn(new EndTurnAction('P2'));
+    const secondApplication = secondEndTurnRule(firstApplication);
 
-    expect(applied2).not.toHaveProperty('reason');
-    applied2.flatMap((w) => {
+    secondApplication.flatMap((w) => {
       expect(w.currentPlayer === 0)
       return success(w);
-    });
+    })
   });
 
   test('A player ending their turn when it is not their turn is not allowed', () => {
@@ -62,6 +63,7 @@ describe('Rules for ending a turn', () => {
       gameState: 'Started',
       gameStatistics: new GameStatistics(),
       version: 0,
+      conditions: {},
       gameRules: {
         gameType: 'original',
         maxCities: 0,

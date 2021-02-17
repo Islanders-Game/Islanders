@@ -2,9 +2,9 @@
 * Development cards
 */
 
-import { BuyCardAction, PlayCardAction } from "../lib/Action";
+import { BuildRoadAction, BuyCardAction, EndTurnAction, PlayCardAction } from "../lib/Action";
 import { DevelopmentCard } from "../lib/Entities/DevelopmentCard";
-import { GameStatistics, Player, Resources, success, World, rules, Result, Success } from "../lib/Shared";
+import { GameStatistics, Player, Resources, success, World, rules, Result, Success, House } from "../lib/Shared";
 
 describe('Rules when playing development cards', () => {
   
@@ -22,6 +22,7 @@ describe('Rules when playing development cards', () => {
         gameState: 'Started',
         gameStatistics: new GameStatistics(),
         version: 0,
+        conditions: {},
         gameRules: {
           gameType: 'original',
           maxCities: 0,
@@ -71,6 +72,7 @@ describe('Rules when playing development cards', () => {
         thief: {hexCoordinate: {x: 0, y: 0}},
         gameStatistics: new GameStatistics(),
         version: 0,
+        conditions: {},
         gameRules: {
           gameType: 'original',
           maxCities: 0,
@@ -104,6 +106,7 @@ describe('Rules when playing development cards', () => {
         thief: {hexCoordinate: {x: 0, y: 0}},
         gameStatistics: new GameStatistics(),
         version: 0,
+        conditions: {},
         gameRules: {
           gameType: 'original',
           maxCities: 0,
@@ -137,6 +140,7 @@ describe('Rules when playing development cards', () => {
         thief: {hexCoordinate: {x: 0, y: 0}},
         gameStatistics: new GameStatistics(),
         version: 0,
+        conditions: {},
         gameRules: {
           gameType: 'original',
           maxCities: 0,
@@ -168,6 +172,7 @@ describe('Rules when playing development cards', () => {
         gameState: 'Started',
         thief: {hexCoordinate: {x: 0, y: 0}},
         gameStatistics: new GameStatistics(),
+        conditions: {},
         version: 0,
         gameRules: {
           gameType: 'original',
@@ -202,6 +207,7 @@ describe('Rules when playing development cards', () => {
         gameState: 'Started',
         thief: {hexCoordinate: {x: 0, y: 0}},
         gameStatistics: new GameStatistics(),
+        conditions: {},
         version: 0,
         gameRules: {
           gameType: 'original',
@@ -245,6 +251,7 @@ describe('Rules when playing development cards', () => {
         thief: {hexCoordinate: {x: 0, y: 0}},
         gameStatistics: new GameStatistics(),
         version: 0,
+        conditions: {},
         gameRules: {
           gameType: 'original',
           maxCities: 0,
@@ -288,6 +295,7 @@ describe('Rules when playing development cards', () => {
         thief: {hexCoordinate: {x: 0, y: 0}},
         gameStatistics: new GameStatistics(),
         version: 0,
+        conditions: {},
         gameRules: {
           gameType: 'original',
           maxCities: 0,
@@ -326,6 +334,7 @@ describe('Rules when playing development cards', () => {
         thief: {hexCoordinate: {x: 0, y: 0}},
         gameStatistics: new GameStatistics(),
         version: 0,
+        conditions: {},
         gameRules: {
           gameType: 'original',
           maxCities: 0,
@@ -340,10 +349,135 @@ describe('Rules when playing development cards', () => {
       const rule = rules.PlayCard(new PlayCardAction('P1', devCard));
       const applied = rule(initial);
       applied.flatMap(w => {
+        expect(w.players.every(p => p.resources.wood === 0));
+        expect(w.players.every(p => p.resources.clay === 0));
+        expect(w.conditions.playedRoadBuilding?.expected === 2);
+        return success(w);
+      });
+    });
+
+    test('A player playing a "Road Building" card and ending their turn without building two roads is not allowed', () => {
+      const resources: Resources = { wool: 0, wood: 0, stone: 0, clay: 0, grain: 0};
+      const p1: Player = new Player('P1');
+      const devCard: DevelopmentCard = {cost: {grain: 1, stone: 1, wool: 1, wood: 0, clay: 0}, played: false, type: 'Road Building'} as DevelopmentCard;
+      p1.devCards = [devCard];
+      p1.resources = resources;
+  
+      const w: World = {
+        currentDie: 7,
+        currentPlayer: 0,
+        map: [],
+        players: [p1],
+        winner: undefined,
+        pointsToWin: 0,
+        gameState: 'Started',
+        thief: {hexCoordinate: {x: 0, y: 0}},
+        gameStatistics: new GameStatistics(),
+        version: 0,
+        conditions: {},
+        gameRules: {
+          gameType: 'original',
+          maxCities: 0,
+          maxHouses: 0,
+          maxRoads: 0,
+          pointsToWin: 0,
+          rounds: 0,
+        },
+      };
+  
+      const initial = success(w);
+      const playRule = rules.PlayCard(new PlayCardAction('P1', devCard));
+      const endRule = rules.EndTurn(new EndTurnAction('P1'));
+      const applied = playRule(initial);
+      applied.flatMap(w => {
         expect(w.players.every(p => p.resources.wood === 2));
         expect(w.players.every(p => p.resources.clay === 2));
         return success(w);
       });
+      
+      const endApplied = endRule(applied);
+      expect(endApplied).toHaveProperty('reason');
+    });
+
+    test('A player playing a "Road Building" card and ending their turn after building one roads is not allowed', () => {
+      const resources: Resources = { wool: 0, wood: 0, stone: 0, clay: 0, grain: 0};
+      const p1: Player = new Player('P1');
+      const devCard: DevelopmentCard = {cost: {grain: 1, stone: 1, wool: 1, wood: 0, clay: 0}, played: false, type: 'Road Building'} as DevelopmentCard;
+      p1.devCards = [devCard];
+      p1.resources = resources;
+  
+      const w: World = {
+        currentDie: 7,
+        currentPlayer: 0,
+        map: [],
+        players: [p1],
+        winner: undefined,
+        pointsToWin: 0,
+        gameState: 'Started',
+        thief: {hexCoordinate: {x: 0, y: 0}},
+        gameStatistics: new GameStatistics(),
+        version: 0,
+        conditions: {},
+        gameRules: {
+          gameType: 'original',
+          maxCities: 0,
+          maxHouses: 0,
+          maxRoads: 0,
+          pointsToWin: 0,
+          rounds: 0,
+        },
+      };
+  
+      const initial = success(w);
+      const playRule = rules.PlayCard(new PlayCardAction('P1', devCard));
+      const buildRule = rules.BuildRoad(new BuildRoadAction('P1', { x: 0, y: 0 }, { x: 0, y: 1 } ));
+      const endRule = rules.EndTurn(new EndTurnAction('P1'));
+      const playApplied = playRule(initial);
+      const buildApplied = buildRule(playApplied);
+      const endApplied = endRule(buildApplied);
+      expect(endApplied).toHaveProperty('reason');
+    });
+
+    test('A player playing a "Road Building" card and ending their turn after building two roads is allowed', () => {
+      const resources: Resources = { wool: 0, wood: 0, stone: 0, clay: 0, grain: 0};
+      const p1: Player = new Player('P1');
+      const devCard: DevelopmentCard = {cost: {grain: 1, stone: 1, wool: 1, wood: 0, clay: 0}, played: false, type: 'Road Building'} as DevelopmentCard;
+      p1.devCards = [devCard];
+      p1.resources = resources;
+      p1.houses = [new House({ x: 0, y: 0 })]
+  
+      const w: World = {
+        currentDie: 7,
+        currentPlayer: 0,
+        map: [],
+        players: [p1],
+        winner: undefined,
+        pointsToWin: 0,
+        gameState: 'Started',
+        thief: {hexCoordinate: {x: 0, y: 0}},
+        gameStatistics: new GameStatistics(),
+        version: 0,
+        conditions: {},
+        gameRules: {
+          gameType: 'original',
+          maxCities: 0,
+          maxHouses: 0,
+          maxRoads: 0,
+          pointsToWin: 0,
+          rounds: 0,
+        },
+      };
+  
+      const initial = success(w);
+      const playRule = rules.PlayCard(new PlayCardAction('P1', devCard));
+      const buildRule1 = rules.BuildRoad(new BuildRoadAction('P1', { x: 0, y: 0 }, { x: 1, y: 1 } ));
+      const buildRule2 = rules.BuildRoad(new BuildRoadAction('P1', { x: 1, y: 1 }, { x: 2, y: 2 } ));
+      const endRule = rules.EndTurn(new EndTurnAction('P1'));
+      const playApplied = playRule(initial);
+      const build1Applied = buildRule1(playApplied);
+      const build2Applied = buildRule2(build1Applied);
+      const endApplied = endRule(build2Applied);
+      expect(endApplied).not.toHaveProperty('reason');
     });
   
     test('A player playing a "Year of Plenty" card will then have two resources of the chosen type after choosing', () => {
@@ -364,6 +498,7 @@ describe('Rules when playing development cards', () => {
         thief: {hexCoordinate: {x: 0, y: 0}},
         gameStatistics: new GameStatistics(),
         version: 0,
+        conditions: {},
         gameRules: {
           gameType: 'original',
           maxCities: 0,

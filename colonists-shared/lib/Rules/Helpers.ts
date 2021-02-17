@@ -16,6 +16,7 @@ import { Player } from '../Player';
 import { addResources } from '../Resources';
 import { DevelopmentCard } from '../Entities/DevelopmentCard';
 import { TileRessource } from './TileRessource';
+import { Conditions } from '../TurnCondition';
 
 export const numberOfResourcesForPlayer = (houses: House[], tile: Tile): number =>
   houses.reduce((state: number, curr: House) => {
@@ -146,7 +147,9 @@ export const setAmountOfResourceOfType = (amount: number, rs: Resources, type: T
 export const purchase = (cost: Resources) => (playerName: string) => (w: World): Result => {
   const player = w.players.find((pl) => pl.name === playerName);
   if (!player) return fail(`The player ${playerName} was not found`);
-  const resources = subtractResources(player.resources, cost);
+  const resources = w.conditions.playedRoadBuilding
+    ? player.resources
+    : subtractResources(player.resources, cost);
   if (!resourcesAreNonNegative(resources)) {
     return fail('You cannot afford this');
   }
@@ -262,12 +265,21 @@ export const placeRoad = (start: MatrixCoordinate, end: MatrixCoordinate) => (pl
   if (!canPlace) {
     return fail('You cannot place a road here');
   }
+
+  const conditionIncreased: Conditions = w.conditions.playedRoadBuilding
+    ? { ...w.conditions,
+      playedRoadBuilding: { ...w.conditions.playedRoadBuilding,
+        roadsBuilt: w.conditions.playedRoadBuilding.roadsBuilt + 1 } }
+    : w.conditions;
   const roads = player.roads.concat([new Road(start, end)]);
   const players = w.players.map((pl) => (pl.name === playerName ? {
-    ...pl, roads,
+    ...pl,
+    roads,
   } : pl));
   return success({
-    ...w, players,
+    ...w,
+    players,
+    conditions: conditionIncreased,
   });
 };
 
@@ -315,13 +327,24 @@ export const diceRollWasSeven = (w: World): Result => {
   return fail('You cannot move the Thief if you have not rolled a 7');
 };
 
-export const moveThief = (coords: HexCoordinate) => (w: World): Result =>
-  success({
-    ...w,
-    thief: {
-      hexCoordinate: coords,
-    },
-    lastThiefPosition: {
-      hexCoordinate: coords,
-    },
-  });
+export const moveThiefUsingKnight = (coords: HexCoordinate) => (w: World): Result =>
+  (w.conditions.playedKnight?.movedThief)
+    ? fail('You cannot move the thief twice')
+    : success({
+      ...w,
+      thief: {
+        hexCoordinate: coords,
+      },
+      conditions: { ...w.conditions, playedKnight: { stoleFromPlayer: false, movedThief: true } },
+    });
+
+export const moveThiefUsingDiceRoll = (coords: HexCoordinate) => (w: World): Result =>
+  (w.conditions.rolledASeven?.movedThief)
+    ? fail('You cannot move the thief twice')
+    : success({
+      ...w,
+      thief: {
+        hexCoordinate: coords,
+      },
+      conditions: { ...w.conditions, rolledASeven: { movedThief: true } },
+    });

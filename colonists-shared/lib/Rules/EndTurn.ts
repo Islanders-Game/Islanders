@@ -3,16 +3,18 @@ import { Result, success, fail } from './Result';
 import { World } from '../World';
 import { findPlayer, assignNextPlayerTurn, assignRessourcesToPlayers } from './Helpers';
 import { GameState, Tile } from '../Shared';
+import { TurnCondition } from '../TurnCondition';
 
 export const EndTurn = ({ parameters }: EndTurnAction) => (
   world: Result,
 ): Result =>
   world
     .flatMap(findPlayer(parameters.playerName))
-    .flatMap(verifyThief)
+    .flatMap(verifyTurnConditions)
     .flatMap(assignNextPlayerTurn)
     .flatMap(stateChanger)
-    .flatMap(checkVictory(parameters.playerName));
+    .flatMap(checkVictory(parameters.playerName))
+    .flatMap(setTurnConditions);
 
 const checkVictory = (playerName: string) => (w: World) => {
   const winner = w.players.find(
@@ -21,15 +23,6 @@ const checkVictory = (playerName: string) => (w: World) => {
   return winner ? success({
     ...w, winner, gameState: 'Finished',
   }) : success(w);
-};
-
-const verifyThief = (w: World) => {
-  if (w.currentDie !== 7) return success(w);
-  if (!w.thief && w.lastThiefPosition) return fail('You have to move the Thief this turn');
-  if (w.thief && w.lastThiefPosition && w.thief.hexCoordinate !== w.lastThiefPosition.hexCoordinate) {
-    return fail('You have to move the Thief this turn');
-  }
-  return success(w);
 };
 
 const stateChanger = (w: World): Result => {
@@ -44,6 +37,32 @@ const stateChanger = (w: World): Result => {
     return success({
       ...w, gameState, players,
     });
+  }
+  return success(w);
+};
+
+const setTurnConditions = (w: World): Result =>
+  w.currentDie === 7
+    ? success({ ...w, conditions: { rolledASeven: { movedThief: false } } })
+    : success({ ...w, conditions: { } });
+
+const verifyTurnConditions = (w: World): Result => {
+  if (w.conditions.playedRoadBuilding) {
+    const { roadsBuilt } = w.conditions.playedRoadBuilding;
+    const { expected } = w.conditions.playedRoadBuilding;
+    if (roadsBuilt < expected) {
+      return fail('You need to build the roads you gained from Road Building');
+    }
+  }
+  if (w.conditions.playedKnight) {
+    const { movedThief } = w.conditions.playedKnight;
+    const { stoleFromPlayer } = w.conditions.playedKnight;
+    if (!movedThief) return fail('You need to move the thief');
+    if (!stoleFromPlayer) return fail('You need to take from a player with a house surrounding the thief');
+  }
+  if (w.conditions.rolledASeven) {
+    const { movedThief } = w.conditions.rolledASeven;
+    if (!movedThief) return fail('You need to move the thief');
   }
   return success(w);
 };

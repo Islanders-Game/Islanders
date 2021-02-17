@@ -72,6 +72,7 @@ const clayOnlyResource = (amount: number) => {
         gameState: 'Uninitialized',
         pointsToWin: 0,
         version: 0,
+        conditions: {},
         gameRules: {
           gameType: 'original',
           maxCities: 0,
@@ -102,6 +103,7 @@ const clayOnlyResource = (amount: number) => {
         gameState: 'Uninitialized',
         gameStatistics: new GameStatistics(),
         version: 0,
+        conditions: {},
         gameRules: {
           gameType: 'original',
           maxCities: 0,
