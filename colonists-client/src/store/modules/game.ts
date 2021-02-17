@@ -100,8 +100,15 @@ const actions: ActionTree<State, RootState> = {
         .flatMap((world: World) => {
           commit('setWorld', world);
           if (world.conditions?.playedKnight) commit('ui/setIsPlayingKnight', true, { root: true })
-          if (world.conditions?.playedRoadBuilding) commit('ui/setIsPlayingRoadBuilding', true, { root: true })
-          if (world.conditions?.playedRoadBuilding) commit('ui/setIsBuilding', 'Road', { root: true })
+          const { roadsBuilt } = world.conditions?.playedRoadBuilding;
+          const { expected } = world.conditions?.playedRoadBuilding;
+          if (expected && roadsBuilt && expected < roadsBuilt) {
+            if (world.conditions?.playedRoadBuilding) commit('ui/setIsPlayingRoadBuilding', true, { root: true })
+            if (world.conditions?.playedRoadBuilding) commit('ui/setIsBuilding', 'Road', { root: true })
+          } else {
+            commit('ui/setIsPlayingRoadBuilding', false, { root: true })
+            commit('ui/setIsBuilding', 'None', { root: true })
+          }
           return success(world);
         })
         .onFailure((r) => {
