@@ -2,7 +2,7 @@ import { Result } from '../Shared';
 import { MoveThiefAction } from '../Action';
 import { diceRollWasSeven,
   ensureGameState,
-  moveThief,
+  moveThiefUsingDiceRoll,
   findPlayer } from './Helpers';
 
 export const MoveThief = ({ parameters }: MoveThiefAction) => (
@@ -11,4 +11,4 @@ export const MoveThief = ({ parameters }: MoveThiefAction) => (
   .flatMap(ensureGameState('Started'))
   .flatMap(findPlayer(parameters.playerName))
   .flatMap(diceRollWasSeven)
-  .flatMap(moveThief(parameters.coordinates));
+  .flatMap(moveThiefUsingDiceRoll(parameters.coordinates));

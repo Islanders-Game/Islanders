@@ -19,6 +19,7 @@ describe('Rules for ending a turn', () => {
       gameState: 'Started',
       gameStatistics: new GameStatistics(),
       version: 0,
+      conditions: {},
       gameRules: {
         gameType: 'original',
         maxCities: 0,
@@ -62,6 +63,7 @@ describe('Rules for ending a turn', () => {
       gameState: 'Started',
       gameStatistics: new GameStatistics(),
       version: 0,
+      conditions: {},
       gameRules: {
         gameType: 'original',
         maxCities: 0,

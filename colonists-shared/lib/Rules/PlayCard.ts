@@ -23,17 +23,17 @@ const playCard = (
   card: DevelopmentCard,
   chosenResources?: [TileType] | [TileType, TileType],
 ) => (w: World): Result => {
-  // Nasty... Couldn't see any other way.
-  // Clone existing card array, modify card played state.
   const player = w.players.find((p) => p.name === playerName);
   if (!player) return fail(`The player ${playerName} was not found`);
+  // Nasty... Couldn't see any other way.
+  // Clone existing card array, modify card played state.
   const devCards = player.devCards.slice();
   const toPlay = devCards.find((c) => c.type === card.type && !c.played);
   if (!toPlay) {
     return fail('You do not have that card');
   }
 
-  // Side effect!
+  // WARN: Side effect!
   toPlay.played = true;
 
   if (card.type === 'Victory Point') {
@@ -44,20 +44,29 @@ const playCard = (
       ...pl, knights: pl.knights + 1, devCards,
     } : pl));
     return success({
-      ...w, players,
+      ...w, players, conditions: { ...w.conditions, playedKnight: { movedThief: false, stoleFromPlayer: false } },
     });
   }
   if (card.type === 'Road Building') {
     const { resources } = player;
     const roadCost = new Road().cost;
-    const withTwoExtraRoads = addResources(addResources(resources, roadCost), roadCost);
     const players = w.players.map((pl) =>
       pl.name === playerName ? {
-        ...pl, resources: withTwoExtraRoads, devCards,
+        ...pl,
+        devCards,
       } : pl);
-    return success({
-      ...w, players,
+    const intermediate = success({
+      ...w,
+      players,
+      conditions:
+      { ...w.conditions,
+        playedRoadBuilding: { roadsBuilt: 0,
+          expected:
+          w.conditions.playedRoadBuilding
+            ? w.conditions.playedRoadBuilding.expected + 2
+            : 2 } },
     });
+    return intermediate;
   }
   if (card.type === 'Year of Plenty') {
     const chosen = chosenResources as [TileType, TileType];
