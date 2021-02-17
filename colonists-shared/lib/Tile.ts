@@ -16,7 +16,7 @@ export type TileType =
   | 'Desert'
   | 'Ocean'
   | HarborType;
-export type DiceRollType =
+export type DiceRoll =
   | 'None'
   | 2
   | 3
@@ -43,6 +43,6 @@ export type GeneratorDiceRollType =
   | 12;
 export interface Tile {
   type: TileType;
-  diceRoll: DiceRollType;
+  diceRoll: DiceRoll;
   coord: HexCoordinate;
 }

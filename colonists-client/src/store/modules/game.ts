@@ -8,7 +8,7 @@ import {
   Result,
   Tile,
   Action,
-  DiceRollType,
+  DiceRoll,
   GameState,
   success,
   toResultInstance,
@@ -49,7 +49,7 @@ const getters: GetterTree<State, unknown> = {
     }
     return state.world.players[state.world.currentPlayer];
   },
-  getCurrentDie(state: State): DiceRollType {
+  getCurrentDie(state: State): DiceRoll {
     if (!state.world) {
       return undefined;
     }

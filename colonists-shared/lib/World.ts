@@ -1,6 +1,6 @@
 import { Player } from './Player';
 import { Thief } from './Thief';
-import { Tile, DiceRollType } from './Tile';
+import { Tile, DiceRoll } from './Tile';
 import { GameRules } from './GameRules';
 import { GameStatistics } from './GameStatistics';
 
@@ -8,7 +8,7 @@ export type GameState = 'Uninitialized' | 'Pregame' | 'Started' | 'Finished';
 
 export interface World {
   currentPlayer: number;
-  currentDie: DiceRollType;
+  currentDie: DiceRoll;
   players: Player[];
   thief?: Thief;
   lastThiefPosition?: Thief;
