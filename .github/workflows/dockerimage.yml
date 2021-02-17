@@ -27,7 +27,6 @@ jobs:
       uses: docker/build-push-action@v2
       with:
         push: true
-        load: true
         tags: localhost:5000/colonists/colonists-shared
         cache-from: type=local,src=/tmp/.buildx-cache-shared
         cache-to: type=local,dest=/tmp/.buildx-cache-shared-new
