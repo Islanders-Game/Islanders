@@ -28,7 +28,7 @@ module.exports = {
     'no-redeclare': 0,
     'no-unused-vars': 0,
     'no-use-before-define': 0,
-    'no-warning-comments': [1, { terms: ['todo', 'fixme'], location: 'anywhere' }],
+    'no-warning-comments': [1, { terms: ['todo', 'fixme', 'warn'], location: 'anywhere' }],
     'object-literal-sort-keys': 0,
     'operator-linebreak': 0,
     'ordered-imports': 0,
