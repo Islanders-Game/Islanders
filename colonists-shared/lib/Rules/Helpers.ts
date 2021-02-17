@@ -319,7 +319,6 @@ export const bankTrade = (start: MatrixCoordinate, end: MatrixCoordinate) => (pl
   });
 };
 
-// WARN: Unused
 export const diceRollWasSeven = (w: World): Result => {
   if (w.currentDie === 7) {
     return success(w);

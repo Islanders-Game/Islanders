@@ -8,6 +8,8 @@ export type buildingType = 'None' | 'House' | 'City' | 'Road';
 export class State {
   public isBuilding: buildingType = 'None';
   public isMovingThief = false;
+  public isPlayingRoadBuilding = false;
+  public isPlayingKnight = false;
 }
 
 // Synchrounous getters: GetterTree<local state, root state>
@@ -21,6 +23,12 @@ const mutationTree: MutationTree<State> = {
   },
   setIsMovingThief(state: State, flag: boolean) {
     state.isMovingThief = flag;
+  },
+  setIsPlayingKnight(state: State, flag: boolean) {
+    state.isPlayingKnight = flag;
+  },
+  setIsPlayingRoadBuilding(state: State, flag: boolean) {
+    state.isPlayingRoadBuilding = flag;
   },
 };
 
