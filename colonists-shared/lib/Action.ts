@@ -23,7 +23,6 @@ interface MoveThiefParameters extends HasPlayerName {
 }
 interface MoveThiefDevCardParameters extends HasPlayerName {
   coordinates: HexCoordinate;
-  playedCard: DevelopmentCard;
 }
 interface PlayerTradeParameters extends HasPlayerName {
   otherPlayerName: string;
@@ -121,10 +120,9 @@ export class MoveThiefDevCardAction {
   constructor(
     playerName: string,
     coordinates: HexCoordinate,
-    playedCard: DevelopmentCard,
   ) {
     this.parameters = {
-      playerName, coordinates, playedCard,
+      playerName, coordinates,
     };
   }
 }

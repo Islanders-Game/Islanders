@@ -384,6 +384,7 @@
 
               <v-col sm="6">
                 <v-btn
+                  :disabled="!canPlayThief"
                   block
                   dark
                   @click="setIsMovingThief"
@@ -398,10 +399,10 @@
                 <v-btn
                   block
                   dark
+                  :disabled="player.devCards.length === 0"
                   @click="showDevelopmentCardPicker = true"
                 >
                   Play Dev. Card
-                  <!-- :disabled="player.devCards.length === 0" -->
                 </v-btn>
               </v-col>
 
@@ -454,7 +455,7 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import { DiceRoll, Player as PlayerState, TileType } from '../../../colonists-shared/dist/Shared';
+import { Player as PlayerState, TileType, World } from '../../../colonists-shared/dist/Shared';
 import Trade from './Trade.vue';
 import { EndTurnAction, BuyCardAction, UndoAction, PlayCardAction } from '../../../colonists-shared/dist/Action';
 import { DevelopmentCardType } from '../../../colonists-shared/dist/Entities/DevelopmentCard';
@@ -476,7 +477,7 @@ export default class Player extends Vue {
   }
 
   public setIsMovingThief (): void {
-    if ((this.$store.state.game.world.currentDie as DiceRoll) === 7) {
+    if ((this.$store.state.game.world as World).conditions?.rolledASeven) {
       this.$store.commit('ui/setIsMovingThief', true);
     }
   }
@@ -516,6 +517,10 @@ export default class Player extends Vue {
 
   get player (): PlayerState {
     return this.$store.getters['game/getCurrentPlayer'];
+  }
+
+  get canPlayThief(): boolean {
+    return (this.$store.getters['game/getWorld'] as World).conditions?.rolledASeven !== undefined;
   }
 
   get isCurrentTurn (): boolean {

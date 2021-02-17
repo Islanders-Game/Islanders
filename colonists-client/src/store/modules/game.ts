@@ -99,6 +99,9 @@ const actions: ActionTree<State, RootState> = {
       asResultInstance
         .flatMap((world: World) => {
           commit('setWorld', world);
+          if (world.conditions?.playedKnight) commit('ui/setIsPlayingKnight', true, { root: true })
+          if (world.conditions?.playedRoadBuilding) commit('ui/setIsPlayingRoadBuilding', true, { root: true })
+          if (world.conditions?.playedRoadBuilding) commit('ui/setIsBuilding', 'Road', { root: true })
           return success(world);
         })
         .onFailure((r) => {
