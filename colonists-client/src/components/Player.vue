@@ -4,6 +4,54 @@
     fluid
     class="fill-height"
   >
+    <v-dialog v-model="isStealingFromPlayers" persistent max-width="750px">
+      <v-card>
+        <v-card-title>
+          Who do you want to steal from?
+        </v-card-title>
+
+        <v-container>
+          <v-row>
+            <template v-for="(p, playerIndex) in players">
+              <v-col :key="playerIndex" sm="3">
+                <v-card
+                  class="player-card"
+                  @click="selectPlayer(playerIndex)"
+                >
+                  <v-card-title class="subtitle-2">
+                    {{ p.name }}
+                    <v-spacer />
+                  </v-card-title>
+                  <v-container fluid>
+                    <v-row
+                      v-for="(resources, resourceIndex) in resourceCountForPlayer(p.name)"
+                      :key="resourceIndex"
+                      dense
+                      no-gutters
+                    >
+                      <v-chip dark color="grey darken-3" label small>
+                        <v-icon small left :color="colorForResourceType(resources[0])">
+                          {{ iconForResourceType(resources[0]) }}
+                        </v-icon> {{ resources[1] }}x
+                      </v-chip>
+                    </v-row>
+                  </v-container>
+                </v-card>
+              </v-col>
+            </template>
+          </v-row>
+        </v-container>
+        <v-card-actions>
+          <v-btn
+            :disabled="currentlySelectedPlayer === 'None'"
+            @click="stealFromPlayer"
+          >
+            Select Player
+          </v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-dialog v-model="showDevelopmentCardPicker" persistent max-width="650px">
       <v-card>
         <v-card-title>Play a development card</v-card-title>
@@ -169,9 +217,9 @@
           class="fill-height"
         >
           <v-row class="fill-height">
-            <v-col sm="9">
-              <v-container>
-                <v-row>
+            <v-col>
+              <v-container fluid>
+                <v-row fluid>
                   <v-col sm="8">
                     <v-row dense>
                       <v-col sm="6">
@@ -183,10 +231,10 @@
                         >
                           <v-icon
                             small
-                            color="green"
+                            :color="colorForResourceType('Wood')"
                             left
                           >
-                            mdi-pine-tree
+                            {{ iconForResourceType('Wood') }}
                           </v-icon> {{ resourceCount('wood') }} wood
                         </v-chip>
                       </v-col>
@@ -198,10 +246,10 @@
                         >
                           <v-icon
                             small
-                            color="yellow"
+                            :color="colorForResourceType('Grain')"
                             left
                           >
-                            mdi-grain
+                            {{ iconForResourceType('Grain') }}
                           </v-icon> {{ resourceCount('grain') }} grain
                         </v-chip>
                       </v-col>
@@ -217,9 +265,9 @@
                             dense
                             small
                             left
-                            color="blue-grey darken-1"
+                            :color="colorForResourceType('Stone')"
                           >
-                            mdi-checkbox-blank-circle
+                            {{ iconForResourceType('Stone') }}
                           </v-icon> {{ resourceCount('stone') }} stone
                         </v-chip>
                       </v-col>
@@ -234,9 +282,9 @@
                             dense
                             small
                             left
-                            color="red"
+                            :color="colorForResourceType('Clay')"
                           >
-                            mdi-toy-brick
+                            {{ iconForResourceType('Clay') }}
                           </v-icon> {{ resourceCount('clay') }} clay
                         </v-chip>
                       </v-col>
@@ -252,9 +300,9 @@
                             dense
                             small
                             left
-                            color="white"
+                            :color="colorForResourceType('Wool')"
                           >
-                            mdi-sheep
+                            {{ iconForResourceType('Wool') }}
                           </v-icon> {{ resourceCount('wool') }} wool
                         </v-chip>
                       </v-col>
@@ -354,13 +402,13 @@
                   >
                     <v-list dense>
                       <v-list-item @click="setIsBuildingHouse">
-                        House
+                        <v-icon left>mdi-home</v-icon> House
                       </v-list-item>
                       <v-list-item @click="setIsBuildingRoad">
-                        Road
+                        <v-icon left>mdi-road</v-icon> Road
                       </v-list-item>
                       <v-list-item @click="setIsBuildingCity">
-                        City
+                        <v-icon left>mdi-city</v-icon> City
                       </v-list-item>
                     </v-list>
                   </v-card>
@@ -387,6 +435,7 @@
                   :disabled="!canPlayThief"
                   block
                   dark
+                  :class="canPlayThief && !didMoveThief ? 'glowing' : ''"
                   @click="setIsMovingThief"
                 >
                   Move Thief
@@ -426,9 +475,10 @@
                   block
                   dark
                   outlined
+                  color="grey lighten-1"
                   @click="undo"
                 >
-                  Undo
+                  <v-icon left>mdi-undo</v-icon> Undo
                 </v-btn>
               </v-col>
               <v-col sm="1" />
@@ -438,7 +488,7 @@
               <v-col sm="10">
                 <v-btn
                   block
-                  color="red darken-4"
+                  light
                   @click="endTurn"
                 >
                   End Turn
@@ -457,7 +507,8 @@
 import { Component, Vue, Watch } from 'vue-property-decorator';
 import { Player as PlayerState, TileType, World } from '../../../colonists-shared/dist/Shared';
 import Trade from './Trade.vue';
-import { EndTurnAction, BuyCardAction, UndoAction, PlayCardAction } from '../../../colonists-shared/dist/Action';
+import { EndTurnAction, BuyCardAction, UndoAction,
+  PlayCardAction, StealFromPlayerAction } from '../../../colonists-shared/dist/Action';
 import { DevelopmentCardType } from '../../../colonists-shared/dist/Entities/DevelopmentCard';
 
 @Component({
@@ -470,6 +521,7 @@ export default class Player extends Vue {
   public showDevelopmentCardPicker = false;
   public chosenResources: [TileType] | [TileType, TileType] = ['Wood'];
   private currentlySelectedCard: DevelopmentCardType = 'None';
+  private currentlySelectedPlayer = 'None';
 
   public constructor () {
     super();
@@ -519,8 +571,16 @@ export default class Player extends Vue {
     return this.$store.getters['game/getCurrentPlayer'];
   }
 
+  get players (): PlayerState[] {
+    return this.$store.getters['game/getPlayers'];
+  }
+
   get canPlayThief(): boolean {
     return (this.$store.getters['game/getWorld'] as World).conditions?.rolledASeven !== undefined;
+  }
+
+  get didMoveThief(): boolean {
+    return (this.$store.getters['game/getWorld'] as World).conditions?.rolledASeven?.movedThief;
   }
 
   get isCurrentTurn (): boolean {
@@ -538,6 +598,26 @@ export default class Player extends Vue {
       return 0;
     }
     return player.devCards.length;
+  }
+
+  get isStealingFromPlayers(): boolean {
+    return this.$store.state.ui.isStealingFromPlayers;
+  }
+
+  get isMovingThief(): boolean {
+    return this.$store.state.ui.isMovingThief;
+  }
+
+  public resourceCountForPlayer (name: string): [TileType, number][] {
+    const player = (this.$store.getters['game/getWorld'] as World).players.find((p) => p.name === name);
+    if (!player) return [];
+    return [
+      ['Wood', player.resources.wood],
+      ['Clay', player.resources.clay],
+      ['Grain', player.resources.grain],
+      ['Wool', player.resources.wool],
+      ['Stone', player.resources.stone],
+    ];
   }
 
   public devCardsOfType (type: DevelopmentCardType, shouldFilterPlayed?: boolean): number {
@@ -610,8 +690,35 @@ export default class Player extends Vue {
     return ['Wood', 'Stone', 'Clay', 'Grain', 'Wool']
   }
 
+  public iconForResourceType(type: TileType): string {
+    switch (type) {
+      case 'Wood': return 'mdi-pine-tree'
+      case 'Grain': return 'mdi-grain'
+      case 'Clay': return 'mdi-toy-brick'
+      case 'Wool': return 'mdi-sheep'
+      case 'Stone': return 'mdi-checkbox-blank-circle'
+      default: return ''
+    }
+  }
+
+  public colorForResourceType(type: TileType): string {
+    switch (type) {
+      case 'Wood': return 'green'
+      case 'Grain': return 'yellow'
+      case 'Clay': return 'red'
+      case 'Wool': return 'grey lighten-3'
+      case 'Stone': return 'blue-grey darken-1'
+      default: return ''
+    }
+  }
+
   public selectedCard(type: DevelopmentCardType): void {
     this.currentlySelectedCard = type;
+  }
+
+  public selectPlayer(index: number): void {
+    const { players } = this.$store.getters['game/getWorld'] as World;
+    this.currentlySelectedPlayer = players[index].name;
   }
 
   public selectDevelopmentCard(): void {
@@ -638,6 +745,12 @@ export default class Player extends Vue {
     this.currentlySelectedCard = 'None'
   }
 
+  public stealFromPlayer(): void {
+    this.$store.commit('ui/setIsStealingFromPlayers', false);
+    this.$store.dispatch('game/sendAction', new StealFromPlayerAction(this.playerName, this.currentlySelectedPlayer));
+    this.currentlySelectedPlayer = 'None';
+  }
+
   @Watch('chosenResources')
   public onChosenResoucesChanged(value: TileType[]): void {
     if (this.currentlySelectedCard === 'Year of Plenty' && value.length > 2) {
@@ -662,5 +775,24 @@ export default class Player extends Vue {
 .development-card {
   height: 100%;
   min-height: 180px;
+}
+
+.glowing {
+  box-shadow: white 0px 0px 0px;
+  animation: pulse 2s infinite;
+}
+
+@keyframes pulse {
+0% {
+  box-shadow: white 0 0 2px;
+}
+
+40% {
+  box-shadow: white 0 0 8px;
+}
+
+100% {
+  box-shadow: white 0 0 2px;
+}
 }
 </style>

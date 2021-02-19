@@ -99,7 +99,8 @@ const actions: ActionTree<State, RootState> = {
       asResultInstance
         .flatMap((world: World) => {
           commit('setWorld', world);
-          if (world.conditions?.playedKnight) commit('ui/setIsPlayingKnight', true, { root: true })
+          if (world.conditions?.playedKnight
+            && !world.conditions.playedKnight.movedThief) commit('ui/setIsPlayingKnight', true, { root: true })
           const roadsBuilt = world.conditions?.playedRoadBuilding?.roadsBuilt;
           const expected = world.conditions?.playedRoadBuilding?.expected;
           if (expected && roadsBuilt && expected < roadsBuilt) {

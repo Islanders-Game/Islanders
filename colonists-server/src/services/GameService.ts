@@ -107,6 +107,8 @@ export class GameService {
           return rules.MoveThief(a);
         case 'moveThiefDevelopmentCard':
           return rules.MoveThiefDevelopmentCard(a);
+        case 'stealFromPlayer':
+          return rules.StealFromPlayer(a);
         case 'playerTrade':
           return rules.PlayerTrade(a);
         case 'bankTrade':

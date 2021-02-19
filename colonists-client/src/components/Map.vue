@@ -191,6 +191,7 @@ export default class Map extends Vue {
     const moveThiefAction = new MoveThiefAction(this.$store.state.game.playerName, hexToFind);
     this.dispatchActionClearCursor(event, moveThiefAction);
     this.$store.commit('ui/setIsMovingThief', false);
+    this.$store.commit('ui/setIsStealingFromPlayers', true);
   }
 
   private handleIsPlayingKnightClick(event) {
@@ -199,6 +200,7 @@ export default class Map extends Vue {
     const moveThiefAction = new MoveThiefDevCardAction(this.$store.state.game.playerName, hexToFind);
     this.dispatchActionClearCursor(event, moveThiefAction);
     this.$store.commit('ui/setIsPlayingKnight', false);
+    this.$store.commit('ui/setIsStealingFromPlayers', true);
   }
 
   private handleBuildClick(event) {

@@ -10,6 +10,7 @@ export class State {
   public isMovingThief = false;
   public isPlayingRoadBuilding = false;
   public isPlayingKnight = false;
+  public isStealingFromPlayers = false;
 }
 
 // Synchrounous getters: GetterTree<local state, root state>
@@ -29,6 +30,9 @@ const mutationTree: MutationTree<State> = {
   },
   setIsPlayingRoadBuilding(state: State, flag: boolean) {
     state.isPlayingRoadBuilding = flag;
+  },
+  setIsStealingFromPlayers(state: State, flag: boolean) {
+    state.isStealingFromPlayers = flag;
   },
 };
 

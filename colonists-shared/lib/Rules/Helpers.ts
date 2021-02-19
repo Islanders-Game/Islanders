@@ -345,5 +345,5 @@ export const moveThiefUsingDiceRoll = (coords: HexCoordinate) => (w: World): Res
       thief: {
         hexCoordinate: coords,
       },
-      conditions: { ...w.conditions, rolledASeven: { movedThief: true } },
+      conditions: { ...w.conditions, rolledASeven: { stoleFromPlayer: false, movedThief: true } },
     });

@@ -24,6 +24,9 @@ interface MoveThiefParameters extends HasPlayerName {
 interface MoveThiefDevCardParameters extends HasPlayerName {
   coordinates: HexCoordinate;
 }
+interface StealFromPlayerParameters extends HasPlayerName {
+  toStealFrom: string;
+}
 interface PlayerTradeParameters extends HasPlayerName {
   otherPlayerName: string;
   resources: Resources;
@@ -123,6 +126,22 @@ export class MoveThiefDevCardAction {
   ) {
     this.parameters = {
       playerName, coordinates,
+    };
+  }
+}
+
+export class StealFromPlayerAction {
+  public type: 'stealFromPlayer' = 'stealFromPlayer';
+
+  public parameters: StealFromPlayerParameters;
+
+  constructor(
+    playerName: string,
+    toStealFrom: string,
+  ) {
+    this.parameters = {
+      playerName,
+      toStealFrom,
     };
   }
 }
@@ -246,6 +265,7 @@ export type Action =
   | BuildRoadInitialAction
   | MoveThiefAction
   | MoveThiefDevCardAction
+  | StealFromPlayerAction
   | PlayerTradeAction
   | BankTradeAction
   | HarborTradeAction

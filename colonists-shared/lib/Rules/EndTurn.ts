@@ -3,7 +3,6 @@ import { Result, success, fail } from './Result';
 import { World } from '../World';
 import { findPlayer, assignNextPlayerTurn, assignRessourcesToPlayers } from './Helpers';
 import { GameState, Tile } from '../Shared';
-import { TurnCondition } from '../TurnCondition';
 
 export const EndTurn = ({ parameters }: EndTurnAction) => (
   world: Result,
@@ -43,7 +42,7 @@ const stateChanger = (w: World): Result => {
 
 const setTurnConditions = (w: World): Result =>
   w.currentDie === 7
-    ? success({ ...w, conditions: { rolledASeven: { movedThief: false } } })
+    ? success({ ...w, conditions: { rolledASeven: { movedThief: false, stoleFromPlayer: false } } })
     : success({ ...w, conditions: { } });
 
 const verifyTurnConditions = (w: World): Result => {
@@ -58,11 +57,13 @@ const verifyTurnConditions = (w: World): Result => {
     const { movedThief } = w.conditions.playedKnight;
     const { stoleFromPlayer } = w.conditions.playedKnight;
     if (!movedThief) return fail('You need to move the thief');
-    if (!stoleFromPlayer) return fail('You need to take from a player with a house surrounding the thief');
+    if (!stoleFromPlayer) return fail('You need to take resources from a player with a building surrounding the thief');
   }
   if (w.conditions.rolledASeven) {
     const { movedThief } = w.conditions.rolledASeven;
+    const { stoleFromPlayer } = w.conditions.rolledASeven;
     if (!movedThief) return fail('You need to move the thief');
+    if (!stoleFromPlayer) return fail('You need to take resources from a player with a building surrounding the thief');
   }
   return success(w);
 };

@@ -14,9 +14,11 @@
           class="fill-height"
         >
           <Error />
+
           <v-chip id="gameInfo" x-small dark absolute label outlined>
             <span id="idLabel">ID:</span>{{ gameID }}
           </v-chip>
+
           <v-dialog v-model="playerHasWon" width="40%">
             <v-card>
               <v-card-title>
@@ -24,6 +26,7 @@
               </v-card-title>
             </v-card>
           </v-dialog>
+
           <Map class="fill-height" />
         </v-col>
         <v-col

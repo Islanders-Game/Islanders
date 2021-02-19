@@ -38,10 +38,10 @@ app.get('/newgame', async (_: Request, res: Response) => {
   try {
     const world = new World();
     const id = await gameRepository.createGame(world);
-    console.info(`[${id}] Created game.`);
     gamePlayerSockets[id.toString()] = {};
     gameSocket.setupSocketOnNamespace(id.toString(), gamePlayerSockets);
     res.send(id);
+    console.info(`[${id}] Created game.`);
   } catch (ex) {
     res.send(fail('Couldn\'t create game!'));
   }
