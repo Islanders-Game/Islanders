@@ -19,6 +19,7 @@ export default class Error extends Vue {
   get errors (): string[] {
     const result = this.$store.getters['game/getError']
     if (result && result !== '') this.currentErrors.push(result)
+    else this.currentErrors = [];
     return this.currentErrors
   }
 
