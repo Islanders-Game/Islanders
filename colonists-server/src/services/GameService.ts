@@ -76,7 +76,7 @@ export class GameService {
   }
 
   public async applyAction(id: string, action: Action): Promise<Result> {
-    console.info(`Applying action ${action.type}`);
+    console.info(`[${id}] Applying action ${action.type}`);
     if (action.type === 'undo') {
       return this.gameRepository.undoMove(id);
     }
