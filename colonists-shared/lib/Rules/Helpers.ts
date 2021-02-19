@@ -98,10 +98,10 @@ export const assignRessourcesToPlayers = (w: World, tileFilter: (tile: Tile) => 
     const resources = allTiles
       .filter((pair) => pair.amount !== 0)
       .reduce((acc: Resources, pair: TileRessource) => {
-        const currentResourcesOfType = getResourceAmountOfType(pair.tile.type, pl.resources);
+        const currentResourcesOfType = getResourceAmountOfType(pair.tile.type, acc);
         const toSet = currentResourcesOfType + pair.amount;
-        const resourcesAdded = setAmountOfResourceOfType(toSet, pl.resources, pair.tile.type);
-        return addResources(acc, resourcesAdded);
+        const resourcesAdded = setAmountOfResourceOfType(toSet, acc, pair.tile.type);
+        return resourcesAdded;
       }, pl.resources);
     return {
       ...pl, resources,
