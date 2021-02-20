@@ -8,7 +8,7 @@ import {
   Result,
   Tile,
   Action,
-  DiceRollType,
+  DiceRoll,
   GameState,
   success,
   toResultInstance,
@@ -19,6 +19,7 @@ import { SocketConnection, State as RootState } from '../store';
 export class State {
   public gameId: string = undefined;
   public playerName: string = undefined;
+  public pointsToWin = 10;
   public world: World = undefined;
   public error: string = undefined;
 }
@@ -48,11 +49,14 @@ const getters: GetterTree<State, unknown> = {
     }
     return state.world.players[state.world.currentPlayer];
   },
-  getCurrentDie(state: State): DiceRollType {
+  getCurrentDie(state: State): DiceRoll {
     if (!state.world) {
       return undefined;
     }
     return state.world.currentDie;
+  },
+  getPointsToWin(state: State) {
+    return state.world.pointsToWin;
   },
   getPlayerColorAsHex: (state: State) => (name: string) => {
     const color = state.world?.players.find((x) => x.name === name)?.color;
@@ -95,6 +99,22 @@ const actions: ActionTree<State, RootState> = {
       asResultInstance
         .flatMap((world: World) => {
           commit('setWorld', world);
+          if (world.conditions?.playedKnight
+            && !world.conditions.playedKnight.movedThief) commit('ui/setIsPlayingKnight', true, { root: true });
+          if (world.conditions.playedRoadBuilding) {
+            const { roadsBuilt } = world.conditions?.playedRoadBuilding;
+            const { expected } = world.conditions?.playedRoadBuilding;
+            if (expected && roadsBuilt && expected < roadsBuilt) {
+              commit('ui/setIsPlayingRoadBuilding', true, { root: true });
+              commit('ui/setIsBuilding', 'Road', { root: true });
+              // Cancel thief movement if player was moving the thief while playing Road Building
+              commit('ui/setIsMovingThief', false, { root: true });
+            } else {
+              commit('ui/setIsPlayingRoadBuilding', false, { root: true });
+              commit('ui/setIsBuilding', 'None', { root: true });
+            }
+          }
+          commit('setError', undefined);
           return success(world);
         })
         .onFailure((r) => {
@@ -102,8 +122,8 @@ const actions: ActionTree<State, RootState> = {
         });
     });
   },
-  async startGame({ commit }: ActionContext<State, RootState>) {
-    SocketConnection.socket.emit(SocketActions.lockMap);
+  async startGame({ commit }: ActionContext<State, RootState>, pointsToWin: number) {
+    SocketConnection.socket.emit(SocketActions.lockMap, pointsToWin);
   },
   async updateMap({ commit }: ActionContext<State, RootState>, map: Tile[]) {
     SocketConnection.socket.emit(SocketActions.newMap, map);

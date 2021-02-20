@@ -25,7 +25,7 @@ Otherwise, run `docker inspect colonists-client | grep IPAddress` to find the ip
 ## Implementation
 
 [![codebeat badge](https://codebeat.co/badges/9fe73beb-c48f-4772-8d45-ab88e2241782)](https://codebeat.co/projects/github-com-awia00-colonists-master)
-[![Maintainability](https://api.codeclimate.com/v1/badges/e9e2a40371b22a5460ad/maintainability)](https://codeclimate.com/github/Awia00/colonists/maintainability)
+[![Maintainability](https://api.codeclimate.com/v1/badges/c01853d77070274d6bc5/maintainability)](https://codeclimate.com/github/Colonists-Game/Colonists/maintainability)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com)
 
 The server, shared libraries and client are all written in TypeScript and transpiled to JavaScript. The server runs in node, and the client is built using Vue.

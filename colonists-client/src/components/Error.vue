@@ -19,6 +19,7 @@ export default class Error extends Vue {
   get errors (): string[] {
     const result = this.$store.getters['game/getError']
     if (result && result !== '') this.currentErrors.push(result)
+    else this.currentErrors = [];
     return this.currentErrors
   }
 
@@ -33,7 +34,7 @@ export default class Error extends Vue {
   padding-left: 6px;
   position: absolute;
   background-color: #B71C1C;
-  width: 100%;
+  width: 90%;
   font-family: Roboto, sans-serif;
   font-size: 0.9rem;
   color: white;

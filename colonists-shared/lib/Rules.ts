@@ -12,7 +12,8 @@ import { BuildHouseAction,
   EndTurnAction,
   LockMapAction,
   BuildHouseInitialAction,
-  BuildRoadInitialAction } from './Action';
+  BuildRoadInitialAction,
+  StealFromPlayerAction } from './Action';
 import { BuildHouse } from './Rules/BuildHouse';
 import { BuildHouseInitial } from './Rules/BuildHouseInitial';
 import { BuildCity } from './Rules/BuildCity';
@@ -20,6 +21,7 @@ import { BuildRoad } from './Rules/BuildRoad';
 import { BuildRoadInitial } from './Rules/BuildRoadInitial';
 import { MoveThief } from './Rules/MoveThief';
 import { MoveThiefDevelopmentCard } from './Rules/MoveThiefDevelopmentCard';
+import { StealFromPlayer } from './Rules/StealFromPlayer';
 import { BuyCard } from './Rules/BuyCard';
 import { PlayCard } from './Rules/PlayCard';
 import { PlayerTrade } from './Rules/PlayerTrade';
@@ -37,6 +39,7 @@ export interface Rules {
   BuildRoadInitial: (data: BuildRoadInitialAction) => Rule;
   MoveThief: (data: MoveThiefAction) => Rule;
   MoveThiefDevelopmentCard: (data: MoveThiefDevCardAction) => Rule;
+  StealFromPlayer: (data: StealFromPlayerAction) => Rule;
   BuyCard: (data: BuyCardAction) => Rule;
   PlayCard: (data: PlayCardAction) => Rule;
   PlayerTrade: (data: PlayerTradeAction) => Rule;
@@ -61,6 +64,7 @@ export const rules: Rules = {
   BuildRoadInitial,
   MoveThief,
   MoveThiefDevelopmentCard,
+  StealFromPlayer,
   BuyCard,
   PlayCard,
   PlayerTrade,

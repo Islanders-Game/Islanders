@@ -23,16 +23,12 @@ import {
   BuildRoadAction,
   BuildHouseInitialAction,
   BuildRoadInitialAction,
+  MoveThiefDevCardAction,
 } from '../../../colonists-shared/dist/Action';
 
 import { buildingType } from '../store/modules/ui';
 import { generateSprites, generateTile, generateTileNumber, generateThiefTile } from '../helpers/SpriteGenerators';
 import { MoveThiefAction } from '../../../colonists-shared/lib/Action';
-
-// if ((window as any).global == undefined) {
-//   (window as any).global = {};
-// }
-// (window as any).global = { PIXI: PIXI };
 
 @Component
 export default class Map extends Vue {
@@ -81,6 +77,14 @@ export default class Map extends Vue {
 
   get isMovingThief(): boolean {
     return this.$store.state.ui.isMovingThief;
+  }
+
+  get isPlayingKnight(): boolean {
+    return this.$store.state.ui.isPlayingKnight;
+  }
+
+  get isPlayingRoadBuilding(): boolean {
+    return this.$store.state.ui.isPlayingRoadBuilding;
   }
 
   get isBuilding(): buildingType {
@@ -174,6 +178,10 @@ export default class Map extends Vue {
       this.handleBuildClick(event);
     } else if (this.isMovingThief) {
       this.handleThiefClick(event);
+    } else if (this.isPlayingKnight) {
+      this.handleIsPlayingKnightClick(event);
+    } else if (this.isPlayingRoadBuilding) {
+      this.handleBuildClick(event);
     }
   }
 
@@ -183,6 +191,16 @@ export default class Map extends Vue {
     const moveThiefAction = new MoveThiefAction(this.$store.state.game.playerName, hexToFind);
     this.dispatchActionClearCursor(event, moveThiefAction);
     this.$store.commit('ui/setIsMovingThief', false);
+    this.$store.commit('ui/setIsStealingFromPlayers', true);
+  }
+
+  private handleIsPlayingKnightClick(event) {
+    const inWorld = this.viewport.toWorld(event.data.global);
+    const hexToFind = this.grid.pointToHex(inWorld);
+    const moveThiefAction = new MoveThiefDevCardAction(this.$store.state.game.playerName, hexToFind);
+    this.dispatchActionClearCursor(event, moveThiefAction);
+    this.$store.commit('ui/setIsPlayingKnight', false);
+    this.$store.commit('ui/setIsStealingFromPlayers', true);
   }
 
   private handleBuildClick(event) {
@@ -277,6 +295,9 @@ export default class Map extends Vue {
       return;
     }
     if (this.isMovingThief) {
+      this.cursorForHex(event);
+    }
+    if (this.isPlayingKnight) {
       this.cursorForHex(event);
     }
   }

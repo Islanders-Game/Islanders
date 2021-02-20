@@ -76,14 +76,14 @@ export class GameService {
   }
 
   public async applyAction(id: string, action: Action): Promise<Result> {
-    console.log(`Applying action ${action.type}`);
+    console.info(`[${id}] Applying action ${action.type}`);
     if (action.type === 'undo') {
       return this.gameRepository.undoMove(id);
     }
     const toApply = GameService.mapRules([action]);
     const result = await this.gameRepository.getWorld(id);
     const apply = toApply.reduce(ruleReducer, result);
-    return apply.flatMapAsync(async (w: World) => this.gameRepository.updateGame(id, w));
+    return apply.flatMapAsync((w: World) => this.gameRepository.updateGame(id, w));
   }
 
   private static mapRules(actions: Action[]): Rule[] {
@@ -107,6 +107,8 @@ export class GameService {
           return rules.MoveThief(a);
         case 'moveThiefDevelopmentCard':
           return rules.MoveThiefDevelopmentCard(a);
+        case 'stealFromPlayer':
+          return rules.StealFromPlayer(a);
         case 'playerTrade':
           return rules.PlayerTrade(a);
         case 'bankTrade':

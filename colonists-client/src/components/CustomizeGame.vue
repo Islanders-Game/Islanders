@@ -87,12 +87,13 @@ export default class CustomizeGame extends Vue {
   }
 
   private async startGame() {
-    await this.$store.dispatch('game/startGame');
+    const pointsToWin = this.$store.getters['game/getPointsToWin'];
+    await this.$store.dispatch('game/startGame', pointsToWin);
   }
 
   @Watch('pointsToWin')
-  private setPointsToWin() {
-    this.$store.commit('game/setPointsToWin', this.pointsToWin);
+  public setPointsToWin(value: number): void {
+    this.$store.commit('game/setPointsToWin', +value);
   }
 
   private async randomizeMap() {

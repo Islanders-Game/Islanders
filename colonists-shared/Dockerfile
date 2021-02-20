@@ -1,15 +1,20 @@
 ARG BRANCH_TAG=latest
-FROM node:latest
+FROM node as dependency-cache-shared
+WORKDIR /cache
+COPY package*.json ./
+RUN npm install
+
+FROM node
 WORKDIR /app
 
 # App dependencies
 RUN ["npm", "install", "-g", "typescript"]
-COPY package.json ./
-COPY .yarnrc.yml ./
-COPY .yarn/releases/yarn-berry.cjs ./.yarn/releases/yarn-berry.cjs
-RUN ["yarn", "install"]
+
+COPY --from=dependency-cache-shared /cache/node_modules ./node_modules
+COPY package.json package-lock.json ./
+RUN ["npm", "install"]
 
 COPY . /app
 
-RUN ["yarn", "build"]
-CMD ["yarn", "test"]
+RUN ["npm", "run", "build"]
+CMD ["npm", "run", "test"]

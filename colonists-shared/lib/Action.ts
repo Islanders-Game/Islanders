@@ -23,7 +23,9 @@ interface MoveThiefParameters extends HasPlayerName {
 }
 interface MoveThiefDevCardParameters extends HasPlayerName {
   coordinates: HexCoordinate;
-  playedCard: DevelopmentCard;
+}
+interface StealFromPlayerParameters extends HasPlayerName {
+  toStealFrom: string;
 }
 interface PlayerTradeParameters extends HasPlayerName {
   otherPlayerName: string;
@@ -40,7 +42,7 @@ interface HarborTradeParameters extends HasPlayerName {
 }
 interface PlayCardParameters extends HasPlayerName {
   card: DevelopmentCard;
-  chosenResources: TileType | [TileType, TileType];
+  chosenResources?: [TileType] | [TileType, TileType];
 }
 type BuyCardParameters = HasPlayerName
 type EndTurnParameters = HasPlayerName
@@ -121,10 +123,25 @@ export class MoveThiefDevCardAction {
   constructor(
     playerName: string,
     coordinates: HexCoordinate,
-    playedCard: DevelopmentCard,
   ) {
     this.parameters = {
-      playerName, coordinates, playedCard,
+      playerName, coordinates,
+    };
+  }
+}
+
+export class StealFromPlayerAction {
+  public type: 'stealFromPlayer' = 'stealFromPlayer';
+
+  public parameters: StealFromPlayerParameters;
+
+  constructor(
+    playerName: string,
+    toStealFrom: string,
+  ) {
+    this.parameters = {
+      playerName,
+      toStealFrom,
     };
   }
 }
@@ -206,7 +223,7 @@ export class PlayCardAction {
   constructor(
     playerName: string,
     card: DevelopmentCard,
-    chosenResources: TileType | [TileType, TileType],
+    chosenResources?: [TileType] | [TileType, TileType],
   ) {
     this.parameters = {
       playerName, card, chosenResources,
@@ -227,7 +244,12 @@ export class EndTurnAction {
 }
 
 export class LockMapAction {
+  public pointsToWin: number;
   public type: 'lockMap' = 'lockMap';
+
+  constructor(pointsToWin: number) {
+    this.pointsToWin = pointsToWin;
+  }
 }
 
 export class UndoAction {
@@ -243,6 +265,7 @@ export type Action =
   | BuildRoadInitialAction
   | MoveThiefAction
   | MoveThiefDevCardAction
+  | StealFromPlayerAction
   | PlayerTradeAction
   | BankTradeAction
   | HarborTradeAction

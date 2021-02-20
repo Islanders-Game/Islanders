@@ -1,21 +1,19 @@
 import { EndTurnAction } from '../Action';
 import { Result, success, fail } from './Result';
 import { World } from '../World';
-import { findPlayer,
-  assignNextPlayerTurn,
-  assignInitalRessourcesToPlayers } from './Helpers';
-import { GameState } from '../Shared';
+import { findPlayer, assignNextPlayerTurn, assignRessourcesToPlayers } from './Helpers';
+import { GameState, Tile } from '../Shared';
 
 export const EndTurn = ({ parameters }: EndTurnAction) => (
   world: Result,
-): Result => {
-  const p = world.flatMap(findPlayer(parameters.playerName));
-  const v = p.flatMap(verifyThief);
-  const a = v.flatMap(assignNextPlayerTurn);
-  const s = a.flatMap(stateChanger);
-  const c = s.flatMap(checkVictory(parameters.playerName));
-  return c;
-};
+): Result =>
+  world
+    .flatMap(findPlayer(parameters.playerName))
+    .flatMap(verifyTurnConditions)
+    .flatMap(assignNextPlayerTurn)
+    .flatMap(stateChanger)
+    .flatMap(checkVictory(parameters.playerName))
+    .flatMap(setTurnConditions);
 
 const checkVictory = (playerName: string) => (w: World) => {
   const winner = w.players.find(
@@ -26,24 +24,64 @@ const checkVictory = (playerName: string) => (w: World) => {
   }) : success(w);
 };
 
-const verifyThief = (w: World) => {
-  if (w.currentDie !== 7) return success(w);
-  if (!w.thief && w.lastThiefPosition) return fail('You have to move the Thief this turn!');
-  if (w.thief && w.lastThiefPosition && w.thief.hexCoordinate !== w.lastThiefPosition.hexCoordinate) {
-    return fail('You have to move the Thief this turn!');
-  }
-  return success(w);
-};
-
 const stateChanger = (w: World): Result => {
   const round = Math.floor(w.gameStatistics.turns / w.players.length);
   if (round === 2 && w.gameState === 'Pregame') {
-    const players = assignInitalRessourcesToPlayers(w);
-    // initial resources
+    const initialFilter = (tile: Tile) =>
+      w.gameState === 'Pregame'
+      && !(w.thief && w.thief.hexCoordinate.x === tile.coord.x && w.thief.hexCoordinate.y === tile.coord.y);
+
+    const players = assignRessourcesToPlayers(w, initialFilter);
     const gameState: GameState = 'Started';
     return success({
       ...w, gameState, players,
     });
+  }
+  return success(w);
+};
+
+const setTurnConditions = (w: World): Result => {
+  if (w.currentDie === 7) {
+    return success({ ...w,
+      conditions: { rolledASeven: { movedThief: false, stoleFromPlayer: false } } });
+  }
+  if (w.gameState === 'Pregame') {
+    return success({ ...w,
+      conditions: { mustPlaceInitialHouse: { hasPlaced: false },
+        mustPlaceInitialRoad: { hasPlaced: false } } });
+  }
+  return success({ ...w, conditions: { } });
+};
+
+const verifyTurnConditions = (w: World): Result => {
+  if (w.conditions.playedRoadBuilding) {
+    const { roadsBuilt } = w.conditions.playedRoadBuilding;
+    const { expected } = w.conditions.playedRoadBuilding;
+    if (roadsBuilt < expected) {
+      return fail('You need to build the roads you gained from Road Building');
+    }
+  }
+  if (w.conditions.playedKnight) {
+    const { movedThief } = w.conditions.playedKnight;
+    const { stoleFromPlayer } = w.conditions.playedKnight;
+    if (!movedThief) return fail('You need to move the thief');
+    if (!stoleFromPlayer) return fail('You need to take resources from a player with a building surrounding the thief');
+  }
+  if (w.conditions.rolledASeven) {
+    const { movedThief } = w.conditions.rolledASeven;
+    const { stoleFromPlayer } = w.conditions.rolledASeven;
+    if (!movedThief) return fail('You need to move the thief');
+    if (!stoleFromPlayer) return fail('You need to take resources from a player with a building surrounding the thief');
+  }
+  if (w.gameState === 'Pregame'
+    && w.conditions.mustPlaceInitialHouse
+    && !w.conditions.mustPlaceInitialHouse.hasPlaced) {
+    return fail('You must place a house this turn');
+  }
+  if (w.gameState === 'Pregame'
+    && w.conditions.mustPlaceInitialRoad
+    && !w.conditions.mustPlaceInitialRoad.hasPlaced) {
+    return fail('You must place a road with a house this turn');
   }
   return success(w);
 };

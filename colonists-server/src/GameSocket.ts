@@ -62,9 +62,9 @@ export class GameSocket {
   }
 
   private setUpLockMap(connection: Socket, gameID: string, namespace: Namespace) {
-    connection.on(SocketActions.lockMap, async () => {
+    connection.on(SocketActions.lockMap, async (pointsToWin: number) => {
       GameSocket.logSocketEvent(gameID, SocketActions.lockMap);
-      const lock: LockMapAction = { type: 'lockMap' };
+      const lock: LockMapAction = new LockMapAction(pointsToWin);
       namespace.emit(SocketActions.newWorld, await this.gameService.applyAction(gameID, lock));
     });
   }

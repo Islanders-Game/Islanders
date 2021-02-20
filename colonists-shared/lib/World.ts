@@ -1,24 +1,25 @@
 import { Player } from './Player';
 import { Thief } from './Thief';
-import { Tile, DiceRollType } from './Tile';
+import { Tile, DiceRoll } from './Tile';
 import { GameRules } from './GameRules';
 import { GameStatistics } from './GameStatistics';
+import { Conditions, TurnCondition } from './TurnCondition';
 
 export type GameState = 'Uninitialized' | 'Pregame' | 'Started' | 'Finished';
 
 export interface World {
   currentPlayer: number;
-  currentDie: DiceRollType;
+  currentDie: DiceRoll;
   players: Player[];
   thief?: Thief;
-  lastThiefPosition?: Thief;
   map: Tile[];
   gameState: GameState;
-  gameRules: GameRules;
   pointsToWin: number;
   winner: Player | undefined;
-  gameStatistics: GameStatistics;
   version: number;
+  conditions: Conditions;
+  gameRules: GameRules;
+  gameStatistics: GameStatistics;
 }
 
 export class World implements World {
@@ -39,5 +40,6 @@ export class World implements World {
     this.gameStatistics = new GameStatistics();
     this.thief = undefined;
     this.version = 0;
+    this.conditions = { };
   }
 }

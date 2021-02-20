@@ -1,9 +1,9 @@
 import { BuildHouseInitialAction } from '../Action';
-import { World, Result, fail, success } from '../Shared';
+import { World, Result, fail, success, HexCoordinate, Player } from '../Shared';
 import { ensureGameState,
   findPlayer,
-  placeHouseInital,
-  increasePointsForPlayer } from './Helpers';
+  increasePointsForPlayer,
+  placeHouse } from './Helpers';
 
 const checkNumberOfStructures = (w: World): Result => {
   const round = Math.floor(w.gameStatistics.turns / w.players.length);
@@ -19,19 +19,21 @@ const checkNumberOfStructures = (w: World): Result => {
     return fail(
       `You cannot place a ${ordinal(
         currentPlayer.houses.length + 1,
-      )} house in the ${ordinal(round + 1)} pre-game round!`,
+      )} house in the ${ordinal(round + 1)} pre-game round`,
     );
   }
-  return success(w);
+  return success({ ...w, conditions: { ...w.conditions, mustPlaceInitialHouse: { hasPlaced: true } } });
 };
 
 export const BuildHouseInitial = ({ parameters }: BuildHouseInitialAction) => (
   world: Result,
 ): Result =>
-  // todo check number;
   world
     .flatMap(ensureGameState('Pregame'))
-    .flatMap((w: World) => checkNumberOfStructures(w))
+    .flatMap(checkNumberOfStructures)
     .flatMap(findPlayer(parameters.playerName))
-    .flatMap(placeHouseInital(parameters.coordinates)(parameters.playerName))
+    .flatMap(placeHouse(parameters.coordinates)(parameters.playerName)(hasRoad))
     .flatMap(increasePointsForPlayer(parameters.playerName));
+
+// TODO: Implement!
+const hasRoad = (coordinate: HexCoordinate, p: Player) => true;

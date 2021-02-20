@@ -66,6 +66,7 @@ module.exports = {
       ExportDeclaration: { multiline: true, minProperties: 3 },
     }],
     'no-console': [1, { allow: ['warn', 'error'] }],
+    'class-methods-use-this': 'off'
   },
   root: true,
 

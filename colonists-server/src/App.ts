@@ -38,16 +38,15 @@ app.get('/newgame', async (_: Request, res: Response) => {
   try {
     const world = new World();
     const id = await gameRepository.createGame(world);
-    console.info(`[${id}] Created game.`);
     gamePlayerSockets[id.toString()] = {};
     gameSocket.setupSocketOnNamespace(id.toString(), gamePlayerSockets);
     res.send(id);
+    console.info(`[${id}] Created game.`);
   } catch (ex) {
     res.send(fail('Couldn\'t create game!'));
   }
 });
 
-//TODO: This throws if the player attempts to join a nonexistent game!
 app.get('/joingame', async (req: Request, res: Response) => {
   const playerName = String(req.query.playerName);
   const gameID = String(req.query.gameId);
@@ -55,12 +54,14 @@ app.get('/joingame', async (req: Request, res: Response) => {
   const result = await gameRepository.getWorld(gameID);
 
   result.flatMap((w: World) => {
-    res.status(200).send(success(w));
+    res.send(success(w));
     console.info(`[${gameID}] Finished /joingame GET with player: ${playerName}`);
     return success(w);
   });
   result.onFailure(() => {
-    if (gamePlayerSockets[gameID] && gamePlayerSockets[gameID][playerName] && gamePlayerSockets[gameID][playerName] !== Disconnected) {
+    if (gamePlayerSockets[gameID] &&
+        gamePlayerSockets[gameID][playerName] &&
+        gamePlayerSockets[gameID][playerName] !== Disconnected) {
       res.send(fail('A player with that name already exists on this game!'));
     }
     res.send(fail('Game does not exist!'));
