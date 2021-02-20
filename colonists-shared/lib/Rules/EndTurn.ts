@@ -40,10 +40,18 @@ const stateChanger = (w: World): Result => {
   return success(w);
 };
 
-const setTurnConditions = (w: World): Result =>
-  w.currentDie === 7
-    ? success({ ...w, conditions: { rolledASeven: { movedThief: false, stoleFromPlayer: false } } })
-    : success({ ...w, conditions: { } });
+const setTurnConditions = (w: World): Result => {
+  if (w.currentDie === 7) {
+    return success({ ...w,
+      conditions: { rolledASeven: { movedThief: false, stoleFromPlayer: false } } });
+  }
+  if (w.gameState === 'Pregame') {
+    return success({ ...w,
+      conditions: { mustPlaceInitialHouse: { hasPlaced: false },
+        mustPlaceInitialRoad: { hasPlaced: false } } });
+  }
+  return success({ ...w, conditions: { } });
+};
 
 const verifyTurnConditions = (w: World): Result => {
   if (w.conditions.playedRoadBuilding) {
@@ -64,6 +72,16 @@ const verifyTurnConditions = (w: World): Result => {
     const { stoleFromPlayer } = w.conditions.rolledASeven;
     if (!movedThief) return fail('You need to move the thief');
     if (!stoleFromPlayer) return fail('You need to take resources from a player with a building surrounding the thief');
+  }
+  if (w.gameState === 'Pregame'
+    && w.conditions.mustPlaceInitialHouse
+    && !w.conditions.mustPlaceInitialHouse.hasPlaced) {
+    return fail('You must place a house this turn');
+  }
+  if (w.gameState === 'Pregame'
+    && w.conditions.mustPlaceInitialRoad
+    && !w.conditions.mustPlaceInitialRoad.hasPlaced) {
+    return fail('You must place a road with a house this turn');
   }
   return success(w);
 };

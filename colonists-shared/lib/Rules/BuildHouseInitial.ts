@@ -22,18 +22,18 @@ const checkNumberOfStructures = (w: World): Result => {
       )} house in the ${ordinal(round + 1)} pre-game round`,
     );
   }
-  return success(w);
+  return success({ ...w, conditions: { ...w.conditions, mustPlaceInitialHouse: { hasPlaced: true } } });
 };
 
 export const BuildHouseInitial = ({ parameters }: BuildHouseInitialAction) => (
   world: Result,
 ): Result =>
-  // todo check number;
   world
     .flatMap(ensureGameState('Pregame'))
-    .flatMap((w: World) => checkNumberOfStructures(w))
+    .flatMap(checkNumberOfStructures)
     .flatMap(findPlayer(parameters.playerName))
     .flatMap(placeHouse(parameters.coordinates)(parameters.playerName)(hasRoad))
     .flatMap(increasePointsForPlayer(parameters.playerName));
 
+// TODO: Implement!
 const hasRoad = (coordinate: HexCoordinate, p: Player) => true;
