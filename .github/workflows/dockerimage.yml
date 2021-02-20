@@ -17,7 +17,7 @@ jobs:
       with:
           driver-opts: network=host
     - name: Set colonists-shared cache
-      uses: actions/cache@v2
+      uses: actions/cache@v2.1.4
       with:
         path: /tmp/.buildx-cache-shared
         key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -42,7 +42,7 @@ jobs:
     - name: Run shared tests
       run: docker run --rm localhost:5000/colonists/colonists-shared
     - name: Set colonists-server cache
-      uses: actions/cache@v2
+      uses: actions/cache@v2.1.4
       with:
         path: /tmp/.buildx-cache-server
         key: ${{ runner.os }}-buildx-${{ github.sha }}
@@ -67,7 +67,7 @@ jobs:
           rm -rf /tmp/.buildx-cache-server
           mv /tmp/.buildx-cache-server-new /tmp/.buildx-cache-server
     - name: Set colonists-client cache
-      uses: actions/cache@v2
+      uses: actions/cache@v2.1.4
       with:
         path: /tmp/.buildx-cache-client
         key: ${{ runner.os }}-buildx-${{ github.sha }}
