@@ -401,13 +401,13 @@
                     dark
                   >
                     <v-list dense>
-                      <v-list-item @click="setIsBuildingHouse">
+                      <v-list-item :disabled="!canPurchase('House')" @click="setIsBuildingHouse">
                         <v-icon left>mdi-home</v-icon> House
                       </v-list-item>
-                      <v-list-item @click="setIsBuildingRoad">
+                      <v-list-item :disabled="!canPurchase('Road')" @click="setIsBuildingRoad">
                         <v-icon left>mdi-road</v-icon> Road
                       </v-list-item>
-                      <v-list-item @click="setIsBuildingCity">
+                      <v-list-item :disabled="!canPurchase('City')" @click="setIsBuildingCity">
                         <v-icon left>mdi-city</v-icon> City
                       </v-list-item>
                     </v-list>
@@ -416,7 +416,7 @@
               </v-col>
 
               <v-col sm="6">
-                <Trade />
+                <Trade :disabled="resources === 0" />
               </v-col>
             </v-row>
             <v-row dense>
@@ -424,6 +424,7 @@
                 <v-btn
                   block
                   dark
+                  :disabled="!canPurchase('DevelopmentCard')"
                   @click="devCard"
                 >
                   Buy Dev. Card
@@ -505,11 +506,13 @@
 
 <script lang="ts">
 import { Component, Vue, Watch } from 'vue-property-decorator';
-import { Player as PlayerState, TileType, World } from '../../../colonists-shared/dist/Shared';
+import { City, House, Player as PlayerState,
+  Resources, resourcesAreNonNegative, Road,
+  subtractResources, TileType, World } from '../../../colonists-shared/dist/Shared';
 import Trade from './Trade.vue';
 import { EndTurnAction, BuyCardAction, UndoAction,
   PlayCardAction, StealFromPlayerAction } from '../../../colonists-shared/dist/Action';
-import { DevelopmentCardType } from '../../../colonists-shared/dist/Entities/DevelopmentCard';
+import { DevelopmentCard, DevelopmentCardType } from '../../../colonists-shared/dist/Entities/DevelopmentCard';
 
 @Component({
   components: {
@@ -620,6 +623,16 @@ export default class Player extends Vue {
     ];
   }
 
+  get resources (): number {
+    const { player } = this;
+    if (!player) return 0;
+    return player.resources.wood
+      + player.resources.wool
+      + player.resources.stone
+      + player.resources.clay
+      + player.resources.grain;
+  }
+
   public devCardsOfType (type: DevelopmentCardType, shouldFilterPlayed?: boolean): number {
     const player: PlayerState = this.$store.getters['game/getCurrentPlayer'];
     if (!player || !player.devCards) {
@@ -714,6 +727,23 @@ export default class Player extends Vue {
 
   public selectedCard(type: DevelopmentCardType): void {
     this.currentlySelectedCard = type;
+  }
+
+  public canPurchase(item: 'House'|'City'|'Road'|'DevelopmentCard'): boolean {
+    const canAfford = (cost: Resources): boolean => {
+      const currentResources = this.player.resources;
+      const subtracted = subtractResources(currentResources, cost);
+      return resourcesAreNonNegative(subtracted);
+    }
+
+    const isInPregame = this.$store.getters['game/getWorld'].gameState === 'Pregame';
+    switch (item) {
+      case 'House': return isInPregame ? true : canAfford(new House().cost);
+      case 'Road': return isInPregame ? true : canAfford(new Road().cost);
+      case 'DevelopmentCard': return canAfford(new DevelopmentCard().cost);
+      case 'City': return canAfford(new City().cost);
+      default: return false;
+    }
   }
 
   public selectPlayer(index: number): void {

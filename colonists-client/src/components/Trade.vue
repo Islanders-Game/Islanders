@@ -1,6 +1,7 @@
 <template>
   <div id="Trade">
     <v-btn
+      :disabled="disabled"
       block
       dark
       @click="dialog = true"
@@ -23,14 +24,13 @@
           <v-spacer />
 
           <v-btn
-            color="green darken-1"
+            color="red"
             @click="dialog = false"
           >
-            Decline
+            Close
           </v-btn>
 
           <v-btn
-            color="green darken-1"
             @click="dialog = false"
           >
             Trade
@@ -44,7 +44,11 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 
-@Component
+@Component({
+  props: {
+    disabled: { type: Boolean, required: false, default: false },
+  },
+})
 export default class Trade extends Vue {
   public dialog = false;
 }
