@@ -100,15 +100,19 @@ const actions: ActionTree<State, RootState> = {
         .flatMap((world: World) => {
           commit('setWorld', world);
           if (world.conditions?.playedKnight
-            && !world.conditions.playedKnight.movedThief) commit('ui/setIsPlayingKnight', true, { root: true })
-          const roadsBuilt = world.conditions?.playedRoadBuilding?.roadsBuilt;
-          const expected = world.conditions?.playedRoadBuilding?.expected;
-          if (expected && roadsBuilt && expected < roadsBuilt) {
-            if (world.conditions?.playedRoadBuilding) commit('ui/setIsPlayingRoadBuilding', true, { root: true })
-            if (world.conditions?.playedRoadBuilding) commit('ui/setIsBuilding', 'Road', { root: true })
-          } else {
-            commit('ui/setIsPlayingRoadBuilding', false, { root: true })
-            commit('ui/setIsBuilding', 'None', { root: true })
+            && !world.conditions.playedKnight.movedThief) commit('ui/setIsPlayingKnight', true, { root: true });
+          if (world.conditions.playedRoadBuilding) {
+            const { roadsBuilt } = world.conditions?.playedRoadBuilding;
+            const { expected } = world.conditions?.playedRoadBuilding;
+            if (expected && roadsBuilt && expected < roadsBuilt) {
+              commit('ui/setIsPlayingRoadBuilding', true, { root: true });
+              commit('ui/setIsBuilding', 'Road', { root: true });
+              // Cancel thief movement if player was moving the thief while playing Road Building
+              commit('ui/setIsMovingThief', false, { root: true });
+            } else {
+              commit('ui/setIsPlayingRoadBuilding', false, { root: true });
+              commit('ui/setIsBuilding', 'None', { root: true });
+            }
           }
           commit('setError', undefined);
           return success(world);
