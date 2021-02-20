@@ -575,7 +575,8 @@ export default class Player extends Vue {
   }
 
   get players (): PlayerState[] {
-    return this.$store.getters['game/getPlayers'];
+    const { player } = this;
+    return this.$store.getters['game/getPlayers'].filter((p) => p.name !== this.playerName);
   }
 
   get canPlayThief(): boolean {
@@ -591,8 +592,7 @@ export default class Player extends Vue {
   }
 
   get playerColor (): PlayerState {
-    const player = this.$store.getters['game/getCurrentPlayer'];
-    return this.$store.getters['game/getPlayerColorAsHex'](player.name);
+    return this.$store.getters['game/getPlayerColorAsHex'](this.playerName);
   }
 
   get devCardsLength (): number {
@@ -653,12 +653,14 @@ export default class Player extends Vue {
   }
 
   get hasLongestRoad (): boolean {
+    // This needs to be implemented based on the roadLength function above
+    // but for all players
     const players: PlayerState[] = this.$store.getters['game/getPlayers'];
     if (players.length === 1 && players[0].roads.length > 4) {
       return true;
     }
     const playerRoads = players
-      .filter((p: PlayerState) => p.name !== this.player.name)
+      .filter((p: PlayerState) => p.name !== this.playerName)
       .map((p: PlayerState) => p.roads.length)
       .filter((r: number) => r > 4);
     if (playerRoads.length === 0) {
@@ -674,7 +676,7 @@ export default class Player extends Vue {
       return true;
     }
     const playerKnights = players
-      .filter((p: PlayerState) => p.name !== this.player.name)
+      .filter((p: PlayerState) => p.name !== this.playerName)
       .map((p: PlayerState) => p.knights)
       .filter((r: number) => r > 2);
     if (playerKnights.length === 0) {
