@@ -4,6 +4,92 @@
     fluid
     class="fill-height"
   >
+    <v-dialog v-if="proposedTrade" v-model="notDismissedTrade" persistent max-width="650px">
+      <v-card>
+        <v-card-title>
+          {{ proposedTrade.player }} proposed a trade
+        </v-card-title>
+
+        <v-container>
+          <v-row>
+            <v-col sm="5">
+              <h3 class="overline">They offer</h3>
+            </v-col>
+            <v-col sm="2">
+              <v-icon small>mdi-arrow-left-bold</v-icon>
+              <v-icon small>mdi-arrow-right-bold</v-icon>
+            </v-col>
+            <v-col sm="5">
+              <h3 class="overline">They want</h3>
+            </v-col>
+          </v-row>
+          <v-row>
+            <v-col sm="5">
+              <v-chip v-if="proposedTrade.resources.wood" dark color="grey darken-3" label small>
+                <v-icon small left :color="colorForResourceType('Wood')">
+                  {{ iconForResourceType('Wood') }}
+                </v-icon> {{ proposedTrade.resources.wood }}x
+              </v-chip>
+              <v-chip v-if="proposedTrade.resources.wool" dark color="grey darken-3" label small>
+                <v-icon small left :color="colorForResourceType('Wool')">
+                  {{ iconForResourceType('Wool') }}
+                </v-icon> {{ proposedTrade.resources.wool }}x
+              </v-chip>
+              <v-chip v-if="proposedTrade.resources.stone" dark color="grey darken-3" label small>
+                <v-icon small left :color="colorForResourceType('Stone')">
+                  {{ iconForResourceType('Stone') }}
+                </v-icon> {{ proposedTrade.resources.stone }}x
+              </v-chip>
+              <v-chip v-if="proposedTrade.resources.grain" dark color="grey darken-3" label small>
+                <v-icon small left :color="colorForResourceType('Grain')">
+                  {{ iconForResourceType('Grain') }}
+                </v-icon> {{ proposedTrade.resources.grain }}x
+              </v-chip>
+              <v-chip v-if="proposedTrade.resources.clay" dark color="grey darken-3" label small>
+                <v-icon small left :color="colorForResourceType('Clay')">
+                  {{ iconForResourceType('Clay') }}
+                </v-icon> {{ proposedTrade.resources.clay }}x
+              </v-chip>
+            </v-col>
+            <v-col sm="2" />
+            <v-col sm="5">
+              <div>TODO: Resources player wants to gain here</div>
+              <v-chip v-if="proposedTrade.resources.wood" dark color="grey darken-3" label small>
+                <v-icon small left :color="colorForResourceType('Wood')">
+                  {{ iconForResourceType('Wood') }}
+                </v-icon> {{ proposedTrade.resources.wood }}x
+              </v-chip>
+              <v-chip v-if="proposedTrade.resources.wool" dark color="grey darken-3" label small>
+                <v-icon small left :color="colorForResourceType('Wool')">
+                  {{ iconForResourceType('Wool') }}
+                </v-icon> {{ proposedTrade.resources.wool }}x
+              </v-chip>
+              <v-chip v-if="proposedTrade.resources.stone" dark color="grey darken-3" label small>
+                <v-icon small left :color="colorForResourceType('Stone')">
+                  {{ iconForResourceType('Stone') }}
+                </v-icon> {{ proposedTrade.resources.stone }}x
+              </v-chip>
+              <v-chip v-if="proposedTrade.resources.grain" dark color="grey darken-3" label small>
+                <v-icon small left :color="colorForResourceType('Grain')">
+                  {{ iconForResourceType('Grain') }}
+                </v-icon> {{ proposedTrade.resources.grain }}x
+              </v-chip>
+              <v-chip v-if="proposedTrade.resources.clay" dark color="grey darken-3" label small>
+                <v-icon small left :color="colorForResourceType('Clay')">
+                  {{ iconForResourceType('Clay') }}
+                </v-icon> {{ proposedTrade.resources.clay }}x
+              </v-chip>
+            </v-col>
+          </v-row>
+        </v-container>
+
+        <v-card-actions>
+          <v-btn>Accept</v-btn>
+          <v-btn @click="notDismissedTrade = false" color="red lighten-1">Reject</v-btn>
+        </v-card-actions>
+      </v-card>
+    </v-dialog>
+
     <v-dialog v-model="isStealingFromPlayers" persistent max-width="750px">
       <v-card>
         <v-card-title>
@@ -525,6 +611,7 @@ export default class Player extends Vue {
   public chosenResources: [TileType] | [TileType, TileType] = ['Wood'];
   private currentlySelectedCard: DevelopmentCardType = 'None';
   private currentlySelectedPlayer = 'None';
+  private notDismissedTrade = false;
 
   public constructor () {
     super();
@@ -799,6 +886,11 @@ export default class Player extends Vue {
     } else if (value && this.chosenResources.length > 1) {
       this.$nextTick(() => { this.chosenResources.pop() })
     }
+  }
+
+  get proposedTrade() {
+    this.notDismissedTrade = true;
+    return this.$store.state.ui.playerProposesTrade;
   }
 }
 </script>

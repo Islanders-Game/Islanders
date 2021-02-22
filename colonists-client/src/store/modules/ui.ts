@@ -1,16 +1,19 @@
 /* eslint-disable no-param-reassign */
 
 import { GetterTree, MutationTree, ActionTree } from 'vuex';
+import { Resources } from '../../../../colonists-shared/dist/Shared';
 import { State as RootState } from '../store';
 
 // The state
 export type buildingType = 'None' | 'House' | 'City' | 'Road';
+export type TradeParameters = { player: string, resources: Resources };
 export class State {
   public isBuilding: buildingType = 'None';
   public isMovingThief = false;
   public isPlayingRoadBuilding = false;
   public isPlayingKnight = false;
   public isStealingFromPlayers = false;
+  public playerProposesTrade: TradeParameters | undefined = undefined;
 }
 
 // Synchrounous getters: GetterTree<local state, root state>
@@ -33,6 +36,9 @@ const mutationTree: MutationTree<State> = {
   },
   setIsStealingFromPlayers(state: State, flag: boolean) {
     state.isStealingFromPlayers = flag;
+  },
+  setPlayerProposesTrade(state: State, flag: TradeParameters) {
+    state.playerProposesTrade = flag;
   },
 };
 
