@@ -11,12 +11,34 @@
 
     <v-dialog
       v-model="dialog"
-      max-width="800px"
+      max-width="850px"
     >
       <v-card>
         <v-card-title>
-          Trade
+          Trade with
+          <v-spacer />
+
+          <v-radio-group v-model="willTradeWith" dense row>
+            <v-radio
+              v-for="(item, index) in canTradeWith"
+              :key="index"
+              :label="item"
+              :value="item"
+            />
+          </v-radio-group>
         </v-card-title>
+
+        <v-card-subtitle v-if="willTradeWith === 'A Harbor'">
+          Harbor Type
+          <v-radio-group v-model="willTradeUsingHarbor" dense row>
+            <v-radio
+              v-for="(item, index) in prettyHarborTypes"
+              :key="index"
+              :label="item"
+              :value="index"
+            />
+          </v-radio-group>
+        </v-card-subtitle>
 
         <v-container fluid>
           <v-card-subtitle>
@@ -54,7 +76,7 @@
 
         <v-container fluid>
           <v-card-subtitle>
-            Request
+            Receive
           </v-card-subtitle>
 
           <v-row dense>
@@ -106,7 +128,11 @@
 <script lang="ts">
 import { Component, Vue } from 'vue-property-decorator'
 import { TileType, Player, Resources } from '../../../colonists-shared/dist/Shared';
-import { ProposeTradeAction } from '../../../colonists-shared/dist/Action';
+import { BankTradeAction, ProposeTradeAction } from '../../../colonists-shared/dist/Action';
+import { HarborTradeAction } from '../../../colonists-shared/lib/Action';
+import { HarborType } from '../../../colonists-shared/dist/Tile';
+
+type TradePartners = 'Other Players' | 'The Bank' | 'A Harbor';
 
 @Component({
   props: {
@@ -117,6 +143,13 @@ export default class Trade extends Vue {
   public dialog = false;
   public chosen = { Wood: 0, Wool: 0, Stone: 0, Grain: 0, Clay: 0 }
   public wants = { Wood: 0, Wool: 0, Stone: 0, Grain: 0, Clay: 0 }
+  public canTradeWith = ['Other Players', 'The Bank', 'A Harbor']
+  public willTradeWith: TradePartners = 'Other Players';
+  public harborTypes: HarborType[] = ['WoodHarbor', 'WoolHarbor', 'GrainHarbor',
+    'ClayHarbor', 'StoneHarbor', 'ThreeToOneHarbor'];
+  public prettyHarborTypes: string[] = ['Wood', 'Wool', 'Grain',
+    'Clay', 'Stone', 'Three-to-One'];
+  public willTradeUsingHarbor = -1;
 
   public trade(): void {
     this.dialog = false
@@ -135,7 +168,19 @@ export default class Trade extends Vue {
       grain: +this.wants.Grain,
       clay: +this.wants.Clay,
     };
-    this.$store.dispatch('game/proposeTrade', new ProposeTradeAction(player.name, chosen, wants));
+    switch (this.willTradeWith) {
+      case 'Other Players':
+        this.$store.dispatch('game/proposeTrade', new ProposeTradeAction(player.name, chosen, wants));
+        return;
+      case 'The Bank':
+        this.$store.dispatch('game/sendAction', new BankTradeAction(player.name, chosen, wants));
+        return;
+      case 'A Harbor':
+        this.$store.dispatch('game/sendAction', new HarborTradeAction(player.name,
+          this.harborTypes[this.willTradeUsingHarbor], chosen, wants));
+        break;
+      default:
+    }
   }
 
   get ownResources(): [string, number][] {
