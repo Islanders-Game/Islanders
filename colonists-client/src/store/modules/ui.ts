@@ -6,7 +6,7 @@ import { State as RootState } from '../store';
 
 // The state
 export type buildingType = 'None' | 'House' | 'City' | 'Road';
-export type TradeParameters = { player: string, resources: Resources };
+export type TradeParameters = { player: string, resources: Resources, wants: Resources };
 export class State {
   public isBuilding: buildingType = 'None';
   public isMovingThief = false;

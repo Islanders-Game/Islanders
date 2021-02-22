@@ -123,7 +123,9 @@ const actions: ActionTree<State, RootState> = {
         });
     });
     SocketConnection.socket.on(SocketActions.proposeTrade, (action: ProposeTradeAction) => {
-      const mapped = { player: action.parameters.playerName, resources: action.parameters.resources };
+      const mapped = { player: action.parameters.playerName,
+        wants: action.parameters.wantsResources,
+        resources: action.parameters.resources };
       commit('ui/setPlayerProposesTrade', mapped, { root: true });
     });
   },

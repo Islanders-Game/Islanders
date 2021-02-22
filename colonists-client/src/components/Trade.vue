@@ -11,38 +11,73 @@
 
     <v-dialog
       v-model="dialog"
-      max-width="750px"
+      max-width="800px"
     >
       <v-card>
         <v-card-title>
           Trade
         </v-card-title>
 
-        <v-container>
-          <v-row>
-            <template v-for="(resource, index) in resources">
-              <v-col :key="index" sm="3">
+        <v-container fluid>
+          <v-card-subtitle>
+            Offer
+          </v-card-subtitle>
+
+          <v-row dense>
+            <template v-for="resource in ownResources">
+              <v-col :key="resource[0]" sm="2" dense>
                 <v-card>
                   <v-card-title class="subtitle-2">
                     {{ resource[0] }}
                     <v-spacer />
-                    <v-chip dark color="grey darken-3" label small>
-                      <v-icon small left :color="colorForResourceType(resource[0])">
+                    <v-chip dark label small>
+                      <v-icon x-small left :color="colorForResourceType(resource[0])">
                         {{ iconForResourceType(resource[0]) }}
                       </v-icon>
                       {{ resource[1] }}x
                     </v-chip>
                   </v-card-title>
-                  <v-text-field
-                    v-model="chosen[resource[0]]"
-                    small-chips
-                    dense
-                    label="Choose Wood amount"
-                    outlined
-                    multiple
-                    type="number"
-                    :max="resource[1]"
-                  />
+                  <v-container>
+                    <v-text-field
+                      v-model="chosen[resource[0]]"
+                      dense
+                      outlined
+                      type="number"
+                      :max="resource[1]"
+                    />
+                  </v-container>
+                </v-card>
+              </v-col>
+            </template>
+          </v-row>
+        </v-container>
+
+        <v-container fluid>
+          <v-card-subtitle>
+            Request
+          </v-card-subtitle>
+
+          <v-row dense>
+            <template v-for="resource in offerResources">
+              <v-col :key="resource[0]" sm="2">
+                <v-card>
+                  <v-card-title class="subtitle-2">
+                    {{ resource[0] }}
+                    <v-spacer />
+                    <v-chip dark label small>
+                      <v-icon x-small :color="colorForResourceType(resource[0])">
+                        {{ iconForResourceType(resource[0]) }}
+                      </v-icon>
+                    </v-chip>
+                  </v-card-title>
+                  <v-container>
+                    <v-text-field
+                      v-model="wants[resource[0]]"
+                      dense
+                      outlined
+                      type="number"
+                    />
+                  </v-container>
                 </v-card>
               </v-col>
             </template>
@@ -81,9 +116,9 @@ import { ProposeTradeAction } from '../../../colonists-shared/dist/Action';
 export default class Trade extends Vue {
   public dialog = false;
   public chosen = { Wood: 0, Wool: 0, Stone: 0, Grain: 0, Clay: 0 }
+  public wants = { Wood: 0, Wool: 0, Stone: 0, Grain: 0, Clay: 0 }
 
   public trade(): void {
-    // TODO: Implement emit to other players
     this.dialog = false
     const player = (this.$store.getters['game/getCurrentPlayer']) as Player;
     const chosen: Resources = {
@@ -93,10 +128,17 @@ export default class Trade extends Vue {
       grain: +this.chosen.Grain,
       clay: +this.chosen.Clay,
     };
-    this.$store.dispatch('game/proposeTrade', new ProposeTradeAction(player.name, chosen));
+    const wants: Resources = {
+      wood: +this.wants.Wood,
+      wool: +this.wants.Wool,
+      stone: +this.wants.Stone,
+      grain: +this.wants.Grain,
+      clay: +this.wants.Clay,
+    };
+    this.$store.dispatch('game/proposeTrade', new ProposeTradeAction(player.name, chosen, wants));
   }
 
-  get resources(): [string, number][] {
+  get ownResources(): [string, number][] {
     const player = (this.$store.getters['game/getCurrentPlayer']) as Player;
     if (!player) return [];
     return [
@@ -106,6 +148,16 @@ export default class Trade extends Vue {
       ['Wool', player.resources.wool],
       ['Stone', player.resources.stone],
     ].filter((r) => r[1] !== 0) as [string, number][];
+  }
+
+  get offerResources(): [string, number][] {
+    return [
+      ['Wood', 0],
+      ['Clay', 0],
+      ['Grain', 0],
+      ['Wool', 0],
+      ['Stone', 0],
+    ];
   }
 
   public iconForResourceType(type: TileType): string {
