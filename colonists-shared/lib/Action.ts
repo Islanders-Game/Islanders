@@ -31,6 +31,9 @@ interface PlayerTradeParameters extends HasPlayerName {
   otherPlayerName: string;
   resources: Resources;
 }
+interface ProposeTradeParameters extends HasPlayerName {
+  resources: Resources;
+}
 interface BankTradeParameters extends HasPlayerName {
   transfer: Resources;
   receive: Resources;
@@ -174,6 +177,21 @@ export class PlayerTradeAction {
   }
 }
 
+export class ProposeTradeAction {
+  public type: 'proposeTrade' = 'proposeTrade';
+
+  public parameters: ProposeTradeParameters;
+
+  constructor(
+    playerName: string,
+    resources: Resources,
+  ) {
+    this.parameters = {
+      playerName, resources,
+    };
+  }
+}
+
 export class BankTradeAction {
   public type: 'bankTrade' = 'bankTrade';
 
@@ -267,6 +285,7 @@ export type Action =
   | MoveThiefDevCardAction
   | StealFromPlayerAction
   | PlayerTradeAction
+  | ProposeTradeAction
   | BankTradeAction
   | HarborTradeAction
   | PlayCardAction
