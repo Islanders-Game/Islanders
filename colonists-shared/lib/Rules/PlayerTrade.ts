@@ -8,15 +8,15 @@ export const PlayerTrade = ({ parameters }: PlayerTradeAction) => (
 ): Result => w
   .flatMap(findPlayer(parameters.playerName))
   .flatMap(findPlayer(parameters.otherPlayerName))
-  .flatMap(hasResources(parameters.playerName, parameters.resources))
-  .flatMap(hasResources(parameters.playerName, parameters.resources))
+  .flatMap(hasResources(parameters.playerName, parameters.sentResources))
+  .flatMap(hasResources(parameters.otherPlayerName, parameters.receivedResources))
   .flatMap(
-    transferResources(parameters.playerName, empty, parameters.resources),
+    transferResources(parameters.playerName, empty, parameters.receivedResources),
   )
   .flatMap(
     transferResources(
       parameters.otherPlayerName,
-      parameters.resources,
+      parameters.sentResources,
       empty,
     ),
   );

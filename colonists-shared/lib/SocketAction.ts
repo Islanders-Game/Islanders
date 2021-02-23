@@ -8,5 +8,6 @@ export const SocketActions = {
   lockMap: 'lockMap',
   newMap: 'newMap',
   sendAction: 'sendAction',
+  proposeTrade: 'proposeTrade',
   undo: 'undo',
 };

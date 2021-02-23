@@ -117,7 +117,7 @@ export default class Map extends Vue {
       corner.x += hexOrigin.x;
       corner.y += hexOrigin.y;
       const cornerDist = distanceFunc(point, corner);
-      if (closestPoint.dist >= cornerDist) {
+      if (closestPoint.dist > cornerDist) {
         closestPoint = {
           point: corners[i],
           index: i,
@@ -129,42 +129,24 @@ export default class Map extends Vue {
   }
 
   private getTwoClosestPoints(point: Point): Array<{ point: { x: number; y: number }; index: number; dist: number }> {
-    const distanceFunc = (from, to) => Math.sqrt(Math.abs(from.x - to.x) ** 2 + Math.abs(from.y - to.y ** 2));
+    const distanceFunc = (from, to) => Math.sqrt(Math.abs(from.x - to.x) ** 2 + Math.abs(from.y - to.y) ** 2);
     const hexToFind = this.grid.pointToHex(point);
     const hexOrigin = hexToFind.toPoint();
-    const centerOfHex = {
-      x: hexOrigin.x + hexToFind.width() / 2,
-      y: hexOrigin.y + hexToFind.height() / 2,
-    };
-
-    let closestPoint = {
-      point: centerOfHex,
-      index: -1,
-      dist: distanceFunc(point, centerOfHex) * distanceFunc(point, centerOfHex),
-    };
-    let secondClosestPoint = closestPoint;
     const corners = hexToFind.corners();
-    for (let i = 0; i < corners.length; i++) {
-      const corner = corners[i];
+    const mapped = corners.map((c, index: number) => {
+      const corner = c;
       corner.x += hexOrigin.x;
       corner.y += hexOrigin.y;
       const cornerDist = distanceFunc(point, corner);
-      if (closestPoint.dist >= cornerDist) {
-        secondClosestPoint = closestPoint;
-        closestPoint = {
-          point: corners[i],
-          index: i,
-          dist: cornerDist,
-        };
-      } else if (secondClosestPoint.dist >= cornerDist) {
-        secondClosestPoint = {
-          point: corners[i],
-          index: i,
-          dist: cornerDist,
-        };
-      }
-    }
-    return [closestPoint, secondClosestPoint];
+      return {
+        point: corner,
+        index,
+        dist: cornerDist,
+      };
+    });
+
+    const sorted = mapped.sort((c) => c.dist);
+    return [sorted[0], sorted[1]];
   }
 
   private async dispatchActionClearCursor(event, action: Action) {
@@ -209,7 +191,6 @@ export default class Map extends Vue {
     if (closestPoints[0].index === -1) {
       return;
     }
-
     const hexToFind = this.grid.pointToHex(inWorld);
     const coord = getMatrixCoordCorner(hexToFind, closestPoints[0].index);
     if (this.isBuilding === 'House') {

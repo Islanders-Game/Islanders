@@ -1,6 +1,7 @@
 /* eslint-disable no-param-reassign */
 
 import { GetterTree, MutationTree, ActionTree, ActionContext } from 'vuex';
+import { ProposeTradeAction } from '../../../../colonists-shared/dist/Action';
 import {
   Player,
   World,
@@ -121,6 +122,12 @@ const actions: ActionTree<State, RootState> = {
           commit('setError', r);
         });
     });
+    SocketConnection.socket.on(SocketActions.proposeTrade, (action: ProposeTradeAction) => {
+      const mapped = { player: action.parameters.playerName,
+        wants: action.parameters.wantsResources,
+        resources: action.parameters.resources };
+      commit('ui/setPlayerProposesTrade', mapped, { root: true });
+    });
   },
   async startGame({ commit }: ActionContext<State, RootState>, pointsToWin: number) {
     SocketConnection.socket.emit(SocketActions.lockMap, pointsToWin);
@@ -130,6 +137,9 @@ const actions: ActionTree<State, RootState> = {
   },
   async sendAction({ commit }: ActionContext<State, RootState>, action: Action) {
     SocketConnection.socket.emit(SocketActions.sendAction, action);
+  },
+  async proposeTrade({ commit }: ActionContext<State, RootState>, action: ProposeTradeAction) {
+    SocketConnection.socket.emit(SocketActions.proposeTrade, action);
   },
 };
 

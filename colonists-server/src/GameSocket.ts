@@ -4,7 +4,7 @@ import { SocketActions, ChatMessage, Action, World, Tile } from '../../colonists
 import { GameService } from './services/GameService';
 import { ChatService } from './services/ChatService';
 import { GameRepository } from './repositories/GameRepository';
-import { LockMapAction } from '../../colonists-shared/dist/Action';
+import { LockMapAction, ProposeTradeAction } from '../../colonists-shared/dist/Action';
 import { GamePlayerSockets, Disconnected } from './App';
 
 export class GameSocket {
@@ -37,6 +37,7 @@ export class GameSocket {
         this.setUpNewMap(connection, gameID, nsp);
         this.setUpChat(connection, gameID, nsp);
         this.setUpSendAction(connection, gameID, nsp);
+        this.setUpProposeTradeAction(connection, gameID, nsp);
         GameSocket.setUpDisconnect(connection, gameID, gamePlayerSockets);
 
         this.checkForReconnect(gameID, playerName, gamePlayerSockets, connection.id).then((r) =>
@@ -88,6 +89,13 @@ export class GameSocket {
       GameSocket.logSocketEvent(gameID, SocketActions.sendAction);
       const result = await this.gameService.applyAction(gameID, action);
       namespace.emit(SocketActions.newWorld, result);
+    });
+  }
+
+  setUpProposeTradeAction = (connection: Socket, gameID: string, namespace: Namespace) => {
+    connection.on(SocketActions.proposeTrade, async (action: ProposeTradeAction) => {
+      GameSocket.logSocketEvent(gameID, SocketActions.sendAction);
+      namespace.emit(SocketActions.proposeTrade, action);
     });
   }
 
