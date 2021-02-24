@@ -3,6 +3,7 @@ import {
   neighbouringMatrixCoords,
   neighbouringHexCoords,
   getMatrixCoordCorner,
+  HexCoordinate,
 } from '../lib/Shared';
 
 describe('neighbouringMatrixCoords', () => {
@@ -44,4 +45,17 @@ describe('getMatrixCoordCorner zeroCase', () => {
     const result = getMatrixCoordCorner(<MatrixCoordinate>point, <number>cornerIndex);
     expect(result).toEqual(<MatrixCoordinate>expected);
   });
+});
+
+describe('Neighbouring HexCoordinates are found from MatrixCoordinates as expected', () => {
+  const matrixCoordinateEven: MatrixCoordinate = { x: 6, y: 0 };
+  const expectedHexesEven: HexCoordinate[] = [{ x: 2, y: 0 }, { x: 2, y: -1 }, { x: 3, y: -1 }];
+
+  const matrixCoordinateOdd: MatrixCoordinate = { x: 7, y: -1 };
+  const expectedHexesOdd: HexCoordinate[] = [{ x: 2, y: -1 }, { x: 3, y: -2 }, { x: 3, y: -1 }];
+
+  const evenConverted = neighbouringHexCoords(matrixCoordinateEven);
+  const oddConverted = neighbouringHexCoords(matrixCoordinateOdd);
+  expect(evenConverted.every((converted) => expectedHexesEven.some((expected) => expected.x === converted.x && expected.y === converted.y)))
+  expect(oddConverted.every((converted) => expectedHexesOdd.some((expected) => expected.x === converted.x && expected.y === converted.y)))
 });

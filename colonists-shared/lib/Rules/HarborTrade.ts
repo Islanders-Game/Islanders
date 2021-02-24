@@ -9,7 +9,7 @@ export const HarborTrade = ({ parameters }: HarborTradeAction) => (
   w: Result,
 ): Result => w
   .flatMap(findPlayer(parameters.playerName))
-  .flatMap(playerHasHarbor(parameters.playerName, parameters.harborType))
+  .flatMap(playerHasHarbor(parameters.harborType))
   .flatMap(resourcesMatchHarbor(parameters.transfer, parameters.harborType))
   .flatMap(hasResources(parameters.playerName, parameters.transfer))
   .flatMap(
@@ -21,36 +21,38 @@ export const HarborTrade = ({ parameters }: HarborTradeAction) => (
   );
 
 const resourcesMatchHarbor = (check: Resources, harborType: HarborType) => (w: World): Result => {
-  const e = fail('The given resources do not match the harbor');
-  const s = success(w);
+  const failed = fail('The given resources do not match the harbor');
+  const succeeded = success(w);
   switch (harborType) {
     case 'ClayHarbor':
-      return check.clay >= 2 ? s : e;
+      return check.clay >= 2 ? succeeded : failed;
     case 'GrainHarbor':
-      return check.grain >= 2 ? s : e;
+      return check.grain >= 2 ? succeeded : failed;
     case 'StoneHarbor':
-      return check.grain >= 2 ? s : e;
+      return check.stone >= 2 ? succeeded : failed;
     case 'WoodHarbor':
-      return check.grain >= 2 ? s : e;
+      return check.wood >= 2 ? succeeded : failed;
     case 'WoolHarbor':
-      return check.grain >= 2 ? s : e;
+      return check.wool >= 2 ? succeeded : failed;
     case 'ThreeToOneHarbor':
-      return check.clay >= 3 || check.grain >= 3 || check.stone >= 3 || check.wood >= 3 || check.wool >= 3 ? s : e;
+      return check.clay >= 3
+        || check.grain >= 3
+        || check.stone >= 3
+        || check.wood >= 3
+        || check.wool >= 3
+        ? succeeded : failed;
     default:
-      return fail('Undefined Harbor');
+      return fail('This harbor type does not exist');
   }
 };
 
-const playerHasHarbor = (playerName: string, harborType: HarborType) => (w: World): Result => {
+const playerHasHarbor = (harborType: HarborType) => (w: World): Result => {
   const player = w.players[w.currentPlayer];
   const tiles = w.map;
-  const hasHarbor = player.houses.some((house) => {
-    const hexes = neighbouringHexCoords(house.position);
-    return hexes.some((h) => {
-      const tile = tiles.find((t) => t.coord.x === h.x && t.coord.y === h.y);
-      return tile && tile.type === harborType;
-    });
-  });
+  const hasHarbor = player.houses.some((house) =>
+    neighbouringHexCoords(house.position)
+      .some((h) => tiles
+        .some((t) => t.coord.x === h.x && t.coord.y === h.y && t.type === harborType)));
   if (!hasHarbor) {
     return fail('You do not have a house on a harbor for this trade');
   }
