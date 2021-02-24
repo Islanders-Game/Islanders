@@ -462,7 +462,7 @@ describe('Rules when playing development cards', () => {
           gameType: 'original',
           maxCities: 0,
           maxHouses: 0,
-          maxRoads: 0,
+          maxRoads: 1000,
           pointsToWin: 0,
           rounds: 0,
         },

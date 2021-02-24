@@ -128,19 +128,6 @@ describe('Rules for ending a turn', () => {
 });
 
 /*
-* Longest road
-*/
-describe('Rules when gaining the longest road', () => {
-  test('A player having the longest road increases their points by 2', () => {
-
-  });
-
-  test('A player losing the longest road decreases their points by 2', () => {
-
-  });
-});
-
-/*
 * Highest number of knights
 */
 describe('Rules when gaining the longest road', () => {
@@ -150,6 +137,19 @@ describe('Rules when gaining the longest road', () => {
   });
 
   test('A player losing the highest number of knights decreases their points by 2', () => {
+
+  });
+});
+
+/*
+* Longest road
+*/
+describe('Rules when gaining the longest road', () => {
+  test('A player having the longest road increases their points by 2', () => {
+
+  });
+
+  test('A player losing the longest road decreases their points by 2', () => {
 
   });
 });
