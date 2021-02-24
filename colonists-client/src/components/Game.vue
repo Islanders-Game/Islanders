@@ -3,7 +3,6 @@
     <v-container
       id="Game"
       fluid
-      class="fill-height"
     >
       <v-row
         no-gutters
@@ -98,7 +97,7 @@ export default class Game extends Vue {
 }
 
 #Game {
-  height: 100%;
+  height: 100vh;
   padding: 0px;
 }
 
