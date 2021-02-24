@@ -4,14 +4,14 @@ services:
     image: mongo
     restart: unless-stopped
     volumes:
-      - colonists-mongo-data:/data/db
+      - islanders-mongo-data:/data/db
     environment:
-      - MONGO_INITDB_DATABASE=colonists
+      - MONGO_INITDB_DATABASE=islanders
     ports:
       - 27017:27017
 
-  colonists-server:
-    image: colonists/colonists-server:latest
+  islanders-server:
+    image: islanders/islanders-server:latest
     restart: unless-stopped
     ports:
       - 3000:3000
@@ -20,12 +20,12 @@ services:
     links:
       - mongo
 
-  colonists-client:
-    image: colonists/colonists-client:latest
+  islanders-client:
+    image: islanders/islanders-client:latest
     restart: unless-stopped
     ports:
       - 80:80
 
 
 volumes:
-  colonists-mongo-data:
+  islanders-mongo-data:

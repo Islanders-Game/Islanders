@@ -1,8 +1,8 @@
-![header](doc/header-simple.jpg "colonists")
+![header](doc/header-simple.jpg "islanders")
 
 ***
 
-<p align="center"><b>Colonists</b> is an online real-time implementation of the magnificent <i>"The Settlers of Catan"</i> designed by Klaus Teuber.</p>
+<p align="center"><b>Islanders</b> is an online real-time implementation of the magnificent <i>"The Settlers of Catan"</i> designed by Klaus Teuber.</p>
 
 ***
 
@@ -10,22 +10,22 @@
 
 Run the following on a system that has Docker installed:
 
-    docker build -t colonists/colonists-shared ./colonists-shared
-    docker build -t colonists/colonists-client ./colonists-client
-    docker build -t colonists/colonists-server ./colonists-server
+    docker build -t islanders/islanders-shared ./islanders-shared
+    docker build -t islanders/islanders-client ./islanders-client
+    docker build -t islanders/islanders-server ./islanders-server
     docker-compose up -d
 
-If you have a running traefik service you can access the app at colonists.localhost.
-Otherwise, run `docker inspect colonists-client | grep IPAddress` to find the ip address of the app.
+If you have a running traefik service you can access the app at islanders.localhost.
+Otherwise, run `docker inspect islanders-client | grep IPAddress` to find the ip address of the app.
 
-![screenshot-1](doc/screenshot-1.jpg "colonists")
+![screenshot-1](doc/screenshot-1.jpg "islanders")
 
-![screenshot-2](doc/screenshot-2.jpg "colonists")
+![screenshot-2](doc/screenshot-2.jpg "islanders")
 
 ## Implementation
 
-[![codebeat badge](https://codebeat.co/badges/9fe73beb-c48f-4772-8d45-ab88e2241782)](https://codebeat.co/projects/github-com-awia00-colonists-master)
-[![Maintainability](https://api.codeclimate.com/v1/badges/c01853d77070274d6bc5/maintainability)](https://codeclimate.com/github/Colonists-Game/Colonists/maintainability)
+[![codebeat badge](https://codebeat.co/badges/9fe73beb-c48f-4772-8d45-ab88e2241782)](https://codebeat.co/projects/github-com-awia00-islanders-master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/c01853d77070274d6bc5/maintainability)](https://codeclimate.com/github/Islanders-Game/Islanders/maintainability)
 [![PRs Welcome](https://img.shields.io/badge/PRs-welcome-brightgreen.svg?style=flat)](http://makeapullrequest.com)
 
 The server, shared libraries and client are all written in TypeScript and transpiled to JavaScript. The server runs in node, and the client is built using Vue.
