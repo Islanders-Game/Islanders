@@ -145,7 +145,7 @@ export default class Map extends Vue {
       };
     });
 
-    const sorted = mapped.sort((c) => c.dist);
+    const sorted = mapped.sort((first, second) => first.dist > second.dist);
     return [sorted[0], sorted[1]];
   }
 
