@@ -64,12 +64,12 @@ export class GameRepository {
     const db = monk(this.mongoURL);
     return result.flatMapAsync(async (current) => {
       const currentVersion = current.version;
-      if (currentVersion - 1 === 0 || current.gameState === 'Finished') return fail('You can not undo further back!');
+      if (currentVersion - 1 === 0 || current.gameState === 'Finished') return fail('You cannot undo further back');
       const lastVersion: DBWorld = await db
         .get(this.tableName)
         .findOne({ _id: { id: new ObjectId(gameID), version: currentVersion - 1 } });
       if (lastVersion.currentPlayer !== current.currentPlayer || lastVersion.gameState === 'Uninitialized') {
-        return fail('You can not undo further back!');
+        return fail('You can not undo further back');
       }
       await db.get(this.tableName).remove({ _id: { id: new ObjectId(gameID), version: currentVersion } });
       return success(lastVersion);
