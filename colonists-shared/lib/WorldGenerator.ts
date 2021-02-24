@@ -1,68 +1,71 @@
 import { defineGrid, extendHex, HexFactory } from 'honeycomb-grid';
-import { Tile, TileType, GeneratorDiceRollType, HarborType } from './Tile';
+import { Tile, TileType, HarborType } from './Tile';
 import { getNeighbouringHexCoords } from './HexCoordinate';
-import { HexCoordinate } from './Shared';
+import { DiceRoll, HexCoordinate } from './Shared';
 
-const randomTileType = (): TileType => {
-  const tileProbabilities: TileType[] = [
-    'Wood',
-    'Wood',
-    'Wood',
-    'Wood',
-    'Wool',
-    'Wool',
-    'Wool',
-    'Wool',
-    'Grain',
-    'Grain',
-    'Grain',
-    'Grain',
-    'Stone',
-    'Stone',
-    'Stone',
-    'Clay',
-    'Clay',
-    'Clay',
-    'Desert',
-  ];
-  const rand = Math.floor(Math.random() * tileProbabilities.length);
-  return tileProbabilities[rand];
-};
+const harborProbabilites: HarborType[] = [
+  'WoodHarbor',
+  'WoolHarbor',
+  'GrainHarbor',
+  'ClayHarbor',
+  'StoneHarbor',
+  'ThreeToOneHarbor',
+  'ThreeToOneHarbor',
+  'ThreeToOneHarbor',
+  'ThreeToOneHarbor',
+];
 
-const generatorDiceRoll = (): GeneratorDiceRollType => {
-  const roll = Math.random();
-  if (roll <= 0.03) {
-    return 2;
+const tileProbabilities: TileType[] = [
+  'Wood',
+  'Wood',
+  'Wood',
+  'Wood',
+  'Wool',
+  'Wool',
+  'Wool',
+  'Wool',
+  'Grain',
+  'Grain',
+  'Grain',
+  'Grain',
+  'Stone',
+  'Stone',
+  'Stone',
+  'Clay',
+  'Clay',
+  'Clay',
+  'Desert',
+];
+
+const diceRollProbabilites: DiceRoll[] = [
+  2,
+  3,
+  3,
+  4,
+  4,
+  5,
+  5,
+  6,
+  6,
+  8,
+  8,
+  9,
+  9,
+  10,
+  10,
+  11,
+  11,
+  12,
+];
+
+function shuffleArray<T>(input: T[]): T[] {
+  const array = [...input];
+  for (let i = array.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [array[i], array[j]] = [array[j], array[i]];
   }
-  if (roll > 0.03 && roll <= 0.06) {
-    return 12;
-  }
-  if (roll > 0.06 && roll <= 0.12) {
-    return 3;
-  }
-  if (roll > 0.12 && roll <= 0.18) {
-    return 11;
-  }
-  if (roll > 0.18 && roll <= 0.26) {
-    return 4;
-  }
-  if (roll > 0.26 && roll <= 0.34) {
-    return 10;
-  }
-  if (roll > 0.34 && roll <= 0.45) {
-    return 5;
-  }
-  if (roll > 0.45 && roll <= 0.56) {
-    return 9;
-  }
-  if (roll > 0.56 && roll <= 0.7) {
-    return 6;
-  }
-  if (roll > 0.7 && roll <= 0.84) {
-    return 8;
-  }
-  return generatorDiceRoll();
-};
+  return array;
+}
 
 export class WorldGenerator {
   // eslint-disable-next-line class-methods-use-this
@@ -84,29 +87,40 @@ export class WorldGenerator {
       for (let i = 0; i < generateIslands; i++) {
         grid = grid.concat(
           Grid.hexagon({
-            radius: Math.floor(r / 2),
+            radius: Math.floor(r / 1.5),
             center: generateIslandCenter(r, mainHex),
           }),
         );
       }
     }
 
-    const harborProbabilites: HarborType[] = [
-      'WoodHarbor',
-      'WoolHarbor',
-      'GrainHarbor',
-      'ClayHarbor',
-      'StoneHarbor',
-      'ThreeToOneHarbor',
-      'ThreeToOneHarbor',
-      'ThreeToOneHarbor',
-      'ThreeToOneHarbor',
-    ];
-    const getHarbor = () => harborProbabilites[Math.floor(Math.random() * harborProbabilites.length)];
+    let shuffledHarbors = shuffleArray<HarborType>(harborProbabilites);
+    const getHarbor = (): HarborType => {
+      if (shuffledHarbors.length === 0) {
+        shuffledHarbors = shuffleArray(harborProbabilites);
+      }
+      return shuffledHarbors.pop() as HarborType;
+    };
+
+    let shuffledTiles = shuffleArray<TileType>(tileProbabilities);
+    const randomTileType = (): TileType => {
+      if (shuffledTiles.length === 0) {
+        shuffledTiles = shuffleArray(tileProbabilities);
+      }
+      return shuffledTiles.pop() as TileType;
+    };
+
+    let shuffledDiceRollProbabilites = shuffleArray<DiceRoll>(diceRollProbabilites);
+    const randomTileNumber = (): DiceRoll => {
+      if (shuffledDiceRollProbabilites.length === 0) {
+        shuffledDiceRollProbabilites = shuffleArray(diceRollProbabilites);
+      }
+      return shuffledDiceRollProbabilites.pop() as DiceRoll;
+    };
 
     grid.forEach((hex) => {
       const tileType = randomTileType();
-      const diceRoll = tileType === 'Desert' ? 'None' : generatorDiceRoll();
+      const diceRoll = tileType === 'Desert' ? 'None' : randomTileNumber();
 
       const neighbours = getNeighbouringHexCoords(hex.coordinates());
       neighbours.forEach((c) => {
@@ -144,15 +158,13 @@ export class WorldGenerator {
 
 const coordinateIsHarbor = (hc: HexCoordinate, map: Tile[]) => {
   const tile = map.find((h) => h.coord.x === hc.x && h.coord.y === hc.y);
-  return (
-    tile !== undefined &&
+  return tile &&
     (tile.type === 'ClayHarbor' ||
       tile.type === 'GrainHarbor' ||
       tile.type === 'StoneHarbor' ||
       tile.type === 'ThreeToOneHarbor' ||
       tile.type === 'WoodHarbor' ||
-      tile.type === 'WoolHarbor')
-  );
+      tile.type === 'WoolHarbor');
 };
 
 const generateIslandCenter = (r: number, hex: HexFactory<{ orientation: 'flat' }>) => {
