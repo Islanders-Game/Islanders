@@ -26,6 +26,7 @@
           <v-col sm="3">
             <v-text-field
               v-model="numberOfIslands"
+              disabled
               dark
               outlined
               dense

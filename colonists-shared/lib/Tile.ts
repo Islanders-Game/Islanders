@@ -29,18 +29,6 @@ export type DiceRoll =
   | 10
   | 11
   | 12;
-export type GeneratorDiceRollType =
-  | 'None'
-  | 2
-  | 3
-  | 4
-  | 5
-  | 6
-  | 8
-  | 9
-  | 10
-  | 11
-  | 12;
 export interface Tile {
   type: TileType;
   diceRoll: DiceRoll;
