@@ -81,10 +81,6 @@ describe('Rules for ending a turn', () => {
     expect(applied1).toHaveProperty('reason');
   });
 
-  test('A player ending their turn increases the resources for all players according to their placed houses', () => {
-
-  });
-
   test('A player rolling a 7 sets the "has rolled 7" conditions for the game', () => {
     const p1: Player = new Player('P1');
     const w: World = {
@@ -124,6 +120,10 @@ describe('Rules for ending a turn', () => {
 
     const hasConditions = (toTest as Success)?.value?.conditions?.rolledASeven !== undefined;
     expect(hasConditions);
+  });
+
+  test('A player ending their turn increases the resources for all players according to their placed houses', () => {
+
   });
 });
 

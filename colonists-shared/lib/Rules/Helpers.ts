@@ -172,6 +172,14 @@ export const findPlayer = (name: string) => (w: World): Result => {
   return success(w);
 };
 
+export const playerExists = (name: string) => (w: World): Result => {
+  const player = w.players.find((p) => p.name === name);
+  if (!player) {
+    return fail('This player does not exist');
+  }
+  return success(w);
+};
+
 export const hasResources = (playerName: string, check: Resources) => (w: World): Result => {
   const player = w.players.find((p) => p.name === playerName);
   if (!player) return fail(`The player ${playerName} was not found`);
@@ -184,9 +192,6 @@ export const hasResources = (playerName: string, check: Resources) => (w: World)
 
 export const transferResources = (playerName: string, remove: Resources, assign: Resources) => (w: World): Result => {
   const player = w.players[w.currentPlayer];
-  if (player.name !== playerName) {
-    return fail('It is not your turn');
-  }
   const subtracted = subtractResources(player.resources, remove);
   const transferred = addResources(subtracted, assign);
   const players = w.players.map((pl) => (pl.name === playerName ? {
