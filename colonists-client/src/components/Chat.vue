@@ -1,5 +1,5 @@
 <template>
-  <v-container id="Chat">
+  <v-container id="chat">
     <v-list-item
       v-for="(message, index) in messages.slice().reverse()"
       :key="index"
@@ -67,5 +67,7 @@ export default class Chat extends Vue {
 </script>
 
 <style lang="scss" scoped>
-
+#chat {
+  overflow: hidden;
+}
 </style>
