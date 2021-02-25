@@ -1,5 +1,5 @@
 import { defineGrid, extendHex, HexFactory } from 'honeycomb-grid';
-import { Tile, TileType, HarborType } from './Tile';
+import { Tile, TileType, HarborType, findTileInMap } from './Tile';
 import { getNeighbouringHexCoords } from './HexCoordinate';
 import { DiceRoll, HexCoordinate } from './Shared';
 
@@ -37,26 +37,7 @@ const tileProbabilities: TileType[] = [
   'Desert',
 ];
 
-const diceRollProbabilites: DiceRoll[] = [
-  2,
-  3,
-  3,
-  4,
-  4,
-  5,
-  5,
-  6,
-  6,
-  8,
-  8,
-  9,
-  9,
-  10,
-  10,
-  11,
-  11,
-  12,
-];
+const diceRollProbabilites: DiceRoll[] = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12];
 
 function shuffleArray<T>(input: T[]): T[] {
   const array = [...input];
@@ -65,6 +46,42 @@ function shuffleArray<T>(input: T[]): T[] {
     [array[i], array[j]] = [array[j], array[i]];
   }
   return array;
+}
+
+function convertToTiles(map: Tile[], hexes: HexCoordinate[]): Tile[] {
+  const optTiles = hexes.map((x) => findTileInMap(map, x));
+  const res = optTiles.filter((x): x is Tile => x !== undefined);
+  return res;
+}
+
+function* randomTileNumberGenerator(): Generator<DiceRoll> {
+  let shuffledDiceRollProbabilites = shuffleArray<DiceRoll>(diceRollProbabilites);
+  while (true) {
+    if (shuffledDiceRollProbabilites.length === 0) {
+      shuffledDiceRollProbabilites = shuffleArray(diceRollProbabilites);
+    }
+    yield shuffledDiceRollProbabilites.pop() as DiceRoll;
+  }
+}
+
+function* randomTileTypeGenerator(): Generator<TileType> {
+  let shuffledTiles = shuffleArray<TileType>(tileProbabilities);
+  while (true) {
+    if (shuffledTiles.length === 0) {
+      shuffledTiles = shuffleArray(tileProbabilities);
+    }
+    yield shuffledTiles.pop() as TileType;
+  }
+}
+
+function* getHarborGenerator(): Generator<HarborType> {
+  let shuffledHarbors = shuffleArray<HarborType>(harborProbabilites);
+  while (true) {
+    if (shuffledHarbors.length === 0) {
+      shuffledHarbors = shuffleArray(harborProbabilites);
+    }
+    yield shuffledHarbors.pop() as HarborType;
+  }
 }
 
 export class WorldGenerator {
@@ -94,54 +111,14 @@ export class WorldGenerator {
       }
     }
 
-    let shuffledHarbors = shuffleArray<HarborType>(harborProbabilites);
-    const getHarbor = (): HarborType => {
-      if (shuffledHarbors.length === 0) {
-        shuffledHarbors = shuffleArray(harborProbabilites);
-      }
-      return shuffledHarbors.pop() as HarborType;
-    };
+    const getHarbor = getHarborGenerator();
+    const randomTileType = randomTileTypeGenerator();
+    const randomTileNumber = randomTileNumberGenerator();
 
-    let shuffledTiles = shuffleArray<TileType>(tileProbabilities);
-    const randomTileType = (): TileType => {
-      if (shuffledTiles.length === 0) {
-        shuffledTiles = shuffleArray(tileProbabilities);
-      }
-      return shuffledTiles.pop() as TileType;
-    };
-
-    let shuffledDiceRollProbabilites = shuffleArray<DiceRoll>(diceRollProbabilites);
-    const randomTileNumber = (): DiceRoll => {
-      if (shuffledDiceRollProbabilites.length === 0) {
-        shuffledDiceRollProbabilites = shuffleArray(diceRollProbabilites);
-      }
-      return shuffledDiceRollProbabilites.pop() as DiceRoll;
-    };
-
+    // set the tile type for each hex in the grid
     grid.forEach((hex) => {
-      const tileType = randomTileType();
-      const diceRoll = tileType === 'Desert' ? 'None' : randomTileNumber();
-
-      const neighbours = getNeighbouringHexCoords(hex.coordinates());
-      neighbours.forEach((c) => {
-        if (!grid.get(c)) {
-          const neighboursNeighbour = getNeighbouringHexCoords(c);
-          if (neighboursNeighbour.some((hc) => coordinateIsHarbor(hc, map))) {
-            map.push({
-              coord: c,
-              diceRoll: 'None',
-              type: 'Ocean',
-            });
-          } else {
-            map.push({
-              coord: c,
-              diceRoll: 'None',
-              type: getHarbor(),
-            });
-          }
-        }
-      });
-
+      const tileType = randomTileType.next().value;
+      const diceRoll = tileType === 'Desert' ? 'None' : randomTileNumber.next().value;
       map.push({
         coord: {
           x: hex.x,
@@ -152,20 +129,53 @@ export class WorldGenerator {
       });
     });
 
+    // add water around each hex if it is not part of the hex
+    grid.forEach((hex) => {
+      const neighbours = getNeighbouringHexCoords(hex.coordinates());
+      neighbours.forEach((c) => {
+        if (!grid.get(c)) {
+          map.push({
+            coord: c,
+            diceRoll: 'None',
+            type: 'Ocean',
+          });
+        }
+      });
+    });
+
+    // add harbors
+    map.forEach((startingTile) => {
+      if (startingTile?.type === 'Ocean') {
+        // neighboursTilePath will consists solely of ocean tiles:
+        const neighboursTilePath = [startingTile];
+        while (neighboursTilePath.length > 0) {
+          const tile = neighboursTilePath.pop()!; // we know its not undefined since it wasnt empty
+          const neighbourTiles = convertToTiles(map, getNeighbouringHexCoords(tile.coord));
+          if (!neighbourTiles.some((t) => tileIsHarbor(t))) {
+            tile.type = getHarbor.next().value;
+          }
+          neighboursTilePath.push(...neighbourTiles.filter((nt) => nt.type === 'Ocean'));
+        }
+      }
+    });
+
     return map;
   }
 }
 
 const coordinateIsHarbor = (hc: HexCoordinate, map: Tile[]) => {
-  const tile = map.find((h) => h.coord.x === hc.x && h.coord.y === hc.y);
-  return tile &&
-    (tile.type === 'ClayHarbor' ||
-      tile.type === 'GrainHarbor' ||
-      tile.type === 'StoneHarbor' ||
-      tile.type === 'ThreeToOneHarbor' ||
-      tile.type === 'WoodHarbor' ||
-      tile.type === 'WoolHarbor');
+  const tile = findTileInMap(map, hc);
+  return tile !== undefined && tileIsHarbor(tile);
 };
+
+const tileIsHarbor = (tile: Tile) =>
+  tile &&
+  (tile.type === 'ClayHarbor' ||
+    tile.type === 'GrainHarbor' ||
+    tile.type === 'StoneHarbor' ||
+    tile.type === 'ThreeToOneHarbor' ||
+    tile.type === 'WoodHarbor' ||
+    tile.type === 'WoolHarbor');
 
 const generateIslandCenter = (r: number, hex: HexFactory<{ orientation: 'flat' }>) => {
   const angle = Math.random() * Math.PI * 2;
