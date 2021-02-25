@@ -1,5 +1,5 @@
 import { HarborTradeAction } from '../Action';
-import { Resources, Result, World, fail, success, neighbouringHexCoords } from '../Shared';
+import { Resources, Result, World, fail, success, neighbouringHexCoords, resourcesAreNonNegative } from '../Shared';
 import { HarborType } from '../Tile';
 import { findPlayer,
   hasResources,
@@ -10,6 +10,8 @@ export const HarborTrade = ({ parameters }: HarborTradeAction) => (
 ): Result => w
   .flatMap(findPlayer(parameters.playerName))
   .flatMap(playerHasHarbor(parameters.harborType))
+  .flatMap(validateResources(parameters.transfer))
+  .flatMap(validateResources(parameters.receive))
   .flatMap(resourcesMatchHarbor(parameters.transfer, parameters.harborType))
   .flatMap(hasResources(parameters.playerName, parameters.transfer))
   .flatMap(
@@ -19,6 +21,10 @@ export const HarborTrade = ({ parameters }: HarborTradeAction) => (
       parameters.receive,
     ),
   );
+
+const validateResources = (resources: Resources) => (w: World): Result => {
+  return resourcesAreNonNegative(resources) ? success(w) : fail('You cannot trade negative resources')
+}
 
 const resourcesMatchHarbor = (check: Resources, harborType: HarborType) => (w: World): Result => {
   const failed = fail('The given resources do not match the harbor');
