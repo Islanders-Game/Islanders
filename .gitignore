@@ -1,5 +1,5 @@
 *.DS_Store
-colonists-server/data/db
+islanders-server/data/db
 .DS_Store
 .vscode/
 

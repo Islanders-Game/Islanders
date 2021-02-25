@@ -1,3 +1,3 @@
 exclude_patterns:
-- "colonists-shared/__tests__/"
-- "colonists-shared/dist/"
+- "islanders-shared/__tests__/"
+- "islanders-shared/dist/"
