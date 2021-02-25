@@ -66,6 +66,7 @@
                       outlined
                       type="number"
                       :max="resource[1]"
+                      min="0"
                     />
                   </v-container>
                 </v-card>
@@ -98,6 +99,7 @@
                       dense
                       outlined
                       type="number"
+                      min="0"
                     />
                   </v-container>
                 </v-card>

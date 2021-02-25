@@ -1,4 +1,5 @@
 import { BankTradeAction } from '../Action';
+import { resourcesAreNonNegative } from '../Resources';
 import { fail, Resources, Result, success, World } from '../Shared';
 import { findPlayer, hasResources, transferResources } from './Helpers';
 
@@ -7,6 +8,7 @@ export const BankTrade = ({ parameters }: BankTradeAction) => (
 ): Result => w
   .flatMap(findPlayer(parameters.playerName))
   .flatMap(hasResources(parameters.playerName, parameters.transfer))
+  .flatMap(validateResources(parameters.transfer))
   .flatMap(resourcesAreOfSameType(parameters.transfer))
   .flatMap(
     transferResources(
@@ -15,6 +17,10 @@ export const BankTrade = ({ parameters }: BankTradeAction) => (
       parameters.receive,
     ),
   );
+
+const validateResources = (resources: Resources) => (w: World): Result => {
+  return resourcesAreNonNegative(resources) ? success(w) : fail('You cannot trade negative resources')
+}
 
 const resourcesAreOfSameType = (toValidate: Resources) => (w: World) => {
   const has4IdenticalResources =
