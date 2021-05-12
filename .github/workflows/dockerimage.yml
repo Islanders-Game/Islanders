@@ -24,7 +24,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
     - name: Build shared
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v2.4.0
       with:
         push: true
         tags: localhost:5000/islanders/islanders-shared
@@ -49,7 +49,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
     - name: Build server
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v2.4.0
       with:
         push: false
         tags: islanders/islanders-server
@@ -74,7 +74,7 @@ jobs:
         restore-keys: |
           ${{ runner.os }}-buildx-
     - name: Build client
-      uses: docker/build-push-action@v2
+      uses: docker/build-push-action@v2.4.0
       with:
         push: false
         tags: islanders/islanders-client
