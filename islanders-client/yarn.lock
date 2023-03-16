@@ -1236,7 +1236,7 @@
     "jest-diff" "^24.3.0"
 
 "@types/jest@^26.0.20", "@types/jest@26.x":
-  "version" "26.0.20"
+  version "26.0.24"
   dependencies:
     "jest-diff" "^26.0.0"
     "pretty-format" "^26.0.0"
