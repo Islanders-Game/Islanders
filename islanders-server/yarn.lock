@@ -163,14 +163,7 @@
     "@types/node" "*"
 
 "@types/uuid@^8.3.0":
-  "integrity" "sha512-eQ9qFW/fhfGJF8WKHGEHZEyVWfZxrT+6CLIJGBcZPfxUh/+BnEj+UCGYMlr9qZuX/2AltsvwrGqp0LhEW8D0zQ=="
-  "resolved" "https://registry.npmjs.org/@types/uuid/-/uuid-8.3.0.tgz"
-  "version" "8.3.0"
-
-"@typescript-eslint/eslint-plugin@^4.15.0":
-  "integrity" "sha512-uiQQeu9tWl3f1+oK0yoAv9lt/KXO24iafxgQTkIYO/kitruILGx3uH+QtIAHqxFV+yIsdnJH+alel9KuE3J15Q=="
-  "resolved" "https://registry.npmjs.org/@typescript-eslint/eslint-plugin/-/eslint-plugin-4.15.2.tgz"
-  "version" "4.15.2"
+  version "8.3.4"
   dependencies:
     "@typescript-eslint/experimental-utils" "4.15.2"
     "@typescript-eslint/scope-manager" "4.15.2"
