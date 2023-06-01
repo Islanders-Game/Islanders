@@ -6578,7 +6578,7 @@
     "penner" "^0.1.3"
 
 "pixi.js@^5.3.7":
-  "version" "5.3.7"
+  version "5.3.12"
   dependencies:
     "@pixi/accessibility" "5.3.7"
     "@pixi/app" "5.3.7"
