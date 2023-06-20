@@ -1416,9 +1416,7 @@
   "version" "0.2.0"
 
 "monk@^7.3.3":
-  "integrity" "sha512-S5M5N3PRMqXParscBFgKpGpzjzZqd3Lsv3GDAvRxbQq5WC9mx2gqU5aXCoI9Ny/AKgoW0J79bhLQ8fihxEvgeQ=="
-  "resolved" "https://registry.npmjs.org/monk/-/monk-7.3.3.tgz"
-  "version" "7.3.3"
+  version "7.3.4"
   dependencies:
     "@types/mongodb" "^3.5.25"
     "debug" "*"
