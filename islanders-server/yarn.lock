@@ -132,9 +132,7 @@
   "version" "1.3.2"
 
 "@types/mongodb@^3.5.25", "@types/mongodb@^3.6.6":
-  "integrity" "sha512-8qNbL5/GFrljXc/QijcuQcUMYZ1iWNcqnJ6tneROwbfU0LsAjQ9bmq3aHi5lWXM4cyBPd2F/n9INAk/pZZttHw=="
-  "resolved" "https://registry.npmjs.org/@types/mongodb/-/mongodb-3.6.8.tgz"
-  "version" "3.6.8"
+  version "3.6.20"
   dependencies:
     "@types/bson" "*"
     "@types/node" "*"
