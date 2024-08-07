@@ -8580,13 +8580,7 @@
   "version" "2.6.12"
 
 "vuetify@^2.4.3":
-  "version" "2.4.4"
-
-"vuex@^3.6.2":
-  "version" "3.6.2"
-
-"w3c-hr-time@^1.0.1":
-  "version" "1.0.2"
+  version "2.6.10"
   dependencies:
     "browser-process-hrtime" "^1.0.0"
 
