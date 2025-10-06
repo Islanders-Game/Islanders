@@ -10,4 +10,4 @@ jobs:
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
       - name: Docker Compose Build
-        run: docker-compose build
+        run: docker compose build
