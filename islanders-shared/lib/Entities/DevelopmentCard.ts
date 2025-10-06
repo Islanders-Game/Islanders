@@ -1,12 +1,6 @@
-import { Purchaseable } from './Purchaseable';
+import type { Purchaseable } from './Purchaseable';
 
-export type DevelopmentCardType =
-  | 'Knight'
-  | 'Victory Point'
-  | 'Road Building'
-  | 'Monopoly'
-  | 'Year of Plenty'
-  | 'None';
+export type DevelopmentCardType = 'Knight' | 'Victory Point' | 'Road Building' | 'Monopoly' | 'Year of Plenty' | 'None';
 
 export class DevelopmentCard implements Purchaseable {
   public type: DevelopmentCardType = 'None';
@@ -54,10 +48,12 @@ export class DevelopmentCard implements Purchaseable {
       'Victory Point',
     ];
     const rand = Math.floor(Math.random() * cardProbabilities.length);
-    return cardProbabilities[rand];
+    return cardProbabilities[rand] ?? 'None';
   };
 }
 
-export const played = (devCard: DevelopmentCard): DevelopmentCard => ({
-  ...devCard, played: false,
-} as DevelopmentCard);
+export const played = (devCard: DevelopmentCard): DevelopmentCard =>
+  ({
+    ...devCard,
+    played: false,
+  } as DevelopmentCard);

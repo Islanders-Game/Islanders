@@ -1,31 +1,38 @@
-version: "3.5"
 services:
-  mongo:
-    image: mongo
+  postgres:
+    image: postgres:15-alpine
     restart: unless-stopped
-    volumes:
-      - islanders-mongo-data:/data/db
     environment:
-      - MONGO_INITDB_DATABASE=islanders
+      - POSTGRES_DB=islanders
+      - POSTGRES_USER=islanders
+      - POSTGRES_PASSWORD=islanders
+    volumes:
+      - ./islanders-server/scripts/init.sql:/docker-entrypoint-initdb.d/init.sql:ro
     ports:
-      - 27017:27017
+      - 5432:5432
 
   islanders-server:
-    image: islanders/islanders-server:latest
+    build:
+      context: .
+      dockerfile: ./islanders-server/Dockerfile
+    env_file:
+      - ./islanders-server/.env
+    restart: unless-stopped
+    ports:
+      - 3001:3001
+    environment:
+      - DATABASE_URL=postgres://islanders:islanders@postgres:5432/islanders
+    depends_on:
+      - postgres
+
+  islanders-client:
+    build:
+      context: .
+      dockerfile: ./islanders-client/Dockerfile
+    env_file:
+      - ./islanders-client/.env
     restart: unless-stopped
     ports:
       - 3000:3000
-    environment:
-      - MONGO_URL=mongo
-    links:
-      - mongo
-
-  islanders-client:
-    image: islanders/islanders-client:latest
-    restart: unless-stopped
-    ports:
-      - 80:80
-
-
-volumes:
-  islanders-mongo-data:
+    depends_on:
+      - islanders-server

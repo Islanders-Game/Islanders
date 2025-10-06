@@ -1,5 +1,0 @@
-.yarn/*
-!.yarn/releases/yarn-berry.cjs
-
-node_modules/*
-dist/*

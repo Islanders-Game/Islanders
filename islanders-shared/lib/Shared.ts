@@ -1,53 +1,42 @@
-import { Turn } from './Turn';
-import { Resources, subtractResources, resourcesAreNonNegative } from './Resources';
-import { HexCoordinate, getMatrixCoordCorner, getNeighbouringMatrixCoords } from './HexCoordinate';
+import type { Turn } from './Turn';
+import { type Resources, subtractResources, resourcesAreNonNegative } from './Resources';
+import { type HexCoordinate, getMatrixCoordCorner, getNeighbouringMatrixCoords } from './HexCoordinate';
 import {
-  MatrixCoordinate,
+  type MatrixCoordinate,
   neighbouringHexCoords,
   neighbouringMatrixCoords,
   matrixCoordToWorldCoord,
 } from './MatrixCoordinate';
-import { Thief } from './Thief';
+import type { Thief } from './Thief';
 import { Ship } from './Entities/Ship';
 import { Road } from './Entities/Road';
 import { House } from './Entities/House';
 import { City } from './Entities/City';
-import { Purchaseable } from './Entities/Purchaseable';
-import { Tile, TileType, DiceRoll } from './Tile';
-import { World, GameState } from './World';
+import type { Purchaseable } from './Entities/Purchaseable';
+import type { Tile, TileType, DiceRoll } from './Tile';
+import { World, type GameState } from './World';
 import { GameRules } from './GameRules';
 import { GameStatistics } from './GameStatistics';
 import { Player } from './Player';
-import { Action } from './Action';
-import { Rules, Rule, ruleReducer, rules } from './Rules';
-import { ChatMessage } from './ChatMessage';
+import type { Action, ProposeTradeAction } from './Action';
+import { LockMapAction } from './Action';
+import { type Rules, type Rule, ruleReducer, rules } from './Rules';
+import type { ChatMessage } from './ChatMessage';
 import { SocketActions } from './SocketAction';
-import { Result, Failure, Success, success, fail, toResultInstance } from './Rules/Result';
+import { type Result, Failure, Success, success, fail, toResultInstance } from './Rules/Result';
 import { WorldGenerator } from './WorldGenerator';
 import { purchase } from './Rules/Helpers';
 
 export {
-  Action,
-  Turn,
-  ChatMessage,
-  Resources,
-  HexCoordinate,
   getMatrixCoordCorner,
-  MatrixCoordinate,
   neighbouringHexCoords,
   neighbouringMatrixCoords,
   matrixCoordToWorldCoord,
   getNeighbouringMatrixCoords,
-  Thief,
   Ship,
   Road,
-  Tile,
-  TileType,
-  DiceRoll,
-  Result,
   World,
   GameRules,
-  Purchaseable,
   purchase,
   Player,
   House,
@@ -56,15 +45,31 @@ export {
   Success,
   success,
   fail,
-  Rules,
-  Rule,
   ruleReducer,
   rules,
   subtractResources,
   resourcesAreNonNegative,
   SocketActions,
   WorldGenerator,
-  GameState,
   GameStatistics,
+  LockMapAction,
   toResultInstance,
+};
+export type {
+  Action,
+  Turn,
+  ChatMessage,
+  Resources,
+  HexCoordinate,
+  MatrixCoordinate,
+  Thief,
+  Tile,
+  TileType,
+  DiceRoll,
+  Result,
+  Purchaseable,
+  Rules,
+  Rule,
+  GameState,
+  ProposeTradeAction,
 };

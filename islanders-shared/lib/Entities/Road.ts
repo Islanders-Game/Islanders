@@ -1,5 +1,5 @@
-import { Purchaseable } from './Purchaseable';
-import { MatrixCoordinate } from '../MatrixCoordinate';
+import type { Purchaseable } from './Purchaseable';
+import type { MatrixCoordinate } from '../MatrixCoordinate';
 
 export class Road implements Purchaseable {
   public start: MatrixCoordinate;
@@ -16,10 +16,12 @@ export class Road implements Purchaseable {
 
   constructor(
     start: MatrixCoordinate = {
-      x: 0, y: 0,
+      x: 0,
+      y: 0,
     },
     end: MatrixCoordinate = {
-      x: 0, y: 0,
+      x: 0,
+      y: 0,
     },
   ) {
     this.start = start;

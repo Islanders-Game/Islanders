@@ -1,26 +1,38 @@
-# islanders-client
+# sv
 
-## Project setup
-```
-npm install
+Everything you need to build a Svelte project, powered by [`sv`](https://github.com/sveltejs/cli).
+
+## Creating a project
+
+If you're seeing this, you've probably already done this step. Congrats!
+
+```sh
+# create a new project in the current directory
+npx sv create
+
+# create a new project in islanders-client
+npx sv create islanders-client
 ```
 
-### Compiles and hot-reloads for development
-```
-npm run serve
+## Developing
+
+Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
+
+```sh
+npm run dev
+
+# or start the server and open the app in a new browser tab
+npm run dev -- --open
 ```
 
-### Compiles and minifies for production
-```
+## Building
+
+To create a production version of your app:
+
+```sh
 npm run build
 ```
 
-### Lints and fixes files
-```
-npm run lint
-```
+You can preview the production build with `npm run preview`.
 
-### Run your unit tests
-```
-npm run test:unit
-```
+> To deploy your app, you may need to install an [adapter](https://svelte.dev/docs/kit/adapters) for your target environment.

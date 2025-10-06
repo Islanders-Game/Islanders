@@ -1,4 +1,4 @@
-import { Action } from './Action';
+import type { Action } from './Action';
 
 export interface Turn {
   player: number;

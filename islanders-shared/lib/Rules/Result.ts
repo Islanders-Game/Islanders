@@ -7,12 +7,10 @@ export class Failure {
     this.reason = reason;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public flatMap(_: (t: World) => Result): Result {
     return this;
   }
 
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   public async flatMapAsync(_: (t: World) => Promise<Result>): Promise<Result> {
     return this;
   }
@@ -36,11 +34,9 @@ export class Success {
     return f(this.value);
   }
 
-  // eslint-disable-next-line class-methods-use-this
-  public onFailure(_: (reason: string) => void): void {
-    // Do nothing
-  }
+  public onFailure(_: (reason: string) => void): void {}
 }
+
 export type Result = Success | Failure;
 
 export function fail(reason: string): Failure {

@@ -1,5 +1,6 @@
-import { Result } from './Rules/Result';
-import { BuildHouseAction,
+import type { Result } from './Rules/Result';
+import {
+  BuildHouseAction,
   BuildCityAction,
   BuildRoadAction,
   MoveThiefAction,
@@ -13,7 +14,8 @@ import { BuildHouseAction,
   LockMapAction,
   BuildHouseInitialAction,
   BuildRoadInitialAction,
-  StealFromPlayerAction } from './Action';
+  StealFromPlayerAction,
+} from './Action';
 import { BuildHouse } from './Rules/BuildHouse';
 import { BuildHouseInitial } from './Rules/BuildHouseInitial';
 import { BuildCity } from './Rules/BuildCity';

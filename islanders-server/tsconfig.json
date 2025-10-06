@@ -15,19 +15,11 @@
     "esModuleInterop": true,
     "baseUrl": ".",
     "allowSyntheticDefaultImports": true,
+    "types": ["node", "express", "body-parser"],
     "paths": {
-      "*": [
-        "node_modules/*",
-        "src/types/*"
-      ]
+      "*": ["node_modules/*", "src/types/*"]
     }
   },
-  "include": [
-    "src/**/*.ts",
-    "public/**/*.html"
-  ],
-  "exclude": [
-    "node_modules",
-    "**/*.spec.ts"
-  ]
+  "include": ["src/**/*.ts", "public/**/*.html"],
+  "exclude": ["node_modules", "**/*.spec.ts"]
 }

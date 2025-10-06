@@ -1,40 +1,44 @@
 import { EndTurnAction } from '../Action';
-import { Result, success, fail } from './Result';
+import { type Result, success, fail } from './Result';
 import { World } from '../World';
 import { findPlayer, assignNextPlayerTurn, assignRessourcesToPlayers } from './Helpers';
-import { GameState, Tile } from '../Shared';
+import type { GameState, Tile } from '../Shared';
 
-export const EndTurn = ({ parameters }: EndTurnAction) => (
-  world: Result,
-): Result =>
-  world
-    .flatMap(findPlayer(parameters.playerName))
-    .flatMap(verifyTurnConditions)
-    .flatMap(assignNextPlayerTurn)
-    .flatMap(stateChanger)
-    .flatMap(checkVictory(parameters.playerName))
-    .flatMap(setTurnConditions);
+export const EndTurn =
+  ({ parameters }: EndTurnAction) =>
+  (world: Result): Result =>
+    world
+      .flatMap(findPlayer(parameters.playerName))
+      .flatMap(verifyTurnConditions)
+      .flatMap(assignNextPlayerTurn)
+      .flatMap(stateChanger)
+      .flatMap(checkVictory(parameters.playerName))
+      .flatMap(setTurnConditions);
 
 const checkVictory = (playerName: string) => (w: World) => {
-  const winner = w.players.find(
-    (p) => p.points >= w.pointsToWin && p.name === playerName,
-  );
-  return winner ? success({
-    ...w, winner, gameState: 'Finished',
-  }) : success(w);
+  const winner = w.players.find((p) => p.points >= w.pointsToWin && p.name === playerName);
+  return winner
+    ? success({
+        ...w,
+        winner,
+        gameState: 'Finished',
+      })
+    : success(w);
 };
 
 const stateChanger = (w: World): Result => {
   const round = Math.floor(w.gameStatistics.turns / w.players.length);
   if (round === 2 && w.gameState === 'Pregame') {
     const initialFilter = (tile: Tile) =>
-      w.gameState === 'Pregame'
-      && !(w.thief && w.thief.hexCoordinate.x === tile.coord.x && w.thief.hexCoordinate.y === tile.coord.y);
+      w.gameState === 'Pregame' &&
+      !(w.thief && w.thief.hexCoordinate.x === tile.coord.x && w.thief.hexCoordinate.y === tile.coord.y);
 
     const players = assignRessourcesToPlayers(w, initialFilter);
     const gameState: GameState = 'Started';
     return success({
-      ...w, gameState, players,
+      ...w,
+      gameState,
+      players,
     });
   }
   return success(w);
@@ -42,15 +46,15 @@ const stateChanger = (w: World): Result => {
 
 const setTurnConditions = (w: World): Result => {
   if (w.currentDie === 7) {
-    return success({ ...w,
-      conditions: { rolledASeven: { movedThief: false, stoleFromPlayer: false } } });
+    return success({ ...w, conditions: { rolledASeven: { movedThief: false, stoleFromPlayer: false } } });
   }
   if (w.gameState === 'Pregame') {
-    return success({ ...w,
-      conditions: { mustPlaceInitialHouse: { hasPlaced: false },
-        mustPlaceInitialRoad: { hasPlaced: false } } });
+    return success({
+      ...w,
+      conditions: { mustPlaceInitialHouse: { hasPlaced: false }, mustPlaceInitialRoad: { hasPlaced: false } },
+    });
   }
-  return success({ ...w, conditions: { } });
+  return success({ ...w, conditions: {} });
 };
 
 const verifyTurnConditions = (w: World): Result => {
@@ -73,14 +77,14 @@ const verifyTurnConditions = (w: World): Result => {
     if (!movedThief) return fail('You need to move the thief');
     if (!stoleFromPlayer) return fail('You need to take resources from a player with a building surrounding the thief');
   }
-  if (w.gameState === 'Pregame'
-    && w.conditions.mustPlaceInitialHouse
-    && !w.conditions.mustPlaceInitialHouse.hasPlaced) {
+  if (
+    w.gameState === 'Pregame' &&
+    w.conditions.mustPlaceInitialHouse &&
+    !w.conditions.mustPlaceInitialHouse.hasPlaced
+  ) {
     return fail('You must place a house this turn');
   }
-  if (w.gameState === 'Pregame'
-    && w.conditions.mustPlaceInitialRoad
-    && !w.conditions.mustPlaceInitialRoad.hasPlaced) {
+  if (w.gameState === 'Pregame' && w.conditions.mustPlaceInitialRoad && !w.conditions.mustPlaceInitialRoad.hasPlaced) {
     return fail('You must place a road with a house this turn');
   }
   return success(w);

@@ -1,0 +1,21 @@
+{
+  "name": "islanders",
+  "private": true,
+  "packageManager": "bun@1.1.26",
+  "workspaces": [
+    "islanders-client",
+    "islanders-server",
+    "islanders-shared"
+  ],
+  "scripts": {
+    "typecheck": "tsc -noEmit",
+    "lint": "eslint --fix ."
+  },
+  "devDependencies": {
+    "eslint": "^9.37.0",
+    "typescript": "^5.9.3"
+  },
+  "overrides": {
+    "typescript": "^5.9.3"
+  }
+}

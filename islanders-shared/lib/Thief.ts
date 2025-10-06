@@ -1,4 +1,4 @@
-import { HexCoordinate } from './HexCoordinate';
+import type { HexCoordinate } from './HexCoordinate';
 
 export interface Thief {
   hexCoordinate: HexCoordinate;

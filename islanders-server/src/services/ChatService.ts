@@ -1,8 +1,7 @@
 import { Namespace } from 'socket.io';
-import { ChatMessage } from '../../../islanders-shared/dist/Shared';
+import { ChatMessage } from '../../../islanders-shared/lib/Shared';
 
 export class ChatService {
-  // eslint-disable-next-line class-methods-use-this
   public chatMessage(chat: ChatMessage, gameID: string, namespace: Namespace): void {
     if (!chat) console.info(`[${gameID}] Chat with empty message.`);
     if (!chat || !chat.user || !chat.text) return;

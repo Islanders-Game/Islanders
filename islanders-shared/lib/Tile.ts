@@ -1,4 +1,4 @@
-import { HexCoordinate, hexEquals } from './HexCoordinate';
+import { type HexCoordinate, hexEquals } from './HexCoordinate';
 
 export type HarborType =
   | 'WoodHarbor'

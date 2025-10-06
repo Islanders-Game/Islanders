@@ -1,5 +1,5 @@
-import { Purchaseable } from './Purchaseable';
-import { MatrixCoordinate } from '../MatrixCoordinate';
+import { type Purchaseable } from './Purchaseable';
+import { type MatrixCoordinate } from '../MatrixCoordinate';
 
 export class House implements Purchaseable {
   public position: MatrixCoordinate;
@@ -14,9 +14,12 @@ export class House implements Purchaseable {
     stone: 0,
   };
 
-  constructor(coordinates: MatrixCoordinate = {
-    x: 0, y: 0,
-  }) {
+  constructor(
+    coordinates: MatrixCoordinate = {
+      x: 0,
+      y: 0,
+    },
+  ) {
     this.position = coordinates;
   }
 }

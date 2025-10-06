@@ -1,4 +1,4 @@
-import { MatrixCoordinate } from './Shared';
+import type { MatrixCoordinate } from './Shared';
 
 export interface HexCoordinate {
   x: number;

@@ -1,10 +1,17 @@
 import { Server, Namespace, Socket } from 'socket.io';
 import http from 'http';
-import { SocketActions, ChatMessage, Action, World, Tile } from '../../islanders-shared/dist/Shared';
+import {
+  SocketActions,
+  ChatMessage,
+  Action,
+  LockMapAction,
+  ProposeTradeAction,
+  World,
+  Tile,
+} from '../../islanders-shared/lib/Shared';
 import { GameService } from './services/GameService';
 import { ChatService } from './services/ChatService';
 import { GameRepository } from './repositories/GameRepository';
-import { LockMapAction, ProposeTradeAction } from '../../islanders-shared/dist/Action';
 import { GamePlayerSockets, Disconnected } from './App';
 
 export class GameSocket {
@@ -41,7 +48,8 @@ export class GameSocket {
         GameSocket.setUpDisconnect(connection, gameID, gamePlayerSockets);
 
         this.checkForReconnect(gameID, playerName, gamePlayerSockets, connection.id).then((r) =>
-          nsp.emit(SocketActions.newWorld, r));
+          nsp.emit(SocketActions.newWorld, r),
+        );
       });
 
       setInterval(() => GameSocket.clearNamespaceIfEmpty(nsp, gamePlayerSockets), 18000000); // Clear every half hour.
@@ -97,7 +105,7 @@ export class GameSocket {
       GameSocket.logSocketEvent(gameID, SocketActions.sendAction);
       namespace.emit(SocketActions.proposeTrade, action);
     });
-  }
+  };
 
   private static setUpDisconnect(connection: Socket, gameID: string, gameSockets: GamePlayerSockets) {
     connection.on('disconnect', () => {
@@ -138,7 +146,6 @@ export class GameSocket {
   private static clearNamespaceIfEmpty(namespace: Namespace, gamePlayerSockets: GamePlayerSockets) {
     namespace.sockets.forEach((socket) => socket.disconnect());
     namespace.removeAllListeners();
-    // eslint-disable-next-line no-param-reassign
     delete gamePlayerSockets[namespace.name.substring(1)];
   }
 }

@@ -1,4 +1,4 @@
-import { HexCoordinate } from './HexCoordinate';
+import type { HexCoordinate } from './HexCoordinate';
 
 export type MatrixCoordinate = HexCoordinate;
 
@@ -18,7 +18,8 @@ export const matrixCoordToWorldCoord = (
   const worldX = (coord.x * width) / 4 + Math.floor(coord.x / 2) * (width / 4);
   const worldY = (coord.y * height) / 2;
   return {
-    x: worldX, y: worldY,
+    x: worldX,
+    y: worldY,
   };
 };
 
@@ -29,46 +30,58 @@ export const neighbouringMatrixCoords = (coord: MatrixCoordinate): MatrixCoordin
   if (mod(coord.y, 2) === 0) {
     if (mod(coord.x, 4) === 1) {
       result.push({
-        x: coord.x - 1, y: coord.y - 1,
+        x: coord.x - 1,
+        y: coord.y - 1,
       });
       result.push({
-        x: coord.x - 1, y: coord.y + 1,
+        x: coord.x - 1,
+        y: coord.y + 1,
       });
       result.push({
-        x: coord.x + 1, y: coord.y,
+        x: coord.x + 1,
+        y: coord.y,
       });
     } else if (mod(coord.x, 4) === 2) {
       result.push({
-        x: coord.x - 1, y: coord.y,
+        x: coord.x - 1,
+        y: coord.y,
       });
       result.push({
-        x: coord.x + 1, y: coord.y - 1,
+        x: coord.x + 1,
+        y: coord.y - 1,
       });
       result.push({
-        x: coord.x + 1, y: coord.y + 1,
+        x: coord.x + 1,
+        y: coord.y + 1,
       });
     }
   } else {
     if (mod(coord.x, 4) === 0) {
       result.push({
-        x: coord.x - 1, y: coord.y,
+        x: coord.x - 1,
+        y: coord.y,
       });
       result.push({
-        x: coord.x + 1, y: coord.y - 1,
+        x: coord.x + 1,
+        y: coord.y - 1,
       });
       result.push({
-        x: coord.x + 1, y: coord.y + 1,
+        x: coord.x + 1,
+        y: coord.y + 1,
       });
     }
     if (mod(coord.x, 4) === 3) {
       result.push({
-        x: coord.x - 1, y: coord.y - 1,
+        x: coord.x - 1,
+        y: coord.y - 1,
       });
       result.push({
-        x: coord.x - 1, y: coord.y + 1,
+        x: coord.x - 1,
+        y: coord.y + 1,
       });
       result.push({
-        x: coord.x + 1, y: coord.y,
+        x: coord.x + 1,
+        y: coord.y,
       });
     }
   }
@@ -85,24 +98,30 @@ export const neighbouringHexCoords = (coord: MatrixCoordinate): HexCoordinate[] 
     if (mod(coord.x, 4) === 1) {
       // one hexX, two hexX-1
       result.push({
-        x: hexX, y: hexY,
+        x: hexX,
+        y: hexY,
       });
       result.push({
-        x: hexX, y: hexY - 1,
+        x: hexX,
+        y: hexY - 1,
       });
       result.push({
-        x: hexX - 1, y: hexY - 1,
+        x: hexX - 1,
+        y: hexY - 1,
       });
     } else if (mod(coord.x, 4) === 2) {
       // two hexX, one hexX-1
       result.push({
-        x: hexX - 1, y: hexY,
+        x: hexX - 1,
+        y: hexY,
       });
       result.push({
-        x: hexX - 1, y: hexY - 1,
+        x: hexX - 1,
+        y: hexY - 1,
       });
       result.push({
-        x: hexX, y: hexY - 1,
+        x: hexX,
+        y: hexY - 1,
       });
     }
   } else {
@@ -111,24 +130,30 @@ export const neighbouringHexCoords = (coord: MatrixCoordinate): HexCoordinate[] 
     if (mod(coord.x, 4) === 0) {
       // one hexX, two hexX-1
       result.push({
-        x: hexX - 1, y: hexY,
+        x: hexX - 1,
+        y: hexY,
       });
       result.push({
-        x: hexX - 1, y: hexY - 1,
+        x: hexX - 1,
+        y: hexY - 1,
       });
       result.push({
-        x: hexX, y: hexY,
+        x: hexX,
+        y: hexY,
       });
     } else if (mod(coord.x, 4) === 3) {
       // two hexX, one hexX-1
       result.push({
-        x: hexX, y: hexY,
+        x: hexX,
+        y: hexY,
       });
       result.push({
-        x: hexX, y: hexY - 1,
+        x: hexX,
+        y: hexY - 1,
       });
       result.push({
-        x: hexX - 1, y: hexY,
+        x: hexX - 1,
+        y: hexY,
       });
     }
   }

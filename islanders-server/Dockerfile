@@ -1,29 +1,25 @@
-ARG BRANCH_TAG=latest
-ARG LOCAL_REGISTRY
-FROM ${LOCAL_REGISTRY}islanders/islanders-shared:${BRANCH_TAG} as library
+FROM oven/bun:1
 
-FROM node as dependency-cache-server
-WORKDIR /cache
-COPY package*.json ./
-RUN npm install
-
-FROM node
 WORKDIR /app
-# Copy over library
-COPY --from=library /app /app/islanders-shared
 
-# App dependencies
-RUN ["npm", "install", "-g", "typescript"]
-WORKDIR /app/server
-COPY --from=dependency-cache-server /cache/node_modules ./node_modules
-COPY package*.json ./
-RUN npm install
+COPY bun.lock package.json ./
+COPY islanders-client/package.json islanders-client/
+COPY islanders-shared/package.json islanders-shared/
+COPY islanders-server/package.json islanders-server/
+RUN bun install --production --frozen-lockfile
 
-# Build app
-COPY . .
-RUN npm run build
+COPY islanders-shared/lib ./islanders-shared/lib
+COPY islanders-shared/tsconfig.json ./islanders-shared/tsconfig.json
+COPY islanders-server/src ./islanders-server/src
+COPY islanders-server/public ./islanders-server/public
+COPY islanders-server/scripts ./islanders-server/scripts
+COPY islanders-server/tsconfig.json ./islanders-server/tsconfig.json
 
-# Run
-ENV PORT 3000
+WORKDIR /app/islanders-server
+
+ENV NODE_ENV=production
+ENV PORT=3000
+
 EXPOSE 3000
-CMD ["npm", "run", "start"]
+
+CMD ["bun", "run", "start"]

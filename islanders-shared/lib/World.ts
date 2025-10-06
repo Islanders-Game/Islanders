@@ -1,9 +1,9 @@
 import { Player } from './Player';
-import { Thief } from './Thief';
-import { Tile, DiceRoll } from './Tile';
+import type { Thief } from './Thief';
+import type { Tile, DiceRoll } from './Tile';
 import { GameRules } from './GameRules';
 import { GameStatistics } from './GameStatistics';
-import { Conditions, TurnCondition } from './TurnCondition';
+import type { Conditions } from './TurnCondition';
 
 export type GameState = 'Uninitialized' | 'Pregame' | 'Started' | 'Finished';
 
@@ -29,17 +29,20 @@ export class World implements World {
     this.gameRules = new GameRules();
     this.players = [];
     this.gameState = 'Uninitialized';
-    this.map = [{
-      type: 'Desert',
-      diceRoll: 'None',
-      coord: {
-        x: 0, y: 0,
+    this.map = [
+      {
+        type: 'Desert',
+        diceRoll: 'None',
+        coord: {
+          x: 0,
+          y: 0,
+        },
       },
-    }];
+    ];
     this.pointsToWin = 10;
     this.gameStatistics = new GameStatistics();
     this.thief = undefined;
     this.version = 0;
-    this.conditions = { };
+    this.conditions = {};
   }
 }

@@ -1,9 +1,9 @@
 import { House } from './House';
 
 export class City extends House {
-  public value = 2;
+  public override value = 2;
 
-  public cost = {
+  public override cost = {
     grain: 2,
     stone: 3,
     wool: 0,

@@ -11,7 +11,7 @@ import {
   Action,
   Rule,
   rules,
-} from '../../../islanders-shared/dist/Shared';
+} from '../../../islanders-shared/lib/Shared';
 import { GameRepository } from '../repositories/GameRepository';
 
 export class GameService {

@@ -1,9 +1,8 @@
 import express, { Request, Response } from 'express';
 import cors from 'cors';
 import http from 'http';
-import dotenv from 'dotenv';
 
-import { fail, success, World } from '../../islanders-shared/dist/Shared';
+import { fail, success, World } from '../../islanders-shared/lib/Shared';
 import { GameSocket } from './GameSocket';
 import { GameService } from './services/GameService';
 import { ChatService } from './services/ChatService';
@@ -15,10 +14,7 @@ app.use(cors());
 
 const server = http.createServer(app);
 
-dotenv.config();
-const mongoURL = `${process.env.MONGO_URL}:${process.env.MONGO_PORT}/islanders`;
-
-const gameRepository = new GameRepository(mongoURL);
+const gameRepository = new GameRepository(process.env.DATABASE_URL!);
 const gameService = new GameService(gameRepository);
 const chatService = new ChatService();
 const gameSocket = new GameSocket(server, gameService, chatService, gameRepository);
@@ -27,8 +23,6 @@ export type GamePlayerSockets = { [gameID: string]: PlayerSockets };
 export type PlayerSockets = { [playerName: string]: string };
 export const Disconnected = 'Disconnect';
 const gamePlayerSockets: GamePlayerSockets = {};
-
-app.use(cors());
 
 app.get('/', async (_, response) => {
   response.send('Server is running.');
@@ -43,7 +37,7 @@ app.get('/newgame', async (_: Request, res: Response) => {
     res.send(id);
     console.info(`[${id}] Created game.`);
   } catch (ex) {
-    res.send(fail('Couldn\'t create game!'));
+    res.send(fail("Couldn't create game!"));
   }
 });
 
@@ -59,9 +53,11 @@ app.get('/joingame', async (req: Request, res: Response) => {
     return success(w);
   });
   result.onFailure(() => {
-    if (gamePlayerSockets[gameID] &&
-        gamePlayerSockets[gameID][playerName] &&
-        gamePlayerSockets[gameID][playerName] !== Disconnected) {
+    if (
+      gamePlayerSockets[gameID] &&
+      gamePlayerSockets[gameID][playerName] &&
+      gamePlayerSockets[gameID][playerName] !== Disconnected
+    ) {
       res.send(fail('A player with that name already exists on this game!'));
     }
     res.send(fail('Game does not exist!'));

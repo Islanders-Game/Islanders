@@ -1,4 +1,4 @@
-import { Resources } from './Resources';
+import type { Resources } from './Resources';
 import { House } from './Entities/House';
 import { City } from './Entities/City';
 import { Road } from './Entities/Road';

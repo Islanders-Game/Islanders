@@ -1,7 +1,7 @@
-import { defineGrid, extendHex, HexFactory } from 'honeycomb-grid';
-import { Tile, TileType, HarborType, findTileInMap } from './Tile';
+import { defineGrid, extendHex, type HexFactory } from 'honeycomb-grid';
+import { type Tile, type TileType, type HarborType, findTileInMap } from './Tile';
 import { getNeighbouringHexCoords } from './HexCoordinate';
-import { DiceRoll, HexCoordinate } from './Shared';
+import type { DiceRoll, HexCoordinate } from './Shared';
 
 const harborProbabilites: HarborType[] = [
   'WoodHarbor',
@@ -43,7 +43,7 @@ function shuffleArray<T>(input: T[]): T[] {
   const array = [...input];
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
-    [array[i], array[j]] = [array[j], array[i]];
+    [array[i], array[j]] = [array[j]!, array[i]!];
   }
   return array;
 }

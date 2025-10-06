@@ -1,78 +1,106 @@
-/* eslint-disable no-underscore-dangle */
-import monk from 'monk';
-import { ObjectId } from 'mongodb';
-import { World, Result, fail, success } from '../../../islanders-shared/dist/Shared';
+import knex, { Knex } from 'knex';
+import { v4 as uuid } from 'uuid';
+import { World, Result, fail, success } from '../../../islanders-shared/lib/Shared';
 
-interface DBWorld extends World {
-  _id: { id: ObjectId; version: number };
-}
+type GameRow = {
+  game_id: string;
+  version: number;
+  world: World | string;
+};
 
 export class GameRepository {
-  private mongoURL: string;
+  private readonly db: Knex;
 
   private tableName = 'games';
 
-  constructor(dbConnectionString: string) {
-    this.mongoURL = dbConnectionString;
+  constructor(connection: string) {
+    this.db = knex({
+      client: 'pg',
+      connection,
+      pool: {
+        min: 0,
+        max: 10,
+      },
+      acquireConnectionTimeout: 10,
+    });
   }
 
   public async createGame(world: World): Promise<string> {
-    const db = monk(this.mongoURL);
-    const dBWorld = world as DBWorld;
-    dBWorld._id = { id: new ObjectId(), version: 0 };
-    const result: { _id: { id: string; version: number } } = await db.get(this.tableName).insert(dBWorld);
-    db.close();
-    return result._id.id;
+    const gameId = uuid();
+    const worldToPersist = this.withVersion(world, 0);
+
+    await this.db(this.tableName).insert({
+      game_id: gameId,
+      version: worldToPersist.version,
+      world: worldToPersist,
+    });
+
+    return gameId;
   }
 
   public async updateGame(gameID: string, world: World): Promise<Result> {
-    const db = monk(this.mongoURL);
     try {
-      const updatedVersion = {
-        ...world,
-        _id: { id: new ObjectId(gameID), version: world.version + 1 },
-        version: world.version + 1,
-      };
-      await db.get(this.tableName).insert(updatedVersion);
-      return success(world);
+      const nextVersion = world.version + 1;
+      const worldToPersist = this.withVersion(world, nextVersion);
+
+      await this.db(this.tableName).insert({
+        game_id: gameID,
+        version: worldToPersist.version,
+        world: worldToPersist,
+      });
+
+      return success(worldToPersist);
     } catch (ex) {
-      return fail(ex);
-    } finally {
-      db.close();
+      return fail(`Failed to update game ${gameID}: ${String(ex)}`);
     }
   }
 
   public async getWorld(gameId: string): Promise<Result> {
-    const db = monk(this.mongoURL);
     try {
-      const result: DBWorld[] = await db
-        .get(this.tableName)
-        .find({ '_id.id': new ObjectId(gameId), '_id.version': { $exists: true } }, { sort: { version: -1 } });
-      if (!result || result.length < 1) {
+      const row = (await this.db(this.tableName).where({ game_id: gameId }).orderBy('version', 'desc').first()) as
+        | GameRow
+        | undefined;
+      if (!row) {
         return fail(`World with id: ${gameId} not found!`);
       }
-      return success(result[0]);
+
+      const world = this.deserializeWorld(row);
+      return success(world);
     } catch (ex) {
-      return fail(ex);
-    } finally {
-      db.close();
+      return fail(`Failed to fetch world ${gameId}: ${String(ex)}`);
     }
   }
 
   public async undoMove(gameID: string): Promise<Result> {
     const result = await this.getWorld(gameID);
-    const db = monk(this.mongoURL);
     return result.flatMapAsync(async (current) => {
       const currentVersion = current.version;
       if (currentVersion - 1 === 0 || current.gameState === 'Finished') return fail('You cannot undo further back');
-      const lastVersion: DBWorld = await db
-        .get(this.tableName)
-        .findOne({ _id: { id: new ObjectId(gameID), version: currentVersion - 1 } });
+      const lastRow = (await this.db(this.tableName)
+        .where({ game_id: gameID, version: currentVersion - 1 })
+        .orderBy('version', 'desc')
+        .first()) as GameRow | undefined;
+      if (!lastRow) {
+        return fail('You can not undo further back');
+      }
+
+      const lastVersion = this.deserializeWorld(lastRow);
+
       if (lastVersion.currentPlayer !== current.currentPlayer || lastVersion.gameState === 'Uninitialized') {
         return fail('You can not undo further back');
       }
-      await db.get(this.tableName).remove({ _id: { id: new ObjectId(gameID), version: currentVersion } });
+
+      await this.db(this.tableName).where({ game_id: gameID, version: currentVersion }).del();
       return success(lastVersion);
     });
+  }
+
+  private withVersion(world: World, version: number): World {
+    return { ...world, version };
+  }
+
+  private deserializeWorld(row: GameRow): World {
+    const storedWorld = typeof row.world === 'string' ? JSON.parse(row.world) : row.world;
+    return { ...(storedWorld as World), version: row.version };
   }
 }

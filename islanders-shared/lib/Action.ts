@@ -1,9 +1,9 @@
-import { MatrixCoordinate } from './MatrixCoordinate';
-import { HexCoordinate } from './HexCoordinate';
+import type { MatrixCoordinate } from './MatrixCoordinate';
+import type { HexCoordinate } from './HexCoordinate';
 import { DevelopmentCard } from './Entities/DevelopmentCard';
-import { Resources } from './Resources';
-import { TileType } from './Shared';
-import { HarborType } from './Tile';
+import type { Resources } from './Resources';
+import type { TileType } from './Shared';
+import type { HarborType } from './Tile';
 
 interface HasPlayerName {
   playerName: string;
@@ -49,8 +49,8 @@ interface PlayCardParameters extends HasPlayerName {
   card: DevelopmentCard;
   chosenResources?: [TileType] | [TileType, TileType];
 }
-type BuyCardParameters = HasPlayerName
-type EndTurnParameters = HasPlayerName
+type BuyCardParameters = HasPlayerName;
+type EndTurnParameters = HasPlayerName;
 
 export class BuildHouseAction {
   public type: 'buildHouse' = 'buildHouse';
@@ -59,7 +59,8 @@ export class BuildHouseAction {
 
   constructor(playerName: string, coordinates: MatrixCoordinate) {
     this.parameters = {
-      playerName, coordinates,
+      playerName,
+      coordinates,
     };
   }
 }
@@ -71,7 +72,8 @@ export class BuildHouseInitialAction {
 
   constructor(playerName: string, coordinates: MatrixCoordinate) {
     this.parameters = {
-      playerName, coordinates,
+      playerName,
+      coordinates,
     };
   }
 }
@@ -83,7 +85,8 @@ export class BuildCityAction {
 
   constructor(playerName: string, coordinates: MatrixCoordinate) {
     this.parameters = {
-      playerName, coordinates,
+      playerName,
+      coordinates,
     };
   }
 }
@@ -93,13 +96,11 @@ export class BuildRoadAction {
 
   public parameters: BuildRoadParameters;
 
-  constructor(
-    playerName: string,
-    start: MatrixCoordinate,
-    end: MatrixCoordinate,
-  ) {
+  constructor(playerName: string, start: MatrixCoordinate, end: MatrixCoordinate) {
     this.parameters = {
-      playerName, start, end,
+      playerName,
+      start,
+      end,
     };
   }
 }
@@ -109,13 +110,11 @@ export class BuildRoadInitialAction {
 
   public parameters: BuildRoadParameters;
 
-  constructor(
-    playerName: string,
-    start: MatrixCoordinate,
-    end: MatrixCoordinate,
-  ) {
+  constructor(playerName: string, start: MatrixCoordinate, end: MatrixCoordinate) {
     this.parameters = {
-      playerName, start, end,
+      playerName,
+      start,
+      end,
     };
   }
 }
@@ -125,12 +124,10 @@ export class MoveThiefDevCardAction {
 
   public parameters: MoveThiefDevCardParameters;
 
-  constructor(
-    playerName: string,
-    coordinates: HexCoordinate,
-  ) {
+  constructor(playerName: string, coordinates: HexCoordinate) {
     this.parameters = {
-      playerName, coordinates,
+      playerName,
+      coordinates,
     };
   }
 }
@@ -140,10 +137,7 @@ export class StealFromPlayerAction {
 
   public parameters: StealFromPlayerParameters;
 
-  constructor(
-    playerName: string,
-    toStealFrom: string,
-  ) {
+  constructor(playerName: string, toStealFrom: string) {
     this.parameters = {
       playerName,
       toStealFrom,
@@ -158,7 +152,8 @@ export class MoveThiefAction {
 
   constructor(playerName: string, coordinates: HexCoordinate) {
     this.parameters = {
-      playerName, coordinates,
+      playerName,
+      coordinates,
     };
   }
 }
@@ -168,14 +163,12 @@ export class PlayerTradeAction {
 
   public parameters: PlayerTradeParameters;
 
-  constructor(
-    playerName: string,
-    otherPlayerName: string,
-    sentResources: Resources,
-    receivedResources: Resources,
-  ) {
+  constructor(playerName: string, otherPlayerName: string, sentResources: Resources, receivedResources: Resources) {
     this.parameters = {
-      playerName, otherPlayerName, sentResources, receivedResources,
+      playerName,
+      otherPlayerName,
+      sentResources,
+      receivedResources,
     };
   }
 }
@@ -185,13 +178,11 @@ export class ProposeTradeAction {
 
   public parameters: ProposeTradeParameters;
 
-  constructor(
-    playerName: string,
-    resources: Resources,
-    wantsResources: Resources,
-  ) {
+  constructor(playerName: string, resources: Resources, wantsResources: Resources) {
     this.parameters = {
-      playerName, resources, wantsResources,
+      playerName,
+      resources,
+      wantsResources,
     };
   }
 }
@@ -203,7 +194,9 @@ export class BankTradeAction {
 
   constructor(playerName: string, transfer: Resources, receive: Resources) {
     this.parameters = {
-      playerName, transfer, receive,
+      playerName,
+      transfer,
+      receive,
     };
   }
 }
@@ -213,14 +206,12 @@ export class HarborTradeAction {
 
   public parameters: HarborTradeParameters;
 
-  constructor(
-    playerName: string,
-    harborType: HarborType,
-    transfer: Resources,
-    receive: Resources,
-  ) {
+  constructor(playerName: string, harborType: HarborType, transfer: Resources, receive: Resources) {
     this.parameters = {
-      playerName, harborType, transfer, receive,
+      playerName,
+      harborType,
+      transfer,
+      receive,
     };
   }
 }
@@ -242,13 +233,11 @@ export class PlayCardAction {
 
   public parameters: PlayCardParameters;
 
-  constructor(
-    playerName: string,
-    card: DevelopmentCard,
-    chosenResources?: [TileType] | [TileType, TileType],
-  ) {
+  constructor(playerName: string, card: DevelopmentCard, chosenResources?: [TileType] | [TileType, TileType]) {
     this.parameters = {
-      playerName, card, chosenResources,
+      playerName,
+      card,
+      chosenResources,
     };
   }
 }
