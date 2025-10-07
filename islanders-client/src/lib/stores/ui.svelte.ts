@@ -1,7 +1,6 @@
 import type { Resources } from '../../../../islanders-shared/lib/Shared';
 
 export type BuildingType = 'None' | 'House' | 'City' | 'Road';
-
 export type TradeParameters = { player: string; resources: Resources; wants: Resources };
 
 export const uiState = $state({
@@ -13,35 +12,35 @@ export const uiState = $state({
 	playerProposesTrade: undefined as TradeParameters | undefined
 });
 
-export function resetUIState() {
+export const resetUIState = () => {
 	uiState.isBuilding = 'None';
 	uiState.isMovingThief = false;
 	uiState.isPlayingRoadBuilding = false;
 	uiState.isPlayingKnight = false;
 	uiState.isStealingFromPlayers = false;
 	uiState.playerProposesTrade = undefined;
-}
+};
 
-export function setIsBuilding(flag: BuildingType) {
+export const setIsBuilding = (flag: BuildingType) => {
 	uiState.isBuilding = flag;
-}
+};
 
-export function setIsMovingThief(flag: boolean) {
+export const setIsMovingThief = (flag: boolean) => {
 	uiState.isMovingThief = flag;
-}
+};
 
-export function setIsPlayingKnight(flag: boolean) {
+export const setIsPlayingKnight = (flag: boolean) => {
 	uiState.isPlayingKnight = flag;
-}
+};
 
-export function setIsPlayingRoadBuilding(flag: boolean) {
+export const setIsPlayingRoadBuilding = (flag: boolean) => {
 	uiState.isPlayingRoadBuilding = flag;
-}
+};
 
-export function setIsStealingFromPlayers(flag: boolean) {
+export const setIsStealingFromPlayers = (flag: boolean) => {
 	uiState.isStealingFromPlayers = flag;
-}
+};
 
-export function setPlayerProposesTrade(params: TradeParameters | undefined) {
+export const setPlayerProposesTrade = (params: TradeParameters | undefined) => {
 	uiState.playerProposesTrade = params;
-}
+};

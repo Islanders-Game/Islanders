@@ -31,11 +31,11 @@ app.get('/', async (_, response) => {
 app.get('/newgame', async (_: Request, res: Response) => {
   try {
     const world = new World();
-    const id = await gameRepository.createGame(world);
-    gamePlayerSockets[id.toString()] = {};
-    gameSocket.setupSocketOnNamespace(id.toString(), gamePlayerSockets);
-    res.send(id);
-    console.info(`[${id}] Created game.`);
+    const game = await gameRepository.createGame(world);
+    gamePlayerSockets[game.id] = {};
+    gameSocket.setupSocketOnNamespace(game.id, gamePlayerSockets);
+    res.send(game);
+    console.info(`[${game.id}] Created game.`);
   } catch (ex) {
     res.send(fail("Couldn't create game!"));
   }

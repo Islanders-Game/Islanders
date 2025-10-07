@@ -9,6 +9,7 @@
   ],
   "scripts": {
     "typecheck": "tsc -noEmit",
+    "typecheck:watch": "tsc -noEmit --watch",
     "lint": "eslint --fix ."
   },
   "devDependencies": {

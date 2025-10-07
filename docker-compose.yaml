@@ -20,8 +20,6 @@ services:
     restart: unless-stopped
     ports:
       - 3001:3001
-    environment:
-      - DATABASE_URL=postgres://islanders:islanders@postgres:5432/islanders
     depends_on:
       - postgres
 

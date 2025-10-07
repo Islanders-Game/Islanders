@@ -10,12 +10,14 @@
 	aria-label="Game board"
 >
 	<div class="grid min-h-0 gap-6 lg:grid-cols-[2fr_1fr]">
-		<div class="flex flex-col overflow-hidden rounded-3xl bg-slate-950/80 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
+		<div
+			class="flex flex-col overflow-hidden rounded-3xl bg-slate-950/80 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
+		>
 			<header class="border-b border-white/10 px-6 py-4 lg:px-8">
 				<h2 class="text-xl font-semibold text-white">World Map</h2>
 				<p class="mt-2 text-sm text-white/70">
-					Interact with the live island grid once you have joined a lobby. Pan with drag, zoom with the mouse
-					wheel or pinch trackpad gestures.
+					Interact with the live island grid once you have joined a lobby. Pan with drag, zoom with
+					the mouse wheel or pinch trackpad gestures.
 				</p>
 			</header>
 			<div class="relative flex flex-1 overflow-hidden">
@@ -23,7 +25,9 @@
 			</div>
 		</div>
 
-		<aside class="flex flex-col gap-4 overflow-auto rounded-3xl bg-slate-950/80 p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] lg:p-8">
+		<aside
+			class="flex flex-col gap-4 overflow-auto rounded-3xl bg-slate-950/80 p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] lg:p-8"
+		>
 			<h2 class="text-xl font-semibold text-white">Overview</h2>
 			<p class="leading-relaxed text-white/75">
 				Load the detailed panels at
@@ -40,7 +44,9 @@
 	</div>
 
 	<footer class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-			<div class="rounded-3xl bg-slate-950/80 p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] md:p-8">
+		<div
+			class="rounded-3xl bg-slate-950/80 p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] md:p-8"
+		>
 			<h2 class="text-xl font-semibold text-white">Lobby Setup</h2>
 			<p class="mt-3 leading-relaxed text-white/75">
 				Waiting to start? The host can configure the world in
@@ -50,7 +56,9 @@
 			</p>
 		</div>
 
-		<div class="rounded-3xl bg-slate-950/80 p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] md:p-8">
+		<div
+			class="rounded-3xl bg-slate-950/80 p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] md:p-8"
+		>
 			<h2 class="text-xl font-semibold text-white">Player Actions</h2>
 			<p class="mt-3 leading-relaxed text-white/75">
 				Build, trade, and play cards from the

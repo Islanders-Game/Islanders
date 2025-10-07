@@ -1,4 +1,5 @@
 <script lang="ts">
+	import '../app.css';
 	import { goto } from '$app/navigation';
 	import { createGame, joinGame, gameState } from '$lib/stores/game.svelte';
 
@@ -58,80 +59,65 @@
 	};
 </script>
 
-<h1 class="mb-4 mt-8 text-center text-4xl font-semibold tracking-tight text-white">Islanders</h1>
-<section class="mx-auto flex max-w-xl flex-col gap-6 px-4 pb-12">
-	<div
-		class="inline-flex overflow-hidden rounded-full border border-white/15 bg-slate-900/40 shadow-lg"
-	>
-		<button
-			type="button"
-			class="flex-1 px-6 py-3 text-base font-semibold text-white transition hover:bg-slate-800 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/0"
-			class:bg-slate-800={mode === 'create'}
-			onclick={() => switchMode('create')}
+<div class="flex min-h-screen flex-col items-center justify-center">
+	<section class="space-between flex w-2/3 max-w-lg flex-col rounded border border-slate-400">
+		<div role="tablist" class="tabs-border tabs border-b border-slate-400 tabs-md">
+			<button
+				type="button"
+				class="tab w-24"
+				class:tab-active={mode === 'create'}
+				onclick={() => switchMode('create')}
+			>
+				Create
+			</button>
+			<button
+				type="button"
+				class="tab w-24"
+				class:tab-active={mode === 'join'}
+				onclick={() => switchMode('join')}
+			>
+				Join
+			</button>
+		</div>
+
+		<form
+			onsubmit={(event) => {
+				event.preventDefault();
+				void handleSubmit();
+			}}
+			class="flex min-h-[200px] flex-col justify-between p-6"
+			aria-labelledby="landing-title"
 		>
-			Create
-		</button>
-		<button
-			type="button"
-			class="flex-1 px-6 py-3 text-base font-semibold text-white/80 transition hover:bg-slate-800 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/0"
-			class:bg-slate-800={mode === 'join'}
-			class:text-white={mode === 'join'}
-			onclick={() => switchMode('join')}
-		>
-			Join
-		</button>
-	</div>
+			<div class="flex flex-col gap-2">
+				<label class="input">
+					<span class="label">Name</span>
+					<input type="text" bind:value={playerName} placeholder="Player" required />
+				</label>
 
-	<form
-		class="flex flex-col gap-4 rounded-2xl bg-slate-900/70 p-8 shadow-2xl backdrop-blur-xl"
-		onsubmit={(event) => {
-			event.preventDefault();
-			void handleSubmit();
-		}}
-		aria-labelledby="landing-title"
-	>
-		<h2 id="landing-title" class="text-2xl font-semibold text-white">
-			{mode === 'create' ? 'Create a new lobby' : 'Join an existing game'}
-		</h2>
+				{#if mode === 'join'}
+					<label class="input">
+						<span class="label">Game</span>
+						<input
+							type="text"
+							bind:value={gameId}
+							placeholder="Enter the code you received"
+							required
+						/>
+					</label>
+				{/if}
+			</div>
 
-		<label class="flex flex-col gap-2 text-sm font-semibold tracking-wide text-white/80">
-			Player name
-			<input
-				type="text"
-				maxlength="25"
-				bind:value={playerName}
-				placeholder="Choose your display name"
-				required
-				class="rounded-xl border border-white/20 bg-black/25 px-4 py-3 text-base text-white placeholder:text-white/50 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400"
-			/>
-		</label>
+			<div class="toast-center toast-top toast">
+				{#if errorMessage}
+					<div class="alert alert-error"><span>{errorMessage}</span></div>
+				{/if}
+			</div>
 
-		{#if mode === 'join'}
-			<label class="flex flex-col gap-2 text-sm font-semibold tracking-wide text-white/80">
-				Game code
-				<input
-					type="text"
-					maxlength="24"
-					bind:value={gameId}
-					placeholder="Enter the code you received"
-					required
-					class="rounded-xl border border-white/20 bg-black/25 px-4 py-3 text-base text-white placeholder:text-white/50 focus:border-sky-400 focus:outline-none focus:ring-2 focus:ring-sky-400"
-				/>
-			</label>
-		{/if}
-
-		{#if errorMessage}
-			<p role="alert" class="rounded-lg bg-red-500/15 px-3 py-2 text-sm font-semibold text-red-200">
-				{errorMessage}
-			</p>
-		{/if}
-
-		<button
-			type="submit"
-			class="rounded-xl bg-gradient-to-br from-sky-500 to-sky-300 px-6 py-3 text-base font-bold text-slate-950 shadow-lg transition hover:from-sky-400 hover:to-sky-200 focus:outline-none focus-visible:ring-2 focus-visible:ring-sky-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-900/0 disabled:cursor-not-allowed disabled:opacity-75"
-			disabled={isSubmitting}
-		>
-			{isSubmitting ? 'Working…' : mode === 'create' ? 'Create game' : 'Join game'}
-		</button>
-	</form>
-</section>
+			<div class="flex">
+				<button class="btn btn-primary" type="submit" disabled={isSubmitting}>
+					{mode === 'create' ? 'Create game' : 'Join game'}
+				</button>
+			</div>
+		</form>
+	</section>
+</div>

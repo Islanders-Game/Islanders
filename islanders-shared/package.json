@@ -5,6 +5,7 @@
   "main": "dist/lib/shared.js",
   "scripts": {
     "build": "tsc --noEmit",
+    "build:watch": "tsc --noEmit --watch",
     "test": "bun test",
     "lint": "eslint --fix  \"lib/**\""
   },

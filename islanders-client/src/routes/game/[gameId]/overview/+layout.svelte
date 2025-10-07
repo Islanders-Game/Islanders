@@ -14,7 +14,7 @@
 	] as const;
 </script>
 
-<section class="flex flex-1 flex-col gap-6 overflow-auto px-6 py-8 text-white/80 sm:px-8">
+<section>
 	<header class="flex flex-col gap-3">
 		<h2 class="text-2xl font-semibold text-white">Overview</h2>
 		<nav

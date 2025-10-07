@@ -1,9 +1,8 @@
-<script lang="ts">
+<!-- <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
 	import { browser } from '$app/environment';
 	import { Application, Container, Graphics, Point } from 'pixi.js';
 	import { Viewport } from 'pixi-viewport';
-	import { extendHex, defineGrid } from 'honeycomb-grid';
 	import { gameState, bindToWorld, sendAction } from '$lib/stores/game.svelte.ts';
 	import {
 		uiState,
@@ -36,6 +35,24 @@
 		generateThiefTile
 	} from '$lib/SpriteGenerators';
 	import { compareWorlds, getClosestPoint, getTwoClosestPoints } from './mapUtils';
+
+	let honeycombReady = false;
+	let extendHexFn: typeof import('honeycomb-grid').extendHex | undefined;
+	let defineGridFn: typeof import('honeycomb-grid').defineGrid | undefined;
+
+	async function ensureHoneycomb() {
+		if (!browser) {
+			return;
+		}
+
+		if (!extendHexFn || !defineGridFn) {
+			const honeycomb = await import('honeycomb-grid');
+			extendHexFn = honeycomb.extendHex;
+			defineGridFn = honeycomb.defineGrid;
+		}
+
+		honeycombReady = true;
+	}
 
 	let container: HTMLDivElement | undefined;
 
@@ -70,14 +87,19 @@
 	let previousWorld: World | undefined;
 
 	$effect(() => {
-		const state = gameState;
-		currentPlayer = state.playerName
-			? state.world?.players.find((player) => player.name === state.playerName)
+		if (!honeycombReady) {
+			return;
+		}
+
+		const nextWorld = gameState.world;
+		const playerName = gameState.playerName;
+		currentPlayer = playerName
+			? nextWorld?.players.find((player: Player) => player.name === playerName)
 			: undefined;
-		currentWorld = state.world;
-		if (state.world !== previousWorld) {
-			drawMap(state.world, previousWorld);
-			previousWorld = state.world;
+		currentWorld = nextWorld;
+		if (nextWorld !== previousWorld) {
+			drawMap(nextWorld, previousWorld);
+			previousWorld = nextWorld;
 		}
 	});
 
@@ -307,11 +329,15 @@
 		if (redrawTiles) {
 			tileContainer = new Container();
 			const map = !newWorld || !newWorld.map ? [] : newWorld.map;
-			const Hex = extendHex({
+			if (!extendHexFn || !defineGridFn) {
+				return;
+			}
+
+			const Hex = extendHexFn({
 				size: hexSize,
 				orientation: 'flat'
 			});
-			grid = defineGrid(Hex);
+			grid = defineGridFn(Hex);
 			hexFactory = Hex;
 
 			lineGraphics.removeChildren();
@@ -420,6 +446,14 @@
 			return;
 		}
 
+		void (async () => {
+			try {
+				await ensureHoneycomb();
+			} catch (error) {
+				console.warn('Unable to load hex grid helpers', error);
+			}
+		})();
+
 		try {
 			void bindToWorld();
 		} catch (error) {
@@ -450,4 +484,4 @@
 	});
 </script>
 
-<div bind:this={container} class="h-full w-full bg-[#03518b]"></div>
+<div bind:this={container} class="h-full w-full bg-[#03518b]"></div> -->

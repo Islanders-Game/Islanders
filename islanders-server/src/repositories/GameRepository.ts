@@ -1,5 +1,4 @@
 import knex, { Knex } from 'knex';
-import { v4 as uuid } from 'uuid';
 import { World, Result, fail, success } from '../../../islanders-shared/lib/Shared';
 
 type GameRow = {
@@ -18,24 +17,23 @@ export class GameRepository {
       client: 'pg',
       connection,
       pool: {
-        min: 0,
+        min: 1,
         max: 10,
       },
-      acquireConnectionTimeout: 10,
     });
   }
 
-  public async createGame(world: World): Promise<string> {
-    const gameId = uuid();
+  public async createGame(world: World): Promise<{ id: string }> {
     const worldToPersist = this.withVersion(world, 0);
 
-    await this.db(this.tableName).insert({
-      game_id: gameId,
-      version: worldToPersist.version,
-      world: worldToPersist,
-    });
+    const result = (await this.db(this.tableName)
+      .insert({
+        version: worldToPersist.version,
+        world: worldToPersist,
+      })
+      .returning('game_id')) as Array<{ game_id: string }>;
 
-    return gameId;
+    return { id: result[0].game_id };
   }
 
   public async updateGame(gameID: string, world: World): Promise<Result> {

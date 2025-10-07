@@ -6,8 +6,10 @@
   "scripts": {
     "lint": "eslint --fix  \"src/**\"",
     "typecheck": "tsc -noEmit",
+    "typecheck:watch": "tsc -noEmit --watch",
     "build": "bun tools/copyAssets.js",
-    "start": "bun src/App.ts"
+    "start": "bun src/App.ts",
+    "start:watch": "bun --watch src/App.ts"
   },
   "repository": {
     "type": "git",
@@ -23,9 +25,11 @@
     "body-parser": "^2.2.0",
     "cors": "^2.8.5",
     "express": "^5.1.0",
+    "hono": "^4.9.10",
     "islanders-shared": "workspace:^1.0.0",
     "knex": "^3.1.0",
-    "pg": "^8.13.1",
+    "pg": "^8.16.3",
+    "postgres": "^3.4.7",
     "socket.io": "^4.8.1",
     "uuid": "^13.0.0"
   },
