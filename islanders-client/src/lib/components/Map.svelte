@@ -34,6 +34,7 @@
 	} from '$lib/SpriteGenerators';
 	import { compareWorlds, getClosestPoint, getTwoClosestPoints } from './mapUtils';
 	import * as honeycombGrid from 'honeycomb-grid';
+	import type { Grid as HoneycombGrid } from 'honeycomb-grid';
 	const { defineHex, Grid, Orientation } = honeycombGrid;
 
 	let container: HTMLDivElement | undefined;
@@ -51,8 +52,10 @@
 	const cursorGraphics = new Graphics();
 	const sprites = generateSprites();
 
-	let grid: any;
-	let hexFactory: any;
+	type HexType = ReturnType<typeof defineHex>;
+	type CustomHex = InstanceType<HexType>;
+	let grid: HoneycombGrid<CustomHex> | undefined;
+	let hexFactory: HexType | undefined;
 
 	let height = 0;
 	let width = 0;
@@ -123,7 +126,7 @@
 		app.renderer.resize(width, height);
 	};
 
-	async function dispatchActionClearCursor(action: GameAction) {
+	const dispatchActionClearCursor = async (action: GameAction) => {
 		cursorGraphics.clear();
 		cursorGraphics.removeChildren();
 		try {
@@ -131,9 +134,9 @@
 		} catch (error) {
 			console.warn('Failed to send action', error);
 		}
-	}
+	};
 
-	function handleThiefClick(event: { data: { global: Point } }) {
+	const handleThiefClick = (event: { data: { global: Point } }) => {
 		if (!worldContainer || !grid) return;
 		if (!currentPlayer) return;
 		const inWorld = toWorld(event.data.global);
@@ -142,9 +145,9 @@
 		dispatchActionClearCursor(moveThiefAction);
 		setIsMovingThief(false);
 		setIsStealingFromPlayers(true);
-	}
+	};
 
-	function handleIsPlayingKnightClick(event: { data: { global: Point } }) {
+	const handleIsPlayingKnightClick = (event: { data: { global: Point } }) => {
 		if (!worldContainer || !grid) return;
 		if (!currentPlayer) return;
 		const inWorld = toWorld(event.data.global);
@@ -153,9 +156,9 @@
 		dispatchActionClearCursor(moveThiefAction);
 		setIsPlayingKnight(false);
 		setIsStealingFromPlayers(true);
-	}
+	};
 
-	function handleBuildClick(event: { data: { global: Point } }) {
+	const handleBuildClick = (event: { data: { global: Point } }) => {
 		if (!worldContainer || !currentPlayer || !currentWorld || !grid) return;
 
 		const inWorld = toWorld(event.data.global);
@@ -189,9 +192,9 @@
 			dispatchActionClearCursor(action);
 			setIsBuilding('None');
 		}
-	}
+	};
 
-	function handleClick(event: { data: { global: Point } }) {
+	const handleClick = (event: { data: { global: Point } }) => {
 		if (isBuilding !== 'None') {
 			handleBuildClick(event);
 		} else if (isMovingThief) {
@@ -201,14 +204,14 @@
 		} else if (isPlayingRoadBuilding) {
 			handleBuildClick(event);
 		}
-	}
+	};
 
-	function createPiece(
+	const createPiece = (
 		spriteType: string,
 		dimensions: { x: number; y: number },
 		tint: number,
 		coord: { x: number; y: number }
-	) {
+	) => {
 		const generator = sprites[spriteType];
 		const piece = generator();
 		piece.width = dimensions.x;
@@ -218,9 +221,9 @@
 		piece.position.y = coord.y;
 		piece.anchor.set(0.5);
 		return piece;
-	}
+	};
 
-	function cursorForSprite(event: { data: { global: Point } }, type: string) {
+	const cursorForSprite = (event: { data: { global: Point } }, type: string) => {
 		if (!worldContainer || !currentPlayer || !grid) return;
 		const inWorld = toWorld(event.data.global);
 		const closest = getClosestPoint(grid, inWorld);
@@ -231,9 +234,9 @@
 			piece.alpha = 0.6;
 			cursorGraphics.addChild(piece);
 		}
-	}
+	};
 
-	function cursorForRoad(event: { data: { global: Point } }) {
+	const cursorForRoad = (event: { data: { global: Point } }) => {
 		if (!worldContainer || !currentPlayer || !grid) return;
 		const inWorld = toWorld(event.data.global);
 		const closestPoints = getTwoClosestPoints(grid, inWorld);
@@ -245,25 +248,24 @@
 			cursorGraphics.moveTo(closestPoints[0].point.x, closestPoints[0].point.y);
 			cursorGraphics.lineTo(closestPoints[1].point.x, closestPoints[1].point.y);
 		}
-	}
+	};
 
-	function cursorForHex(event: { data: { global: Point } }) {
+	const cursorForHex = (event: { data: { global: Point } }) => {
 		if (!worldContainer || !currentPlayer || !grid) return;
 		const inWorld = toWorld(event.data.global);
 		const hexToFind = grid.pointToHex(inWorld);
-		const hexOrigin = hexToFind.toPoint();
 		const centerOfHex = {
-			x: hexOrigin.x + hexToFind.width / 2,
-			y: hexOrigin.y + hexToFind.height / 2
+			x: hexToFind.x + hexToFind.width / 2,
+			y: hexToFind.y + hexToFind.height / 2
 		};
 		cursorGraphics.clear();
 		cursorGraphics.removeChildren();
 		const piece = createPiece('Thief', { x: 100, y: 100 }, currentPlayer.color, centerOfHex);
 		piece.alpha = 0.6;
 		cursorGraphics.addChild(piece);
-	}
+	};
 
-	function handleMove(event: { data: { global: Point } }) {
+	const handleMove = (event: { data: { global: Point } }) => {
 		if (isBuilding === 'House') {
 			cursorForSprite(event, 'House');
 			return;
@@ -279,9 +281,9 @@
 		if (isMovingThief || isPlayingKnight) {
 			cursorForHex(event);
 		}
-	}
+	};
 
-	function addPiecesToContainer(player: Player, container: Container) {
+	const addPiecesToContainer = (player: Player, container: Container) => {
 		if (!grid || !hexFactory) return;
 		const { color } = player;
 		const roadGraphics = new Graphics();
@@ -316,9 +318,9 @@
 			);
 			container.addChild(piece);
 		});
-	}
+	};
 
-	function drawMap(newWorld: World | undefined, oldWorld: World | undefined) {
+	const drawMap = (newWorld: World | undefined, oldWorld: World | undefined) => {
 		if (!newWorld) {
 			return;
 		}
@@ -386,9 +388,9 @@
 			pieceGraphics.clear();
 			pieceGraphics.addChild(pieceContainer);
 		}
-	}
+	};
 
-	function setupCanvas() {
+	const setupCanvas = () => {
 		if (!container) return;
 
 		height = container.clientHeight / (window.devicePixelRatio || 1);
@@ -494,7 +496,7 @@
 					container.addEventListener('wheel', wheelHandler, { passive: false });
 				}
 			});
-	}
+	};
 
 	onMount(() => {
 		try {

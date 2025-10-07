@@ -51,9 +51,9 @@ export interface Rules {
   EndTurn: (data: EndTurnAction) => Rule;
 }
 
-export function ruleReducer(acc: Result, curr: (x: Result) => Result): Result {
+export const ruleReducer = (acc: Result, curr: (x: Result) => Result): Result => {
   return curr(acc);
-}
+};
 
 //
 // ---- Rule implementations ----

@@ -2,7 +2,7 @@ import { Sprite } from 'pixi.js';
 
 import { type Tile } from '../../../islanders-shared/lib/Shared';
 
-export function generateSprites(): { [s: string]: () => Sprite } {
+export const generateSprites = (): { [s: string]: () => Sprite } => {
 	const tilePath = './img/tilesets/';
 	const tileStyle = 'realistic';
 
@@ -36,14 +36,14 @@ export function generateSprites(): { [s: string]: () => Sprite } {
 		12: () => Sprite.from('./img/numbers/12.png')
 	};
 	return sprites;
-}
+};
 
-export function generateTile(
+export const generateTile = (
 	tileWidth: number,
 	tileHeight: number,
 	tile: Tile,
 	corner: { x: number; y: number }
-): Sprite {
+): Sprite => {
 	const generator = generateSprites()[tile.type.toString()];
 	const s = generator();
 	s.width = tileWidth;
@@ -51,14 +51,14 @@ export function generateTile(
 	s.position.x = corner.x - tileWidth;
 	s.position.y = corner.y - tileHeight / 2;
 	return s;
-}
+};
 
-export function generateSprite(
+export const generateSprite = (
 	type: string,
 	tileWidth: number,
 	center: { x: number; y: number },
 	origin: { x: number; y: number }
-): Sprite {
+): Sprite => {
 	const generator = generateSprites()[type];
 	const s = generator();
 	s.width = tileWidth / 4;
@@ -68,14 +68,14 @@ export function generateSprite(
 	s.position.x = center.x + origin.x;
 	s.position.y = center.y + origin.y;
 	return s;
-}
+};
 
-export function generateThiefTile(
+export const generateThiefTile = (
 	type: 'Scorch' | 'Thief',
 	tileWidth: number,
 	tileHeight: number,
 	corner: { x: number; y: number }
-): Sprite {
+): Sprite => {
 	const generator = generateSprites()[type];
 	const s = generator();
 	s.width = tileWidth;
@@ -83,14 +83,14 @@ export function generateThiefTile(
 	s.position.x = corner.x - tileWidth;
 	s.position.y = corner.y - tileHeight / 2;
 	return s;
-}
+};
 
-export function generateTileNumber(
+export const generateTileNumber = (
 	tileWidth: number,
 	center: { x: number; y: number },
 	origin: { x: number; y: number },
 	tile: Tile
-): Sprite | undefined {
+): Sprite | undefined => {
 	if (tile.diceRoll === 'None') {
 		return undefined;
 	}
@@ -103,4 +103,4 @@ export function generateTileNumber(
 	s.position.x = center.x + origin.x;
 	s.position.y = center.y + origin.y;
 	return s;
-}
+};

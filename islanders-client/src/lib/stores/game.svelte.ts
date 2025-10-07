@@ -31,7 +31,7 @@ export interface GameState {
 	error: string | undefined;
 }
 
-function createInitialGameState(): GameState {
+const createInitialGameState = (): GameState => {
 	return {
 		gameId: undefined,
 		playerName: undefined,
@@ -39,7 +39,7 @@ function createInitialGameState(): GameState {
 		world: undefined,
 		error: undefined
 	};
-}
+};
 
 export const gameState = $state(createInitialGameState());
 
@@ -125,7 +125,7 @@ export const createGame = async (playerName: string): Promise<void> => {
 	gameState.playerName = playerName;
 };
 
-export async function joinGame(gameId: string, playerName: string): Promise<void> {
+export const joinGame = async (gameId: string, playerName: string): Promise<void> => {
 	const host = env.PUBLIC_SERVER;
 	const response = await fetch(`${host}/joingame?gameId=${gameId}&playerName=${playerName}`);
 	const data: Result = await response.json();
@@ -144,7 +144,7 @@ export async function joinGame(gameId: string, playerName: string): Promise<void
 	flatmappable.onFailure((reason: string) => {
 		setError(reason);
 	});
-}
+};
 
 export const setPointsToWin = (points: number) => {
 	gameState.pointsToWin = points;

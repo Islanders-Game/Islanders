@@ -40,22 +40,22 @@ const tileProbabilities: TileType[] = [
 
 const diceRollProbabilites: DiceRoll[] = [2, 3, 3, 4, 4, 5, 5, 6, 6, 8, 8, 9, 9, 10, 10, 11, 11, 12];
 
-function shuffleArray<T>(input: T[]): T[] {
+const shuffleArray = <T>(input: T[]): T[] => {
   const array = [...input];
   for (let i = array.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
     [array[i], array[j]] = [array[j]!, array[i]!];
   }
   return array;
-}
+};
 
-function convertToTiles(map: Tile[], hexes: HexCoordinate[]): Tile[] {
+const convertToTiles = (map: Tile[], hexes: HexCoordinate[]): Tile[] => {
   const optTiles = hexes.map((x) => findTileInMap(map, x));
   const res = optTiles.filter((x): x is Tile => x !== undefined);
   return res;
-}
+};
 
-function* randomTileNumberGenerator(): Generator<DiceRoll> {
+const randomTileNumberGenerator = function* (): Generator<DiceRoll> {
   let shuffledDiceRollProbabilites = shuffleArray<DiceRoll>(diceRollProbabilites);
   while (true) {
     if (shuffledDiceRollProbabilites.length === 0) {
@@ -63,9 +63,9 @@ function* randomTileNumberGenerator(): Generator<DiceRoll> {
     }
     yield shuffledDiceRollProbabilites.pop() as DiceRoll;
   }
-}
+};
 
-function* randomTileTypeGenerator(): Generator<TileType> {
+const randomTileTypeGenerator = function* (): Generator<TileType> {
   let shuffledTiles = shuffleArray<TileType>(tileProbabilities);
   while (true) {
     if (shuffledTiles.length === 0) {
@@ -73,9 +73,9 @@ function* randomTileTypeGenerator(): Generator<TileType> {
     }
     yield shuffledTiles.pop() as TileType;
   }
-}
+};
 
-function* getHarborGenerator(): Generator<HarborType> {
+const getHarborGenerator = function* (): Generator<HarborType> {
   let shuffledHarbors = shuffleArray<HarborType>(harborProbabilites);
   while (true) {
     if (shuffledHarbors.length === 0) {
@@ -83,7 +83,7 @@ function* getHarborGenerator(): Generator<HarborType> {
     }
     yield shuffledHarbors.pop() as HarborType;
   }
-}
+};
 
 export class WorldGenerator {
   public generateRandomMap(radius: number | undefined, generateIslands: number | undefined): Tile[] {
@@ -170,16 +170,12 @@ const tileIsHarbor = (tile: Tile) =>
     tile.type === 'WoodHarbor' ||
     tile.type === 'WoolHarbor');
 
-// Helper function to create a hexagon grid in v4
-function createHexagon(Hex: any, center: any, radius: number): any[] {
+const createHexagon = (Hex: any, center: any, radius: number): any[] => {
   const hexes: any[] = [center];
 
-  // Generate hexagon rings around the center
   for (let ring = 1; ring <= radius; ring++) {
-    // Start at the top hex and go around the ring
     let hex = new Hex({ col: center.col, row: center.row - ring });
 
-    // Directions to traverse a hexagon ring (flat orientation)
     const directions = [
       { col: 1, row: 0 }, // SE
       { col: 0, row: 1 }, // S
@@ -198,7 +194,7 @@ function createHexagon(Hex: any, center: any, radius: number): any[] {
   }
 
   return hexes;
-}
+};
 
 const generateIslandCenter = (r: number, Hex: any) => {
   const angle = Math.random() * Math.PI * 2;

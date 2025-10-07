@@ -17,7 +17,7 @@ type ClosestPoint = {
 	dist: number;
 };
 
-export function getClosestPoint(grid: HexGrid, point: { x: number; y: number }): ClosestPoint {
+export const getClosestPoint = (grid: HexGrid, point: { x: number; y: number }): ClosestPoint => {
 	const distanceFunc = (from: { x: number; y: number }, to: { x: number; y: number }) =>
 		Math.sqrt(Math.abs(from.x - to.x) ** 2 + Math.abs(from.y - to.y) ** 2);
 
@@ -39,12 +39,12 @@ export function getClosestPoint(grid: HexGrid, point: { x: number; y: number }):
 		}
 	}
 	return closestPoint;
-}
+};
 
-export function getTwoClosestPoints(
+export const getTwoClosestPoints = (
 	grid: HexGrid,
 	point: { x: number; y: number }
-): [ClosestPoint, ClosestPoint] {
+): [ClosestPoint, ClosestPoint] => {
 	const distanceFunc = (from: { x: number; y: number }, to: { x: number; y: number }) =>
 		Math.sqrt(Math.abs(from.x - to.x) ** 2 + Math.abs(from.y - to.y) ** 2);
 	const hexToFind = grid.pointToHex(point);
@@ -62,12 +62,12 @@ export function getTwoClosestPoints(
 		first.dist > second.dist ? 1 : -1
 	);
 	return [sorted[0], sorted[1]];
-}
+};
 
-export function compareWorlds(
+export const compareWorlds = (
 	oldWorld: World | undefined,
 	newWorld: World | undefined
-): [boolean, boolean] {
+): [boolean, boolean] => {
 	if (oldWorld === undefined || newWorld === undefined) {
 		return [true, true];
 	}
@@ -77,4 +77,4 @@ export function compareWorlds(
 		!oldWorld.thief || oldWorld.thief !== newWorld.thief || oldWorld.players !== newWorld.players;
 
 	return [tilesChanged, piecesChanged];
-}
+};

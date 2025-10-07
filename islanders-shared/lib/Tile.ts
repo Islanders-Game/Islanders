@@ -15,6 +15,6 @@ export interface Tile {
   coord: HexCoordinate;
 }
 
-export function findTileInMap(map: Tile[], hex: HexCoordinate): Tile | undefined {
+export const findTileInMap = (map: Tile[], hex: HexCoordinate): Tile | undefined => {
   return map.find((x) => hexEquals(x.coord, hex));
-}
+};

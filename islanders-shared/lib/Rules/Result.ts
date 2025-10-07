@@ -39,14 +39,14 @@ export class Success {
 
 export type Result = Success | Failure;
 
-export function fail(reason: string): Failure {
+export const fail = (reason: string): Failure => {
   return new Failure(reason);
-}
-export function success(t: World): Success {
+};
+export const success = (t: World): Success => {
   return new Success(t);
-}
+};
 
-export function toResultInstance(result: any): Result {
+export const toResultInstance = (result: any): Result => {
   if (result.value) {
     return success(result.value);
   }
@@ -54,4 +54,4 @@ export function toResultInstance(result: any): Result {
     return fail(result.reason);
   }
   throw TypeError(`${result} is not of Result type`);
-}
+};

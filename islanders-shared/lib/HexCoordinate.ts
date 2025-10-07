@@ -5,9 +5,9 @@ export interface HexCoordinate {
   y: number;
 }
 
-export function hexEquals(hex1: HexCoordinate, hex2: HexCoordinate) {
+export const hexEquals = (hex1: HexCoordinate, hex2: HexCoordinate) => {
   return hex1.x === hex2.x && hex1.y === hex2.y;
-}
+};
 
 export const getNeighbouringHexCoords = (coord: HexCoordinate): HexCoordinate[] => {
   let result = [
