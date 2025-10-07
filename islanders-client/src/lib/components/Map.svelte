@@ -1,8 +1,6 @@
-<!-- <script lang="ts">
+<script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import { browser } from '$app/environment';
 	import { Application, Container, Graphics, Point } from 'pixi.js';
-	import { Viewport } from 'pixi-viewport';
 	import { gameState, bindToWorld, sendAction } from '$lib/stores/game.svelte.ts';
 	import {
 		uiState,
@@ -35,24 +33,8 @@
 		generateThiefTile
 	} from '$lib/SpriteGenerators';
 	import { compareWorlds, getClosestPoint, getTwoClosestPoints } from './mapUtils';
-
-	let honeycombReady = false;
-	let extendHexFn: typeof import('honeycomb-grid').extendHex | undefined;
-	let defineGridFn: typeof import('honeycomb-grid').defineGrid | undefined;
-
-	async function ensureHoneycomb() {
-		if (!browser) {
-			return;
-		}
-
-		if (!extendHexFn || !defineGridFn) {
-			const honeycomb = await import('honeycomb-grid');
-			extendHexFn = honeycomb.extendHex;
-			defineGridFn = honeycomb.defineGrid;
-		}
-
-		honeycombReady = true;
-	}
+	import * as honeycombGrid from 'honeycomb-grid';
+	const { defineHex, Grid, Orientation } = honeycombGrid;
 
 	let container: HTMLDivElement | undefined;
 
@@ -62,7 +44,7 @@
 	const lineWidth = 14;
 
 	let app: Application | undefined;
-	let viewport: Viewport | undefined;
+	let worldContainer: Container | undefined;
 	const tileGraphics = new Graphics();
 	const pieceGraphics = new Graphics();
 	const lineGraphics = new Graphics();
@@ -75,6 +57,13 @@
 	let height = 0;
 	let width = 0;
 
+	// Pan and zoom state
+	let scale = 1;
+	let panX = 0;
+	let panY = 0;
+	let isDragging = false;
+	let lastPointerPosition = { x: 0, y: 0 };
+
 	let currentPlayer: Player | undefined;
 	let currentWorld: World | undefined;
 
@@ -86,11 +75,10 @@
 	let resizeObserver: ResizeObserver | undefined;
 	let previousWorld: World | undefined;
 
-	$effect(() => {
-		if (!honeycombReady) {
-			return;
-		}
+	// Store event handlers for cleanup
+	let wheelHandler: ((event: WheelEvent) => void) | undefined;
 
+	$effect(() => {
 		const nextWorld = gameState.world;
 		const playerName = gameState.playerName;
 		currentPlayer = playerName
@@ -110,15 +98,29 @@
 		isPlayingRoadBuilding = uiState.isPlayingRoadBuilding;
 	});
 
+	// Convert screen coordinates to world coordinates
+	const toWorld = (screenPoint: { x: number; y: number }): { x: number; y: number } => {
+		return {
+			x: (screenPoint.x - panX) / scale,
+			y: (screenPoint.y - panY) / scale
+		};
+	};
+
+	// Update world container transform
+	const updateWorldTransform = () => {
+		if (!worldContainer) return;
+		worldContainer.scale.set(scale);
+		worldContainer.position.set(panX, panY);
+	};
+
 	const handleResize = () => {
-		if (!container || !app || !viewport) {
+		if (!container || !app || !worldContainer) {
 			return;
 		}
 
 		height = container.clientHeight / (window.devicePixelRatio || 1);
 		width = container.clientWidth / (window.devicePixelRatio || 1);
 		app.renderer.resize(width, height);
-		viewport.resize(width, height, width, height);
 	};
 
 	async function dispatchActionClearCursor(action: GameAction) {
@@ -132,9 +134,9 @@
 	}
 
 	function handleThiefClick(event: { data: { global: Point } }) {
-		if (!viewport || !grid) return;
+		if (!worldContainer || !grid) return;
 		if (!currentPlayer) return;
-		const inWorld = viewport.toWorld(event.data.global);
+		const inWorld = toWorld(event.data.global);
 		const hexToFind = grid.pointToHex(inWorld);
 		const moveThiefAction = new MoveThiefAction(currentPlayer.name, hexToFind);
 		dispatchActionClearCursor(moveThiefAction);
@@ -143,9 +145,9 @@
 	}
 
 	function handleIsPlayingKnightClick(event: { data: { global: Point } }) {
-		if (!viewport || !grid) return;
+		if (!worldContainer || !grid) return;
 		if (!currentPlayer) return;
-		const inWorld = viewport.toWorld(event.data.global);
+		const inWorld = toWorld(event.data.global);
 		const hexToFind = grid.pointToHex(inWorld);
 		const moveThiefAction = new MoveThiefDevCardAction(currentPlayer.name, hexToFind);
 		dispatchActionClearCursor(moveThiefAction);
@@ -154,9 +156,9 @@
 	}
 
 	function handleBuildClick(event: { data: { global: Point } }) {
-		if (!viewport || !currentPlayer || !currentWorld || !grid) return;
+		if (!worldContainer || !currentPlayer || !currentWorld || !grid) return;
 
-		const inWorld = viewport.toWorld(event.data.global);
+		const inWorld = toWorld(event.data.global);
 		const closestPoints = getTwoClosestPoints(grid, inWorld);
 		if (closestPoints[0].index === -1) {
 			return;
@@ -219,8 +221,8 @@
 	}
 
 	function cursorForSprite(event: { data: { global: Point } }, type: string) {
-		if (!viewport || !currentPlayer || !grid) return;
-		const inWorld = viewport.toWorld(event.data.global);
+		if (!worldContainer || !currentPlayer || !grid) return;
+		const inWorld = toWorld(event.data.global);
 		const closest = getClosestPoint(grid, inWorld);
 		if (closest.index !== -1) {
 			cursorGraphics.clear();
@@ -232,8 +234,8 @@
 	}
 
 	function cursorForRoad(event: { data: { global: Point } }) {
-		if (!viewport || !currentPlayer || !grid) return;
-		const inWorld = viewport.toWorld(event.data.global);
+		if (!worldContainer || !currentPlayer || !grid) return;
+		const inWorld = toWorld(event.data.global);
 		const closestPoints = getTwoClosestPoints(grid, inWorld);
 
 		cursorGraphics.clear();
@@ -246,13 +248,13 @@
 	}
 
 	function cursorForHex(event: { data: { global: Point } }) {
-		if (!viewport || !currentPlayer || !grid) return;
-		const inWorld = viewport.toWorld(event.data.global);
+		if (!worldContainer || !currentPlayer || !grid) return;
+		const inWorld = toWorld(event.data.global);
 		const hexToFind = grid.pointToHex(inWorld);
 		const hexOrigin = hexToFind.toPoint();
 		const centerOfHex = {
-			x: hexOrigin.x + hexToFind.width() / 2,
-			y: hexOrigin.y + hexToFind.height() / 2
+			x: hexOrigin.x + hexToFind.width / 2,
+			y: hexOrigin.y + hexToFind.height / 2
 		};
 		cursorGraphics.clear();
 		cursorGraphics.removeChildren();
@@ -283,9 +285,9 @@
 		if (!grid || !hexFactory) return;
 		const { color } = player;
 		const roadGraphics = new Graphics();
-		const sampleHex = hexFactory(0, 0);
-		const hexWidth = sampleHex.width();
-		const hexHeight = sampleHex.height();
+		const sampleHex = new hexFactory({ col: 0, row: 0 });
+		const hexWidth = sampleHex.width;
+		const hexHeight = sampleHex.height;
 		player.roads.forEach((road) => {
 			roadGraphics.lineStyle(lineWidth, color);
 			const start = matrixCoordToWorldCoord(road.start, hexWidth, hexHeight);
@@ -329,30 +331,27 @@
 		if (redrawTiles) {
 			tileContainer = new Container();
 			const map = !newWorld || !newWorld.map ? [] : newWorld.map;
-			if (!extendHexFn || !defineGridFn) {
-				return;
-			}
 
-			const Hex = extendHexFn({
-				size: hexSize,
-				orientation: 'flat'
+			const Hex = defineHex({
+				dimensions: hexSize,
+				orientation: Orientation.FLAT
 			});
-			grid = defineGridFn(Hex);
+			grid = new Grid(Hex);
 			hexFactory = Hex;
 
 			lineGraphics.removeChildren();
 			lineGraphics.clear();
 			map.forEach((tile) => {
-				const hex = Hex(tile.coord.x, tile.coord.y);
-				hex.center();
-				const point = hex.toPoint();
-				const corners = hex.corners().map((corner) => corner.add(point));
+				const hex = new Hex({ col: tile.coord.x, row: tile.coord.y });
+				const point = { x: hex.x, y: hex.y };
+				const center = hex.center;
+				const corners = hex.corners;
 				const [firstCorner, ...otherCorners] = corners;
 				const tileSprite = generateTile(tileWidth, tileHeight, tile, firstCorner);
 
 				tileContainer?.addChild(tileSprite);
 				if (newWorld.gameState === 'Started') {
-					const tileNumber = generateTileNumber(tileWidth, hex.center(), hex.toPoint(), tile);
+					const tileNumber = generateTileNumber(tileWidth, center, point, tile);
 					if (tileNumber) {
 						tileContainer?.addChild(tileNumber);
 					}
@@ -395,65 +394,109 @@
 		height = container.clientHeight / (window.devicePixelRatio || 1);
 		width = container.clientWidth / (window.devicePixelRatio || 1);
 
-		const appInstance = new Application({
-			width,
-			height,
-			antialias: true,
-			resolution: window.devicePixelRatio || 1,
-			transparent: true
-		});
+		const appInstance = new Application();
 
-		const viewportInstance = new Viewport({
-			screenWidth: width,
-			screenHeight: height,
-			worldHeight: 1000,
-			worldWidth: 1000,
-			interaction: appInstance.renderer.plugins.interaction
-		});
+		// Initialize PixiJS v8 (async)
+		void appInstance
+			.init({
+				width,
+				height,
+				antialias: true,
+				resolution: window.devicePixelRatio || 1,
+				backgroundAlpha: 0
+			})
+			.then(() => {
+				const worldContainerInstance = new Container();
+				worldContainerInstance.eventMode = 'static';
+				worldContainerInstance.hitArea = appInstance.screen;
 
-		app = appInstance;
-		viewport = viewportInstance;
+				app = appInstance;
+				worldContainer = worldContainerInstance;
 
-		(appInstance.stage as any).addChild(viewportInstance as any);
-		(viewportInstance as any).drag().pinch().wheel().decelerate();
+				appInstance.stage.addChild(worldContainerInstance);
+				container?.appendChild(appInstance.canvas);
 
-		container.appendChild(appInstance.view as HTMLCanvasElement);
-		(viewportInstance as any).addChild(tileGraphics);
-		(viewportInstance as any).addChild(lineGraphics);
-		(viewportInstance as any).addChild(pieceGraphics);
-		(viewportInstance as any).addChild(cursorGraphics);
+				worldContainerInstance.addChild(tileGraphics);
+				worldContainerInstance.addChild(lineGraphics);
+				worldContainerInstance.addChild(pieceGraphics);
+				worldContainerInstance.addChild(cursorGraphics);
 
-		const moveHandler = (event: { data: { global: Point } }) => handleMove(event);
-		const clickHandler = (event: { data: { global: Point } }) => handleClick(event);
-		const hoverHandler = () => {
-			const selection = window.getSelection?.();
-			selection?.removeAllRanges();
-		};
+				// Set initial position (center the view)
+				panX = width / 2;
+				panY = height / 2;
+				updateWorldTransform();
 
-		(viewportInstance as any).on('mousemove', moveHandler);
-		(viewportInstance as any).on('pointerup', clickHandler);
-		(viewportInstance as any).on('mouseover', hoverHandler);
+				// Event handlers
+				const moveHandler = (event: { data: { global: Point } }) => handleMove(event);
+				const clickHandler = (event: { data: { global: Point } }) => handleClick(event);
+				const hoverHandler = () => {
+					const selection = window.getSelection?.();
+					selection?.removeAllRanges();
+				};
 
-		onDestroy(() => {
-			(viewportInstance as any).off('mousemove', moveHandler);
-			(viewportInstance as any).off('pointerup', clickHandler);
-			(viewportInstance as any).off('mouseover', hoverHandler);
-		});
+				// Pan handlers
+				const pointerDownHandler = (event: any) => {
+					if (event.data.button === 0) {
+						// Left click only
+						isDragging = true;
+						lastPointerPosition = { x: event.data.global.x, y: event.data.global.y };
+					}
+				};
+
+				const pointerMoveHandler = (event: any) => {
+					if (isDragging) {
+						const dx = event.data.global.x - lastPointerPosition.x;
+						const dy = event.data.global.y - lastPointerPosition.y;
+						panX += dx;
+						panY += dy;
+						lastPointerPosition = { x: event.data.global.x, y: event.data.global.y };
+						updateWorldTransform();
+					}
+				};
+
+				const pointerUpHandler = () => {
+					isDragging = false;
+				};
+
+				// Zoom handler
+				wheelHandler = (event: WheelEvent) => {
+					event.preventDefault();
+					const delta = -event.deltaY;
+					const zoomFactor = delta > 0 ? 1.1 : 0.9;
+					const newScale = scale * zoomFactor;
+
+					// Limit zoom levels
+					if (newScale >= 0.1 && newScale <= 5) {
+						const mouseX = event.clientX;
+						const mouseY = event.clientY;
+
+						// Zoom towards mouse position
+						const worldPosBefore = toWorld({ x: mouseX, y: mouseY });
+						scale = newScale;
+						const worldPosAfter = toWorld({ x: mouseX, y: mouseY });
+
+						panX += (worldPosAfter.x - worldPosBefore.x) * scale;
+						panY += (worldPosAfter.y - worldPosBefore.y) * scale;
+
+						updateWorldTransform();
+					}
+				};
+
+				worldContainerInstance.on('mousemove', moveHandler);
+				worldContainerInstance.on('pointerup', clickHandler);
+				worldContainerInstance.on('mouseover', hoverHandler);
+				worldContainerInstance.on('pointerdown', pointerDownHandler);
+				worldContainerInstance.on('pointermove', pointerMoveHandler);
+				worldContainerInstance.on('pointerup', pointerUpHandler);
+				worldContainerInstance.on('pointerupoutside', pointerUpHandler);
+
+				if (container) {
+					container.addEventListener('wheel', wheelHandler, { passive: false });
+				}
+			});
 	}
 
 	onMount(() => {
-		if (!browser) {
-			return;
-		}
-
-		void (async () => {
-			try {
-				await ensureHoneycomb();
-			} catch (error) {
-				console.warn('Unable to load hex grid helpers', error);
-			}
-		})();
-
 		try {
 			void bindToWorld();
 		} catch (error) {
@@ -471,17 +514,17 @@
 		const resizeListener = () => handleResize();
 		window.addEventListener('resize', resizeListener);
 
-		onDestroy(() => {
+		return () => {
 			resizeObserver?.disconnect();
 			window.removeEventListener('resize', resizeListener);
-			if (viewport) {
-				viewport.destroy();
+			if (wheelHandler && container) {
+				container.removeEventListener('wheel', wheelHandler);
 			}
 			if (app) {
-				app.destroy(true, { children: true, texture: true, baseTexture: true });
+				app.destroy(true, { children: true, texture: true });
 			}
-		});
+		};
 	});
 </script>
 
-<div bind:this={container} class="h-full w-full bg-[#03518b]"></div> -->
+<div bind:this={container} class="h-full w-full bg-[#03518b]"></div>

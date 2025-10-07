@@ -1,15 +1,13 @@
-import type { Point } from 'pixi.js';
 import type { World } from '../../../../islanders-shared/lib/Shared';
 
 export type HexGrid = {
 	pointToHex: (point: { x: number; y: number }) => {
 		x: number;
 		y: number;
-		toPoint: () => { x: number; y: number };
-		width: () => number;
-		height: () => number;
-		corners: () => Array<{ x: number; y: number }>;
-		center: () => { x: number; y: number };
+		width: number;
+		height: number;
+		corners: Array<{ x: number; y: number }>;
+		center: { x: number; y: number };
 	};
 };
 
@@ -19,24 +17,18 @@ type ClosestPoint = {
 	dist: number;
 };
 
-export function getClosestPoint(grid: HexGrid, point: Point): ClosestPoint {
+export function getClosestPoint(grid: HexGrid, point: { x: number; y: number }): ClosestPoint {
 	const distanceFunc = (from: { x: number; y: number }, to: { x: number; y: number }) =>
 		Math.sqrt(Math.abs(from.x - to.x) ** 2 + Math.abs(from.y - to.y) ** 2);
 
 	const hexToFind = grid.pointToHex(point);
-	const hexOrigin = hexToFind.toPoint();
-	const centerOfHex = {
-		x: hexOrigin.x + hexToFind.width() / 2,
-		y: hexOrigin.y + hexToFind.height() / 2
-	};
+	const centerOfHex = hexToFind.center;
 
 	const distance = distanceFunc(point, centerOfHex);
 	let closestPoint: ClosestPoint = { point: centerOfHex, index: -1, dist: distance };
-	const corners = hexToFind.corners();
+	const corners = hexToFind.corners;
 	for (let i = 0; i < corners.length; i += 1) {
 		const corner = corners[i];
-		corner.x += hexOrigin.x;
-		corner.y += hexOrigin.y;
 		const cornerDist = distanceFunc(point, corner);
 		if (closestPoint.dist > cornerDist) {
 			closestPoint = {
@@ -49,16 +41,15 @@ export function getClosestPoint(grid: HexGrid, point: Point): ClosestPoint {
 	return closestPoint;
 }
 
-export function getTwoClosestPoints(grid: HexGrid, point: Point): [ClosestPoint, ClosestPoint] {
+export function getTwoClosestPoints(
+	grid: HexGrid,
+	point: { x: number; y: number }
+): [ClosestPoint, ClosestPoint] {
 	const distanceFunc = (from: { x: number; y: number }, to: { x: number; y: number }) =>
 		Math.sqrt(Math.abs(from.x - to.x) ** 2 + Math.abs(from.y - to.y) ** 2);
 	const hexToFind = grid.pointToHex(point);
-	const hexOrigin = hexToFind.toPoint();
-	const corners = hexToFind.corners();
-	const mapped = corners.map((c, index: number) => {
-		const corner = c;
-		corner.x += hexOrigin.x;
-		corner.y += hexOrigin.y;
+	const corners = hexToFind.corners;
+	const mapped = corners.map((corner: { x: number; y: number }, index: number) => {
 		const cornerDist = distanceFunc(point, corner);
 		return {
 			point: corner,
@@ -67,7 +58,9 @@ export function getTwoClosestPoints(grid: HexGrid, point: Point): [ClosestPoint,
 		};
 	});
 
-	const sorted = mapped.sort((first, second) => (first.dist > second.dist ? 1 : -1));
+	const sorted = mapped.sort((first: ClosestPoint, second: ClosestPoint) =>
+		first.dist > second.dist ? 1 : -1
+	);
 	return [sorted[0], sorted[1]];
 }
 

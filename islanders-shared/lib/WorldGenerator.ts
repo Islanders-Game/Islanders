@@ -1,4 +1,5 @@
-import { defineGrid, extendHex, type HexFactory } from 'honeycomb-grid';
+import * as honeycombGrid from 'honeycomb-grid';
+const { defineHex, Orientation } = honeycombGrid;
 import { type Tile, type TileType, type HarborType, findTileInMap } from './Tile';
 import { getNeighbouringHexCoords } from './HexCoordinate';
 import type { DiceRoll, HexCoordinate } from './Shared';
@@ -85,29 +86,21 @@ function* getHarborGenerator(): Generator<HarborType> {
 }
 
 export class WorldGenerator {
-  // eslint-disable-next-line class-methods-use-this
   public generateRandomMap(radius: number | undefined, generateIslands: number | undefined): Tile[] {
-    const mainHex = extendHex({
-      orientation: 'flat',
+    const Hex = defineHex({
+      dimensions: 30,
+      orientation: Orientation.FLAT,
     });
     const r: number = radius !== undefined ? Number(radius) : 3;
-    const Grid = defineGrid(mainHex);
     const map: Tile[] = [];
 
-    const mainlandCenter = mainHex(0, 0);
-    let grid = Grid.hexagon({
-      radius: r,
-      center: mainlandCenter,
-    });
+    const mainlandCenter = new Hex({ col: 0, row: 0 });
+    let grid = createHexagon(Hex, mainlandCenter, r);
 
     if (generateIslands && generateIslands > 1) {
       for (let i = 0; i < generateIslands; i++) {
-        grid = grid.concat(
-          Grid.hexagon({
-            radius: Math.floor(r / 1.5),
-            center: generateIslandCenter(r, mainHex),
-          }),
-        );
+        const islandCenter = generateIslandCenter(r, Hex);
+        grid = grid.concat(createHexagon(Hex, islandCenter, Math.floor(r / 1.5)));
       }
     }
 
@@ -116,13 +109,13 @@ export class WorldGenerator {
     const randomTileNumber = randomTileNumberGenerator();
 
     // set the tile type for each hex in the grid
-    grid.forEach((hex) => {
+    grid.forEach((hex: any) => {
       const tileType = randomTileType.next().value;
       const diceRoll = tileType === 'Desert' ? 'None' : randomTileNumber.next().value;
       map.push({
         coord: {
-          x: hex.x,
-          y: hex.y,
+          x: hex.col,
+          y: hex.row,
         },
         diceRoll,
         type: tileType,
@@ -130,10 +123,10 @@ export class WorldGenerator {
     });
 
     // add water around each hex if it is not part of the hex
-    grid.forEach((hex) => {
-      const neighbours = getNeighbouringHexCoords(hex.coordinates());
+    grid.forEach((hex: any) => {
+      const neighbours = getNeighbouringHexCoords({ x: hex.col, y: hex.row });
       neighbours.forEach((c) => {
-        if (!grid.get(c)) {
+        if (!grid.some((h: any) => h.col === c.x && h.row === c.y)) {
           map.push({
             coord: c,
             diceRoll: 'None',
@@ -177,10 +170,40 @@ const tileIsHarbor = (tile: Tile) =>
     tile.type === 'WoodHarbor' ||
     tile.type === 'WoolHarbor');
 
-const generateIslandCenter = (r: number, hex: HexFactory<{ orientation: 'flat' }>) => {
+// Helper function to create a hexagon grid in v4
+function createHexagon(Hex: any, center: any, radius: number): any[] {
+  const hexes: any[] = [center];
+
+  // Generate hexagon rings around the center
+  for (let ring = 1; ring <= radius; ring++) {
+    // Start at the top hex and go around the ring
+    let hex = new Hex({ col: center.col, row: center.row - ring });
+
+    // Directions to traverse a hexagon ring (flat orientation)
+    const directions = [
+      { col: 1, row: 0 }, // SE
+      { col: 0, row: 1 }, // S
+      { col: -1, row: 1 }, // SW
+      { col: -1, row: 0 }, // NW
+      { col: 0, row: -1 }, // N
+      { col: 1, row: -1 }, // NE
+    ];
+
+    for (const dir of directions) {
+      for (let i = 0; i < ring; i++) {
+        hexes.push(hex);
+        hex = new Hex({ col: hex.col + dir.col, row: hex.row + dir.row });
+      }
+    }
+  }
+
+  return hexes;
+}
+
+const generateIslandCenter = (r: number, Hex: any) => {
   const angle = Math.random() * Math.PI * 2;
   const x = Math.ceil(Math.cos(angle) * (r * 2) + 1);
   const y = Math.ceil(Math.sin(angle) * (r * 2) + 1);
-  const islandCenter = hex(x, y);
+  const islandCenter = new Hex({ col: x, row: y });
   return islandCenter;
 };
