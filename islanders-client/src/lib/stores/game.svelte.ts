@@ -8,8 +8,8 @@ import {
 	type Result,
 	type World,
 	type Tile
-} from '../../../../islanders-shared/lib/Shared';
-import type { ProposeTradeAction } from '../../../../islanders-shared/lib/Action';
+} from '../../../../islanders-shared/lib/Shared.ts';
+import type { ProposeTradeAction } from '../../../../islanders-shared/lib/Action.ts';
 
 import {
 	setIsBuilding,
@@ -17,10 +17,11 @@ import {
 	setIsPlayingKnight,
 	setIsPlayingRoadBuilding,
 	setPlayerProposesTrade
-} from './ui.svelte';
+} from './ui.svelte.ts';
 import { browser } from '$app/environment';
 import { connect, disconnect } from './socket.ts';
 import { env } from '$env/dynamic/public';
+import type { Socket } from 'socket.io-client';
 
 const DEFAULT_POINTS_TO_WIN = 10;
 const SESSION_KEY = 'islanders:session';
@@ -109,8 +110,14 @@ const setError = (errorMessage: string | undefined) => {
 	gameState.error = errorMessage;
 };
 
-export const bindToWorld = async (): Promise<void> => {
+let socketListenersBound = false;
+
+export const bindToWorld = (): Socket => {
 	const socket = connect();
+
+	if (socketListenersBound) {
+		return socket;
+	}
 
 	socket.on(SocketActions.newWorld, (result: Result) => {
 		const asResultInstance = toResultInstance(result);
@@ -147,6 +154,9 @@ export const bindToWorld = async (): Promise<void> => {
 		};
 		setPlayerProposesTrade(mapped);
 	});
+
+	socketListenersBound = true;
+	return socket;
 };
 
 export const startGame = async (pointsToWin: number): Promise<void> => {
@@ -177,7 +187,9 @@ export const createGame = async (playerName: string): Promise<void> => {
 	console.log(`Created game with ID: ${id}`);
 
 	const socket = connect(`${host}/${id}`);
+	bindToWorld();
 	socket.emit(SocketActions.join, playerName);
+	socket.emit(SocketActions.getWorld);
 
 	gameState.gameId = id;
 	gameState.playerName = playerName;
@@ -202,7 +214,9 @@ export const joinGame = async (gameId: string, playerName?: string): Promise<voi
 	const flatmappable = toResultInstance(data);
 	flatmappable.flatMap((world: World) => {
 		const socket = connect(`${host}/${gameId}`);
+		bindToWorld();
 		socket.emit(SocketActions.join, resolvedPlayerName);
+		socket.emit(SocketActions.getWorld);
 
 		gameState.gameId = gameId;
 		gameState.playerName = resolvedPlayerName;
@@ -277,6 +291,7 @@ export const resetGameState = () => {
 	gameState.error = initialState.error;
 	disconnect();
 	clearSession();
+	socketListenersBound = false;
 };
 
 export const getStoredSession = readSession;

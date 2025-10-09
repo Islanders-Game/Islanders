@@ -32,17 +32,54 @@
 		generateTileNumber,
 		generateThiefTile
 	} from '$lib/SpriteGenerators';
-	import { compareWorlds, getClosestPoint, getTwoClosestPoints } from './mapUtils';
+	import { getClosestPoint, getTwoClosestPoints } from './mapUtils';
 	import * as honeycombGrid from 'honeycomb-grid';
 	import type { Grid as HoneycombGrid } from 'honeycomb-grid';
 	const { defineHex, Grid, Orientation } = honeycombGrid;
 
 	let container: HTMLDivElement | undefined;
+	let parentElement: HTMLElement | null = null;
 
 	const hexSize = 200;
 	const tileHeight = 348;
 	const tileWidth = 400;
 	const lineWidth = 14;
+	const tilePath = '/img/tilesets/';
+	const tileStyle = 'realistic';
+	const assetsToLoad = [
+		// Tiles
+		`${tilePath}${tileStyle}/clay.png`,
+		`${tilePath}${tileStyle}/desert.png`,
+		`${tilePath}${tileStyle}/grain.png`,
+		`${tilePath}${tileStyle}/wood.png`,
+		`${tilePath}${tileStyle}/stone.png`,
+		`${tilePath}${tileStyle}/wool.png`,
+		`${tilePath}${tileStyle}/ocean.png`,
+		// Pieces
+		'/img/pieces/house.png',
+		'/img/pieces/city.png',
+		'/img/pieces/thief.png',
+		// Special
+		`${tilePath}shared/scorch-with-thief.png`,
+		// Harbors
+		`${tilePath}${tileStyle}/woodharbor.png`,
+		`${tilePath}${tileStyle}/woolharbor.png`,
+		`${tilePath}${tileStyle}/grainharbor.png`,
+		`${tilePath}${tileStyle}/clayharbor.png`,
+		`${tilePath}${tileStyle}/stoneharbor.png`,
+		`${tilePath}${tileStyle}/threetooneharbor.png`,
+		// Numbers
+		'/img/numbers/2.png',
+		'/img/numbers/3.png',
+		'/img/numbers/4.png',
+		'/img/numbers/5.png',
+		'/img/numbers/6.png',
+		'/img/numbers/8.png',
+		'/img/numbers/9.png',
+		'/img/numbers/10.png',
+		'/img/numbers/11.png',
+		'/img/numbers/12.png'
+	];
 
 	let app: Application | undefined;
 	let worldContainer: Container | undefined;
@@ -78,13 +115,16 @@
 
 	// Store event handlers for cleanup
 	let wheelHandler: ((event: WheelEvent) => void) | undefined;
+	let assetsLoaded = false;
+	let latestWorld: World | undefined;
+	let loadingPromise: Promise<void> | undefined;
 
 	const currentPlayer: Player | undefined = $derived(
 		gameState.world?.players.find((player: Player) => player.name === gameState.playerName)
 	);
 
 	$effect(() => {
-		drawMap(gameState.world);
+		updateMap(gameState.world);
 	});
 
 	$effect(() => {
@@ -114,8 +154,12 @@
 			return;
 		}
 
-		height = container.clientHeight / (window.devicePixelRatio || 1);
-		width = container.clientWidth / (window.devicePixelRatio || 1);
+		const target = parentElement ?? container;
+		const ratio = window.devicePixelRatio || 1;
+		height = target.clientHeight / ratio;
+		width = target.clientWidth / ratio;
+		container.style.width = `${target.clientWidth}px`;
+		container.style.height = `${target.clientHeight}px`;
 		app.renderer.resize(width, height);
 	};
 
@@ -317,7 +361,7 @@
 		});
 	};
 
-	const drawMap = (newWorld: World | undefined) => {
+	const drawMap = (newWorld: World) => {
 		if (!newWorld) {
 			return;
 		}
@@ -380,58 +424,53 @@
 		pieceGraphics.addChild(pieceContainer);
 	};
 
+	const updateMap = (newWorld: World | undefined) => {
+		if (!newWorld) {
+			return;
+		}
+
+		latestWorld = newWorld;
+		if (!assetsLoaded) {
+			void ensureAssetsLoaded();
+			return;
+		}
+
+		drawMap(newWorld);
+	};
+
+	const ensureAssetsLoaded = async () => {
+		if (assetsLoaded) {
+			return;
+		}
+
+		if (!loadingPromise) {
+			loadingPromise = Assets.load(assetsToLoad)
+				.then(() => {
+					assetsLoaded = true;
+					if (latestWorld) {
+						drawMap(latestWorld);
+					}
+				})
+				.catch((error) => {
+					console.error('Failed to load assets:', error);
+				});
+		}
+
+		await loadingPromise;
+	};
+
 	const setupCanvas = async () => {
 		if (!container) return;
 
-		height = container.clientHeight / (window.devicePixelRatio || 1);
-		width = container.clientWidth / (window.devicePixelRatio || 1);
+		parentElement = container.parentElement;
+		const target = parentElement ?? container;
+		const ratio = window.devicePixelRatio || 1;
+		height = target.clientHeight / ratio;
+		width = target.clientWidth / ratio;
+		container.style.width = `${target.clientWidth}px`;
+		container.style.height = `${target.clientHeight}px`;
 
-		// Preload all assets for PixiJS v8
-		const tilePath = '/img/tilesets/';
-		const tileStyle = 'realistic';
-		const assetsToLoad = [
-			// Tiles
-			`${tilePath}${tileStyle}/clay.png`,
-			`${tilePath}${tileStyle}/desert.png`,
-			`${tilePath}${tileStyle}/grain.png`,
-			`${tilePath}${tileStyle}/wood.png`,
-			`${tilePath}${tileStyle}/stone.png`,
-			`${tilePath}${tileStyle}/wool.png`,
-			`${tilePath}${tileStyle}/ocean.png`,
-			// Pieces
-			'/img/pieces/house.png',
-			'/img/pieces/city.png',
-			'/img/pieces/thief.png',
-			// Special
-			`${tilePath}shared/scorch-with-thief.png`,
-			// Harbors
-			`${tilePath}${tileStyle}/woodharbor.png`,
-			`${tilePath}${tileStyle}/woolharbor.png`,
-			`${tilePath}${tileStyle}/grainharbor.png`,
-			`${tilePath}${tileStyle}/clayharbor.png`,
-			`${tilePath}${tileStyle}/stoneharbor.png`,
-			`${tilePath}${tileStyle}/threetooneharbor.png`,
-			// Numbers
-			'/img/numbers/2.png',
-			'/img/numbers/3.png',
-			'/img/numbers/4.png',
-			'/img/numbers/5.png',
-			'/img/numbers/6.png',
-			'/img/numbers/8.png',
-			'/img/numbers/9.png',
-			'/img/numbers/10.png',
-			'/img/numbers/11.png',
-			'/img/numbers/12.png'
-		];
-
-		// Load all assets
-		try {
-			console.log('Loading assets...');
-			await Assets.load(assetsToLoad);
-			console.log('Assets loaded successfully');
-		} catch (error) {
-			console.error('Failed to load assets:', error);
-		}
+		await ensureAssetsLoaded();
 
 		const appInstance = new Application();
 
@@ -583,4 +622,4 @@
 	});
 </script>
 
-<div bind:this={container} class="h-full w-full bg-[#03518b]"></div>
+<div bind:this={container} class="h-full w-full flex-1 bg-[#03518b]"></div>
