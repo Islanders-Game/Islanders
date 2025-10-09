@@ -1,13 +1,6 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import {
-		Application,
-		Container,
-		Graphics,
-		Point,
-		Assets,
-		FederatedPointerEvent
-	} from 'pixi.js';
+	import { Application, Container, Graphics, Point, Assets, FederatedPointerEvent } from 'pixi.js';
 	import { gameState, bindToWorld, sendAction } from '$lib/stores/game.svelte.ts';
 	import {
 		uiState,
@@ -76,31 +69,22 @@
 	let pointerDownPosition = { x: 0, y: 0 };
 	let hasDragged = false;
 
-	let currentPlayer: Player | undefined;
-	let currentWorld: World | undefined;
-
 	let isBuilding: BuildingType = 'None';
 	let isMovingThief = false;
 	let isPlayingKnight = false;
 	let isPlayingRoadBuilding = false;
 
 	let resizeObserver: ResizeObserver | undefined;
-	let previousWorld: World | undefined;
 
 	// Store event handlers for cleanup
 	let wheelHandler: ((event: WheelEvent) => void) | undefined;
 
+	const currentPlayer: Player | undefined = $derived(
+		gameState.world?.players.find((player: Player) => player.name === gameState.playerName)
+	);
+
 	$effect(() => {
-		const nextWorld = gameState.world;
-		const playerName = gameState.playerName;
-		currentPlayer = playerName
-			? nextWorld?.players.find((player: Player) => player.name === playerName)
-			: undefined;
-		currentWorld = nextWorld;
-		if (nextWorld !== previousWorld) {
-			drawMap(nextWorld, previousWorld);
-			previousWorld = nextWorld;
-		}
+		drawMap(gameState.world);
 	});
 
 	$effect(() => {
@@ -168,7 +152,7 @@
 	};
 
 	const handleBuildClick = (event: FederatedPointerEvent) => {
-		if (!worldContainer || !currentPlayer || !currentWorld || !grid) return;
+		if (!worldContainer || !currentPlayer || !gameState.world || !grid) return;
 
 		const inWorld = toWorld(event.global);
 		const closestPoints = getTwoClosestPoints(grid, inWorld);
@@ -180,7 +164,7 @@
 
 		if (isBuilding === 'House') {
 			const action =
-				currentWorld.gameState === 'Started'
+				gameState.world.gameState === 'Started'
 					? new BuildHouseAction(currentPlayer.name, coord)
 					: new BuildHouseInitialAction(currentPlayer.name, coord);
 
@@ -194,7 +178,7 @@
 		if (isBuilding === 'Road' && closestPoints[1].index !== -1) {
 			const coord2 = getMatrixCoordCorner(hexToFind, closestPoints[1].index);
 			const action =
-				currentWorld.gameState === 'Started'
+				gameState.world.gameState === 'Started'
 					? new BuildRoadAction(currentPlayer.name, coord, coord2)
 					: new BuildRoadInitialAction(currentPlayer.name, coord, coord2);
 
@@ -333,77 +317,67 @@
 		});
 	};
 
-	const drawMap = (newWorld: World | undefined, oldWorld: World | undefined) => {
+	const drawMap = (newWorld: World | undefined) => {
 		if (!newWorld) {
 			return;
 		}
 
-		const [redrawTiles, redrawPieces] = compareWorlds(oldWorld, newWorld);
 		let tileContainer: Container | undefined;
 		let pieceContainer: Container | undefined;
 		const thief = newWorld.thief ? newWorld.thief.hexCoordinate : undefined;
 
-		if (redrawTiles) {
-			tileContainer = new Container();
-			const map = !newWorld || !newWorld.map ? [] : newWorld.map;
+		tileContainer = new Container();
+		const map = !newWorld || !newWorld.map ? [] : newWorld.map;
 
-			const Hex = defineHex({
-				dimensions: hexSize,
-				orientation: Orientation.FLAT
-			});
-			grid = new Grid(Hex);
-			hexFactory = Hex;
+		const Hex = defineHex({
+			dimensions: hexSize,
+			orientation: Orientation.FLAT
+		});
+		grid = new Grid(Hex);
+		hexFactory = Hex;
 
-			lineGraphics.removeChildren();
-			lineGraphics.clear();
-			map.forEach((tile) => {
-				const hex = new Hex({ col: tile.coord.x, row: tile.coord.y });
-				// In honeycomb v4, hex.x and hex.y are the center coordinates
-				const point = { x: hex.x, y: hex.y };
-				// corners is a property (getter), not a method, and returns Points relative to origin
-				const corners = hex.corners;
-				const minX = Math.min(...corners.map(({ x }) => x));
-				const minY = Math.min(...corners.map(({ y }) => y));
-				const topLeft = { x: minX, y: minY };
-				const tileSprite = generateTile(tileWidth, tileHeight, tile, topLeft);
+		lineGraphics.removeChildren();
+		lineGraphics.clear();
+		map.forEach((tile) => {
+			const hex = new Hex({ col: tile.coord.x, row: tile.coord.y });
+			// In honeycomb v4, hex.x and hex.y are the center coordinates
+			const point = { x: hex.x, y: hex.y };
+			// corners is a property (getter), not a method, and returns Points relative to origin
+			const corners = hex.corners;
+			const minX = Math.min(...corners.map(({ x }) => x));
+			const minY = Math.min(...corners.map(({ y }) => y));
+			const topLeft = { x: minX, y: minY };
+			const tileSprite = generateTile(tileWidth, tileHeight, tile, topLeft);
 
-				tileContainer?.addChild(tileSprite);
-				if (newWorld.gameState === 'Started') {
-					// Pass hex center directly instead of recalculating
-					const tileNumber = generateTileNumber(tileWidth, { x: hex.x, y: hex.y }, point, tile);
-					if (tileNumber) {
-						tileContainer?.addChild(tileNumber);
-					}
+			tileContainer?.addChild(tileSprite);
+			if (newWorld.gameState === 'Started') {
+				// Pass hex center directly instead of recalculating
+				const tileNumber = generateTileNumber(tileWidth, { x: hex.x, y: hex.y }, point, tile);
+				if (tileNumber) {
+					tileContainer?.addChild(tileNumber);
 				}
+			}
 
-				if (thief && thief.x === hex.col && thief.y === hex.row) {
-					const thiefSprite = generateThiefTile('Scorch', tileWidth, tileHeight, topLeft);
-					tileContainer?.addChild(thiefSprite);
-				}
+			if (thief && thief.x === hex.col && thief.y === hex.row) {
+				const thiefSprite = generateThiefTile('Scorch', tileWidth, tileHeight, topLeft);
+				tileContainer?.addChild(thiefSprite);
+			}
 
-				// PixiJS v8: Use poly() for closed polygons with stroke
-				lineGraphics.poly(corners, true);
-				lineGraphics.stroke({ width: lineWidth, color: 0xffffff });
-			});
-		}
+			// PixiJS v8: Use poly() for closed polygons with stroke
+			lineGraphics.poly(corners, true);
+			lineGraphics.stroke({ width: lineWidth, color: 0xffffff });
+		});
+		pieceContainer = new Container();
+		newWorld.players.forEach((player) => {
+			addPiecesToContainer(player, pieceContainer!);
+		});
 
-		if (redrawPieces) {
-			pieceContainer = new Container();
-			newWorld.players.forEach((player) => {
-				addPiecesToContainer(player, pieceContainer!);
-			});
-		}
-
-		if (redrawTiles && tileContainer) {
-			tileGraphics.removeChildren();
-			tileGraphics.clear();
-			tileGraphics.addChild(tileContainer);
-		}
-		if (redrawPieces && pieceContainer) {
-			pieceGraphics.removeChildren();
-			pieceGraphics.clear();
-			pieceGraphics.addChild(pieceContainer);
-		}
+		tileGraphics.removeChildren();
+		tileGraphics.clear();
+		tileGraphics.addChild(tileContainer);
+		pieceGraphics.removeChildren();
+		pieceGraphics.clear();
+		pieceGraphics.addChild(pieceContainer);
 	};
 
 	const setupCanvas = async () => {
@@ -568,7 +542,9 @@
 				stage.on('pointerdown', pointerDownHandler);
 				stage.on('pointermove', pointerMoveHandler);
 				stage.on('pointerup', (event: FederatedPointerEvent) => pointerUpHandler(event, true));
-				stage.on('pointerupoutside', (event: FederatedPointerEvent) => pointerUpHandler(event, false));
+				stage.on('pointerupoutside', (event: FederatedPointerEvent) =>
+					pointerUpHandler(event, false)
+				);
 
 				if (container) {
 					container.addEventListener('wheel', wheelHandler, { passive: false });

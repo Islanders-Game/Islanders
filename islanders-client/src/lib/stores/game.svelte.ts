@@ -18,10 +18,68 @@ import {
 	setIsPlayingRoadBuilding,
 	setPlayerProposesTrade
 } from './ui.svelte';
+import { browser } from '$app/environment';
 import { connect, disconnect } from './socket.ts';
 import { env } from '$env/dynamic/public';
 
 const DEFAULT_POINTS_TO_WIN = 10;
+const SESSION_KEY = 'islanders:session';
+
+type GameSession = {
+	gameId: string;
+	playerName: string;
+};
+
+const readSession = (): GameSession | undefined => {
+	if (!browser) {
+		return undefined;
+	}
+
+	try {
+		const raw = localStorage.getItem(SESSION_KEY);
+		if (!raw) return undefined;
+		const parsed = JSON.parse(raw) as GameSession;
+		if (!parsed.gameId || !parsed.playerName) {
+			return undefined;
+		}
+		return parsed;
+	} catch (error) {
+		console.warn('Failed to parse game session from storage', error);
+		return undefined;
+	}
+};
+
+const persistSession = (session: GameSession) => {
+	if (!browser) return;
+	try {
+		localStorage.setItem(SESSION_KEY, JSON.stringify(session));
+	} catch (error) {
+		console.warn('Failed to persist game session', error);
+	}
+};
+
+const clearSession = () => {
+	if (!browser) return;
+	try {
+		localStorage.removeItem(SESSION_KEY);
+	} catch (error) {
+		console.warn('Failed to clear game session', error);
+	}
+};
+
+const resolvePlayerName = (gameId: string, provided?: string): string | undefined => {
+	const trimmed = provided?.trim();
+	if (trimmed) {
+		return trimmed;
+	}
+
+	const session = readSession();
+	if (session && session.gameId === gameId && session.playerName.trim()) {
+		return session.playerName.trim();
+	}
+
+	return undefined;
+};
 
 export interface GameState {
 	gameId: string | undefined;
@@ -123,21 +181,33 @@ export const createGame = async (playerName: string): Promise<void> => {
 
 	gameState.gameId = id;
 	gameState.playerName = playerName;
+	persistSession({ gameId: id, playerName });
 };
 
-export const joinGame = async (gameId: string, playerName: string): Promise<void> => {
+export const joinGame = async (gameId: string, playerName?: string): Promise<void> => {
+	const resolvedPlayerName = resolvePlayerName(gameId, playerName);
+	if (!resolvedPlayerName) {
+		setError('A player name is required to join this game.');
+		return;
+	}
+
+	setError(undefined);
+
 	const host = env.PUBLIC_SERVER;
-	const response = await fetch(`${host}/joingame?gameId=${gameId}&playerName=${playerName}`);
+	const response = await fetch(
+		`${host}/joingame?gameId=${encodeURIComponent(gameId)}&playerName=${encodeURIComponent(resolvedPlayerName)}`
+	);
 	const data: Result = await response.json();
 
 	const flatmappable = toResultInstance(data);
 	flatmappable.flatMap((world: World) => {
 		const socket = connect(`${host}/${gameId}`);
-		socket.emit(SocketActions.join, playerName);
+		socket.emit(SocketActions.join, resolvedPlayerName);
 
 		gameState.gameId = gameId;
-		gameState.playerName = playerName;
+		gameState.playerName = resolvedPlayerName;
 		setWorld(world);
+		persistSession({ gameId, playerName: resolvedPlayerName });
 		return success(world);
 	});
 
@@ -206,4 +276,7 @@ export const resetGameState = () => {
 	gameState.world = initialState.world;
 	gameState.error = initialState.error;
 	disconnect();
+	clearSession();
 };
+
+export const getStoredSession = readSession;
