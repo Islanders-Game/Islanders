@@ -1,6 +1,13 @@
 <script lang="ts">
 	import { onDestroy, onMount } from 'svelte';
-	import { Application, Container, Graphics, Point } from 'pixi.js';
+	import {
+		Application,
+		Container,
+		Graphics,
+		Point,
+		Assets,
+		FederatedPointerEvent
+	} from 'pixi.js';
 	import { gameState, bindToWorld, sendAction } from '$lib/stores/game.svelte.ts';
 	import {
 		uiState,
@@ -66,6 +73,8 @@
 	let panY = 0;
 	let isDragging = false;
 	let lastPointerPosition = { x: 0, y: 0 };
+	let pointerDownPosition = { x: 0, y: 0 };
+	let hasDragged = false;
 
 	let currentPlayer: Player | undefined;
 	let currentWorld: World | undefined;
@@ -136,10 +145,10 @@
 		}
 	};
 
-	const handleThiefClick = (event: { data: { global: Point } }) => {
+	const handleThiefClick = (event: FederatedPointerEvent) => {
 		if (!worldContainer || !grid) return;
 		if (!currentPlayer) return;
-		const inWorld = toWorld(event.data.global);
+		const inWorld = toWorld(event.global);
 		const hexToFind = grid.pointToHex(inWorld);
 		const moveThiefAction = new MoveThiefAction(currentPlayer.name, hexToFind);
 		dispatchActionClearCursor(moveThiefAction);
@@ -147,10 +156,10 @@
 		setIsStealingFromPlayers(true);
 	};
 
-	const handleIsPlayingKnightClick = (event: { data: { global: Point } }) => {
+	const handleIsPlayingKnightClick = (event: FederatedPointerEvent) => {
 		if (!worldContainer || !grid) return;
 		if (!currentPlayer) return;
-		const inWorld = toWorld(event.data.global);
+		const inWorld = toWorld(event.global);
 		const hexToFind = grid.pointToHex(inWorld);
 		const moveThiefAction = new MoveThiefDevCardAction(currentPlayer.name, hexToFind);
 		dispatchActionClearCursor(moveThiefAction);
@@ -158,10 +167,10 @@
 		setIsStealingFromPlayers(true);
 	};
 
-	const handleBuildClick = (event: { data: { global: Point } }) => {
+	const handleBuildClick = (event: FederatedPointerEvent) => {
 		if (!worldContainer || !currentPlayer || !currentWorld || !grid) return;
 
-		const inWorld = toWorld(event.data.global);
+		const inWorld = toWorld(event.global);
 		const closestPoints = getTwoClosestPoints(grid, inWorld);
 		if (closestPoints[0].index === -1) {
 			return;
@@ -194,7 +203,7 @@
 		}
 	};
 
-	const handleClick = (event: { data: { global: Point } }) => {
+	const handleClick = (event: FederatedPointerEvent) => {
 		if (isBuilding !== 'None') {
 			handleBuildClick(event);
 		} else if (isMovingThief) {
@@ -223,9 +232,9 @@
 		return piece;
 	};
 
-	const cursorForSprite = (event: { data: { global: Point } }, type: string) => {
+	const cursorForSprite = (event: FederatedPointerEvent, type: string) => {
 		if (!worldContainer || !currentPlayer || !grid) return;
-		const inWorld = toWorld(event.data.global);
+		const inWorld = toWorld(event.global);
 		const closest = getClosestPoint(grid, inWorld);
 		if (closest.index !== -1) {
 			cursorGraphics.clear();
@@ -236,27 +245,29 @@
 		}
 	};
 
-	const cursorForRoad = (event: { data: { global: Point } }) => {
+	const cursorForRoad = (event: FederatedPointerEvent) => {
 		if (!worldContainer || !currentPlayer || !grid) return;
-		const inWorld = toWorld(event.data.global);
+		const inWorld = toWorld(event.global);
 		const closestPoints = getTwoClosestPoints(grid, inWorld);
 
 		cursorGraphics.clear();
 		cursorGraphics.removeChildren();
 		if (closestPoints[0].index !== -1 && closestPoints[1].index !== -1) {
-			cursorGraphics.lineStyle(lineWidth, currentPlayer.color);
+			// PixiJS v8: Use moveTo/lineTo and then stroke() with style
 			cursorGraphics.moveTo(closestPoints[0].point.x, closestPoints[0].point.y);
 			cursorGraphics.lineTo(closestPoints[1].point.x, closestPoints[1].point.y);
+			cursorGraphics.stroke({ width: lineWidth, color: currentPlayer.color });
 		}
 	};
 
-	const cursorForHex = (event: { data: { global: Point } }) => {
+	const cursorForHex = (event: FederatedPointerEvent) => {
 		if (!worldContainer || !currentPlayer || !grid) return;
-		const inWorld = toWorld(event.data.global);
+		const inWorld = toWorld(event.global);
 		const hexToFind = grid.pointToHex(inWorld);
+		// In honeycomb v4, hex.x and hex.y are already the center coordinates
 		const centerOfHex = {
-			x: hexToFind.x + hexToFind.width / 2,
-			y: hexToFind.y + hexToFind.height / 2
+			x: hexToFind.x,
+			y: hexToFind.y
 		};
 		cursorGraphics.clear();
 		cursorGraphics.removeChildren();
@@ -265,7 +276,7 @@
 		cursorGraphics.addChild(piece);
 	};
 
-	const handleMove = (event: { data: { global: Point } }) => {
+	const handleMove = (event: FederatedPointerEvent) => {
 		if (isBuilding === 'House') {
 			cursorForSprite(event, 'House');
 			return;
@@ -288,14 +299,16 @@
 		const { color } = player;
 		const roadGraphics = new Graphics();
 		const sampleHex = new hexFactory({ col: 0, row: 0 });
+		// In honeycomb v4, width and height are properties, not methods
 		const hexWidth = sampleHex.width;
 		const hexHeight = sampleHex.height;
 		player.roads.forEach((road) => {
-			roadGraphics.lineStyle(lineWidth, color);
 			const start = matrixCoordToWorldCoord(road.start, hexWidth, hexHeight);
 			const end = matrixCoordToWorldCoord(road.end, hexWidth, hexHeight);
+			// PixiJS v8: Use moveTo/lineTo and then stroke() with style
 			roadGraphics.moveTo(start.x, start.y);
 			roadGraphics.lineTo(end.x, end.y);
+			roadGraphics.stroke({ width: lineWidth, color });
 		});
 		container.addChild(roadGraphics);
 
@@ -345,29 +358,32 @@
 			lineGraphics.clear();
 			map.forEach((tile) => {
 				const hex = new Hex({ col: tile.coord.x, row: tile.coord.y });
+				// In honeycomb v4, hex.x and hex.y are the center coordinates
 				const point = { x: hex.x, y: hex.y };
-				const center = hex.center;
+				// corners is a property (getter), not a method, and returns Points relative to origin
 				const corners = hex.corners;
-				const [firstCorner, ...otherCorners] = corners;
-				const tileSprite = generateTile(tileWidth, tileHeight, tile, firstCorner);
+				const minX = Math.min(...corners.map(({ x }) => x));
+				const minY = Math.min(...corners.map(({ y }) => y));
+				const topLeft = { x: minX, y: minY };
+				const tileSprite = generateTile(tileWidth, tileHeight, tile, topLeft);
 
 				tileContainer?.addChild(tileSprite);
 				if (newWorld.gameState === 'Started') {
-					const tileNumber = generateTileNumber(tileWidth, center, point, tile);
+					// Pass hex center directly instead of recalculating
+					const tileNumber = generateTileNumber(tileWidth, { x: hex.x, y: hex.y }, point, tile);
 					if (tileNumber) {
 						tileContainer?.addChild(tileNumber);
 					}
 				}
 
-				if (thief && thief.x === hex.x && thief.y === hex.y) {
-					const thiefSprite = generateThiefTile('Scorch', tileWidth, tileHeight, firstCorner);
+				if (thief && thief.x === hex.col && thief.y === hex.row) {
+					const thiefSprite = generateThiefTile('Scorch', tileWidth, tileHeight, topLeft);
 					tileContainer?.addChild(thiefSprite);
 				}
 
-				lineGraphics.lineStyle(lineWidth, 0xffffff);
-				lineGraphics.moveTo(firstCorner.x, firstCorner.y);
-				otherCorners.forEach(({ x, y }) => lineGraphics.lineTo(x, y));
-				lineGraphics.lineTo(firstCorner.x, firstCorner.y);
+				// PixiJS v8: Use poly() for closed polygons with stroke
+				lineGraphics.poly(corners, true);
+				lineGraphics.stroke({ width: lineWidth, color: 0xffffff });
 			});
 		}
 
@@ -390,11 +406,58 @@
 		}
 	};
 
-	const setupCanvas = () => {
+	const setupCanvas = async () => {
 		if (!container) return;
 
 		height = container.clientHeight / (window.devicePixelRatio || 1);
 		width = container.clientWidth / (window.devicePixelRatio || 1);
+
+		// Preload all assets for PixiJS v8
+		const tilePath = '/img/tilesets/';
+		const tileStyle = 'realistic';
+		const assetsToLoad = [
+			// Tiles
+			`${tilePath}${tileStyle}/clay.png`,
+			`${tilePath}${tileStyle}/desert.png`,
+			`${tilePath}${tileStyle}/grain.png`,
+			`${tilePath}${tileStyle}/wood.png`,
+			`${tilePath}${tileStyle}/stone.png`,
+			`${tilePath}${tileStyle}/wool.png`,
+			`${tilePath}${tileStyle}/ocean.png`,
+			// Pieces
+			'/img/pieces/house.png',
+			'/img/pieces/city.png',
+			'/img/pieces/thief.png',
+			// Special
+			`${tilePath}shared/scorch-with-thief.png`,
+			// Harbors
+			`${tilePath}${tileStyle}/woodharbor.png`,
+			`${tilePath}${tileStyle}/woolharbor.png`,
+			`${tilePath}${tileStyle}/grainharbor.png`,
+			`${tilePath}${tileStyle}/clayharbor.png`,
+			`${tilePath}${tileStyle}/stoneharbor.png`,
+			`${tilePath}${tileStyle}/threetooneharbor.png`,
+			// Numbers
+			'/img/numbers/2.png',
+			'/img/numbers/3.png',
+			'/img/numbers/4.png',
+			'/img/numbers/5.png',
+			'/img/numbers/6.png',
+			'/img/numbers/8.png',
+			'/img/numbers/9.png',
+			'/img/numbers/10.png',
+			'/img/numbers/11.png',
+			'/img/numbers/12.png'
+		];
+
+		// Load all assets
+		try {
+			console.log('Loading assets...');
+			await Assets.load(assetsToLoad);
+			console.log('Assets loaded successfully');
+		} catch (error) {
+			console.error('Failed to load assets:', error);
+		}
 
 		const appInstance = new Application();
 
@@ -415,7 +478,10 @@
 				app = appInstance;
 				worldContainer = worldContainerInstance;
 
-				appInstance.stage.addChild(worldContainerInstance);
+				const stage = appInstance.stage;
+				stage.eventMode = 'static';
+				stage.hitArea = appInstance.screen;
+				stage.addChild(worldContainerInstance);
 				container?.appendChild(appInstance.canvas);
 
 				worldContainerInstance.addChild(tileGraphics);
@@ -429,35 +495,48 @@
 				updateWorldTransform();
 
 				// Event handlers
-				const moveHandler = (event: { data: { global: Point } }) => handleMove(event);
-				const clickHandler = (event: { data: { global: Point } }) => handleClick(event);
+				const moveHandler = (event: FederatedPointerEvent) => handleMove(event);
 				const hoverHandler = () => {
 					const selection = window.getSelection?.();
 					selection?.removeAllRanges();
 				};
 
 				// Pan handlers
-				const pointerDownHandler = (event: any) => {
-					if (event.data.button === 0) {
+				const pointerDownHandler = (event: FederatedPointerEvent) => {
+					if (event.button === 0) {
 						// Left click only
 						isDragging = true;
-						lastPointerPosition = { x: event.data.global.x, y: event.data.global.y };
+						hasDragged = false;
+						pointerDownPosition = { x: event.global.x, y: event.global.y };
+						lastPointerPosition = { x: event.global.x, y: event.global.y };
 					}
 				};
 
-				const pointerMoveHandler = (event: any) => {
+				const pointerMoveHandler = (event: FederatedPointerEvent) => {
 					if (isDragging) {
-						const dx = event.data.global.x - lastPointerPosition.x;
-						const dy = event.data.global.y - lastPointerPosition.y;
+						const dx = event.global.x - lastPointerPosition.x;
+						const dy = event.global.y - lastPointerPosition.y;
 						panX += dx;
 						panY += dy;
-						lastPointerPosition = { x: event.data.global.x, y: event.data.global.y };
+						lastPointerPosition = { x: event.global.x, y: event.global.y };
+						if (!hasDragged) {
+							const totalDx = event.global.x - pointerDownPosition.x;
+							const totalDy = event.global.y - pointerDownPosition.y;
+							if (Math.abs(totalDx) > 2 || Math.abs(totalDy) > 2) {
+								hasDragged = true;
+							}
+						}
 						updateWorldTransform();
 					}
 				};
 
-				const pointerUpHandler = () => {
-					isDragging = false;
+				const pointerUpHandler = (event: FederatedPointerEvent, shouldTriggerClick: boolean) => {
+					if (isDragging) {
+						isDragging = false;
+					}
+					if (shouldTriggerClick && !hasDragged) {
+						handleClick(event);
+					}
 				};
 
 				// Zoom handler
@@ -484,13 +563,12 @@
 					}
 				};
 
-				worldContainerInstance.on('mousemove', moveHandler);
-				worldContainerInstance.on('pointerup', clickHandler);
-				worldContainerInstance.on('mouseover', hoverHandler);
-				worldContainerInstance.on('pointerdown', pointerDownHandler);
-				worldContainerInstance.on('pointermove', pointerMoveHandler);
-				worldContainerInstance.on('pointerup', pointerUpHandler);
-				worldContainerInstance.on('pointerupoutside', pointerUpHandler);
+				stage.on('mousemove', moveHandler);
+				stage.on('mouseover', hoverHandler);
+				stage.on('pointerdown', pointerDownHandler);
+				stage.on('pointermove', pointerMoveHandler);
+				stage.on('pointerup', (event: FederatedPointerEvent) => pointerUpHandler(event, true));
+				stage.on('pointerupoutside', (event: FederatedPointerEvent) => pointerUpHandler(event, false));
 
 				if (container) {
 					container.addEventListener('wheel', wheelHandler, { passive: false });
@@ -505,7 +583,7 @@
 			console.warn('Unable to bind to world socket', error);
 		}
 
-		setupCanvas();
+		void setupCanvas();
 		handleResize();
 
 		if (container) {

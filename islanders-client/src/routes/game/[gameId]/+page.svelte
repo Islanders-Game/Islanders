@@ -1,71 +1,75 @@
 <script lang="ts">
 	import Map from '$lib/components/Map.svelte';
+	import { startGame, updateMap } from '$lib/stores/game.svelte';
+	import { WorldGenerator, type Tile } from '../../../../../islanders-shared/lib/Shared';
+
 	const props = $props();
 	const { gameId } = props.data as { gameId: string };
 	const base = `/game/${encodeURIComponent(gameId)}`;
+
+	let radius = $state(2);
+	let numberOfIslands = $state(1);
+	const worldGenerator = new WorldGenerator();
+
+	const randomizeMap = async () => {
+		const map: Tile[] = worldGenerator.generateRandomMap(radius, numberOfIslands);
+		await updateMap(map);
+	};
+
+	const start = (pointsToWin: number) => async () => {
+		await startGame(pointsToWin);
+	};
 </script>
 
 <section
 	class="flex flex-1 flex-col gap-6 overflow-auto p-6 text-white/90 sm:p-8"
 	aria-label="Game board"
 >
-	<div class="grid min-h-0 gap-6 lg:grid-cols-[2fr_1fr]">
+	<div class="grid min-h-0 gap-6">
 		<div
-			class="flex flex-col overflow-hidden rounded-3xl bg-slate-950/80 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
+			class="flex flex-col overflow-hidden rounded bg-slate-950/80 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
 		>
-			<header class="border-b border-white/10 px-6 py-4 lg:px-8">
-				<h2 class="text-xl font-semibold text-white">World Map</h2>
-				<p class="mt-2 text-sm text-white/70">
-					Interact with the live island grid once you have joined a lobby. Pan with drag, zoom with
-					the mouse wheel or pinch trackpad gestures.
-				</p>
-			</header>
-			<div class="relative flex flex-1 overflow-hidden">
+			<div class="relative flex min-h-[500px] flex-1 overflow-hidden">
 				<Map />
 			</div>
 		</div>
-
-		<aside
-			class="flex flex-col gap-4 overflow-auto rounded-3xl bg-slate-950/80 p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] lg:p-8"
-		>
-			<h2 class="text-xl font-semibold text-white">Overview</h2>
-			<p class="leading-relaxed text-white/75">
-				Load the detailed panels at
-				<a href={`${base}/overview/players`} class="font-semibold text-sky-200 hover:text-sky-100">
-					Overview &rarr;
-				</a>
-			</p>
-			<ul class="list-disc space-y-2 pl-6 text-sm text-white/70">
-				<li>Players – turn order, resources, knights</li>
-				<li>Chat – in-game messaging</li>
-				<li>Logs – event history</li>
-			</ul>
-		</aside>
 	</div>
 
-	<footer class="grid gap-6 md:grid-cols-2 xl:grid-cols-3">
-		<div
-			class="rounded-3xl bg-slate-950/80 p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] md:p-8"
-		>
-			<h2 class="text-xl font-semibold text-white">Lobby Setup</h2>
-			<p class="mt-3 leading-relaxed text-white/75">
-				Waiting to start? The host can configure the world in
-				<a href={`${base}/setup`} class="font-semibold text-sky-200 hover:text-sky-100">
-					Setup &rarr;
-				</a>
-			</p>
+	<div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+		<div class="rounded bg-slate-950/80 p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]">
+			<h3 class="mb-4 text-lg font-semibold text-white">Map Configuration</h3>
+			<div class="space-y-4">
+				<div>
+					<label for="radius" class="mb-2 block text-sm text-white/70">Radius</label>
+					<input
+						id="radius"
+						type="number"
+						bind:value={radius}
+						min="2"
+						max="12"
+						class="w-full rounded-lg border border-white/10 bg-slate-900/50 px-3 py-2 text-white focus:border-sky-500 focus:ring-1 focus:ring-sky-500 focus:outline-none"
+					/>
+				</div>
+				<div>
+					<label for="islands" class="mb-2 block text-sm text-white/70">Number of Islands</label>
+					<input
+						id="islands"
+						type="number"
+						bind:value={numberOfIslands}
+						min="1"
+						max="13"
+						disabled
+						class="w-full rounded-lg border border-white/10 bg-slate-900/50 px-3 py-2 text-white/50 focus:border-sky-500 focus:ring-1 focus:ring-sky-500 focus:outline-none"
+					/>
+				</div>
+				<button class="btn w-full" onclick={randomizeMap}>
+					<span>Randomize Map</span>
+				</button>
+			</div>
 		</div>
 
-		<div
-			class="rounded-3xl bg-slate-950/80 p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)] md:p-8"
-		>
-			<h2 class="text-xl font-semibold text-white">Player Actions</h2>
-			<p class="mt-3 leading-relaxed text-white/75">
-				Build, trade, and play cards from the
-				<a href={`${base}/actions`} class="font-semibold text-sky-200 hover:text-sky-100">
-					Actions panel &rarr;
-				</a>
-			</p>
-		</div>
-	</footer>
+		<button class="btn w-full" onclick={start(10)}>
+			<span>Start Game</span>
+		</button>
+	</div>
 </section>

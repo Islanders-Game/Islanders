@@ -3,7 +3,7 @@ import { Sprite } from 'pixi.js';
 import { type Tile } from '../../../islanders-shared/lib/Shared';
 
 export const generateSprites = (): { [s: string]: () => Sprite } => {
-	const tilePath = './img/tilesets/';
+	const tilePath = '/img/tilesets/';
 	const tileStyle = 'realistic';
 
 	const sprites = {
@@ -14,26 +14,26 @@ export const generateSprites = (): { [s: string]: () => Sprite } => {
 		Stone: () => Sprite.from(`${tilePath}${tileStyle}/stone.png`),
 		Wool: () => Sprite.from(`${tilePath}${tileStyle}/wool.png`),
 		Ocean: () => Sprite.from(`${tilePath}${tileStyle}/ocean.png`),
-		House: () => Sprite.from('./img/pieces/house.png'),
-		City: () => Sprite.from('./img/pieces/city.png'),
-		Thief: () => Sprite.from('./img/pieces/thief.png'),
-		Scorch: () => Sprite.from(`${tilePath}/shared/scorch-with-thief.png`),
+		House: () => Sprite.from('/img/pieces/house.png'),
+		City: () => Sprite.from('/img/pieces/city.png'),
+		Thief: () => Sprite.from('/img/pieces/thief.png'),
+		Scorch: () => Sprite.from(`${tilePath}shared/scorch-with-thief.png`),
 		WoodHarbor: () => Sprite.from(`${tilePath}${tileStyle}/woodharbor.png`),
 		WoolHarbor: () => Sprite.from(`${tilePath}${tileStyle}/woolharbor.png`),
 		GrainHarbor: () => Sprite.from(`${tilePath}${tileStyle}/grainharbor.png`),
 		ClayHarbor: () => Sprite.from(`${tilePath}${tileStyle}/clayharbor.png`),
 		StoneHarbor: () => Sprite.from(`${tilePath}${tileStyle}/stoneharbor.png`),
 		ThreeToOneHarbor: () => Sprite.from(`${tilePath}${tileStyle}/threetooneharbor.png`),
-		2: () => Sprite.from('./img/numbers/2.png'),
-		3: () => Sprite.from('./img/numbers/3.png'),
-		4: () => Sprite.from('./img/numbers/4.png'),
-		5: () => Sprite.from('./img/numbers/5.png'),
-		6: () => Sprite.from('./img/numbers/6.png'),
-		8: () => Sprite.from('./img/numbers/8.png'),
-		9: () => Sprite.from('./img/numbers/9.png'),
-		10: () => Sprite.from('./img/numbers/10.png'),
-		11: () => Sprite.from('./img/numbers/11.png'),
-		12: () => Sprite.from('./img/numbers/12.png')
+		2: () => Sprite.from('/img/numbers/2.png'),
+		3: () => Sprite.from('/img/numbers/3.png'),
+		4: () => Sprite.from('/img/numbers/4.png'),
+		5: () => Sprite.from('/img/numbers/5.png'),
+		6: () => Sprite.from('/img/numbers/6.png'),
+		8: () => Sprite.from('/img/numbers/8.png'),
+		9: () => Sprite.from('/img/numbers/9.png'),
+		10: () => Sprite.from('/img/numbers/10.png'),
+		11: () => Sprite.from('/img/numbers/11.png'),
+		12: () => Sprite.from('/img/numbers/12.png')
 	};
 	return sprites;
 };
@@ -42,14 +42,18 @@ export const generateTile = (
 	tileWidth: number,
 	tileHeight: number,
 	tile: Tile,
-	corner: { x: number; y: number }
+	topLeft: { x: number; y: number }
 ): Sprite => {
 	const generator = generateSprites()[tile.type.toString()];
 	const s = generator();
 	s.width = tileWidth;
 	s.height = tileHeight;
-	s.position.x = corner.x - tileWidth;
-	s.position.y = corner.y - tileHeight / 2;
+	// Set anchor to top-left (default)
+	s.anchor.set(0, 0);
+	s.position.x = topLeft.x;
+	s.position.y = topLeft.y;
+	s.visible = true;
+	s.alpha = 1.0;
 	return s;
 };
 
@@ -74,14 +78,14 @@ export const generateThiefTile = (
 	type: 'Scorch' | 'Thief',
 	tileWidth: number,
 	tileHeight: number,
-	corner: { x: number; y: number }
+	topLeft: { x: number; y: number }
 ): Sprite => {
 	const generator = generateSprites()[type];
 	const s = generator();
 	s.width = tileWidth;
 	s.height = tileHeight;
-	s.position.x = corner.x - tileWidth;
-	s.position.y = corner.y - tileHeight / 2;
+	s.position.x = topLeft.x;
+	s.position.y = topLeft.y;
 	return s;
 };
 

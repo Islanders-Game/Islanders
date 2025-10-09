@@ -2,12 +2,13 @@ import type { World } from '../../../../islanders-shared/lib/Shared';
 
 export type HexGrid = {
 	pointToHex: (point: { x: number; y: number }) => {
-		x: number;
-		y: number;
+		x: number; // center x coordinate
+		y: number; // center y coordinate
 		width: number;
 		height: number;
 		corners: Array<{ x: number; y: number }>;
-		center: { x: number; y: number };
+		col: number;
+		row: number;
 	};
 };
 
@@ -22,7 +23,8 @@ export const getClosestPoint = (grid: HexGrid, point: { x: number; y: number }):
 		Math.sqrt(Math.abs(from.x - to.x) ** 2 + Math.abs(from.y - to.y) ** 2);
 
 	const hexToFind = grid.pointToHex(point);
-	const centerOfHex = hexToFind.center;
+	// In honeycomb v4, hex.x and hex.y are the center coordinates
+	const centerOfHex = { x: hexToFind.x, y: hexToFind.y };
 
 	const distance = distanceFunc(point, centerOfHex);
 	let closestPoint: ClosestPoint = { point: centerOfHex, index: -1, dist: distance };
