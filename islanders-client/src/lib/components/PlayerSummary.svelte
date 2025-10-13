@@ -5,35 +5,43 @@
 	interface PlayerInformation {
 		player?: Player;
 		isActive?: boolean;
-		subtitle?: string;
-		size?: 'sm' | 'md';
-		className?: string;
+		resourceEntries: [string, any][];
 	}
 
-	const props = $props<PlayerInformation>();
+	const { player, resourceEntries, isActive }: PlayerInformation = $props();
 
 	const defaultColor = '#94a3b8';
 
-	const playerName = $derived(props.player?.name ?? '—');
-	const points = $derived(props.player?.points ?? 0);
+	const playerName = $derived(player?.name ?? '—');
+	const points = $derived(player?.points ?? 0);
 	const color = $derived(
-		props.player && playerName ? (getPlayerColorAsHex(playerName) ?? defaultColor) : defaultColor
+		player && playerName ? (getPlayerColorAsHex(playerName) ?? defaultColor) : defaultColor
 	);
-	const size = $derived(props.size ?? 'md');
-	const subtitle = $derived(props.subtitle ?? (props.isActive ? 'Current turn' : undefined));
 </script>
 
 <div
-	class={`flex items-center gap-3 leading-tight ${
-		size === 'sm' ? 'text-sm' : 'text-base'
-	} ${props.isActive ? 'text-white' : 'text-white/90'} ${props.className ?? ''}`.trim()}
+	class="card card-body w-full gap-4 transition-colors"
+	class:bg-base-300={isActive}
+	class:bg-base-200={!isActive}
+	class:border={isActive}
+	class:text-base-900={isActive}
+	class:text-base={!isActive}
 >
-	<span class="h-10 w-2 rounded-full" style={`background-color: ${color}`}></span>
-	<div class="flex flex-col">
-		<span class={`font-semibold ${size === 'sm' ? 'text-base' : 'text-lg'}`}>{playerName}</span>
-		<span class="text-xs opacity-80">Points: {points}</span>
-		{#if subtitle}
-			<span class="text-[0.65rem] tracking-wide text-white/70 uppercase">{subtitle}</span>
-		{/if}
+	<div class="flex items-center">
+		<div class="flex w-full flex-row gap-2">
+			<span class="min-h-full w-2 rounded-full" style={`background-color: ${color}`}></span>
+			<div class="flex flex-col">
+				<span class="text-base font-semibold">{playerName}</span>
+				<span class="text-xs">Points: {points}</span>
+			</div>
+		</div>
+	</div>
+
+	<div class="flex w-full flex-row flex-wrap uppercase">
+		{#each resourceEntries as [resource, amount]}
+			<span class="badge text-xs">
+				{resource}: <span>{amount}</span>
+			</span>
+		{/each}
 	</div>
 </div>

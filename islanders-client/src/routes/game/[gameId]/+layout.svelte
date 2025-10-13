@@ -6,6 +6,8 @@
 	import { gameState, getStoredSession, joinGame } from '$lib/stores/game.svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
+	import ResourcesBar from '$lib/components/ResourcesBar.svelte';
+	import type { Player } from '../../../../../islanders-shared/lib/Shared';
 
 	const props = $props();
 	const { children, data } = props;
@@ -31,6 +33,10 @@
 	let localError = $state('');
 	let isSubmitting = $state(false);
 	let modalElement: HTMLDialogElement;
+
+	const applyTheme = (t: string) => {
+		if (typeof document !== 'undefined') document.documentElement.setAttribute('data-theme', t);
+	};
 
 	const handleTabClick = (href: string) => (event: MouseEvent) => {
 		event.preventDefault();
@@ -78,22 +84,38 @@
 				}
 			}
 
-			// Only show modal if we don't have a valid session
 			modalElement?.showModal();
 		};
 
 		void handleInitialJoin();
+
+		applyTheme(window.matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light');
+		window
+			.matchMedia('(prefers-color-scheme: dark)')
+			.addEventListener('change', (e: MediaQueryListEvent) => {
+				applyTheme(e.matches ? 'dark' : 'light');
+			});
 	});
+
+	const currentPlayer: Player | undefined = $derived(
+		gameState.world?.players.find((player: Player) => player.name === gameState.playerName)
+	);
+	const playerResources = $derived(
+		currentPlayer?.resources ?? { wood: 0, clay: 0, stone: 0, grain: 0, wool: 0 }
+	);
 </script>
 
 <div class="flex h-screen overflow-hidden">
-	<section class="flex flex-1" aria-label="Game map">
+	<section class="flex min-w-0 flex-1" aria-label="Game map">
 		<div class="flex h-full min-h-0 min-w-0 flex-1">
 			<Map />
 		</div>
 	</section>
-	<aside class="flex h-full w-[500px] flex-shrink-0 flex-col" aria-label="Game sidebar">
-		<nav class="tabs-box tabs">
+	<aside
+		class="z-10 flex h-full w-[28rem] flex-shrink-0 flex-col bg-base-100"
+		aria-label="Game sidebar"
+	>
+		<nav class="tabs-border tabs">
 			{#each tabs as tab}
 				<a
 					class={`tab ${activeTabId === tab.id ? 'tab-active' : ''}`}
@@ -104,7 +126,7 @@
 				</a>
 			{/each}
 		</nav>
-		<div class="flex-1 overflow-y-auto p-4">
+		<div class="flex-1 overflow-y-auto p-4 pt-6">
 			{@render children?.()}
 		</div>
 	</aside>
@@ -148,13 +170,16 @@
 		</div>
 	</dialog>
 
-	<div class="toast-top toast-start toast-sm toast">
-		<div class="alert">
+	<div class="toast-top toast-start toast-sm toast space-y-2">
+		<div
+			class="flex flex-row items-center gap-2 rounded-md bg-base-200/40 px-3 py-2 backdrop-blur-md"
+		>
 			<div
 				class="h-2 w-2 rounded-full"
-				class:bg-green-200={$socketStore.connected}
-				class:bg-yellow-200={$socketStore.connecting}
-				class:bg-red-200={!$socketStore.connected && !$socketStore.connecting}
+				class:bg-green-400={$socketStore.connected}
+				class:bg-yellow-400={$socketStore.connecting}
+				class:bg-red-400={!$socketStore.connected && !$socketStore.connecting}
+				aria-label="Connection status indicator"
 			></div>
 			<div class="flex flex-col text-xs">
 				{#if $socketStore.connected}
@@ -166,5 +191,9 @@
 				{/if}
 			</div>
 		</div>
+	</div>
+
+	<div class="toast-bottom toast-start toast-sm toast space-y-2">
+		<ResourcesBar resources={playerResources} />
 	</div>
 </div>

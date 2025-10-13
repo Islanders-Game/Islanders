@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { onDestroy, onMount } from 'svelte';
+	import { onMount } from 'svelte';
 	import { Application, Container, Graphics, Point, Assets, FederatedPointerEvent } from 'pixi.js';
 	import { gameState, bindToWorld, sendAction } from '$lib/stores/game.svelte.ts';
 	import {
@@ -40,6 +40,10 @@
 	let container: HTMLDivElement | undefined;
 	let parentElement: HTMLElement | null = null;
 
+	const currentPlayer: Player | undefined = $derived(
+		gameState.world?.players.find((player: Player) => player.name === gameState.playerName)
+	);
+
 	const hexSize = 200;
 	const tileHeight = 348;
 	const tileWidth = 400;
@@ -47,7 +51,6 @@
 	const tilePath = '/img/tilesets/';
 	const tileStyle = 'realistic';
 	const assetsToLoad = [
-		// Tiles
 		`${tilePath}${tileStyle}/clay.png`,
 		`${tilePath}${tileStyle}/desert.png`,
 		`${tilePath}${tileStyle}/grain.png`,
@@ -55,20 +58,16 @@
 		`${tilePath}${tileStyle}/stone.png`,
 		`${tilePath}${tileStyle}/wool.png`,
 		`${tilePath}${tileStyle}/ocean.png`,
-		// Pieces
 		'/img/pieces/house.png',
 		'/img/pieces/city.png',
 		'/img/pieces/thief.png',
-		// Special
 		`${tilePath}shared/scorch-with-thief.png`,
-		// Harbors
 		`${tilePath}${tileStyle}/woodharbor.png`,
 		`${tilePath}${tileStyle}/woolharbor.png`,
 		`${tilePath}${tileStyle}/grainharbor.png`,
 		`${tilePath}${tileStyle}/clayharbor.png`,
 		`${tilePath}${tileStyle}/stoneharbor.png`,
 		`${tilePath}${tileStyle}/threetooneharbor.png`,
-		// Numbers
 		'/img/numbers/2.png',
 		'/img/numbers/3.png',
 		'/img/numbers/4.png',
@@ -120,10 +119,6 @@
 	let latestWorld: World | undefined;
 	let loadingPromise: Promise<void> | undefined;
 
-	const currentPlayer: Player | undefined = $derived(
-		gameState.world?.players.find((player: Player) => player.name === gameState.playerName)
-	);
-
 	$effect(() => {
 		updateMap(gameState.world);
 	});
@@ -135,7 +130,6 @@
 		isPlayingRoadBuilding = uiState.isPlayingRoadBuilding;
 	});
 
-	// Convert screen coordinates to world coordinates
 	const toWorld = (screenPoint: { x: number; y: number }): { x: number; y: number } => {
 		return {
 			x: (screenPoint.x - panX) / scale,
@@ -143,7 +137,6 @@
 		};
 	};
 
-	// Update world container transform
 	const updateWorldTransform = () => {
 		if (!worldContainer) return;
 		worldContainer.scale.set(scale);
@@ -155,13 +148,21 @@
 			return;
 		}
 
+		const prevCenterWorld = toWorld({ x: width / 2, y: height / 2 });
+
 		const target = parentElement ?? container;
-		const ratio = window.devicePixelRatio || 1;
-		height = target.clientHeight / ratio;
-		width = target.clientWidth / ratio;
-		container.style.width = `${target.clientWidth}px`;
-		container.style.height = `${target.clientHeight}px`;
+		width = target.clientWidth;
+		height = target.clientHeight;
+		container.style.width = `${width}px`;
+		container.style.height = `${height}px`;
+
 		app.renderer.resize(width, height);
+		app.stage.hitArea = app.screen;
+		worldContainer.hitArea = app.screen;
+
+		panX = width / 2 - prevCenterWorld.x * scale;
+		panY = height / 2 - prevCenterWorld.y * scale;
+		updateWorldTransform();
 	};
 
 	const dispatchActionClearCursor = async (action: GameAction) => {
@@ -233,14 +234,12 @@
 	};
 
 	const handleClick = (event: FederatedPointerEvent) => {
-		if (isBuilding !== 'None') {
+		if (isBuilding !== 'None' || isPlayingRoadBuilding) {
 			handleBuildClick(event);
 		} else if (isMovingThief) {
 			handleThiefClick(event);
 		} else if (isPlayingKnight) {
 			handleIsPlayingKnightClick(event);
-		} else if (isPlayingRoadBuilding) {
-			handleBuildClick(event);
 		}
 	};
 
@@ -255,8 +254,7 @@
 		piece.width = dimensions.x;
 		piece.height = dimensions.y;
 		piece.tint = tint;
-		piece.position.x = coord.x;
-		piece.position.y = coord.y;
+		piece.position.set(coord.x, coord.y);
 		piece.anchor.set(0.5);
 		return piece;
 	};
@@ -465,9 +463,9 @@
 
 		parentElement = container.parentElement;
 		const target = parentElement ?? container;
-		const ratio = window.devicePixelRatio || 1;
-		height = target.clientHeight / ratio;
-		width = target.clientWidth / ratio;
+		// Use raw client sizes (renderer resolution will scale for DPR)
+		height = target.clientHeight;
+		width = target.clientWidth;
 		container.style.width = `${target.clientWidth}px`;
 		container.style.height = `${target.clientHeight}px`;
 
@@ -498,10 +496,7 @@
 				stage.addChild(worldContainerInstance);
 				container?.appendChild(appInstance.canvas);
 
-				worldContainerInstance.addChild(tileGraphics);
-				worldContainerInstance.addChild(lineGraphics);
-				worldContainerInstance.addChild(pieceGraphics);
-				worldContainerInstance.addChild(cursorGraphics);
+				worldContainerInstance.addChild(tileGraphics, lineGraphics, pieceGraphics, cursorGraphics);
 
 				// Set initial position (center the view)
 				panX = width / 2;
@@ -562,8 +557,8 @@
 					const delta = -event.deltaY;
 					const zoomIntensity = 0.0005;
 					const zoomFactor = Math.exp(delta * zoomIntensity);
-					const minScale = 0.1;
-					const maxScale = 5;
+					const minScale = 0.08;
+					const maxScale = 2;
 					const targetScale = scale * zoomFactor;
 					const newScale = Math.min(maxScale, Math.max(minScale, targetScale));
 
