@@ -105,6 +105,7 @@
 	let lastPointerPosition = { x: 0, y: 0 };
 	let pointerDownPosition = { x: 0, y: 0 };
 	let hasDragged = false;
+	const wheelPointerPosition = new Point();
 
 	let isBuilding: BuildingType = 'None';
 	let isMovingThief = false;
@@ -554,23 +555,33 @@
 
 				// Zoom handler
 				wheelHandler = (event: WheelEvent) => {
+					if (!app) {
+						return;
+					}
 					event.preventDefault();
 					const delta = -event.deltaY;
-					const zoomFactor = delta > 0 ? 1.1 : 0.9;
-					const newScale = scale * zoomFactor;
+					const zoomIntensity = 0.0005;
+					const zoomFactor = Math.exp(delta * zoomIntensity);
+					const minScale = 0.1;
+					const maxScale = 5;
+					const targetScale = scale * zoomFactor;
+					const newScale = Math.min(maxScale, Math.max(minScale, targetScale));
 
 					// Limit zoom levels
-					if (newScale >= 0.1 && newScale <= 5) {
-						const mouseX = event.clientX;
-						const mouseY = event.clientY;
+					if (newScale !== scale) {
+						app.renderer.events.mapPositionToPoint(
+							wheelPointerPosition,
+							event.clientX,
+							event.clientY
+						);
+						const mouseX = wheelPointerPosition.x;
+						const mouseY = wheelPointerPosition.y;
 
 						// Zoom towards mouse position
 						const worldPosBefore = toWorld({ x: mouseX, y: mouseY });
 						scale = newScale;
-						const worldPosAfter = toWorld({ x: mouseX, y: mouseY });
-
-						panX += (worldPosAfter.x - worldPosBefore.x) * scale;
-						panY += (worldPosAfter.y - worldPosBefore.y) * scale;
+						panX = mouseX - worldPosBefore.x * scale;
+						panY = mouseY - worldPosBefore.y * scale;
 
 						updateWorldTransform();
 					}
