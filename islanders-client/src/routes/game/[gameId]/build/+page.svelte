@@ -1,12 +1,12 @@
 <script lang="ts">
-	import { gameState } from '$lib/stores/game.svelte';
-	import { setIsBuilding } from '$lib/stores/ui.svelte';
+	import { gameStore } from '$lib/stores/game.svelte';
+	import { uiStore } from '$lib/stores/ui.svelte';
 
 	const props = $props();
 	const { gameId } = props.data as { gameId: string };
 
-	const currentWorld = $derived(gameState.world);
-	const playerName = $derived(gameState.playerName);
+	const currentWorld = $derived(gameStore.world);
+	const playerName = $derived(gameStore.playerName);
 	const currentTurnPlayer = $derived(
 		currentWorld ? currentWorld.players[currentWorld.currentPlayer] : undefined
 	);
@@ -43,10 +43,10 @@
 		if (!canAfford(buildingCosts[action])) return;
 		console.log(`Build action triggered: ${action}`, { gameId, player: playerName });
 		// TODO: dispatch socket action to server
-		if (action === 'road') setIsBuilding('Road');
-		else if (action === 'settlement') setIsBuilding('House');
-		else if (action === 'city') setIsBuilding('City');
-		else setIsBuilding('None');
+		if (action === 'road') uiStore.setBuilding('Road');
+		else if (action === 'settlement') uiStore.setBuilding('House');
+		else if (action === 'city') uiStore.setBuilding('City');
+		else uiStore.setBuilding('None');
 	};
 </script>
 

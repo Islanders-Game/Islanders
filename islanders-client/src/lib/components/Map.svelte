@@ -1,15 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Application, Container, Graphics, Point, Assets, FederatedPointerEvent } from 'pixi.js';
-	import { gameState, bindToWorld, sendAction } from '$lib/stores/game.svelte.ts';
-	import {
-		uiState,
-		setIsBuilding,
-		setIsMovingThief,
-		setIsPlayingKnight,
-		setIsStealingFromPlayers
-	} from '$lib/stores/ui.svelte.ts';
-	import type { BuildingType } from '$lib/stores/ui.svelte.ts';
+	import { gameStore } from '$lib/stores/game.svelte.ts';
+	import { uiStore } from '$lib/stores/ui.svelte';
+	import type { BuildingType } from '$lib/stores/ui.svelte';
 	import {
 		type World,
 		type Player,
@@ -41,7 +35,7 @@
 	let parentElement: HTMLElement | null = null;
 
 	const currentPlayer: Player | undefined = $derived(
-		gameState.world?.players.find((player: Player) => player.name === gameState.playerName)
+		gameStore.world?.players.find((player: Player) => player.name === gameStore.playerName)
 	);
 
 	const hexSize = 200;
@@ -120,14 +114,14 @@
 	let loadingPromise: Promise<void> | undefined;
 
 	$effect(() => {
-		updateMap(gameState.world);
+		updateMap(gameStore.world);
 	});
 
 	$effect(() => {
-		isBuilding = uiState.isBuilding;
-		isMovingThief = uiState.isMovingThief;
-		isPlayingKnight = uiState.isPlayingKnight;
-		isPlayingRoadBuilding = uiState.isPlayingRoadBuilding;
+		isBuilding = uiStore.isBuilding;
+		isMovingThief = uiStore.isMovingThief;
+		isPlayingKnight = uiStore.isPlayingKnight;
+		isPlayingRoadBuilding = uiStore.isPlayingRoadBuilding;
 	});
 
 	const toWorld = (screenPoint: { x: number; y: number }): { x: number; y: number } => {
@@ -169,7 +163,7 @@
 		cursorGraphics.clear();
 		cursorGraphics.removeChildren();
 		try {
-			await sendAction(action);
+			await gameStore.sendAction(action);
 		} catch (error) {
 			console.warn('Failed to send action', error);
 		}
@@ -182,8 +176,8 @@
 		const hexToFind = grid.pointToHex(inWorld);
 		const moveThiefAction = new MoveThiefAction(currentPlayer.name, hexToFind);
 		dispatchActionClearCursor(moveThiefAction);
-		setIsMovingThief(false);
-		setIsStealingFromPlayers(true);
+		uiStore.setMovingThief(false);
+		uiStore.setStealingFromPlayers(true);
 	};
 
 	const handleIsPlayingKnightClick = (event: FederatedPointerEvent) => {
@@ -193,12 +187,12 @@
 		const hexToFind = grid.pointToHex(inWorld);
 		const moveThiefAction = new MoveThiefDevCardAction(currentPlayer.name, hexToFind);
 		dispatchActionClearCursor(moveThiefAction);
-		setIsPlayingKnight(false);
-		setIsStealingFromPlayers(true);
+		uiStore.setPlayingKnight(false);
+		uiStore.setStealingFromPlayers(true);
 	};
 
 	const handleBuildClick = (event: FederatedPointerEvent) => {
-		if (!worldContainer || !currentPlayer || !gameState.world || !grid) return;
+		if (!worldContainer || !currentPlayer || !gameStore.world || !grid) return;
 
 		const inWorld = toWorld(event.global);
 		const closestPoints = getTwoClosestPoints(grid, inWorld);
@@ -210,26 +204,26 @@
 
 		if (isBuilding === 'House') {
 			const action =
-				gameState.world.gameState === 'Started'
+				gameStore.world.gameState === 'Started'
 					? new BuildHouseAction(currentPlayer.name, coord)
 					: new BuildHouseInitialAction(currentPlayer.name, coord);
 
 			dispatchActionClearCursor(action);
-			setIsBuilding('None');
+			uiStore.setBuilding('None');
 		}
 		if (isBuilding === 'City') {
 			dispatchActionClearCursor(new BuildCityAction(currentPlayer.name, coord));
-			setIsBuilding('None');
+			uiStore.setBuilding('None');
 		}
 		if (isBuilding === 'Road' && closestPoints[1].index !== -1) {
 			const coord2 = getMatrixCoordCorner(hexToFind, closestPoints[1].index);
 			const action =
-				gameState.world.gameState === 'Started'
+				gameStore.world.gameState === 'Started'
 					? new BuildRoadAction(currentPlayer.name, coord, coord2)
 					: new BuildRoadInitialAction(currentPlayer.name, coord, coord2);
 
 			dispatchActionClearCursor(action);
-			setIsBuilding('None');
+			uiStore.setBuilding('None');
 		}
 	};
 
@@ -599,7 +593,7 @@
 
 	onMount(() => {
 		try {
-			void bindToWorld();
+			void gameStore.bindToWorld();
 		} catch (error) {
 			console.warn('Unable to bind to world socket', error);
 		}

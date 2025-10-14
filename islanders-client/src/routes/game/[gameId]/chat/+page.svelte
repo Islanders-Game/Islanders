@@ -1,6 +1,6 @@
 <script lang="ts">
-	import { chatStore, bindChat, sendChat } from '$lib/stores/chat';
-	import { gameState } from '$lib/stores/game.svelte';
+	import { chatStore } from '$lib/stores/chat.svelte';
+	import { gameStore } from '$lib/stores/game.svelte';
 	import { onMount } from 'svelte';
 
 	const props = $props();
@@ -9,15 +9,15 @@
 	let messageInput = $state('');
 	let containerEl: HTMLDivElement | undefined;
 
-	const messages = $derived($chatStore.messages);
-	const error = $derived($chatStore.error);
-	const canSend = $derived.by(() => !!messageInput.trim() && !!gameState.playerName);
+	const messages = $derived(chatStore.messages);
+	const error = $derived(chatStore.error);
+	const canSend = $derived.by(() => !!messageInput.trim() && !!gameStore.playerName);
 
 	const handleSend = () => {
 		if (!canSend) return;
 		const text = messageInput;
 		messageInput = '';
-		sendChat(text);
+		chatStore.sendMessage(text);
 	};
 
 	const handleKey = (e: KeyboardEvent) => {
@@ -27,7 +27,9 @@
 		}
 	};
 
-	onMount(() => bindChat(gameId));
+	onMount(() => {
+		chatStore.init(gameId);
+	});
 </script>
 
 <section class="flex h-full flex-col text-white">
@@ -57,19 +59,19 @@
 		</div>
 
 		<form
-			class="flex h-12 items-end gap-2"
-			onsubmit={(e) => {
-				e.preventDefault();
+			class="flex gap-2"
+			onsubmit={(event) => {
+				event.preventDefault();
 				handleSend();
 			}}
 			aria-label="Send chat message"
 		>
 			<textarea
 				class="textarea max-h-24 min-h-24 flex-1 resize-none text-sm"
-				placeholder={gameState.playerName ? 'Type a message' : 'Join the game to chat'}
+				placeholder={gameStore.playerName ? 'Type a message' : 'Join the game to chat'}
 				bind:value={messageInput}
 				onkeydown={handleKey}
-				disabled={!gameState.playerName}
+				disabled={!gameStore.playerName}
 				maxlength={500}
 			></textarea>
 			<button type="submit" class="btn h-full min-h-24 btn-primary" disabled={!canSend}>Send</button

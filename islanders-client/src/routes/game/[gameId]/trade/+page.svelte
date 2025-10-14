@@ -1,5 +1,5 @@
 <script lang="ts">
-	import { gameState, getPlayerColorAsHex } from '$lib/stores/game.svelte';
+	import { gameStore } from '$lib/stores/game.svelte';
 	import ResourcePanel from '$lib/components/trade/ResourcePanel.svelte';
 
 	const props = $props();
@@ -7,8 +7,8 @@
 
 	type ResourceType = 'wood' | 'clay' | 'stone' | 'grain' | 'wool';
 
-	const currentWorld = $derived(gameState.world);
-	const currentPlayerName = $derived(gameState.playerName);
+	const currentWorld = $derived(gameStore.world);
+	const currentPlayerName = $derived(gameStore.playerName);
 	const currentPlayer = $derived.by(() => {
 		if (!currentWorld || !currentPlayerName) return undefined;
 		return currentWorld.players.find((p) => p.name === currentPlayerName);
@@ -21,7 +21,7 @@
 		if (!currentWorld || !currentPlayerName) return [] as { name: string; color: string }[];
 		return currentWorld.players
 			.filter((p) => p.name !== currentPlayerName)
-			.map((p) => ({ name: p.name, color: getPlayerColorAsHex(p.name) ?? '#ffffff' }));
+			.map((p) => ({ name: p.name, color: gameStore.getPlayerColorAsHex(p.name) ?? '#ffffff' }));
 	});
 
 	let offerResources = $state<Record<ResourceType, number>>({

@@ -1,9 +1,9 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Map from '$lib/components/Map.svelte';
-	import { connect, socketStore } from '$lib/stores/socket';
+	import { socketManager } from '$lib/stores/socket.svelte';
 	import { env } from '$env/dynamic/public';
-	import { gameState, getStoredSession, joinGame } from '$lib/stores/game.svelte';
+	import { gameStore } from '$lib/stores/game.svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import ResourcesBar from '$lib/components/ResourcesBar.svelte';
@@ -52,12 +52,12 @@
 		}
 
 		isSubmitting = true;
-		connect(`${host}/${gameId}`);
-		await joinGame(gameId, trimmed);
+		socketManager.connect(`${host}/${gameId}`);
+		await gameStore.joinGame(gameId, trimmed);
 		isSubmitting = false;
 
-		if (gameState.error) {
-			localError = gameState.error;
+		if (gameStore.error) {
+			localError = gameStore.error;
 			return false;
 		}
 
@@ -71,10 +71,10 @@
 
 	onMount(() => {
 		const handleInitialJoin = async () => {
-			connect(`${host}/${gameId}`);
-			const session = getStoredSession();
+			socketManager.connect(`${host}/${gameId}`);
+			const session = gameStore.getStoredSession();
 			const candidateName =
-				session && session.gameId === gameId ? session.playerName : gameState.playerName;
+				session && session.gameId === gameId ? session.playerName : gameStore.playerName;
 
 			if (candidateName && candidateName.trim()) {
 				nameInput = candidateName.trim();
@@ -98,7 +98,7 @@
 	});
 
 	const currentPlayer: Player | undefined = $derived(
-		gameState.world?.players.find((player: Player) => player.name === gameState.playerName)
+		gameStore.world?.players.find((player: Player) => player.name === gameStore.playerName)
 	);
 	const playerResources = $derived(
 		currentPlayer?.resources ?? { wood: 0, clay: 0, stone: 0, grain: 0, wool: 0 }
@@ -155,9 +155,9 @@
 					<div class="alert alert-error">
 						<span>{localError}</span>
 					</div>
-				{:else if gameState.error}
+				{:else if gameStore.error}
 					<div class="alert alert-error">
-						<span>{gameState.error}</span>
+						<span>{gameStore.error}</span>
 					</div>
 				{/if}
 				<div class="modal-action flex">
@@ -176,16 +176,13 @@
 		>
 			<div
 				class="h-2 w-2 rounded-full"
-				class:bg-green-400={$socketStore.connected}
-				class:bg-yellow-400={$socketStore.connecting}
-				class:bg-red-400={!$socketStore.connected && !$socketStore.connecting}
+				class:bg-green-400={socketManager.connected}
+				class:bg-red-400={!socketManager.connected}
 				aria-label="Connection status indicator"
 			></div>
 			<div class="flex flex-col text-xs">
-				{#if $socketStore.connected}
+				{#if socketManager.connected}
 					<span>Connected</span>
-				{:else if $socketStore.connecting}
-					<span>Connecting…</span>
 				{:else}
 					<span>Disconnected</span>
 				{/if}

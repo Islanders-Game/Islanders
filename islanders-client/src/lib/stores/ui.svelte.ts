@@ -3,44 +3,46 @@ import type { Resources } from '../../../../islanders-shared/lib/Shared';
 export type BuildingType = 'None' | 'House' | 'City' | 'Road';
 export type TradeParameters = { player: string; resources: Resources; wants: Resources };
 
-export const uiState = $state({
-	isBuilding: 'None' as BuildingType,
-	isMovingThief: false,
-	isPlayingRoadBuilding: false,
-	isPlayingKnight: false,
-	isStealingFromPlayers: false,
-	playerProposesTrade: undefined as TradeParameters | undefined
-});
+class UIStore {
+	isBuilding = $state<BuildingType>('None');
+	isMovingThief = $state(false);
+	isPlayingRoadBuilding = $state(false);
+	isPlayingKnight = $state(false);
+	isStealingFromPlayers = $state(false);
+	playerProposesTrade = $state<TradeParameters | undefined>(undefined);
 
-export const resetUIState = () => {
-	uiState.isBuilding = 'None';
-	uiState.isMovingThief = false;
-	uiState.isPlayingRoadBuilding = false;
-	uiState.isPlayingKnight = false;
-	uiState.isStealingFromPlayers = false;
-	uiState.playerProposesTrade = undefined;
-};
+	reset() {
+		this.isBuilding = 'None';
+		this.isMovingThief = false;
+		this.isPlayingRoadBuilding = false;
+		this.isPlayingKnight = false;
+		this.isStealingFromPlayers = false;
+		this.playerProposesTrade = undefined;
+	}
 
-export const setIsBuilding = (flag: BuildingType) => {
-	uiState.isBuilding = flag;
-};
+	setBuilding(flag: BuildingType) {
+		this.isBuilding = flag;
+	}
 
-export const setIsMovingThief = (flag: boolean) => {
-	uiState.isMovingThief = flag;
-};
+	setMovingThief(flag: boolean) {
+		this.isMovingThief = flag;
+	}
 
-export const setIsPlayingKnight = (flag: boolean) => {
-	uiState.isPlayingKnight = flag;
-};
+	setPlayingKnight(flag: boolean) {
+		this.isPlayingKnight = flag;
+	}
 
-export const setIsPlayingRoadBuilding = (flag: boolean) => {
-	uiState.isPlayingRoadBuilding = flag;
-};
+	setPlayingRoadBuilding(flag: boolean) {
+		this.isPlayingRoadBuilding = flag;
+	}
 
-export const setIsStealingFromPlayers = (flag: boolean) => {
-	uiState.isStealingFromPlayers = flag;
-};
+	setStealingFromPlayers(flag: boolean) {
+		this.isStealingFromPlayers = flag;
+	}
 
-export const setPlayerProposesTrade = (params: TradeParameters | undefined) => {
-	uiState.playerProposesTrade = params;
-};
+	setProposesTrade(params: TradeParameters | undefined) {
+		this.playerProposesTrade = params;
+	}
+}
+
+export const uiStore = new UIStore();

@@ -1,7 +1,8 @@
 <script lang="ts">
-	import { gameState, startGame, sendAction, updateMap } from '$lib/stores/game.svelte';
+	import { gameStore } from '$lib/stores/game.svelte';
 	import PlayerSummary from '$lib/components/PlayerSummary.svelte';
-	import { uiState, setIsBuilding, type BuildingType } from '$lib/stores/ui.svelte';
+	import { uiStore } from '$lib/stores/ui.svelte';
+	import type { BuildingType } from '$lib/stores/ui.svelte';
 	import { goto } from '$app/navigation';
 	import { WorldGenerator, type Tile } from '../../../../../islanders-shared/lib/Shared';
 	import {
@@ -13,7 +14,7 @@
 	const props = $props();
 	const { gameId } = props.data as { gameId: string };
 	const base = `/game/${encodeURIComponent(gameId)}`;
-	const world = $derived(gameState.world);
+	const world = $derived(gameStore.world);
 	const players = $derived(world?.players ?? []);
 	const currentPlayerIndex = $derived(world?.currentPlayer ?? -1);
 
@@ -23,16 +24,16 @@
 
 	const randomizeMap = async () => {
 		const map: Tile[] = worldGenerator.generateRandomMap(radius, numberOfIslands);
-		await updateMap(map);
+		await gameStore.updateMap(map);
 	};
 
 	const start = (pointsToWin: number) => async () => {
-		await startGame(pointsToWin);
+		await gameStore.startGame(pointsToWin);
 	};
 
 	const defaultResources = { clay: 0, grain: 0, stone: 0, wood: 0, wool: 0 };
 
-	const currentWorld = $derived(gameState.world);
+	const currentWorld = $derived(gameStore.world);
 	const currentPlayer = $derived(
 		currentWorld ? currentWorld.players?.[currentWorld.currentPlayer] : undefined
 	);
