@@ -12,7 +12,6 @@
 
 <section class="flex flex-col gap-5">
 	<div>
-		<h2 class="mb-4 text-2xl font-semibold">Players</h2>
 		{#if players.length}
 			<div class="space-y-3">
 				{#each players as player, index}
