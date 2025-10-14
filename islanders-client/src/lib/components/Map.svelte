@@ -31,8 +31,8 @@
 	import type { Grid as HoneycombGrid } from 'honeycomb-grid';
 	const { defineHex, Grid, Orientation } = honeycombGrid;
 
-	let container: HTMLDivElement | undefined;
-	let parentElement: HTMLElement | null = null;
+	type HexType = ReturnType<typeof defineHex>;
+	type CustomHex = InstanceType<HexType>;
 
 	const currentPlayer: Player | undefined = $derived(
 		gameStore.world?.players.find((player: Player) => player.name === gameStore.playerName)
@@ -74,54 +74,46 @@
 		'/img/numbers/12.png'
 	];
 
-	let app: Application | undefined;
-	let worldContainer: Container | undefined;
 	const tileGraphics = new Graphics();
 	const pieceGraphics = new Graphics();
 	const lineGraphics = new Graphics();
 	const cursorGraphics = new Graphics();
 	const sprites = generateSprites();
 
-	type HexType = ReturnType<typeof defineHex>;
-	type CustomHex = InstanceType<HexType>;
+	let app: Application | undefined;
+	let worldContainer: Container | undefined;
 	let grid: HoneycombGrid<CustomHex> | undefined;
+	let container: HTMLDivElement | undefined;
+	let parentElement: HTMLElement | null = null;
 	let hexFactory: HexType | undefined;
 
 	let height = 0;
 	let width = 0;
 
-	// Pan and zoom state
 	let scale = 1;
 	let panX = 0;
 	let panY = 0;
+
 	let isDragging = false;
 	let lastPointerPosition = { x: 0, y: 0 };
 	let pointerDownPosition = { x: 0, y: 0 };
 	let hasDragged = false;
-	const wheelPointerPosition = new Point();
-
-	let isBuilding: BuildingType = 'None';
-	let isMovingThief = false;
-	let isPlayingKnight = false;
-	let isPlayingRoadBuilding = false;
+	let wheelPointerPosition = new Point();
+	let wheelHandler: ((event: WheelEvent) => void) | undefined;
 
 	let resizeObserver: ResizeObserver | undefined;
 
-	// Store event handlers for cleanup
-	let wheelHandler: ((event: WheelEvent) => void) | undefined;
 	let assetsLoaded = false;
 	let latestWorld: World | undefined;
 	let loadingPromise: Promise<void> | undefined;
 
-	$effect(() => {
-		updateMap(gameStore.world);
-	});
+	let isBuilding: BuildingType = $derived(uiStore.isBuilding);
+	let isMovingThief = $derived(uiStore.isMovingThief);
+	let isPlayingKnight = $derived(uiStore.isPlayingKnight);
+	let isPlayingRoadBuilding = $derived(uiStore.isPlayingRoadBuilding);
 
 	$effect(() => {
-		isBuilding = uiStore.isBuilding;
-		isMovingThief = uiStore.isMovingThief;
-		isPlayingKnight = uiStore.isPlayingKnight;
-		isPlayingRoadBuilding = uiStore.isPlayingRoadBuilding;
+		updateMap(gameStore.world);
 	});
 
 	const toWorld = (screenPoint: { x: number; y: number }): { x: number; y: number } => {
@@ -592,13 +584,8 @@
 	};
 
 	onMount(() => {
-		try {
-			void gameStore.bindToWorld();
-		} catch (error) {
-			console.warn('Unable to bind to world socket', error);
-		}
-
-		void setupCanvas();
+		gameStore.bindToWorld();
+		setupCanvas();
 		handleResize();
 
 		if (container) {
@@ -622,4 +609,4 @@
 	});
 </script>
 
-<div bind:this={container} class="h-full w-full flex-1 bg-[#03518b]"></div>
+<div bind:this={container} class="h-full w-full flex-1 bg-slate-500"></div>
