@@ -63,7 +63,7 @@
 					disabled={!isMyTurn || !canAfford(buildingCosts.road)}
 					onclick={() => handleBuild('road')}
 				>
-					Build Road
+					Road
 				</button>
 			</div>
 		</div>
@@ -81,7 +81,7 @@
 					disabled={!isMyTurn || !canAfford(buildingCosts.settlement)}
 					onclick={() => handleBuild('settlement')}
 				>
-					Build Settlement
+					Settlement
 				</button>
 			</div>
 		</div>
@@ -99,7 +99,7 @@
 					disabled={!isMyTurn || !canAfford(buildingCosts.city)}
 					onclick={() => handleBuild('city')}
 				>
-					Upgrade to City
+					City
 				</button>
 			</div>
 		</div>
@@ -117,7 +117,7 @@
 					disabled={!isMyTurn || !canAfford(buildingCosts.developmentCard)}
 					onclick={() => handleBuild('developmentCard')}
 				>
-					Buy Card
+					Card
 				</button>
 			</div>
 		</div>

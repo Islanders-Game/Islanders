@@ -67,14 +67,14 @@
 			aria-label="Send chat message"
 		>
 			<textarea
-				class="textarea max-h-24 min-h-24 flex-1 resize-none text-sm"
+				class="textarea max-h-18 min-h-18 flex-1 resize-none text-sm"
 				placeholder={gameStore.playerName ? 'Type a message' : 'Join the game to chat'}
 				bind:value={messageInput}
 				onkeydown={handleKey}
 				disabled={!gameStore.playerName}
 				maxlength={500}
 			></textarea>
-			<button type="submit" class="btn h-full min-h-24 btn-primary" disabled={!canSend}>Send</button
+			<button type="submit" class="btn h-full min-h-18 btn-primary" disabled={!canSend}>Send</button
 			>
 		</form>
 

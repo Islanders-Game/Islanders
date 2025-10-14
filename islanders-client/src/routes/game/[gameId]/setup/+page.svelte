@@ -1,49 +1,100 @@
 <script lang="ts">
+	import { gameStore } from '$lib/stores/game.svelte';
+	import { WorldGenerator, type Tile } from '../../../../../../islanders-shared/lib/Shared';
+	import { goto } from '$app/navigation';
+
 	const props = $props();
 	const { gameId } = props.data as { gameId: string };
 	const base = `/game/${encodeURIComponent(gameId)}`;
+
+	const world = $derived(gameStore.world);
+	const isGameStarted = $derived(world?.gameState === 'Started');
+
+	let radius = $state(4);
+	let numberOfIslands = $state(1);
+	let pointsToWin = $state(10);
+	const worldGenerator = new WorldGenerator();
+
+	const randomizeMap = async () => {
+		const map: Tile[] = worldGenerator.generateRandomMap(radius, numberOfIslands);
+		await gameStore.updateMap(map);
+	};
+
+	const startGame = async () => {
+		await gameStore.startGame(pointsToWin);
+		await goto(base);
+	};
 </script>
 
-<section class="space-y-6 text-white/80">
-	<header class="space-y-2">
-		<h2 class="text-2xl font-semibold text-white">Pregame Setup</h2>
-		<p class="leading-relaxed">
-			This screen will host the Svelte port of the customization tools—map randomization, radius,
-			and points to win—from the current Vue client.
-		</p>
-	</header>
+<section class="flex flex-col gap-6">
+	<div class="space-y-6">
+		<div class="rounded-lg bg-base-200 p-6">
+			<div class="space-y-4">
+				<div>
+					<label for="numberOfIslands" class="mb-2 flex justify-between text-sm">
+						<span>Number of Islands</span>
+					</label>
+					<input
+						id="numberOfIslands"
+						type="range"
+						bind:value={numberOfIslands}
+						min="1"
+						max="8"
+						class="range w-full range-primary range-xs"
+						disabled={isGameStarted}
+					/>
+				</div>
 
-	<div class="space-y-4">
-		<article
-			class="rounded-3xl border border-white/10 bg-slate-950/80 p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
-		>
-			<h3 class="text-sm font-semibold tracking-wide text-white/70 uppercase">Setup checklist</h3>
-			<ul class="mt-3 list-disc space-y-2 pl-5 text-xs text-white/60">
-				<li>Confirm the target map radius and island count.</li>
-				<li>Share the lobby code with anyone who still needs to join.</li>
-				<li>Lock in the starting resources once everyone is ready.</li>
-			</ul>
-		</article>
-		<article
-			class="rounded-3xl border border-white/10 bg-slate-950/80 p-6 shadow-[inset_0_0_0_1px_rgba(255,255,255,0.05)]"
-		>
-			<h3 class="text-sm font-semibold tracking-wide text-white/70 uppercase">Quick links</h3>
-			<ul class="mt-3 space-y-2 text-xs text-white/60">
-				<li>
-					<a class="font-semibold text-sky-200 hover:text-sky-100" href={base}> Return to board </a>
-				</li>
-				<li>
-					<a class="font-semibold text-sky-200 hover:text-sky-100" href={`${base}/players`}>
-						Review player overview
-					</a>
-				</li>
-			</ul>
-		</article>
+				{#if numberOfIslands > 1}
+					<div>
+						<label for="radius" class="mb-2 flex justify-between text-sm">
+							<span>Island Size</span>
+						</label>
+						<input
+							id="radius"
+							type="range"
+							bind:value={radius}
+							min="2"
+							max="8"
+							class="range w-full range-primary range-xs"
+							disabled={isGameStarted}
+						/>
+						<div class="mt-1 flex justify-between text-xs text-white/60">
+							<span>Tiny (2)</span>
+							<span>Large (8)</span>
+						</div>
+					</div>
+				{/if}
+
+				<button class="btn w-full" onclick={randomizeMap} disabled={isGameStarted}>
+					<span>Randomize</span>
+				</button>
+			</div>
+		</div>
+
+		<!-- Game Rules -->
+		<div class="rounded-lg bg-base-200 p-6">
+			<div class="space-y-4">
+				<div>
+					<label for="pointsToWin" class="mb-2 flex justify-between text-sm">
+						<span>Points to Win</span>
+						<span class="font-mono">{pointsToWin}</span>
+					</label>
+					<input
+						id="pointsToWin"
+						type="range"
+						bind:value={pointsToWin}
+						min="5"
+						max="15"
+						class="range w-full range-primary range-xs"
+						disabled={isGameStarted}
+					/>
+				</div>
+			</div>
+		</div>
+
+		<button class="btn w-full btn-lg btn-primary" onclick={startGame} disabled={isGameStarted}>
+			<span>Start Game</span>
+		</button>
 	</div>
-
-	<p class="text-sm text-white/70">
-		When the lobby is set, jump back to the
-		<a class="font-semibold text-sky-200 hover:text-sky-100" href={base}>board</a>
-		and start the game.
-	</p>
 </section>

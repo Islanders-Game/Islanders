@@ -25,11 +25,11 @@
 	const dec = (r: ResourceType) => onChange(r, clamp(r, resources[r] - 1));
 </script>
 
-<article class="rounded bg-base-300 p-4">
-	<h3 class="mb-3 text-sm font-semibold tracking-wide uppercase">{title}</h3>
-	<div class="space-y-2">
+<div>
+	<article class="rounded bg-base-300 px-4 py-3">
+		<h4 class="pb-2 uppercase">{title}</h4>
 		{#each Object.entries(resources) as [resource, count]}
-			<div class="flex items-center justify-between rounded-lg p-2">
+			<div class="flex items-center justify-between rounded-lg p-1">
 				<div class="flex min-w-0 flex-1 items-center gap-2 text-sm capitalize">
 					<span class={`h-3 w-3 rounded ${resourceColors[resource as ResourceType]}`}></span>
 					<span class="truncate">{resource}</span>
@@ -57,5 +57,5 @@
 				</div>
 			</div>
 		{/each}
-	</div>
-</article>
+	</article>
+</div>

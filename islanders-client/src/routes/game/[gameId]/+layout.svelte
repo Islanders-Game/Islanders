@@ -19,7 +19,8 @@
 		{ id: 'players' as const, href: `${base}`, label: 'Players' },
 		{ id: 'build' as const, href: `${base}/build`, label: 'Build' },
 		{ id: 'trade' as const, href: `${base}/trade`, label: 'Trade' },
-		{ id: 'chat' as const, href: `${base}/chat`, label: 'Chat' }
+		{ id: 'chat' as const, href: `${base}/chat`, label: 'Chat' },
+		{ id: 'setup' as const, href: `${base}/setup`, label: 'Setup' }
 	];
 
 	const currentPath = $derived(page.url.pathname);
@@ -112,7 +113,7 @@
 		</div>
 	</section>
 	<aside
-		class="z-10 flex h-full w-[28rem] flex-shrink-0 flex-col bg-base-100"
+		class="z-10 flex h-full w-[22rem] flex-shrink-0 flex-col bg-base-100"
 		aria-label="Game sidebar"
 	>
 		<nav class="tabs-border tabs">
