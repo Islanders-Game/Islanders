@@ -8,7 +8,9 @@
 	import { page } from '$app/state';
 	import ResourcesBar from '$lib/components/ResourcesBar.svelte';
 	import type { Player } from '../../../../../islanders-shared/lib/Shared';
-	import { notifications } from '$lib/stores/notifications.svelte';
+	import { EndTurnAction, StealFromPlayerAction } from '../../../../../islanders-shared/lib/Action';
+	import { ui } from '$lib/stores/ui.svelte';
+	import { getStealablePlayers } from '$lib/components/mapUtils';
 
 	const props = $props();
 	const { children, data } = props;
@@ -18,7 +20,7 @@
 
 	const tabs = [
 		{ id: 'players' as const, href: `${base}`, label: 'Players' },
-		{ id: 'build' as const, href: `${base}/build`, label: 'Build' },
+		{ id: 'actions' as const, href: `${base}/actions`, label: 'Actions' },
 		{ id: 'trade' as const, href: `${base}/trade`, label: 'Trade' },
 		{ id: 'chat' as const, href: `${base}/chat`, label: 'Chat' },
 		{ id: 'setup' as const, href: `${base}/setup`, label: 'Setup' }
@@ -103,6 +105,45 @@
 	const playerResources = $derived(
 		currentPlayer?.resources ?? { wood: 0, clay: 0, stone: 0, grain: 0, wool: 0 }
 	);
+
+	let stealModalElement: HTMLDialogElement;
+	const isStealingFromPlayers = $derived(ui.isStealingFromPlayers);
+
+	const stealablePlayers = $derived.by(() => {
+		if (!game.world) return [];
+		return getStealablePlayers(game.world, game.playerName);
+	});
+
+	$effect(() => {
+		console.log('Steal effect running:', { 
+			isStealingFromPlayers, 
+			stealableCount: stealablePlayers.length,
+			modalElement: !!stealModalElement 
+		});
+		
+		if (isStealingFromPlayers && stealablePlayers.length > 0) {
+			console.log('Opening steal modal with players:', stealablePlayers.map(p => p.name));
+			stealModalElement?.showModal();
+		} else if (isStealingFromPlayers && stealablePlayers.length === 0) {
+			console.log('No stealable players, closing steal UI');
+			ui.setStealingFromPlayers(false);
+		}
+	});
+
+	const handleStealFrom = async (playerToStealFrom: string) => {
+		if (!game.playerName) return;
+		
+		const action = new StealFromPlayerAction(game.playerName, playerToStealFrom);
+		await game.sendAction(action);
+		
+		stealModalElement?.close();
+		ui.setStealingFromPlayers(false);
+	};
+
+	const handleSkipStealing = () => {
+		stealModalElement?.close();
+		ui.setStealingFromPlayers(false);
+	};
 </script>
 
 <div class="flex h-screen overflow-hidden">
@@ -111,12 +152,23 @@
 			<Map />
 			{#if game.isGameStarted && currentPlayer && game.world?.players[game.world?.currentPlayer].name === game.playerName}
 				<div
-					class="absolute right-4 bottom-4 z-10 flex h-14 gap-1 rounded-md bg-base-200/40 p-1 backdrop-blur-md"
+					class="absolute right-4 bottom-20 z-10 flex h-28 w-28 flex-col items-center justify-center rounded-md bg-base-200/40 p-3 backdrop-blur-md"
+				>
+					<div class="text-xs font-medium opacity-70">Dice</div>
+					<div class="text-4xl font-bold">
+						{game.world?.currentDie !== 'None' ? game.world?.currentDie : '-'}
+					</div>
+				</div>
+				<div
+					class="absolute right-4 bottom-4 z-10 flex h-14 w-28 gap-1 rounded-md bg-base-200/40 p-1 backdrop-blur-md"
 				>
 					<button
-						class="btn h-full btn-primary"
-						onclick={() => {
-							console.log('End turn clicked');
+						class="btn h-full w-full btn-primary"
+						onclick={async () => {
+							if (game.playerName) {
+								const action = new EndTurnAction(game.playerName);
+								await game.sendAction(action);
+							}
 						}}
 					>
 						End Turn
@@ -207,6 +259,43 @@
 					</button>
 				</div>
 			</form>
+		</div>
+	</dialog>
+
+	<dialog class="modal" bind:this={stealModalElement}>
+		<div class="modal-box">
+			<h2 class="mb-4 text-lg font-semibold">Steal from a Player</h2>
+			<p class="mb-4 text-sm opacity-70">
+				Choose a player to steal a random resource from. These players have settlements or cities
+				adjacent to the robber.
+			</p>
+
+			<div class="flex flex-col gap-2">
+				{#each stealablePlayers as player}
+					<button
+						class="btn btn-block justify-start"
+						onclick={() => handleStealFrom(player.name)}
+					>
+						<div
+							class="h-4 w-4 flex-shrink-0 rounded-full"
+							style="background-color: #{player.color.toString(16).padStart(6, '0')}"
+						></div>
+						<span class="flex-1 text-left">{player.name}</span>
+						<span class="text-xs opacity-60">
+							{player.resources.wood +
+								player.resources.clay +
+								player.resources.stone +
+								player.resources.grain +
+								player.resources.wool}
+							resources
+						</span>
+					</button>
+				{/each}
+			</div>
+
+			<div class="modal-action">
+				<button class="btn" onclick={handleSkipStealing}>Skip Stealing</button>
+			</div>
 		</div>
 	</dialog>
 </div>

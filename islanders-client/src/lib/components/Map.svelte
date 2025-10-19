@@ -165,10 +165,11 @@
 		if (!currentPlayer) return;
 		const inWorld = toWorld(event.global);
 		const hexToFind = grid.pointToHex(inWorld);
-		const moveThiefAction = new MoveThiefAction(currentPlayer.name, hexToFind);
+		const hexCoord = { x: hexToFind.col, y: hexToFind.row };
+		const moveThiefAction = new MoveThiefAction(currentPlayer.name, hexCoord);
 		dispatchActionClearCursor(moveThiefAction);
 		ui.setMovingThief(false);
-		ui.setStealingFromPlayers(true);
+		// Don't set isStealingFromPlayers here - let the world update handler do it
 	};
 
 	const handleIsPlayingKnightClick = (event: FederatedPointerEvent) => {
@@ -176,10 +177,11 @@
 		if (!currentPlayer) return;
 		const inWorld = toWorld(event.global);
 		const hexToFind = grid.pointToHex(inWorld);
-		const moveThiefAction = new MoveThiefDevCardAction(currentPlayer.name, hexToFind);
+		const hexCoord = { x: hexToFind.col, y: hexToFind.row };
+		const moveThiefAction = new MoveThiefDevCardAction(currentPlayer.name, hexCoord);
 		dispatchActionClearCursor(moveThiefAction);
 		ui.setPlayingKnight(false);
-		ui.setStealingFromPlayers(true);
+		// Don't set isStealingFromPlayers here - let the world update handler do it
 	};
 
 	const handleBuildClick = (event: FederatedPointerEvent) => {
@@ -191,7 +193,8 @@
 			return;
 		}
 		const hexToFind = grid.pointToHex(inWorld);
-		const coord = getMatrixCoordCorner(hexToFind, closestPoints[0].index);
+		const hexCoord = { x: hexToFind.col, y: hexToFind.row };
+		const coord = getMatrixCoordCorner(hexCoord, closestPoints[0].index);
 
 		if (isBuilding === 'House') {
 			const action =
@@ -207,7 +210,7 @@
 			ui.setBuilding('None');
 		}
 		if (isBuilding === 'Road' && closestPoints[1].index !== -1) {
-			const coord2 = getMatrixCoordCorner(hexToFind, closestPoints[1].index);
+			const coord2 = getMatrixCoordCorner(hexCoord, closestPoints[1].index);
 			const action =
 				game.world.gameState === 'Started'
 					? new BuildRoadAction(currentPlayer.name, coord, coord2)
@@ -368,8 +371,13 @@
 
 			tileContainer?.addChild(tileSprite);
 			if (newWorld.gameState === 'Started') {
-				// Pass hex center directly instead of recalculating
-				const tileNumber = generateTileNumber(tileWidth, { x: hex.x, y: hex.y }, point, tile);
+				// Pass hex center and zero origin since hex.x/hex.y are already world coordinates
+				const tileNumber = generateTileNumber(
+					tileWidth,
+					{ x: hex.x, y: hex.y },
+					{ x: 0, y: 0 },
+					tile
+				);
 				if (tileNumber) {
 					tileContainer?.addChild(tileNumber);
 				}

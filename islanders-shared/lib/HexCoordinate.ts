@@ -60,7 +60,12 @@ export const getNeighbouringMatrixCoords = (coord: HexCoordinate): MatrixCoordin
   if (coord.x % 2 !== 0) {
     matrixY++;
   }
+  // Return corners in honeycomb v4 order (starting from Northeast, going clockwise)
   return [
+    {
+      x: matrixX + 2,
+      y: matrixY - 1,
+    },
     {
       x: matrixX + 3,
       y: matrixY,
@@ -81,10 +86,6 @@ export const getNeighbouringMatrixCoords = (coord: HexCoordinate): MatrixCoordin
       x: matrixX + 1,
       y: matrixY - 1,
     },
-    {
-      x: matrixX + 2,
-      y: matrixY - 1,
-    },
   ];
 };
 
@@ -94,35 +95,42 @@ export const getMatrixCoordCorner = (coord: HexCoordinate, cornerIndex: number):
   if (coord.x % 2 !== 0) {
     matrixY++;
   }
+  // Honeycomb v4 corners for FLAT orientation:
+  // 0: Northeast (top-right)
+  // 1: East (right)
+  // 2: Southeast (bottom-right)
+  // 3: Southwest (bottom-left)
+  // 4: West (left)
+  // 5: Northwest (top-left)
   switch (cornerIndex) {
     case 0:
+      return {
+        x: matrixX + 2,
+        y: matrixY - 1,
+      };
+    case 1:
       return {
         x: matrixX + 3,
         y: matrixY,
       };
-    case 1:
-      return {
-        x: matrixX + 2,
-        y: matrixY + 1,
-      };
     case 2:
       return {
-        x: matrixX + 1,
+        x: matrixX + 2,
         y: matrixY + 1,
       };
     case 3:
       return {
-        x: matrixX,
-        y: matrixY,
+        x: matrixX + 1,
+        y: matrixY + 1,
       };
     case 4:
       return {
-        x: matrixX + 1,
-        y: matrixY - 1,
+        x: matrixX,
+        y: matrixY,
       };
     case 5:
       return {
-        x: matrixX + 2,
+        x: matrixX + 1,
         y: matrixY - 1,
       };
     default:

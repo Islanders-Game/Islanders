@@ -1,8 +1,10 @@
 import {
 	type World,
 	getMatrixCoordCorner,
-	type MatrixCoordinate
+	type MatrixCoordinate,
+	type Player
 } from '../../../../islanders-shared/lib/Shared';
+import { neighbouringHexCoords } from '../../../../islanders-shared/lib/MatrixCoordinate';
 
 export type HexGrid = {
 	pointToHex: (point: { x: number; y: number }) => {
@@ -142,4 +144,65 @@ export const matrixCoordToGridWorldCoord = (
 		(matrixCoord.x * originHex.width) / 4 + Math.floor(matrixCoord.x / 2) * (originHex.width / 4);
 	const worldY = (matrixCoord.y * originHex.height) / 2;
 	return { x: worldX, y: worldY };
+};
+
+/**
+ * Gets the list of players who can be stolen from based on the thief's position.
+ * A player can be stolen from if they have a settlement or city adjacent to the hex where the thief is located.
+ *
+ * @param world - The current game world state
+ * @param currentPlayerName - The name of the current player (who cannot be stolen from themselves)
+ * @returns Array of players who can be stolen from
+ */
+export const getStealablePlayers = (
+	world: World,
+	currentPlayerName: string | undefined
+): Player[] => {
+	if (!world.thief || !world.players) return [];
+
+	const thiefHex = world.thief.hexCoordinate;
+	console.log('Getting stealable players. Thief at:', thiefHex);
+	const playersWithBuildings = new Set<string>();
+
+	world.players.forEach((player) => {
+		// Check houses
+		player.houses.forEach((house) => {
+			const houseHexes = neighbouringHexCoords(house.position);
+			console.log(
+				`Checking house for ${player.name} at:`,
+				house.position,
+				'adjacent hexes:',
+				houseHexes
+			);
+			if (houseHexes.some((hex) => hex.x === thiefHex.x && hex.y === thiefHex.y)) {
+				console.log(`Player ${player.name} has house adjacent to thief`);
+				playersWithBuildings.add(player.name);
+			}
+		});
+
+		// Check cities
+		player.cities.forEach((city) => {
+			const cityHexes = neighbouringHexCoords(city.position);
+			console.log(
+				`Checking city for ${player.name} at:`,
+				city.position,
+				'adjacent hexes:',
+				cityHexes
+			);
+			if (cityHexes.some((hex) => hex.x === thiefHex.x && hex.y === thiefHex.y)) {
+				console.log(`Player ${player.name} has city adjacent to thief`);
+				playersWithBuildings.add(player.name);
+			}
+		});
+	});
+
+	const result = Array.from(playersWithBuildings)
+		.map((name) => world.players.find((p) => p.name === name))
+		.filter((p): p is Player => p !== undefined);
+
+	console.log(
+		'Stealable players:',
+		result.map((p) => p.name)
+	);
+	return result;
 };

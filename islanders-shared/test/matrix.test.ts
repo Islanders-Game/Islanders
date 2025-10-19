@@ -91,13 +91,13 @@ describe('neighbouringHexCoord', () => {
 
 describe('getMatrixCoordCorner zeroCase', () => {
   test.each([
-    [{ x: 0, y: 0 }, 3, { x: 0, y: 1 }],
-    [{ x: 1, y: 0 }, 3, { x: 2, y: 2 }],
-    [{ x: 0, y: 1 }, 3, { x: 0, y: 3 }],
-    [{ x: 1, y: 1 }, 3, { x: 2, y: 4 }],
-    [{ x: 2, y: 1 }, 3, { x: 4, y: 3 }],
-    [{ x: 1, y: 2 }, 3, { x: 2, y: 6 }],
-    [{ x: 2, y: 2 }, 3, { x: 4, y: 5 }],
+    [{ x: 0, y: 0 }, 3, { x: 1, y: 2 }],
+    [{ x: 1, y: 0 }, 3, { x: 3, y: 3 }],
+    [{ x: 0, y: 1 }, 3, { x: 1, y: 4 }],
+    [{ x: 1, y: 1 }, 3, { x: 3, y: 5 }],
+    [{ x: 2, y: 1 }, 3, { x: 5, y: 4 }],
+    [{ x: 1, y: 2 }, 3, { x: 3, y: 7 }],
+    [{ x: 2, y: 2 }, 3, { x: 5, y: 6 }],
   ])('Check correct output', (point, cornerIndex, expected) => {
     const result = getMatrixCoordCorner(<MatrixCoordinate>point, <number>cornerIndex);
     expect(result).toEqual(<MatrixCoordinate>expected);
