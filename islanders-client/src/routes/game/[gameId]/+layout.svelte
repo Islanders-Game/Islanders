@@ -115,14 +115,17 @@
 	});
 
 	$effect(() => {
-		console.log('Steal effect running:', { 
-			isStealingFromPlayers, 
+		console.log('Steal effect running:', {
+			isStealingFromPlayers,
 			stealableCount: stealablePlayers.length,
-			modalElement: !!stealModalElement 
+			modalElement: !!stealModalElement
 		});
-		
+
 		if (isStealingFromPlayers && stealablePlayers.length > 0) {
-			console.log('Opening steal modal with players:', stealablePlayers.map(p => p.name));
+			console.log(
+				'Opening steal modal with players:',
+				stealablePlayers.map((p) => p.name)
+			);
 			stealModalElement?.showModal();
 		} else if (isStealingFromPlayers && stealablePlayers.length === 0) {
 			console.log('No stealable players, closing steal UI');
@@ -132,10 +135,10 @@
 
 	const handleStealFrom = async (playerToStealFrom: string) => {
 		if (!game.playerName) return;
-		
+
 		const action = new StealFromPlayerAction(game.playerName, playerToStealFrom);
 		await game.sendAction(action);
-		
+
 		stealModalElement?.close();
 		ui.setStealingFromPlayers(false);
 	};
@@ -272,10 +275,7 @@
 
 			<div class="flex flex-col gap-2">
 				{#each stealablePlayers as player}
-					<button
-						class="btn btn-block justify-start"
-						onclick={() => handleStealFrom(player.name)}
-					>
+					<button class="btn btn-block justify-start" onclick={() => handleStealFrom(player.name)}>
 						<div
 							class="h-4 w-4 flex-shrink-0 rounded-full"
 							style="background-color: #{player.color.toString(16).padStart(6, '0')}"

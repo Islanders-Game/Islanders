@@ -164,7 +164,7 @@
 				<div class="flex flex-col gap-1">
 					{#each viewerPlayer.devCards as card}
 						<div class="flex items-center justify-between rounded bg-base-100 px-2 py-1 text-sm">
-							<span>{card}</span>
+							<span>{card.type}</span>
 							<button class="btn btn-xs" disabled={!isMyTurn}>Play</button>
 						</div>
 					{/each}

@@ -131,8 +131,12 @@ class Game {
 						ui.setPlayingKnight(true);
 					}
 					// Check if the thief was moved and stealing is required
-					const knightNeedsStealing = world.conditions?.playedKnight?.movedThief && !world.conditions.playedKnight.stoleFromPlayer;
-					const sevenNeedsStealing = world.conditions?.rolledASeven?.movedThief && !world.conditions.rolledASeven.stoleFromPlayer;
+					const knightNeedsStealing =
+						world.conditions?.playedKnight?.movedThief &&
+						!world.conditions.playedKnight.stoleFromPlayer;
+					const sevenNeedsStealing =
+						world.conditions?.rolledASeven?.movedThief &&
+						!world.conditions.rolledASeven.stoleFromPlayer;
 					if (knightNeedsStealing || sevenNeedsStealing) {
 						ui.setStealingFromPlayers(true);
 					} else {
