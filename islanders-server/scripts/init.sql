@@ -5,4 +5,3 @@ CREATE TABLE IF NOT EXISTS games (
     created_at TIMESTAMPTZ NOT NULL DEFAULT NOW(),
     PRIMARY KEY (game_id, version)
 );
-

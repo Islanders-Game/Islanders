@@ -1,9 +1,8 @@
 <script lang="ts">
-	import { gameStore } from '$lib/stores/game.svelte';
+	import { game } from '$lib/stores/game.svelte';
 	import PlayerSummary from '$lib/components/PlayerSummary.svelte';
 
-	const props = $props();
-	const world = $derived(gameStore.world);
+	const world = $derived(game.world);
 	const players = $derived(world?.players ?? []);
 	const currentPlayerIndex = $derived(world?.currentPlayer ?? -1);
 

@@ -1,14 +1,13 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Application, Container, Graphics, Point, Assets, FederatedPointerEvent } from 'pixi.js';
-	import { gameStore } from '$lib/stores/game.svelte.ts';
-	import { uiStore } from '$lib/stores/ui.svelte';
+	import { game } from '$lib/stores/game.svelte.ts';
+	import { ui } from '$lib/stores/ui.svelte';
 	import type { BuildingType } from '$lib/stores/ui.svelte';
 	import {
 		type World,
 		type Player,
-		getMatrixCoordCorner,
-		matrixCoordToWorldCoord
+		getMatrixCoordCorner
 	} from '../../../../islanders-shared/lib/Shared';
 	import {
 		BuildHouseAction,
@@ -26,7 +25,7 @@
 		generateTileNumber,
 		generateThiefTile
 	} from '$lib/SpriteGenerators';
-	import { getClosestPoint, getTwoClosestPoints } from './mapUtils';
+	import { getClosestPoint, getTwoClosestPoints, matrixCoordToGridWorldCoord } from './mapUtils';
 	import * as honeycombGrid from 'honeycomb-grid';
 	import type { Grid as HoneycombGrid } from 'honeycomb-grid';
 	const { defineHex, Grid, Orientation } = honeycombGrid;
@@ -35,7 +34,7 @@
 	type CustomHex = InstanceType<HexType>;
 
 	const currentPlayer: Player | undefined = $derived(
-		gameStore.world?.players.find((player: Player) => player.name === gameStore.playerName)
+		game.world?.players.find((player: Player) => player.name === game.playerName)
 	);
 
 	const hexSize = 200;
@@ -107,13 +106,13 @@
 	let latestWorld: World | undefined;
 	let loadingPromise: Promise<void> | undefined;
 
-	let isBuilding: BuildingType = $derived(uiStore.isBuilding);
-	let isMovingThief = $derived(uiStore.isMovingThief);
-	let isPlayingKnight = $derived(uiStore.isPlayingKnight);
-	let isPlayingRoadBuilding = $derived(uiStore.isPlayingRoadBuilding);
+	let isBuilding: BuildingType = $derived(ui.isBuilding);
+	let isMovingThief = $derived(ui.isMovingThief);
+	let isPlayingKnight = $derived(ui.isPlayingKnight);
+	let isPlayingRoadBuilding = $derived(ui.isPlayingRoadBuilding);
 
 	$effect(() => {
-		updateMap(gameStore.world);
+		updateMap(game.world);
 	});
 
 	const toWorld = (screenPoint: { x: number; y: number }): { x: number; y: number } => {
@@ -155,7 +154,7 @@
 		cursorGraphics.clear();
 		cursorGraphics.removeChildren();
 		try {
-			await gameStore.sendAction(action);
+			await game.sendAction(action);
 		} catch (error) {
 			console.warn('Failed to send action', error);
 		}
@@ -168,8 +167,8 @@
 		const hexToFind = grid.pointToHex(inWorld);
 		const moveThiefAction = new MoveThiefAction(currentPlayer.name, hexToFind);
 		dispatchActionClearCursor(moveThiefAction);
-		uiStore.setMovingThief(false);
-		uiStore.setStealingFromPlayers(true);
+		ui.setMovingThief(false);
+		ui.setStealingFromPlayers(true);
 	};
 
 	const handleIsPlayingKnightClick = (event: FederatedPointerEvent) => {
@@ -179,12 +178,12 @@
 		const hexToFind = grid.pointToHex(inWorld);
 		const moveThiefAction = new MoveThiefDevCardAction(currentPlayer.name, hexToFind);
 		dispatchActionClearCursor(moveThiefAction);
-		uiStore.setPlayingKnight(false);
-		uiStore.setStealingFromPlayers(true);
+		ui.setPlayingKnight(false);
+		ui.setStealingFromPlayers(true);
 	};
 
 	const handleBuildClick = (event: FederatedPointerEvent) => {
-		if (!worldContainer || !currentPlayer || !gameStore.world || !grid) return;
+		if (!worldContainer || !currentPlayer || !game.world || !grid) return;
 
 		const inWorld = toWorld(event.global);
 		const closestPoints = getTwoClosestPoints(grid, inWorld);
@@ -196,26 +195,26 @@
 
 		if (isBuilding === 'House') {
 			const action =
-				gameStore.world.gameState === 'Started'
+				game.world.gameState === 'Started'
 					? new BuildHouseAction(currentPlayer.name, coord)
 					: new BuildHouseInitialAction(currentPlayer.name, coord);
 
 			dispatchActionClearCursor(action);
-			uiStore.setBuilding('None');
+			ui.setBuilding('None');
 		}
 		if (isBuilding === 'City') {
 			dispatchActionClearCursor(new BuildCityAction(currentPlayer.name, coord));
-			uiStore.setBuilding('None');
+			ui.setBuilding('None');
 		}
 		if (isBuilding === 'Road' && closestPoints[1].index !== -1) {
 			const coord2 = getMatrixCoordCorner(hexToFind, closestPoints[1].index);
 			const action =
-				gameStore.world.gameState === 'Started'
+				game.world.gameState === 'Started'
 					? new BuildRoadAction(currentPlayer.name, coord, coord2)
 					: new BuildRoadInitialAction(currentPlayer.name, coord, coord2);
 
 			dispatchActionClearCursor(action);
-			uiStore.setBuilding('None');
+			ui.setBuilding('None');
 		}
 	};
 
@@ -311,14 +310,11 @@
 		if (!grid || !hexFactory) return;
 		const { color } = player;
 		const roadGraphics = new Graphics();
-		const sampleHex = new hexFactory({ col: 0, row: 0 });
-		// In honeycomb v4, width and height are properties, not methods
-		const hexWidth = sampleHex.width;
-		const hexHeight = sampleHex.height;
+		const factory = hexFactory;
+
 		player.roads.forEach((road) => {
-			const start = matrixCoordToWorldCoord(road.start, hexWidth, hexHeight);
-			const end = matrixCoordToWorldCoord(road.end, hexWidth, hexHeight);
-			// PixiJS v8: Use moveTo/lineTo and then stroke() with style
+			const start = matrixCoordToGridWorldCoord(road.start, factory);
+			const end = matrixCoordToGridWorldCoord(road.end, factory);
 			roadGraphics.moveTo(start.x, start.y);
 			roadGraphics.lineTo(end.x, end.y);
 			roadGraphics.stroke({ width: lineWidth, color });
@@ -326,22 +322,14 @@
 		container.addChild(roadGraphics);
 
 		player.houses.forEach((house) => {
-			const piece = createPiece(
-				'House',
-				{ x: 100, y: 100 },
-				color,
-				matrixCoordToWorldCoord(house.position, hexWidth, hexHeight)
-			);
+			const worldCoord = matrixCoordToGridWorldCoord(house.position, factory);
+			const piece = createPiece('House', { x: 100, y: 100 }, color, worldCoord);
 			container.addChild(piece);
 		});
 
 		player.cities.forEach((city) => {
-			const piece = createPiece(
-				'City',
-				{ x: 124, y: 124 },
-				color,
-				matrixCoordToWorldCoord(city.position, hexWidth, hexHeight)
-			);
+			const worldCoord = matrixCoordToGridWorldCoord(city.position, factory);
+			const piece = createPiece('City', { x: 124, y: 124 }, color, worldCoord);
 			container.addChild(piece);
 		});
 	};
@@ -584,7 +572,7 @@
 	};
 
 	onMount(() => {
-		gameStore.bindToWorld();
+		game.bindToWorld();
 		setupCanvas();
 		handleResize();
 

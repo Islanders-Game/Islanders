@@ -3,7 +3,7 @@ import type { Resources } from '../../../../islanders-shared/lib/Shared';
 export type BuildingType = 'None' | 'House' | 'City' | 'Road';
 export type TradeParameters = { player: string; resources: Resources; wants: Resources };
 
-class UIStore {
+class UI {
 	isBuilding = $state<BuildingType>('None');
 	isMovingThief = $state(false);
 	isPlayingRoadBuilding = $state(false);
@@ -45,4 +45,4 @@ class UIStore {
 	}
 }
 
-export const uiStore = new UIStore();
+export const ui = new UI();

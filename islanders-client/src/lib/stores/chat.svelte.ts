@@ -1,7 +1,7 @@
 import { browser } from '$app/environment';
-import { socketManager } from './socket.svelte';
+import { socket } from './socket.svelte';
 import { env } from '$env/dynamic/public';
-import { gameStore } from './game.svelte';
+import { game } from './game.svelte';
 import { SocketActions, type ChatMessage } from '../../../../islanders-shared/lib/Shared';
 
 export interface ChatEntry extends ChatMessage {
@@ -13,7 +13,7 @@ export interface ChatEntry extends ChatMessage {
 
 const MAX_MESSAGES = 250;
 
-class ChatStore {
+class Chat {
 	messages = $state<ChatEntry[]>([]);
 	initialized = $state(false);
 	error = $state<string | undefined>(undefined);
@@ -27,18 +27,22 @@ class ChatStore {
 	}
 
 	private bindChat(gameId?: string) {
-		const resolved = gameId ?? gameStore.gameId;
+		const resolved = gameId ?? game.gameId;
 		const host = env.PUBLIC_SERVER ?? 'http://localhost:3002';
 		const path = resolved ? `${host}/${resolved}` : undefined;
 
 		if (this.listenersBound && path === this.lastChatPath) {
-			return socketManager.getSocket();
+			return socket.getSocket();
 		}
 
-		const socket = socketManager.connect(path);
-		this.lastChatPath = path;
+		if (resolved) {
+			socket.ensureGame(resolved);
+			this.lastChatPath = path;
+		}
+		const connectedSocket = socket.getSocket();
+		if (!connectedSocket) return;
 
-		socket.on(SocketActions.chat, (incoming: ChatMessage & { clientId?: string }) => {
+		connectedSocket.on(SocketActions.chat, (incoming: ChatMessage & { clientId?: string }) => {
 			const existing = this.messages;
 			let idx = -1;
 			if (incoming.clientId) {
@@ -63,7 +67,7 @@ class ChatStore {
 					ts: Date.now(),
 					text: incoming.text,
 					user: incoming.user,
-					self: incoming.user === gameStore.playerName,
+					self: incoming.user === game.playerName,
 					pending: false
 				};
 				const next = [...existing, entry];
@@ -74,7 +78,7 @@ class ChatStore {
 			}
 		});
 
-		socket.on('connect_error', (err: Error) => {
+		connectedSocket.on('connect_error', (err: Error) => {
 			this.error = err.message;
 		});
 
@@ -88,12 +92,12 @@ class ChatStore {
 		const trimmed = text.trim();
 		if (!trimmed) return;
 
-		const socket = socketManager.getSocket();
-		if (!socket || !socket.connected) {
+		const connectedSocket = socket.getSocket();
+		if (!connectedSocket || !connectedSocket.connected) {
 			this.error = 'Not connected';
 			return;
 		}
-		const playerName = gameStore.playerName ?? 'Unknown';
+		const playerName = game.playerName ?? 'Unknown';
 		const clientId = crypto.randomUUID();
 
 		const optimistic: ChatEntry = {
@@ -114,7 +118,7 @@ class ChatStore {
 		}
 
 		const outgoing = { text: trimmed, user: playerName, clientId } as ChatMessage;
-		socket.emit(SocketActions.chat, outgoing);
+		connectedSocket.emit(SocketActions.chat, outgoing);
 	}
 
 	clear() {
@@ -130,4 +134,4 @@ class ChatStore {
 	}
 }
 
-export const chatStore = new ChatStore();
+export const chat = new Chat();

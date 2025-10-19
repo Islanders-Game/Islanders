@@ -1,15 +1,17 @@
-import type { Socket } from 'socket.io-client';
+import type { Socket as SocketIO } from 'socket.io-client';
 import { io } from 'socket.io-client';
 import { browser } from '$app/environment';
 import { env } from '$env/dynamic/public';
 
 const STORAGE_KEY = 'islanders:socket:path';
 
-class SocketManager {
-	private socket: Socket | undefined = $state(undefined);
-	private currentPath: string | undefined = $state(undefined);
+class Socket {
+	private socket: SocketIO | undefined = $state(undefined);
 	private lifecycleListenersAttached = false;
 	private defaultHost = env.PUBLIC_SERVER ?? 'http://localhost:3002';
+	private namespaceGameId: string | undefined = undefined;
+	private pendingNamespace: string | undefined = undefined;
+	private readyCallbacks: Array<() => void> = [];
 
 	connected = $state(false);
 	connecting = $state(false);
@@ -18,14 +20,12 @@ class SocketManager {
 	reconnectAttempts = $state(0);
 	socketId = $state<string | undefined>(undefined);
 
-	private rememberPath(path: string) {
-		this.currentPath = path;
-		if (browser) {
-			try {
-				localStorage.setItem(STORAGE_KEY, path);
-			} catch (err) {
-				console.warn('Unable to persist socket path', err);
-			}
+	private persistPath(path: string) {
+		if (!browser) return;
+		try {
+			localStorage.setItem(STORAGE_KEY, path);
+		} catch (err) {
+			console.warn('Unable to persist socket path', err);
 		}
 	}
 
@@ -39,7 +39,7 @@ class SocketManager {
 		}
 	}
 
-	private attachLifecycleListeners(instance: Socket) {
+	private attachLifecycleListeners(instance: SocketIO) {
 		if (this.lifecycleListenersAttached) {
 			return;
 		}
@@ -49,7 +49,7 @@ class SocketManager {
 			this.connected = true;
 			this.connecting = false;
 			this.error = undefined;
-			this.path = this.currentPath ?? null;
+			this.path = this.pendingNamespace ?? this.path ?? null;
 			this.reconnectAttempts = 0;
 			this.socketId = instance.id;
 		});
@@ -58,7 +58,7 @@ class SocketManager {
 			this.connected = false;
 			this.connecting = false;
 			this.error = reason == 'io client disconnect' ? undefined : reason;
-			this.path = this.currentPath ?? null;
+			this.path = this.pendingNamespace ?? this.path ?? null;
 			this.reconnectAttempts = 0;
 			this.socketId = undefined;
 		});
@@ -80,48 +80,65 @@ class SocketManager {
 		});
 	}
 
-	private initializeSocket(path: string): Socket {
-		const needNew = !this.socket || this.currentPath !== path;
-		if (needNew) {
-			if (this.socket) {
-				try {
-					this.socket.disconnect();
-				} catch (err) {
-					console.warn('Error disconnecting previous socket', err);
-				}
-			}
+	private ensureBaseSocket(): SocketIO {
+		const path = this.restorePath() ?? this.defaultHost;
+		if (!this.socket) {
 			this.socket = io(path, {
 				transports: ['websocket'],
-				autoConnect: false,
+				autoConnect: true,
 				reconnection: true
 			});
-			this.rememberPath(path);
-			this.lifecycleListenersAttached = false;
+			this.persistPath(path);
+			this.attachLifecycleListeners(this.socket);
 		}
-		this.attachLifecycleListeners(this.socket!);
-		return this.socket!;
+		return this.socket;
 	}
 
-	connect(path?: string): Socket {
-		const target = path ?? this.currentPath ?? this.restorePath() ?? this.defaultHost;
-
-		const inst = this.initializeSocket(target);
-
-		this.path = target;
-		this.connecting = !inst.connected;
-
-		if (!inst.connected) {
-			inst.connect();
+	connectNamespace(gameId: string, onSocketRecreated?: () => void) {
+		if (!gameId) return;
+		const target = `${this.defaultHost}/${gameId}`;
+		if (this.namespaceGameId === gameId && this.socket && this.path === target) {
+			return;
 		}
+		// If a socket exists but path differs, reconnect to namespace
+		const isRecreating = !!this.socket;
+		if (this.socket) {
+			try {
+				this.socket.disconnect();
+			} catch (err) {
+				console.warn('Error disconnecting old socket', err);
+			}
+			this.socket = undefined;
+		}
+		this.namespaceGameId = gameId;
+		this.pendingNamespace = target;
+		this.socket = io(target, {
+			transports: ['websocket'],
+			autoConnect: true,
+			reconnection: true
+		});
+		this.persistPath(target);
+		this.lifecycleListenersAttached = false;
+		this.attachLifecycleListeners(this.socket);
 
-		return inst;
+		// Notify caller that socket was recreated so they can rebind listeners
+		if (isRecreating && onSocketRecreated) {
+			onSocketRecreated();
+		}
+	}
+
+	onReady(cb: () => void) {
+		if (this.connected) {
+			cb();
+			return;
+		}
+		this.readyCallbacks.push(cb);
 	}
 
 	disconnect() {
 		if (this.socket && this.socket.connected) {
 			this.socket.disconnect();
 		}
-		this.currentPath = undefined;
 		this.lifecycleListenersAttached = false;
 		this.connected = false;
 		this.connecting = false;
@@ -138,9 +155,22 @@ class SocketManager {
 		}
 	}
 
-	getSocket(): Socket | undefined {
-		return this.socket;
+	getSocket(): SocketIO | undefined {
+		return this.socket ?? this.ensureBaseSocket();
+	}
+
+	ensureGame(gameId?: string, onSocketRecreated?: () => void) {
+		if (gameId) {
+			this.connectNamespace(gameId, onSocketRecreated);
+		} else {
+			this.ensureBaseSocket();
+		}
 	}
 }
 
-export const socketManager = new SocketManager();
+export const socket = new Socket();
+
+// Initialize base socket immediately so components can rely on availability
+if (typeof window !== 'undefined') {
+	socket.getSocket();
+}

@@ -11,11 +11,11 @@ import {
 } from '../../../../islanders-shared/lib/Shared.ts';
 import type { ProposeTradeAction } from '../../../../islanders-shared/lib/Action.ts';
 
-import { uiStore } from './ui.svelte.ts';
+import { ui } from './ui.svelte.ts';
 import { browser } from '$app/environment';
-import { socketManager } from './socket.svelte.ts';
+import { socket } from './socket.svelte.ts';
 import { env } from '$env/dynamic/public';
-import type { Socket } from 'socket.io-client';
+import type { Socket as SocketIO } from 'socket.io-client';
 
 const DEFAULT_POINTS_TO_WIN = 10;
 const SESSION_KEY = 'islanders:session';
@@ -25,7 +25,7 @@ interface GameSession {
 	playerName: string;
 }
 
-class GameStore {
+class Game {
 	gameId = $state<string | undefined>(undefined);
 	playerName = $state<string | undefined>(undefined);
 	pointsToWin = $state(DEFAULT_POINTS_TO_WIN);
@@ -109,30 +109,36 @@ class GameStore {
 		return undefined;
 	}
 
-	bindToWorld(): Socket {
-		const socket = socketManager.connect();
-
-		if (this.socketListenersBound) {
-			return socket;
+	bindToWorld(): SocketIO {
+		// Assume socket already initialized; attach listeners lazily.
+		const connectedSocket = socket.getSocket();
+		if (!connectedSocket) {
+			throw new Error('Socket unavailable when binding world listeners');
 		}
 
-		socket.on(SocketActions.newWorld, (result: Result) => {
+		if (this.socketListenersBound) {
+			return connectedSocket as SocketIO;
+		}
+
+		connectedSocket.on(SocketActions.newWorld, (result: Result) => {
+			console.debug('Received newWorld update from server', result);
+			console.debug('Socket ID:', connectedSocket.id, 'Connected:', connectedSocket.connected);
 			const asResultInstance = toResultInstance(result);
 			asResultInstance
 				.flatMap((world: World) => {
 					this.world = world;
 					if (world.conditions?.playedKnight && !world.conditions.playedKnight.movedThief) {
-						uiStore.setPlayingKnight(true);
+						ui.setPlayingKnight(true);
 					}
 					if (world.conditions?.playedRoadBuilding) {
 						const { roadsBuilt, expected } = world.conditions.playedRoadBuilding;
 						if (expected && roadsBuilt && expected < roadsBuilt) {
-							uiStore.setPlayingRoadBuilding(true);
-							uiStore.setBuilding('Road');
-							uiStore.setMovingThief(false);
+							ui.setPlayingRoadBuilding(true);
+							ui.setBuilding('Road');
+							ui.setMovingThief(false);
 						} else {
-							uiStore.setPlayingRoadBuilding(false);
-							uiStore.setBuilding('None');
+							ui.setPlayingRoadBuilding(false);
+							ui.setBuilding('None');
 						}
 					}
 					this.error = undefined;
@@ -143,37 +149,52 @@ class GameStore {
 				});
 		});
 
-		socket.on(SocketActions.proposeTrade, (action: ProposeTradeAction) => {
+		connectedSocket.on(SocketActions.proposeTrade, (action: ProposeTradeAction) => {
 			const mapped = {
 				player: action.parameters.playerName,
 				wants: action.parameters.wantsResources,
 				resources: action.parameters.resources
 			};
-			uiStore.setProposesTrade(mapped);
+			ui.setProposesTrade(mapped);
 		});
 
 		this.socketListenersBound = true;
-		return socket;
+		return connectedSocket as SocketIO;
 	}
 
 	async startGame(pointsToWin: number): Promise<void> {
-		const socket = socketManager.connect();
-		socket.emit(SocketActions.lockMap, pointsToWin);
+		const s = socket.getSocket();
+		if (!s || !s.connected) {
+			console.warn('Socket not connected when starting game; ensuring namespace');
+			socket.ensureGame(this.gameId, () => {
+				// Socket was recreated, reset listener flag so they rebind
+				this.socketListenersBound = false;
+				this.bindToWorld();
+			});
+		}
+		const active = socket.getSocket();
+		if (!active) {
+			throw new Error('Unable to obtain socket to start game');
+		}
+		active.emit(SocketActions.lockMap, pointsToWin);
 	}
 
 	async updateMap(map: Tile[]): Promise<void> {
-		const socket = socketManager.connect();
-		socket.emit(SocketActions.newMap, map);
+		const s = socket.getSocket();
+		if (!s) throw new Error('Socket unavailable for updateMap');
+		s.emit(SocketActions.newMap, map);
 	}
 
 	async sendAction(action: GameAction): Promise<void> {
-		const socket = socketManager.connect();
-		socket.emit(SocketActions.sendAction, action);
+		const s = socket.getSocket();
+		if (!s) throw new Error('Socket unavailable for sendAction');
+		s.emit(SocketActions.sendAction, action);
 	}
 
 	async proposeTrade(action: ProposeTradeAction): Promise<void> {
-		const socket = socketManager.connect();
-		socket.emit(SocketActions.proposeTrade, action);
+		const s = socket.getSocket();
+		if (!s) throw new Error('Socket unavailable for proposeTrade');
+		s.emit(SocketActions.proposeTrade, action);
 	}
 
 	async createGame(playerName: string): Promise<void> {
@@ -183,10 +204,17 @@ class GameStore {
 		const { id }: { id: string } = await response.json();
 		console.log(`Created game with ID: ${id}`);
 
-		const socket = socketManager.connect(`${host}/${id}`);
+		// Move to game namespace and bind listeners
+		socket.ensureGame(id, () => {
+			// Socket was recreated, reset listener flag so they rebind
+			this.socketListenersBound = false;
+		});
 		this.bindToWorld();
-		socket.emit(SocketActions.join, playerName);
-		socket.emit(SocketActions.getWorld);
+		const s = socket.getSocket();
+		if (s) {
+			s.emit(SocketActions.join, playerName);
+			s.emit(SocketActions.getWorld);
+		}
 
 		this.gameId = id;
 		this.playerName = playerName;
@@ -210,10 +238,16 @@ class GameStore {
 
 		const flatmappable = toResultInstance(data);
 		flatmappable.flatMap((world: World) => {
-			const socket = socketManager.connect(`${host}/${gameId}`);
+			socket.ensureGame(gameId, () => {
+				// Socket was recreated, reset listener flag so they rebind
+				this.socketListenersBound = false;
+			});
 			this.bindToWorld();
-			socket.emit(SocketActions.join, resolvedPlayerName);
-			socket.emit(SocketActions.getWorld);
+			const s = socket.getSocket();
+			if (s) {
+				s.emit(SocketActions.join, resolvedPlayerName);
+				s.emit(SocketActions.getWorld);
+			}
 
 			this.gameId = gameId;
 			this.playerName = resolvedPlayerName;
@@ -252,7 +286,7 @@ class GameStore {
 		this.pointsToWin = DEFAULT_POINTS_TO_WIN;
 		this.world = undefined;
 		this.error = undefined;
-		socketManager.disconnect();
+		socket.disconnect();
 		this.clearSession();
 		this.socketListenersBound = false;
 	}
@@ -262,4 +296,4 @@ class GameStore {
 	}
 }
 
-export const gameStore = new GameStore();
+export const game = new Game();

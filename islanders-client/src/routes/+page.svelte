@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { goto } from '$app/navigation';
-	import { gameStore } from '$lib/stores/game.svelte';
+	import { game } from '$lib/stores/game.svelte';
 
 	type Mode = 'create' | 'join';
 
@@ -33,17 +33,17 @@
 		isSubmitting = true;
 		try {
 			if (mode === 'join') {
-				gameStore.error = undefined;
-				await gameStore.joinGame(gameId.trim(), trimmedName);
-				if (gameStore.error) {
-					errorMessage = gameStore.error;
+				game.error = undefined;
+				await game.joinGame(gameId.trim(), trimmedName);
+				if (game.error) {
+					errorMessage = game.error;
 					return;
 				}
 			} else {
-				await gameStore.createGame(trimmedName);
+				await game.createGame(trimmedName);
 			}
 
-			const nextGameId = gameStore.gameId;
+			const nextGameId = game.gameId;
 			if (!nextGameId) {
 				errorMessage = 'Unable to open the game lobby. Please try again.';
 				return;

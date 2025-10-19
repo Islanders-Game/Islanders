@@ -35,10 +35,10 @@
 	};
 </script>
 
-<div class="flex w-full min-w-96 gap-1 rounded-md bg-base-200/40 p-1 backdrop-blur-md">
+<div class="flex h-14 w-full min-w-96 gap-1 rounded-md bg-base-200/40 p-1 backdrop-blur-md">
 	{#each Object.entries(resources) as [key, value]}
 		<div
-			class={`flex grow flex-col items-center rounded ${background(key as keyof typeof baseColors)} p-2`}
+			class={`flex grow flex-col items-center justify-center rounded ${background(key as keyof typeof baseColors)}`}
 		>
 			<span class="text-[10px] font-semibold tracking-wide uppercase">{key}</span>
 			<span class="font-bold">{value}</span>

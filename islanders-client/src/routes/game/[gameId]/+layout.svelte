@@ -1,13 +1,14 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import Map from '$lib/components/Map.svelte';
-	import { socketManager } from '$lib/stores/socket.svelte';
+	import { socket } from '$lib/stores/socket.svelte';
 	import { env } from '$env/dynamic/public';
-	import { gameStore } from '$lib/stores/game.svelte';
+	import { game } from '$lib/stores/game.svelte';
 	import { goto } from '$app/navigation';
 	import { page } from '$app/state';
 	import ResourcesBar from '$lib/components/ResourcesBar.svelte';
 	import type { Player } from '../../../../../islanders-shared/lib/Shared';
+	import { notifications } from '$lib/stores/notifications.svelte';
 
 	const props = $props();
 	const { children, data } = props;
@@ -53,12 +54,11 @@
 		}
 
 		isSubmitting = true;
-		socketManager.connect(`${host}/${gameId}`);
-		await gameStore.joinGame(gameId, trimmed);
+		await game.joinGame(gameId, trimmed);
 		isSubmitting = false;
 
-		if (gameStore.error) {
-			localError = gameStore.error;
+		if (game.error) {
+			localError = game.error;
 			return false;
 		}
 
@@ -72,10 +72,9 @@
 
 	onMount(() => {
 		const handleInitialJoin = async () => {
-			socketManager.connect(`${host}/${gameId}`);
-			const session = gameStore.getStoredSession();
+			const session = game.getStoredSession();
 			const candidateName =
-				session && session.gameId === gameId ? session.playerName : gameStore.playerName;
+				session && session.gameId === gameId ? session.playerName : game.playerName;
 
 			if (candidateName && candidateName.trim()) {
 				nameInput = candidateName.trim();
@@ -99,7 +98,7 @@
 	});
 
 	const currentPlayer: Player | undefined = $derived(
-		gameStore.world?.players.find((player: Player) => player.name === gameStore.playerName)
+		game.world?.players.find((player: Player) => player.name === game.playerName)
 	);
 	const playerResources = $derived(
 		currentPlayer?.resources ?? { wood: 0, clay: 0, stone: 0, grain: 0, wool: 0 }
@@ -108,8 +107,48 @@
 
 <div class="flex h-screen overflow-hidden">
 	<section class="flex min-w-0 flex-1" aria-label="Game map">
-		<div class="flex h-full min-h-0 min-w-0 flex-1">
+		<div class="relative flex h-full min-h-0 min-w-0 flex-1">
 			<Map />
+			{#if game.isGameStarted && currentPlayer && game.world?.players[game.world?.currentPlayer].name === game.playerName}
+				<div
+					class="absolute right-4 bottom-4 z-10 flex h-14 gap-1 rounded-md bg-base-200/40 p-1 backdrop-blur-md"
+				>
+					<button
+						class="btn h-full btn-primary"
+						onclick={() => {
+							console.log('End turn clicked');
+						}}
+					>
+						End Turn
+					</button>
+				</div>
+			{/if}
+
+			<div class="toast-top toast-start toast-sm toast space-y-2">
+				<div
+					class="group flex w-fit flex-row items-center rounded-md bg-base-200/40 py-2 pr-3 pl-3 backdrop-blur-md transition-all"
+				>
+					<div
+						class="h-2 w-2 flex-shrink-0 rounded-full"
+						class:bg-green-400={socket.connected}
+						class:bg-red-400={!socket.connected}
+						aria-label="Connection status indicator"
+					></div>
+					<div
+						class="flex max-w-0 flex-col overflow-hidden text-xs whitespace-nowrap opacity-0 transition-all group-hover:ml-2 group-hover:max-w-xs group-hover:opacity-100"
+					>
+						{#if socket.connected}
+							<span>Connected</span>
+						{:else}
+							<span>Disconnected</span>
+						{/if}
+					</div>
+				</div>
+			</div>
+
+			<div class="toast-bottom toast-start toast-sm toast space-y-2">
+				<ResourcesBar resources={playerResources} />
+			</div>
 		</div>
 	</section>
 	<aside
@@ -156,9 +195,9 @@
 					<div class="alert alert-error">
 						<span>{localError}</span>
 					</div>
-				{:else if gameStore.error}
+				{:else if game.error}
 					<div class="alert alert-error">
-						<span>{gameStore.error}</span>
+						<span>{game.error}</span>
 					</div>
 				{/if}
 				<div class="modal-action flex">
@@ -170,28 +209,4 @@
 			</form>
 		</div>
 	</dialog>
-
-	<div class="toast-top toast-start toast-sm toast space-y-2">
-		<div
-			class="flex flex-row items-center gap-2 rounded-md bg-base-200/40 px-3 py-2 backdrop-blur-md"
-		>
-			<div
-				class="h-2 w-2 rounded-full"
-				class:bg-green-400={socketManager.connected}
-				class:bg-red-400={!socketManager.connected}
-				aria-label="Connection status indicator"
-			></div>
-			<div class="flex flex-col text-xs">
-				{#if socketManager.connected}
-					<span>Connected</span>
-				{:else}
-					<span>Disconnected</span>
-				{/if}
-			</div>
-		</div>
-	</div>
-
-	<div class="toast-bottom toast-start toast-sm toast space-y-2">
-		<ResourcesBar resources={playerResources} />
-	</div>
 </div>

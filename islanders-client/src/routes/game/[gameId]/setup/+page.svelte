@@ -1,27 +1,34 @@
 <script lang="ts">
-	import { gameStore } from '$lib/stores/game.svelte';
+	import { game } from '$lib/stores/game.svelte';
 	import { WorldGenerator, type Tile } from '../../../../../../islanders-shared/lib/Shared';
 	import { goto } from '$app/navigation';
+	import { onMount } from 'svelte';
 
 	const props = $props();
 	const { gameId } = props.data as { gameId: string };
 	const base = `/game/${encodeURIComponent(gameId)}`;
 
-	const world = $derived(gameStore.world);
+	const world = $derived(game.world);
 	const isGameStarted = $derived(world?.gameState === 'Started');
 
 	let radius = $state(4);
 	let numberOfIslands = $state(1);
-	let pointsToWin = $state(10);
+	let pointsToWin = $state(game.effectivePointsToWin ?? 10);
 	const worldGenerator = new WorldGenerator();
+
+	$effect(() => {
+		if (pointsToWin && pointsToWin !== game.effectivePointsToWin) {
+			game.setPointsToWin(pointsToWin);
+		}
+	});
 
 	const randomizeMap = async () => {
 		const map: Tile[] = worldGenerator.generateRandomMap(radius, numberOfIslands);
-		await gameStore.updateMap(map);
+		await game.updateMap(map);
 	};
 
 	const startGame = async () => {
-		await gameStore.startGame(pointsToWin);
+		await game.startGame(pointsToWin);
 		await goto(base);
 	};
 </script>

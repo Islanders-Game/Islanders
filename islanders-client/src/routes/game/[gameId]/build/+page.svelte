@@ -1,22 +1,23 @@
 <script lang="ts">
-	import { gameStore } from '$lib/stores/game.svelte';
-	import { uiStore } from '$lib/stores/ui.svelte';
+	import { game } from '$lib/stores/game.svelte';
+	import { ui } from '$lib/stores/ui.svelte';
 
 	const props = $props();
 	const { gameId } = props.data as { gameId: string };
 
-	const currentWorld = $derived(gameStore.world);
-	const playerName = $derived(gameStore.playerName);
-	const currentTurnPlayer = $derived(
+	const currentWorld = $derived(game.world);
+	const playerName = $derived(game.playerName);
+	const currentTurnPlayer = $derived.by(() =>
 		currentWorld ? currentWorld.players[currentWorld.currentPlayer] : undefined
 	);
-	const viewerPlayer = $derived(() => {
+	const viewerPlayer = $derived.by(() => {
 		if (!currentWorld || !playerName) return undefined;
 		return currentWorld.players.find((p) => p.name === playerName);
 	});
 	const isMyTurn = $derived(currentTurnPlayer?.name === playerName);
+	const isInitialPlacementPhase = $derived(!!currentWorld && currentWorld.gameState !== 'Started');
 	const playerResources = $derived(
-		viewerPlayer()?.resources ?? { wood: 0, clay: 0, stone: 0, grain: 0, wool: 0 }
+		viewerPlayer?.resources ?? { wood: 0, clay: 0, stone: 0, grain: 0, wool: 0 }
 	);
 
 	const buildingCosts = {
@@ -29,6 +30,10 @@
 	type BuildingCost = (typeof buildingCosts)[keyof typeof buildingCosts];
 
 	const canAfford = (cost: BuildingCost) => {
+		// During initial placement phase, roads & settlements are free (classic rules)
+		if (isInitialPlacementPhase) {
+			return true;
+		}
 		return (
 			playerResources.wood >= cost.wood &&
 			playerResources.clay >= cost.clay &&
@@ -39,14 +44,18 @@
 	};
 
 	const handleBuild = (action: keyof typeof buildingCosts) => {
-		if (!isMyTurn || !viewerPlayer()) return;
+		if (!isMyTurn || !viewerPlayer) return;
 		if (!canAfford(buildingCosts[action])) return;
-		console.log(`Build action triggered: ${action}`, { gameId, player: playerName });
-		// TODO: dispatch socket action to server
-		if (action === 'road') uiStore.setBuilding('Road');
-		else if (action === 'settlement') uiStore.setBuilding('House');
-		else if (action === 'city') uiStore.setBuilding('City');
-		else uiStore.setBuilding('None');
+		// Set building mode; actual placement is done on map click (Map.svelte)
+		if (action === 'road') ui.setBuilding('Road');
+		else if (action === 'settlement') ui.setBuilding('House');
+		else if (action === 'city') ui.setBuilding('City');
+		else ui.setBuilding('None');
+	};
+
+	const endTurn = async () => {
+		if (!isMyTurn) return;
+		await game.sendAction({ type: 'endTurn', parameters: { playerName: playerName! } });
 	};
 </script>
 

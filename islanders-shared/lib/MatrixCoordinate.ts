@@ -2,27 +2,6 @@ import type { HexCoordinate } from './HexCoordinate';
 
 export type MatrixCoordinate = HexCoordinate;
 
-// Because of decisions, we have to deal with this hex->matrix mapping:
-// 0 1 | 2 3 | 4 5 | 6 7
-// . ._|_. . | . ._|_. .
-// ./. | .\._|_./. | .\.
-// .\._|_./. | .\._|_./.
-// ./. | .\._|_./. | .\.
-//
-// . = MatrixCoordinates
-export const matrixCoordToWorldCoord = (
-  coord: MatrixCoordinate,
-  width: number,
-  height: number,
-): { x: number; y: number } => {
-  const worldX = (coord.x * width) / 4 + Math.floor(coord.x / 2) * (width / 4);
-  const worldY = (coord.y * height) / 2;
-  return {
-    x: worldX,
-    y: worldY,
-  };
-};
-
 const mod = (n: number, m: number) => ((n % m) + m) % m;
 
 export const neighbouringMatrixCoords = (coord: MatrixCoordinate): MatrixCoordinate[] => {

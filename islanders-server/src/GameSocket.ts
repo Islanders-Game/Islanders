@@ -47,9 +47,14 @@ export class GameSocket {
         this.setUpProposeTradeAction(connection, gameID, nsp);
         GameSocket.setUpDisconnect(connection, gameID, gamePlayerSockets);
 
-        this.checkForReconnect(gameID, playerName, gamePlayerSockets, connection.id).then((r) =>
-          nsp.emit(SocketActions.newWorld, r),
-        );
+        this.checkForReconnect(gameID, playerName, gamePlayerSockets, connection.id)
+          .then((r) => {
+            nsp.emit(SocketActions.newWorld, r);
+            r.onFailure?.((reason: string) => console.warn(`[${gameID}] reconnect emission failure: ${reason}`));
+          })
+          .catch((err) => {
+            console.error(`[${gameID}] reconnect handling threw`, err);
+          });
       });
 
       setInterval(() => GameSocket.clearNamespaceIfEmpty(nsp, gamePlayerSockets), 18000000); // Clear every half hour.
@@ -59,7 +64,15 @@ export class GameSocket {
   private setUpGetWorld(connection: Socket, gameID: string) {
     connection.on(SocketActions.getWorld, async () => {
       GameSocket.logSocketEvent(gameID, SocketActions.getWorld);
-      connection.emit(SocketActions.newWorld, await this.gameRepository.getWorld(gameID));
+      const t0 = Date.now();
+      try {
+        const result = await this.gameRepository.getWorld(gameID);
+        connection.emit(SocketActions.newWorld, result);
+        result.onFailure?.((reason: string) => console.warn(`[${gameID}] getWorld failure: ${reason}`));
+        console.info(`[${gameID}] getWorld served in ${Date.now() - t0}ms`);
+      } catch (err) {
+        console.error(`[${gameID}] getWorld exception`, err);
+      }
     });
   }
 
@@ -73,37 +86,65 @@ export class GameSocket {
   private setUpLockMap(connection: Socket, gameID: string, namespace: Namespace) {
     connection.on(SocketActions.lockMap, async (pointsToWin: number) => {
       GameSocket.logSocketEvent(gameID, SocketActions.lockMap);
-      const lock: LockMapAction = new LockMapAction(pointsToWin);
-      namespace.emit(SocketActions.newWorld, await this.gameService.applyAction(gameID, lock));
+      const t0 = Date.now();
+      try {
+        const lock: LockMapAction = new LockMapAction(pointsToWin);
+        const result = await this.gameService.applyAction(gameID, lock);
+        namespace.emit(SocketActions.newWorld, result);
+        result.onFailure?.((reason: string) => console.warn(`[${gameID}] lockMap failure: ${reason}`));
+        console.info(`[${gameID}] lockMap processed in ${Date.now() - t0}ms points=${pointsToWin}`);
+      } catch (err) {
+        console.error(`[${gameID}] lockMap exception`, err);
+      }
     });
   }
 
   private setUpNewMap(connection: Socket, gameID: string, namespace: Namespace) {
     connection.on(SocketActions.newMap, (map: Tile[]) => {
       GameSocket.logSocketEvent(gameID, SocketActions.newMap);
-      this.gameService.updateMap(map, gameID, namespace);
+      const size = map?.length ?? 0;
+      this.gameService
+        .updateMap(map, gameID, namespace)
+        .then((r) => r.onFailure?.((reason: string) => console.warn(`[${gameID}] newMap failure: ${reason}`)))
+        .catch((err) => console.error(`[${gameID}] newMap exception`, err))
+        .finally(() => console.info(`[${gameID}] newMap size=${size}`));
     });
   }
 
   private setUpChat(connection: Socket, gameID: string, namespace: Namespace) {
     connection.on(SocketActions.chat, (chat: ChatMessage) => {
       GameSocket.logSocketEvent(gameID, SocketActions.chat);
-      this.chatService.chatMessage(chat, gameID, namespace);
+      try {
+        this.chatService.chatMessage(chat, gameID, namespace);
+      } catch (err) {
+        console.error(`[${gameID}] chat exception`, err);
+      }
     });
   }
 
   private setUpSendAction(connection: Socket, gameID: string, namespace: Namespace) {
     connection.on(SocketActions.sendAction, async (action: Action) => {
       GameSocket.logSocketEvent(gameID, SocketActions.sendAction);
-      const result = await this.gameService.applyAction(gameID, action);
-      namespace.emit(SocketActions.newWorld, result);
+      const start = Date.now();
+      try {
+        const result = await this.gameService.applyAction(gameID, action);
+        namespace.emit(SocketActions.newWorld, result);
+        result.onFailure?.((reason: string) => console.warn(`[${gameID}] sendAction failure: ${reason}`));
+        console.info(`[${gameID}] sendAction ${action.type} duration=${Date.now() - start}ms`);
+      } catch (err) {
+        console.error(`[${gameID}] sendAction exception`, err);
+      }
     });
   }
 
   setUpProposeTradeAction = (connection: Socket, gameID: string, namespace: Namespace) => {
     connection.on(SocketActions.proposeTrade, async (action: ProposeTradeAction) => {
-      GameSocket.logSocketEvent(gameID, SocketActions.sendAction);
-      namespace.emit(SocketActions.proposeTrade, action);
+      GameSocket.logSocketEvent(gameID, SocketActions.proposeTrade);
+      try {
+        namespace.emit(SocketActions.proposeTrade, action);
+      } catch (err) {
+        console.error(`[${gameID}] proposeTrade exception`, err);
+      }
     });
   };
 

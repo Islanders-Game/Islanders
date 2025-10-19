@@ -1,4 +1,5 @@
 import knex, { Knex } from 'knex';
+import { randomUUID } from 'crypto';
 import { World, Result, fail, success } from '../../../islanders-shared/lib/Shared';
 
 type GameRow = {
@@ -24,21 +25,29 @@ export class GameRepository {
   }
 
   public async createGame(world: World): Promise<{ id: string }> {
+    const id = randomUUID();
     const worldToPersist = this.withVersion(world, 0);
-
-    const result = (await this.db(this.tableName)
-      .insert({
-        version: worldToPersist.version,
-        world: worldToPersist,
-      })
-      .returning('game_id')) as Array<{ game_id: string }>;
-
-    return { id: result[0].game_id };
+    await this.db(this.tableName).insert({
+      game_id: id,
+      version: worldToPersist.version,
+      world: worldToPersist,
+    });
+    return { id };
   }
 
   public async updateGame(gameID: string, world: World): Promise<Result> {
     try {
-      const nextVersion = world.version + 1;
+      // Always derive next version from latest persisted state to avoid clashes / stale clients.
+      const latestRow = (await this.db(this.tableName)
+        .where({ game_id: gameID })
+        .orderBy('version', 'desc')
+        .first()) as GameRow | undefined;
+      const latestVersion = latestRow
+        ? typeof latestRow.world === 'string'
+          ? (JSON.parse(latestRow.world as string).version ?? latestRow.version)
+          : latestRow.version
+        : -1;
+      const nextVersion = latestVersion + 1;
       const worldToPersist = this.withVersion(world, nextVersion);
 
       await this.db(this.tableName).insert({
@@ -46,7 +55,6 @@ export class GameRepository {
         version: worldToPersist.version,
         world: worldToPersist,
       });
-
       return success(worldToPersist);
     } catch (ex) {
       return fail(`Failed to update game ${gameID}: ${String(ex)}`);

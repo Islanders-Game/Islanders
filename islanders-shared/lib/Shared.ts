@@ -1,12 +1,7 @@
 import type { Turn } from './Turn';
 import { type Resources, subtractResources, resourcesAreNonNegative } from './Resources';
 import { type HexCoordinate, getMatrixCoordCorner, getNeighbouringMatrixCoords } from './HexCoordinate';
-import {
-  type MatrixCoordinate,
-  neighbouringHexCoords,
-  neighbouringMatrixCoords,
-  matrixCoordToWorldCoord,
-} from './MatrixCoordinate';
+import { type MatrixCoordinate, neighbouringHexCoords, neighbouringMatrixCoords } from './MatrixCoordinate';
 import type { Thief } from './Thief';
 import { Ship } from './Entities/Ship';
 import { Road } from './Entities/Road';
@@ -31,7 +26,6 @@ export {
   getMatrixCoordCorner,
   neighbouringHexCoords,
   neighbouringMatrixCoords,
-  matrixCoordToWorldCoord,
   getNeighbouringMatrixCoords,
   Ship,
   Road,
