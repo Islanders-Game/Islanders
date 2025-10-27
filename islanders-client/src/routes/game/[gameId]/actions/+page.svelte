@@ -1,34 +1,33 @@
 <script lang="ts">
-	import { game } from '$lib/stores/game.svelte';
-	import { ui } from '$lib/stores/ui.svelte';
+	import { playerName } from '$lib/stores/game.svelte';
+	import { getWorld } from '$lib/stores/socket.svelte';
 	import { BuyCardAction } from '../../../../../../islanders-shared/lib/Action';
 
 	const props = $props();
 	const { gameId } = props.data as { gameId: string };
 
-	const currentWorld = $derived(game.world);
-	const playerName = $derived(game.playerName);
 	const currentTurnPlayer = $derived.by(() =>
-		currentWorld ? currentWorld.players[currentWorld.currentPlayer] : undefined
+		getWorld() && getWorld()?.currentPlayer
+			? getWorld()?.players[getWorld()?.currentPlayer ?? 0]
+			: undefined
 	);
 	const viewerPlayer = $derived.by(() => {
-		if (!currentWorld || !playerName) return undefined;
-		return currentWorld.players.find((p) => p.name === playerName);
+		if (!getWorld() || !playerName) return undefined;
+		return getWorld()?.players.find((p) => p.name === playerName);
 	});
 	const isMyTurn = $derived(currentTurnPlayer?.name === playerName);
-	const isPregame = $derived(currentWorld?.gameState === 'Pregame');
+	const isPregame = $derived(getWorld()?.gameState === 'Pregame');
 	const playerResources = $derived(
 		viewerPlayer?.resources ?? { wood: 0, clay: 0, stone: 0, grain: 0, wool: 0 }
 	);
 
-	// Pregame turn conditions
 	const mustPlaceHouseFirst = $derived(
-		isPregame && currentWorld?.conditions.mustPlaceInitialHouse?.hasPlaced === false
+		isPregame && getWorld()?.conditions.mustPlaceInitialHouse?.hasPlaced === false
 	);
 	const mustPlaceRoadAfterHouse = $derived(
 		isPregame &&
-			currentWorld?.conditions.mustPlaceInitialHouse?.hasPlaced === true &&
-			currentWorld?.conditions.mustPlaceInitialRoad?.hasPlaced === false
+			getWorld()?.conditions.mustPlaceInitialHouse?.hasPlaced === true &&
+			getWorld()?.conditions.mustPlaceInitialRoad?.hasPlaced === false
 	);
 
 	const buildingCosts = {
@@ -41,7 +40,6 @@
 	type BuildingCost = (typeof buildingCosts)[keyof typeof buildingCosts];
 
 	const canAfford = (cost: BuildingCost) => {
-		// During initial placement phase, roads & settlements are free (classic rules)
 		if (isPregame) {
 			return true;
 		}
@@ -54,7 +52,6 @@
 		);
 	};
 
-	// Check if a building action is allowed based on game state and turn conditions
 	const canBuild = $derived.by(() => ({
 		settlement: isMyTurn && (isPregame ? mustPlaceHouseFirst : canAfford(buildingCosts.settlement)),
 		road: isMyTurn && (isPregame ? mustPlaceRoadAfterHouse : canAfford(buildingCosts.road)),
@@ -65,22 +62,21 @@
 	const handleBuild = (action: keyof typeof buildingCosts) => {
 		if (!isMyTurn || !viewerPlayer) return;
 		if (!canBuild[action]) return;
-		// Set building mode; actual placement is done on map click (Map.svelte)
-		if (action === 'road') ui.setBuilding('Road');
-		else if (action === 'settlement') ui.setBuilding('House');
-		else if (action === 'city') ui.setBuilding('City');
-		else ui.setBuilding('None');
+		// if (action === 'road') ui.setBuilding('Road');
+		// else if (action === 'settlement') ui.setBuilding('House');
+		// else if (action === 'city') ui.setBuilding('City');
+		// else ui.setBuilding('None');
 	};
 
 	const handleMoveThief = () => {
 		if (!isMyTurn) return;
-		ui.setMovingThief(true);
+		// ui.setMovingThief(true);
 	};
 
 	const handleBuyCard = async () => {
 		if (!isMyTurn || !playerName || !canBuild.developmentCard) return;
 		const action = new BuyCardAction(playerName);
-		await game.sendAction(action);
+		// await game.sendAction(action);
 	};
 </script>
 

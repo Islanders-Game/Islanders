@@ -1,27 +1,30 @@
 <script lang="ts">
-	import { game } from '$lib/stores/game.svelte';
 	import ResourcePanel from '$lib/components/trade/ResourcePanel.svelte';
+	import { getPlayerColorAsHex } from '$lib/helpers';
+	import { playerName } from '$lib/stores/game.svelte';
+	import { getWorld } from '$lib/stores/socket.svelte';
 
 	const props = $props();
 	const { gameId } = props.data as { gameId: string };
 
 	type ResourceType = 'wood' | 'clay' | 'stone' | 'grain' | 'wool';
 
-	const currentWorld = $derived(game.world);
-	const currentPlayerName = $derived(game.playerName);
+	const currentWorld = $derived(getWorld);
+	const currentPlayerName = $derived(playerName);
 	const currentPlayer = $derived.by(() => {
-		if (!currentWorld || !currentPlayerName) return undefined;
-		return currentWorld.players.find((p) => p.name === currentPlayerName);
+		if (!currentWorld() || !currentPlayerName) return undefined;
+		return currentWorld()?.players.find((p) => p.name === currentPlayerName);
 	});
 	const playerResources = $derived(
 		currentPlayer ? currentPlayer?.resources : { wood: 0, clay: 0, stone: 0, grain: 0, wool: 0 }
 	);
 
 	const otherPlayers = $derived.by(() => {
-		if (!currentWorld || !currentPlayerName) return [] as { name: string; color: string }[];
-		return currentWorld.players
-			.filter((p) => p.name !== currentPlayerName)
-			.map((p) => ({ name: p.name, color: game.getPlayerColorAsHex(p.name) ?? '#ffffff' }));
+		return (
+			currentWorld()
+				?.players.filter((p) => p.name !== currentPlayerName)
+				.map((p) => ({ name: p.name, color: getPlayerColorAsHex(p.name) ?? '#ffffff' })) ?? []
+		);
 	});
 
 	let offerResources = $state<Record<ResourceType, number>>({

@@ -1,34 +1,34 @@
 <script lang="ts">
-	import { game } from '$lib/stores/game.svelte';
-	import { WorldGenerator, type Tile } from '../../../../../../islanders-shared/lib/Shared';
+	import {
+		SocketActions,
+		WorldGenerator,
+		type Tile
+	} from '../../../../../../islanders-shared/lib/Shared';
 	import { goto } from '$app/navigation';
-	import { onMount } from 'svelte';
+	import { getSocket, getWorld } from '$lib/stores/socket.svelte';
 
 	const props = $props();
 	const { gameId } = props.data as { gameId: string };
 	const base = `/game/${encodeURIComponent(gameId)}`;
 
-	const world = $derived(game.world);
-	const isGameStarted = $derived(world?.gameState === 'Started');
+	const isGameStarted = $derived(getWorld()?.gameState === 'Started');
 
 	let radius = $state(4);
 	let numberOfIslands = $state(1);
-	let pointsToWin = $state(game.effectivePointsToWin ?? 10);
+	let pointsToWin = $state(getWorld()?.pointsToWin ?? 10);
 	const worldGenerator = new WorldGenerator();
-
-	$effect(() => {
-		if (pointsToWin && pointsToWin !== game.effectivePointsToWin) {
-			game.setPointsToWin(pointsToWin);
-		}
-	});
 
 	const randomizeMap = async () => {
 		const map: Tile[] = worldGenerator.generateRandomMap(radius, numberOfIslands);
-		await game.updateMap(map);
+		const newWorld = {
+			...getWorld(),
+			map
+		};
+		getSocket()?.emit(SocketActions.newWorld, newWorld);
 	};
 
 	const startGame = async () => {
-		await game.startGame(pointsToWin);
+		getSocket()?.emit(SocketActions.lockMap, pointsToWin);
 		await goto(base);
 	};
 </script>

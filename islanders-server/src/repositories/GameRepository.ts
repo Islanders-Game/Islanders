@@ -37,18 +37,18 @@ export class GameRepository {
 
   public async updateGame(gameID: string, world: World): Promise<Result> {
     try {
-      // Always derive next version from latest persisted state to avoid clashes / stale clients.
       const latestRow = (await this.db(this.tableName)
         .where({ game_id: gameID })
         .orderBy('version', 'desc')
         .first()) as GameRow | undefined;
-      const latestVersion = latestRow
-        ? typeof latestRow.world === 'string'
-          ? (JSON.parse(latestRow.world as string).version ?? latestRow.version)
-          : latestRow.version
-        : -1;
-      const nextVersion = latestVersion + 1;
+
+      if (!latestRow) {
+        return fail(`World with id: ${gameID} not found!`);
+      }
+
+      const nextVersion = (latestRow?.version ?? 0) + 1;
       const worldToPersist = this.withVersion(world, nextVersion);
+      console.log(`Persisting game ${gameID} at version ${nextVersion}`);
 
       await this.db(this.tableName).insert({
         game_id: gameID,

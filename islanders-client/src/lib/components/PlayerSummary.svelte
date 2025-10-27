@@ -1,6 +1,6 @@
 <script lang="ts">
+	import { getPlayerColorAsHex } from '$lib/helpers';
 	import type { Player } from '../../../../islanders-shared/lib/Player';
-	import { game } from '$lib/stores/game.svelte';
 
 	interface PlayerInformation {
 		player?: Player;
@@ -15,7 +15,7 @@
 	const playerName = $derived(player?.name ?? '—');
 	const points = $derived(player?.points ?? 0);
 	const color = $derived(
-		player && playerName ? (game.getPlayerColorAsHex(playerName) ?? defaultColor) : defaultColor
+		player && playerName ? (getPlayerColorAsHex(playerName) ?? defaultColor) : defaultColor
 	);
 </script>
 

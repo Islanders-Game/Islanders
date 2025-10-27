@@ -1,7 +1,7 @@
 <script lang="ts">
 	import '../app.css';
 	import { goto } from '$app/navigation';
-	import { game } from '$lib/stores/game.svelte';
+	import { createGame, joinGame } from '$lib/stores/game.svelte';
 
 	type Mode = 'create' | 'join';
 
@@ -33,23 +33,14 @@
 		isSubmitting = true;
 		try {
 			if (mode === 'join') {
-				game.error = undefined;
-				await game.joinGame(gameId.trim(), trimmedName);
-				if (game.error) {
-					errorMessage = game.error;
-					return;
-				}
+				await joinGame(gameId.trim(), trimmedName);
 			} else {
-				await game.createGame(trimmedName);
-			}
-
-			const nextGameId = game.gameId;
-			if (!nextGameId) {
-				errorMessage = 'Unable to open the game lobby. Please try again.';
+				const result = await createGame(trimmedName);
+				goto(`/game/${encodeURIComponent(result)}`);
 				return;
 			}
 
-			await goto(`/game/${encodeURIComponent(nextGameId)}`);
+			await goto(`/game/${encodeURIComponent(gameId)}`);
 		} catch (error) {
 			const message = error instanceof Error ? error.message : String(error);
 			errorMessage = message || 'Something went wrong while contacting the game server.';

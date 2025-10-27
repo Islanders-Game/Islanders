@@ -1,8 +1,6 @@
 <script lang="ts">
 	import { onMount } from 'svelte';
 	import { Application, Container, Graphics, Point, Assets, FederatedPointerEvent } from 'pixi.js';
-	import { game } from '$lib/stores/game.svelte.ts';
-	import { ui } from '$lib/stores/ui.svelte';
 	import type { BuildingType } from '$lib/stores/ui.svelte';
 	import {
 		type World,
@@ -28,14 +26,24 @@
 	import { getClosestPoint, getTwoClosestPoints, matrixCoordToGridWorldCoord } from './mapUtils';
 	import * as honeycombGrid from 'honeycomb-grid';
 	import type { Grid as HoneycombGrid } from 'honeycomb-grid';
+	import { getWorld } from '$lib/stores/socket.svelte';
+	import { playerName, sendAction } from '$lib/stores/game.svelte';
 	const { defineHex, Grid, Orientation } = honeycombGrid;
+	import type { Resources } from '../../../../islanders-shared/lib/Shared';
 
+	type TradeParameters = { player: string; resources: Resources; wants: Resources };
 	type HexType = ReturnType<typeof defineHex>;
 	type CustomHex = InstanceType<HexType>;
 
 	const currentPlayer: Player | undefined = $derived(
-		game.world?.players.find((player: Player) => player.name === game.playerName)
+		getWorld()?.players.find((player: Player) => player.name === playerName)
 	);
+	let isBuilding = $state<BuildingType>('None');
+	let isMovingThief = $state(false);
+	let isPlayingRoadBuilding = $state(false);
+	let isPlayingKnight = $state(false);
+	let isStealingFromPlayers = $state(false);
+	let playerProposesTrade = $state<TradeParameters | undefined>(undefined);
 
 	const hexSize = 200;
 	const tileHeight = 348;
@@ -106,13 +114,8 @@
 	let latestWorld: World | undefined;
 	let loadingPromise: Promise<void> | undefined;
 
-	let isBuilding: BuildingType = $derived(ui.isBuilding);
-	let isMovingThief = $derived(ui.isMovingThief);
-	let isPlayingKnight = $derived(ui.isPlayingKnight);
-	let isPlayingRoadBuilding = $derived(ui.isPlayingRoadBuilding);
-
 	$effect(() => {
-		updateMap(game.world);
+		updateMap(getWorld());
 	});
 
 	const toWorld = (screenPoint: { x: number; y: number }): { x: number; y: number } => {
@@ -154,7 +157,7 @@
 		cursorGraphics.clear();
 		cursorGraphics.removeChildren();
 		try {
-			await game.sendAction(action);
+			await sendAction(action);
 		} catch (error) {
 			console.warn('Failed to send action', error);
 		}
@@ -168,8 +171,7 @@
 		const hexCoord = { x: hexToFind.col, y: hexToFind.row };
 		const moveThiefAction = new MoveThiefAction(currentPlayer.name, hexCoord);
 		dispatchActionClearCursor(moveThiefAction);
-		ui.setMovingThief(false);
-		// Don't set isStealingFromPlayers here - let the world update handler do it
+		isMovingThief = false;
 	};
 
 	const handleIsPlayingKnightClick = (event: FederatedPointerEvent) => {
@@ -180,12 +182,11 @@
 		const hexCoord = { x: hexToFind.col, y: hexToFind.row };
 		const moveThiefAction = new MoveThiefDevCardAction(currentPlayer.name, hexCoord);
 		dispatchActionClearCursor(moveThiefAction);
-		ui.setPlayingKnight(false);
-		// Don't set isStealingFromPlayers here - let the world update handler do it
+		isStealingFromPlayers = true;
 	};
 
 	const handleBuildClick = (event: FederatedPointerEvent) => {
-		if (!worldContainer || !currentPlayer || !game.world || !grid) return;
+		if (!worldContainer || !currentPlayer || !getWorld() || !grid) return;
 
 		const inWorld = toWorld(event.global);
 		const closestPoints = getTwoClosestPoints(grid, inWorld);
@@ -198,26 +199,26 @@
 
 		if (isBuilding === 'House') {
 			const action =
-				game.world.gameState === 'Started'
+				getWorld()?.gameState === 'Started'
 					? new BuildHouseAction(currentPlayer.name, coord)
 					: new BuildHouseInitialAction(currentPlayer.name, coord);
 
 			dispatchActionClearCursor(action);
-			ui.setBuilding('None');
+			isBuilding = 'None';
 		}
 		if (isBuilding === 'City') {
 			dispatchActionClearCursor(new BuildCityAction(currentPlayer.name, coord));
-			ui.setBuilding('None');
+			isBuilding = 'None';
 		}
 		if (isBuilding === 'Road' && closestPoints[1].index !== -1) {
 			const coord2 = getMatrixCoordCorner(hexCoord, closestPoints[1].index);
 			const action =
-				game.world.gameState === 'Started'
+				getWorld()?.gameState === 'Started'
 					? new BuildRoadAction(currentPlayer.name, coord, coord2)
 					: new BuildRoadInitialAction(currentPlayer.name, coord, coord2);
 
 			dispatchActionClearCursor(action);
-			ui.setBuilding('None');
+			isBuilding = 'None';
 		}
 	};
 
@@ -580,7 +581,6 @@
 	};
 
 	onMount(() => {
-		game.bindToWorld();
 		setupCanvas();
 		handleResize();
 

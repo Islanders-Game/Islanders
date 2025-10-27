@@ -154,10 +154,7 @@ export const matrixCoordToGridWorldCoord = (
  * @param currentPlayerName - The name of the current player (who cannot be stolen from themselves)
  * @returns Array of players who can be stolen from
  */
-export const getStealablePlayers = (
-	world: World,
-	currentPlayerName: string | undefined
-): Player[] => {
+export const getStealablePlayers = (world: World): Player[] => {
 	if (!world.thief || !world.players) return [];
 
 	const thiefHex = world.thief.hexCoordinate;
